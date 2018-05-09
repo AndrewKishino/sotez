@@ -1,0 +1,41 @@
+{
+  "name": "sotez",
+  "version": "0.0.6",
+  "description": "A JS Library for Tezos",
+  "main": "tez.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "A",
+    "javascript",
+    "library",
+    "for",
+    "tezos"
+  ],
+  "author": "Andrew Kishino",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bip39": "^2.5.0",
+    "bs58check": "^2.1.1",
+    "libsodium-wrappers": "^0.7.3",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-parallel": "^0.3.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewKishino/sotez.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AndrewKishino/sotez/issues"
+  },
+  "homepage": "https://github.com/AndrewKishino/sotez#readme"
+}

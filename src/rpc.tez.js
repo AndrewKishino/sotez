@@ -69,6 +69,7 @@ module.exports = {
     let counter;
     let sopbytes;
     let returnedContracts;
+    let predBlock;
     const promises = [];
     promises.push(node.query('/blocks/head'));
     if (typeof fee !== 'undefined') {
@@ -76,7 +77,7 @@ module.exports = {
     }
     return Promise.all(promises).then((f) => {
       head = f[0];
-      const predBlock = head.predecessor;
+      predBlock = head.predecessor;
       let ops;
       if (Array.isArray(operation)) {
         ops = operation;

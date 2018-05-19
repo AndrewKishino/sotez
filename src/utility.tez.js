@@ -1,3 +1,4 @@
+/* eslint-disable */
 const library = require('./library.tez');
 const prefix = require('./prefix.tez');
 
@@ -188,14 +189,14 @@ const utility = {
     return ret;
   },
   formatMoney(n, c, d, t) {
-    const c = isNaN(c = Math.abs(c)) ? 2 : c;
-    const d = d == undefined ? '.' : d;
-    const t = t == undefined ? ',' : t;
+    const cc = isNaN(c = Math.abs(c)) ? 2 : c;
+    const dd = d == undefined ? '.' : d;
+    const tt = t == undefined ? ',' : t;
     const s = n < 0 ? '-' : '';
-    const i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c)));
+    const i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(cc), 10));
     const j = (j = i.length) > 3 ? j % 3 : 0;
-    return s + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${t}`) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '');
-  }
+    return s + (j ? i.substr(0, j) + tt : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${tt}`) + (cc ? dd + Math.abs(n - i).toFixed(cc).slice(2) : '');
+  },
 };
 
 utility.ml2tzjson = utility.sexp2mic;

@@ -20,6 +20,7 @@
     "bip39": "^2.5.0",
     "bs58check": "^2.1.1",
     "libsodium-wrappers": "^0.7.3",
+    "pbkdf2": "^3.0.16",
     "yargs": "^11.0.0"
   },
   "devDependencies": {

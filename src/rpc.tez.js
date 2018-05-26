@@ -25,7 +25,7 @@ module.exports = {
       .then((f) => {
         head = f;
         predBlock = head.predecessor;
-        return node.query('/blocks/prevalidation/proto/helpers/forge/forge/operations', {
+        return node.query('/blocks/head/proto/helpers/forge/forge/operations', {
           branch: predBlock,
           operations: [{
             kind: 'faucet',
@@ -37,7 +37,7 @@ module.exports = {
       .then((f) => {
         opbytes = f.operation;
         const operationHash = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(opbytes)), prefix.o);
-        return node.query('/blocks/prevalidation/proto/helpers/apply_operation', {
+        return node.query('/blocks/head/proto/helpers/apply_operation', {
           pred_block: predBlock,
           operation_hash: operationHash,
           forged_operation: opbytes,
@@ -53,10 +53,10 @@ module.exports = {
       .then(f => new Promise((resolve => setTimeout(() => resolve(f), 500))));
   },
   getBalance(tz1) {
-    return node.query(`/blocks/prevalidation/proto/context/contracts/${tz1}/balance`).then(r => r.balance);
+    return node.query(`/blocks/head/proto/context/contracts/${tz1}/balance`).then(r => r.balance);
   },
   getDelegate(tz1) {
-    return node.query(`/blocks/prevalidation/proto/context/contracts/${tz1}/delegate`);
+    return node.query(`/blocks/head/proto/context/contracts/${tz1}/delegate`);
   },
   getHead() {
     return node.query('/blocks/head');

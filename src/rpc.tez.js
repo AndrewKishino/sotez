@@ -130,8 +130,7 @@ module.exports = {
       })
       .then(e => new Promise(((resolve) => {
         setTimeout(() => resolve(e), 500);
-      })))
-      .catch(e => console.log(e));
+      })));
   },
   freeDefaultAccount(keys) {
     const m = crypto.generateMnemonic();

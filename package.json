@@ -2,9 +2,11 @@
   "name": "sotez",
   "version": "0.0.9",
   "description": "A JS Library for Tezos",
-  "main": "tez.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:all": "npm run build:cli && npm run build:browser",
+    "build:cli": "webpack --config webpack.cli.config.js --progress",
+    "build:browser": "webpack --config webpack.browser.config.js --progress"
   },
   "keywords": [
     "A",
@@ -14,22 +16,24 @@
     "tezos"
   ],
   "author": "Andrew Kishino",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
     "bip39": "^2.5.0",
     "bs58check": "^2.1.1",
+    "buffer": "^5.1.0",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
-    "yargs": "^11.1.0"
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
     "eslint": "^4.3.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-parallel": "^0.3.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.8.2"
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.3"
   },
   "repository": {
     "type": "git",
@@ -38,5 +42,8 @@
   "bugs": {
     "url": "https://github.com/AndrewKishino/sotez/issues"
   },
-  "homepage": "https://github.com/AndrewKishino/sotez#readme"
+  "homepage": "https://github.com/AndrewKishino/sotez#readme",
+  "browser": {
+    "./index.js": "./browser.js"
+  }
 }

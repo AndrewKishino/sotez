@@ -1,3 +1,3 @@
-const sotez = require('./dist/sotez.cli');
+const sotez = require('./src/cli.sotez');
 
 module.exports = sotez;

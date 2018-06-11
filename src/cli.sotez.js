@@ -213,7 +213,7 @@ const utility = {
   },
 };
 
-export const crypto = {
+const crypto = {
   extractKeys: sk => (
     {
       pk: utility.b58cencode(utility.b58cdecode(sk, prefix.edsk).slice(32), prefix.edpk),
@@ -301,7 +301,7 @@ export const crypto = {
   ),
 };
 
-export const node = {
+const node = {
   activeProvider: defaultProvider,
   debugMode: false,
   async: true,
@@ -348,7 +348,7 @@ export const node = {
   },
 };
 
-export const rpc = {
+const rpc = {
   account: (keys, amount, spendable, delegatable, delegate, fee) => {
     const operation = {
       kind: 'origination',
@@ -397,7 +397,7 @@ export const rpc = {
           setTimeout(() => resolve(f), 500);
         })
       ))
-      .catch(e => console.error(`Error: ${e}`));
+      .catch(e => e);
   },
   getBalance: tz1 => node.query(`/blocks/head/proto/context/contracts/${tz1}/balance`).then(r => r.balance),
   getDelegate: tz1 => node.query(`/blocks/head/proto/context/contracts/${tz1}/delegate`),
@@ -472,7 +472,7 @@ export const rpc = {
           setTimeout(() => resolve(e), 500);
         })
       ))
-      .catch(e => console.error(`Error: ${e}`));
+      .catch(e => e);
   },
   transfer: (keys, from, to, amount, fee) => {
     const operation = {
@@ -535,7 +535,7 @@ export const rpc = {
   },
 };
 
-export const contract = {
+const contract = {
   originate: (keys, amount, code, init, spendable, delegatable, delegate, fee) => (
     rpc.originate(keys, amount, code, init, spendable, delegatable, delegate, fee)
   ),
@@ -566,7 +566,7 @@ export const contract = {
       kind: 'transaction',
       amount: utility.tztomin(amount),
       destination: contractArg,
-      parameters: utility.sexp2mic(parameter),
+      parameters: parameter, // utility.sexp2mic(parameter),
     }, keys, fee)
   ),
 };

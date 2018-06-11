@@ -1,5 +1,5 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin'); // eslint-disable-line
 
 module.exports = {
   resolve: {
@@ -37,5 +37,4 @@ module.exports = {
       }),
     ],
   },
-  target: 'web',
 };

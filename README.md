@@ -6,7 +6,7 @@ npm install --save sotez
 
 import sotez from 'sotez';
 
-sotez.node.query('/blocks/head')
+sotez.node.query('/chains/main/blocks/head')
   .then(response => console.log(response));
 ```
 
@@ -15,7 +15,7 @@ Or import individule modules
 ```js
 import { node } from 'sotez';
 
-node.query('/blocks/head')
+node.query('/chains/main/blocks/head')
   .then(response => console.log(response));
 ```
 

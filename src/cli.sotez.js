@@ -1,6 +1,6 @@
 const { XMLHttpRequest } = require('xmlhttprequest');
 
-const defaultProvider = 'http://mytezoswallet.com:8732';
+const defaultProvider = 'http://node.mytezoswallet.com';
 
 const library = {
   bs58check: require('bs58check'),
@@ -11,48 +11,79 @@ const library = {
 
 const prefix = {
   tz1: new Uint8Array([6, 161, 159]),
+  tz2: new Uint8Array([6, 161, 161]),
+  tz3: new Uint8Array([6, 161, 164]),
+  KT: new Uint8Array([2, 90, 121]),
+
   edpk: new Uint8Array([13, 15, 37, 217]),
-  edsk: new Uint8Array([43, 246, 78, 7]),
   edsk2: new Uint8Array([13, 15, 58, 7]),
+  spsk: new Uint8Array([17, 162, 224, 201]),
+  p2sk: new Uint8Array([16, 81, 238, 189]),
+
+  sppk: new Uint8Array([3, 254, 226, 86]),
+  p2pk: new Uint8Array([3, 178, 139, 127]),
+
+  edsk: new Uint8Array([43, 246, 78, 7]),
   edsig: new Uint8Array([9, 245, 205, 134, 18]),
+  spsig1: new Uint8Array([13, 115, 101, 19, 63]),
+  p2sig: new Uint8Array([54, 240, 44, 52]),
+  sig: new Uint8Array([4, 130, 43]),
+
+  Net: new Uint8Array([87, 82, 0]),
   nce: new Uint8Array([69, 220, 169]),
   b: new Uint8Array([1, 52]),
   o: new Uint8Array([5, 116]),
-  TZ: new Uint8Array([3, 99, 29]),
+  Lo: new Uint8Array([133, 233]),
+  LLo: new Uint8Array([29, 159, 109]),
+  P: new Uint8Array([2, 170]),
+  Co: new Uint8Array([79, 179]),
+  id: new Uint8Array([153, 103]),
+};
+
+const watermark = {
+  block: new Uint8Array([1]),
+  endorsement: new Uint8Array([2]),
+  generic: new Uint8Array([3]),
 };
 
 const utility = {
-  mintotz: m => parseInt(m, 10) / 1000000,
-  tztomin: (tz) => {
-    let r = tz.toFixed(6) * 1000000;
-    if (r > 4294967296) r = r.toString();
+  totez: m => parseInt(m, 10) / 1000000,
+  mutez: (tz) => {
+    const r = tz.toFixed(6) * 1000000;
+    if (r > 4294967296) {
+      return r.toString();
+    }
     return r;
   },
   b58cencode: (payload, prefixArg) => {
     const n = new Uint8Array(prefixArg.length + payload.length);
     n.set(prefixArg);
     n.set(payload, prefixArg.length);
-    return library.bs58check.encode(new Buffer(n, 'hex'));
+    return library.bs58check.encode(Buffer.from(n, 'hex'));
   },
   b58cdecode: (enc, prefixArg) => library.bs58check.decode(enc).slice(prefixArg.length),
   buf2hex: (buffer) => {
     const byteArray = new Uint8Array(buffer);
     const hexParts = [];
-    for (let i = 0; i < byteArray.length; i += 1) {
-      const hex = byteArray[i].toString(16);
+    byteArray.forEach((byte) => {
+      const hex = byte.toString(16);
       const paddedHex = (`00${hex}`).slice(-2);
       hexParts.push(paddedHex);
-    }
+    });
     return hexParts.join('');
   },
   hex2buf: hex => new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))),
   hexNonce: (length) => {
     const chars = '0123456789abcedf';
     let hex = '';
-    while (length -= 1) {
-      hex += chars[(Math.random() * 16) | 0];
-    }
+    while (length -= 1) hex += chars[(Math.random() * 16) | 0];
     return hex;
+  },
+  mergebuf: (b1, b2) => {
+    const r = new Uint8Array(b1.length + b2.length);
+    r.set(b1);
+    r.set(b2, b1.length);
+    return r;
   },
   sexp2mic: function me(mi) {
     mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
@@ -78,6 +109,9 @@ const utility = {
           if (val === parseInt(val, 10).toString()) {
             if (!ret.prim) return { int: val };
             ret.args.push({ int: val });
+          } else if (val[0] === '0') {
+            if (!ret.prim) return { bytes: val };
+            ret.args.push({ bytes: val });
           } else if (ret.prim) {
             ret.args.push(me(val));
           } else {
@@ -192,43 +226,58 @@ const utility = {
         ret.push(utility.ml2tzjson(val));
         val = '';
         continue;
-      } else if (mi[i] === '"' && sopen) sopen = false;
-      else if (mi[i] === '"' && !sopen) sopen = true;
-      else if (mi[i] === '\\') escaped = true;
-      else if (mi[i] === '(') pl += 1;
-      else if (mi[i] === ')') pl -= 1;
+      } else if (mi[i] === '"' && sopen) {
+        sopen = false;
+      } else if (mi[i] === '"' && !sopen) {
+        sopen = true;
+      } else if (mi[i] === '\\') {
+        escaped = true;
+      } else if (mi[i] === '(') {
+        pl += 1;
+      } else if (mi[i] === ')') {
+        pl -= 1;
+      }
       val += mi[i];
     }
     return ret;
   },
   formatMoney: (n, c, d, t) => {
-    const cc = isNaN(c = Math.abs(c)) ? 2 : c;
+    const cc = isNaN(c = Math.abs(c)) ? 2 : c; // eslint-disable-line
     const dd = d === undefined ? '.' : d;
     const tt = t === undefined ? ',' : t;
     const s = n < 0 ? '-' : '';
     const i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(cc), 10));
-    const k = i.length;
-    const j = k > 3 ? k % 3 : 0;
-    return s + (j ? i.substr(0, j) + tt : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${tt}`) + (cc ? dd + Math.abs(n - i).toFixed(cc).slice(2) : '');
+    const j = i.length > 3 ? i.length % 3 : 0;
+    return s + (j ? i.substr(0, j) + tt : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${tt}`) + (cc ? dd + Math.abs(n - i).toFixed(c).slice(2) : '');
   },
 };
 
+// TODO: Add p256 and secp256k1 cryptographay
 const crypto = {
-  extractKeys: sk => (
-    {
-      pk: utility.b58cencode(utility.b58cdecode(sk, prefix.edsk).slice(32), prefix.edpk),
-      pkh: utility.b58cencode(library.sodium.crypto_generichash(20, utility.b58cdecode(sk, prefix.edsk).slice(32)), prefix.tz1),
-      sk,
+  extractKeys: (sk) => { // eslint-disable-line
+    const pref = sk.substr(0, 4);
+    switch (pref) {
+      case 'edsk':
+        if (sk.length === 98) {
+          return {
+            pk: utility.b58cencode(utility.b58cdecode(sk, prefix.edsk).slice(32), prefix.edpk),
+            pkh: utility.b58cencode(library.sodium.crypto_generichash(20, utility.b58cdecode(sk, prefix.edsk).slice(32)), prefix.tz1),
+            sk,
+          };
+        }
+        if (sk.length === 54) { // seed
+          const s = utility.b58cdecode(sk, prefix.edsk2);
+          const kp = library.sodium.crypto_sign_seed_keypair(s);
+          return {
+            sk: utility.b58cencode(kp.privateKey, prefix.edsk),
+            pk: utility.b58cencode(kp.publicKey, prefix.edpk),
+            pkh: utility.b58cencode(library.sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
+          };
+        }
+        break;
+      default:
+        return false;
     }
-  ),
-  extractKeysShort: (sk) => {
-    const s = utility.b58cdecode(sk, prefix.edsk2);
-    const kp = library.sodium.crypto_sign_seed_keypair(s);
-    return {
-      sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-      pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-      pkh: utility.b58cencode(library.sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-    };
   },
   generateMnemonic: () => library.bip39.generateMnemonic(160),
   checkAddress: (a) => {
@@ -242,20 +291,6 @@ const crypto = {
   generateKeysNoSeed: () => {
     const kp = library.sodium.crypto_sign_keypair();
     return {
-      sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-      pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-      pkh: utility.b58cencode(library.sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-    };
-  },
-  generateKeysSalted: (m, p) => {
-    const ss = Math.random().toString(36).slice(2);
-    const pp = library.pbkdf2.pbkdf2Sync(p, ss, 0, 32, 'sha512').toString();
-    const s = library.bip39.mnemonicToSeed(m, pp).slice(0, 32);
-    const kp = library.sodium.crypto_sign_seed_keypair(s);
-    return {
-      mnemonic: m,
-      passphrase: p,
-      salt: ss,
       sk: utility.b58cencode(kp.privateKey, prefix.edsk),
       pk: utility.b58cencode(kp.publicKey, prefix.edpk),
       pkh: utility.b58cencode(library.sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
@@ -285,8 +320,12 @@ const crypto = {
       pkh: utility.b58cencode(library.sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
     };
   },
-  sign: (bytes, sk) => {
-    const sig = library.sodium.crypto_sign_detached(library.sodium.crypto_generichash(32, utility.hex2buf(bytes)), utility.b58cdecode(sk, prefix.edsk), 'uint8array');
+  sign: (bytes, sk, wm) => {
+    let bb = utility.hex2buf(bytes);
+    if (typeof wm !== 'undefined') {
+      bb = utility.mergebuf(wm, bb);
+    }
+    const sig = library.sodium.crypto_sign_detached(library.sodium.crypto_generichash(32, bb), utility.b58cdecode(sk, prefix.edsk), 'uint8array');
     const edsig = utility.b58cencode(sig, prefix.edsig);
     const sbytes = bytes + utility.buf2hex(sig);
     return {
@@ -314,36 +353,54 @@ const node = {
   resetProvider: () => {
     node.activeProvider = defaultProvider;
   },
-  query: (e, o) => {
-    if (typeof o === 'undefined') o = {};
+  query: (e, o, t) => {
+    if (typeof o === 'undefined') {
+      if (typeof t === 'undefined') {
+        t = 'GET';
+      } else {
+        o = {};
+      }
+    } else if (typeof t === 'undefined') {
+      t = 'POST';
+    }
     return new Promise((resolve, reject) => {
-      const http = new XMLHttpRequest();
-      http.open('POST', node.activeProvider + e, node.async);
-      http.onload = () => {
-        if (http.status === 200) {
+      try {
+        const http = new XMLHttpRequest();
+        http.open(t, node.activeProvider + e, node.async);
+        http.onload = () => {
           if (node.debugMode) {
             console.log(e, o, http.responseText);
           }
-          if (http.responseText) {
-            let r = JSON.parse(http.responseText);
-            if (typeof r.error !== 'undefined') {
-              reject(r.error);
+          if (http.status === 200) {
+            if (http.responseText) {
+              let r = JSON.parse(http.responseText);
+              if (typeof r.error !== 'undefined') {
+                reject(r.error);
+              } else {
+                if (typeof r.ok !== 'undefined') r = r.ok;
+                resolve(r);
+              }
             } else {
-              if (typeof r.ok !== 'undefined') r = r.ok;
-              resolve(r);
+              reject('Empty response returned'); // eslint-disable-line
             }
+          } else if (http.responseText) {
+            reject(http.responseText);
           } else {
-            reject('Empty response returned');
+            reject(http.statusText);
           }
-        } else {
+        };
+        http.onerror = () => {
           reject(http.statusText);
+        };
+        if (t === 'POST') {
+          http.setRequestHeader('Content-Type', 'application/json');
+          http.send(JSON.stringify(o));
+        } else {
+          http.send();
         }
-      };
-      http.onerror = () => {
-        reject(http.statusText);
-      };
-      http.setRequestHeader('Content-Type', 'application/json');
-      http.send(JSON.stringify(o));
+      } catch (err) {
+        reject(err);
+      }
     });
   },
 };
@@ -352,135 +409,132 @@ const rpc = {
   account: (keys, amount, spendable, delegatable, delegate, fee) => {
     const operation = {
       kind: 'origination',
-      balance: utility.tztomin(amount),
+      fee: fee.toString(),
       managerPubkey: keys.pkh,
+      balance: utility.mutez(amount).toString(),
       spendable: (typeof spendable !== 'undefined' ? spendable : true),
       delegatable: (typeof delegatable !== 'undefined' ? delegatable : true),
       delegate: (typeof delegate !== 'undefined' ? delegate : keys.pkh),
     };
-    return rpc.sendOperation(operation, keys, fee);
+    return rpc.sendOperation(keys.pkh, operation, keys);
   },
-  freeAccount: (keys) => {
-    let head;
-    let predBlock;
-    let opbytes;
-    return node.query('/blocks/head')
-      .then((f) => {
-        head = f;
-        predBlock = head.predecessor;
-        return node.query('/blocks/head/proto/helpers/forge/operations', {
-          branch: predBlock,
-          operations: [{
-            kind: 'faucet',
-            id: keys.pkh,
-            nonce: utility.hexNonce(32),
-          }],
-        });
-      })
-      .then((f) => {
-        opbytes = f.operation;
-        const operationHash = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(opbytes)), prefix.o);
-        return node.query('/blocks/head/proto/helpers/apply_operation', {
-          pred_block: predBlock,
-          operation_hash: operationHash,
-          forged_operation: opbytes,
-        });
-      })
-      .then((f) => {
-        const npkh = f.contracts[0];
-        return node.query('/inject_operation', {
-          signedOperationContents: opbytes,
-        }).then(() => npkh);
-      })
-      .then(f => (
-        new Promise((resolve) => {
-          setTimeout(() => resolve(f), 500);
-        })
-      ))
-      .catch(e => e);
-  },
-  getBalance: tz1 => node.query(`/blocks/head/proto/context/contracts/${tz1}/balance`).then(r => r.balance),
-  getDelegate: tz1 => node.query(`/blocks/head/proto/context/contracts/${tz1}/delegate`),
-  getHead: () => node.query('/blocks/head'),
+  getBalance: tz1 => (
+    node.query(`/chains/main/blocks/head/context/contracts/${tz1}/balance`)
+      .then(r => r)
+  ),
+  getDelegate: tz1 => (
+    node.query(`/chains/main/blocks/head/context/contracts/${tz1}/delegate`)
+      .then((r) => {
+        if (r) { return r; }
+        return false;
+      }).catch(() => false)
+  ),
+  getHead: () => node.query('/chains/main/blocks/head'),
+  getHeadHash: () => node.query('/chains/main/blocks/head/hash'),
   call: (e, d) => node.query(e, d),
-  sendOperation: (operation, keys, fee) => {
-    let head;
+  sendOperation: (from, operation, keys) => {
     let counter;
-    let predBlock;
     let sopbytes;
-    let returnedContracts;
+    let opOb;
+    let errors = [];
+    const opResponse = [];
     const promises = [];
-    promises.push(node.query('/blocks/head'));
-    if (typeof fee !== 'undefined') {
-      promises.push(node.query(`/blocks/head/proto/context/contracts/${keys.pkh}/counter`));
+    let requiresReveal = false;
+    let head;
+
+    promises.push(node.query('/chains/main/blocks/head/header'));
+    const ops = [...operation];
+
+    for (let i = 0; i < ops.length; i += 1) {
+      if (['transaction', 'origination', 'delegation'].indexOf(ops[i].kind) >= 0) {
+        requiresReveal = true;
+        promises.push(node.query(`/chains/main/blocks/head/context/contracts/${from}/counter`));
+        promises.push(node.query(`/chains/main/blocks/head/context/contracts/${from}/manager_key`));
+        break;
+      }
     }
-    return Promise.all(promises).then((f) => {
-      head = f[0];
-      predBlock = head.predecessor;
-      let ops;
-      if (Array.isArray(operation)) {
-        ops = operation;
-      } else if (operation.kind === 'transaction' || operation.kind === 'delegation' || operation.kind === 'origination') {
-        ops = [
-          {
-            kind: 'reveal',
-            public_key: keys.pk,
-          },
-          operation,
-        ];
-      } else {
-        ops = [operation];
+
+    return Promise.all(promises).then(([header, headCounter, manager]) => {
+      head = header;
+      if (requiresReveal && typeof manager.key === 'undefined') {
+        ops.unshift({
+          kind: 'reveal',
+          fee: 0,
+          public_key: keys.pk,
+          source: from,
+        });
       }
-      const opOb = {
-        branch: predBlock,
-        kind: 'manager',
-        source: keys.pkh,
-        operations: ops,
+      counter = parseInt(headCounter, 10) + 1;
+
+      ops.forEach((op) => {
+        if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].indexOf(op.kind) >= 0) {
+          if (typeof op.source === 'undefined') op.source = from;
+        }
+        if (['reveal', 'transaction', 'origination', 'delegation'].indexOf(op.kind) >= 0) {
+          if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
+          if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
+          op.counter = (counter += 1).toString();
+
+          op.fee = op.fee.toString();
+          op.gas_limit = op.gas_limit.toString();
+          op.storage_limit = op.storage_limit.toString();
+          op.counter = op.counter.toString();
+        }
+      });
+
+      opOb = {
+        branch: head.hash,
+        contents: ops,
       };
-      if (typeof fee !== 'undefined') {
-        counter = f[1].counter + 1;
-        opOb.fee = fee;
-        opOb.counter = counter;
-        // opOb['public_key'] = keys.pk;
-      }
-      return node.query('/blocks/head/proto/helpers/forge/operations', opOb);
+
+      return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
     })
       .then((f) => {
-        const opbytes = f.operation;
-        const signed = crypto.sign(opbytes, keys.sk);
+        const opbytes = f;
+        const signed = crypto.sign(opbytes, keys.sk, watermark.generic);
         sopbytes = signed.sbytes;
-        const oh = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(sopbytes)), prefix.o);
-        return node.query('/blocks/head/proto/helpers/apply_operation', {
-          pred_block: predBlock,
-          operation_hash: oh,
-          forged_operation: opbytes,
-          signature: signed.edsig,
-        });
+        // const oh = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(sopbytes)), prefix.o);
+        opOb.protocol = 'ProtoALphaALphaALphaALphaALphaALphaALphaALphaDdp3zK';
+        opOb.signature = signed.edsig;
+        return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/preapply/operations`, [opOb]);
       })
       .then((f) => {
-        returnedContracts = f.contracts;
-        return node.query('/inject_operation', {
-          signedOperationContents: sopbytes,
-        });
+        if (!Array.isArray(f)) {
+          throw { error: "RPC Fail", errors: [] }; // eslint-disable-line
+        }
+        for (let i = 0; i < f.length; i += 1) {
+          for (let j = 0; j < f[i].contents.length; j += 1) {
+            opResponse.push(f[i].contents[j]);
+            if (typeof f[i].contents[j].metadata.operation_result !== 'undefined' && f[i].contents[j].metadata.operation_result.status === 'failed') {
+              errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
+            }
+          }
+        }
+        if (errors.length) throw { error: 'Operation Failed', errors: errors }; // eslint-disable-line
+        return node.query('/injection/operation', sopbytes);
       })
-      .then((f) => {
-        f.contracts = returnedContracts;
-        return f;
-      })
-      .then(e => (
-        new Promise((resolve) => {
-          setTimeout(() => resolve(e), 500);
-        })
-      ))
-      .catch(e => e);
+      .then(f => ({
+        hash: f,
+        operations: opResponse,
+      }));
   },
-  transfer: (keys, from, to, amount, fee) => {
+  transfer: (from, keys, to, amount, fee) => {
     const operation = {
       kind: 'transaction',
-      amount: utility.tztomin(amount),
+      fee: fee.toString(),
+      gas_limit: '200',
+      amount: utility.mutez(amount).toString(),
       destination: to,
     };
-    return rpc.sendOperation(operation, { pk: keys.pk, pkh: from, sk: keys.sk }, fee);
+    return rpc.sendOperation(from, operation, keys);
+  },
+  activate: (keys, secret) => {
+    const operation = {
+      kind: 'activate_account',
+      pkh: keys.pkh,
+      secret,
+    };
+    return rpc.sendOperation(keys.pkh, operation, keys);
   },
   originate: (keys, amount, code, init, spendable, delegatable, delegate, fee) => {
     const _code = utility.ml2mic(code);
@@ -490,45 +544,59 @@ const rpc = {
     };
     const operation = {
       kind: 'origination',
+      fee: fee.toString(),
+      gas_limit: '10000',
+      storage_limit: '10000',
       managerPubkey: keys.pkh,
-      balance: utility.tztomin(amount),
+      balance: utility.mutez(amount).toString(),
       spendable: (typeof spendable !== 'undefined' ? spendable : false),
       delegatable: (typeof delegatable !== 'undefined' ? delegatable : false),
       delegate: (typeof delegate !== 'undefined' && delegate ? delegate : keys.pkh),
       script,
     };
-    return rpc.sendOperation(operation, keys, fee);
+    return rpc.sendOperation(keys.pkh, operation, keys);
   },
-  setDelegate: (keys, account, delegate, fee) => {
+  setDelegate: (from, keys, delegate, fee) => {
     const operation = {
       kind: 'delegation',
+      fee: fee.toString(),
       delegate: (typeof delegate !== 'undefined' ? delegate : keys.pkh),
     };
-    return rpc.sendOperation(operation, { pk: keys.pk, pkh: account, sk: keys.sk }, fee);
+    return rpc.sendOperation(from, operation, keys);
   },
   registerDelegate: (keys, fee) => {
     const operation = {
       kind: 'delegation',
+      fee: fee.toString(),
       delegate: keys.pkh,
     };
-    return rpc.sendOperation(operation, keys, fee);
+    return rpc.sendOperation(keys.pkh, operation, keys);
   },
   typecheckCode: (code) => {
     const _code = utility.ml2mic(code);
-    return node.query('/blocks/head/proto/helpers/typecheck_code', _code);
+    return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_code', { program: _code, gas: '10000' });
+  },
+  packData: (data, type) => {
+    const check = {
+      data: utility.sexp2mic(data),
+      type: utility.sexp2mic(type),
+      gas: '400000',
+    };
+    return node.query('/chains/main/blocks/head/helpers/scripts/pack_data', check);
   },
   typecheckData: (data, type) => {
     const check = {
       data: utility.sexp2mic(data),
       type: utility.sexp2mic(type),
+      gas: '400000',
     };
-    return node.query('/blocks/head/proto/helpers/typecheck_data', check);
+    return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_data', check);
   },
   runCode: (code, amount, input, storage, trace) => {
-    const ep = (trace ? 'trace_code' : 'run_code');
-    return node.query(`/blocks/head/proto/helpers/${ep}`, {
+    const ep = ((typeof trace !== 'undefined' && trace) ? 'trace_code' : 'run_code');
+    return node.query(`/chains/main/blocks/head/helpers/scripts/${ep}`, {
       script: utility.ml2mic(code),
-      amount: utility.tztomin(amount),
+      amount: utility.mutez(amount).toString(),
       input: utility.sexp2mic(input),
       storage: utility.sexp2mic(storage),
     });
@@ -536,103 +604,75 @@ const rpc = {
 };
 
 const contract = {
+  hash: (operationHash, ind) => {
+    const ob = utility.b58cdecode(operationHash, prefix.o);
+    let tt = [];
+    let i = 0;
+    for (; i < ob.length; i += 1) {
+      tt.push(ob[i]);
+    }
+    tt = tt.concat([
+      (ind & 0xff000000) >> 24,
+      (ind & 0x00ff0000) >> 16,
+      (ind & 0x0000ff00) >> 8,
+      (ind & 0x000000ff),
+    ]);
+    return utility.b58cencode(library.sodium.crypto_generichash(20, new Uint8Array(tt)), prefix.TZ);
+  },
   originate: (keys, amount, code, init, spendable, delegatable, delegate, fee) => (
     rpc.originate(keys, amount, code, init, spendable, delegatable, delegate, fee)
   ),
   storage: contractArg => (
-    new Promise((resolve, reject) => {
-      node.query(`/blocks/head/proto/context/contracts/${contractArg}`)
-        .then(r => resolve(r.storage))
-        .catch(e => reject(e));
-    })
+    new Promise((resolve, reject) => (
+      node.query(`/chains/main/blocks/head/context/contracts/${contractArg}/storage`)
+        .then(r => resolve(r))
+        .catch(e => reject(e))
+    ))
   ),
-  load: contractArg => node.query(`/blocks/head/proto/context/contracts/${contractArg}`),
+  load: contractArg => node.query(`/chains/main/blocks/head/context/contracts/${contractArg}`),
   watch: (cc, timeout, cb) => {
     let storage = [];
     const ct = () => {
-      contract.storage(cc)
-        .then((r) => {
-          if (JSON.stringify(storage) !== JSON.stringify(r)) {
-            storage = r;
-            cb(storage);
-          }
-        });
+      contract.storage(cc).then((r) => {
+        if (JSON.stringify(storage) !== JSON.stringify(r)) {
+          storage = r;
+          cb(storage);
+        }
+      });
     };
     ct();
     return setInterval(ct, timeout * 1000);
   },
-  send: (contractArg, keys, amount, parameter, fee) => (
-    rpc.sendOperation({
+  send: (contractArg, from, keys, amount, parameter, fee) => (
+    rpc.sendOperation(from, {
       kind: 'transaction',
-      amount: utility.tztomin(amount),
+      fee: fee.toString(),
+      gas_limit: '2000',
+      amount: utility.mutez(amount).toString(),
       destination: contractArg,
-      parameters: parameter, // utility.sexp2mic(parameter),
-    }, keys, fee)
+      parameters: utility.sexp2mic(parameter),
+    }, keys)
   ),
 };
 
-// Legacy (for new micheline engine)
+// Legacy commands
 utility.ml2tzjson = utility.sexp2mic;
 utility.tzjson2arr = utility.mic2arr;
 utility.mlraw2json = utility.ml2mic;
+utility.mintotz = utility.totez;
+utility.tztomin = utility.mutez;
+prefix.TZ = new Uint8Array([2, 90, 121]);
 
 // Expose library
 const sotez = {
   library,
   prefix,
+  watermark,
   utility,
   crypto,
   node,
   rpc,
   contract,
-};
-
-// Alpha only functions
-sotez.alphanet = {};
-sotez.alphanet.faucet = (toAddress) => {
-  const keys = crypto.generateKeysNoSeed();
-  let head;
-  let predBlock;
-  let opbytes;
-  let npkh;
-  return node.query('/blocks/head')
-    .then((f) => {
-      head = f;
-      predBlock = head.predecessor;
-      return node.query('/blocks/head/proto/helpers/forge/operations', {
-        branch: predBlock,
-        operations: [{
-          kind: 'faucet',
-          id: keys.pkh,
-          nonce: utility.hexNonce(32),
-        }],
-      });
-    })
-    .then((f) => {
-      opbytes = f.operation;
-      const operationHash = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(opbytes)), prefix.o);
-      return node.query('/blocks/head/proto/helpers/apply_operation', {
-        pred_block: predBlock,
-        operation_hash: operationHash,
-        forged_operation: opbytes,
-      });
-    })
-    .then((f) => {
-      npkh = f.contracts[0];
-      return node.query('/inject_operation', {
-        signedOperationContents: opbytes,
-      });
-    })
-    .then(() => node.query(`/blocks/head/proto/context/contracts/${npkh}/manager`))
-    .then(() => {
-      keys.pkh = npkh;
-      const operation = {
-        kind: 'transaction',
-        amount: utility.tztomin(100000),
-        destination: toAddress,
-      };
-      return rpc.sendOperation(operation, keys, 0);
-    });
 };
 
 module.exports = sotez;

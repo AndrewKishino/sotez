@@ -1,8 +1,14 @@
 {
-  "extends": "airbnb",
+  "extends": "airbnb-base",
   "env": {
     "node": true,
     "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
   },
   "rules": {
     "no-param-reassign": 0,

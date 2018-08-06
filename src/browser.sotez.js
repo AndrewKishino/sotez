@@ -289,7 +289,9 @@ const crypto = {
     }
   },
   generateKeysNoSeed: () => {
-    const kp = library.sodium.crypto_sign_keypair();
+    const kp = sodium.crypto_sign_keypair();
+    // you can remove the library in front of sodium; 
+    // https://github.com/jedisct1/libsodium.js/issues/116 here is the reference (under sample usage comment)
     return {
       sk: utility.b58cencode(kp.privateKey, prefix.edsk),
       pk: utility.b58cencode(kp.publicKey, prefix.edpk),
@@ -298,7 +300,9 @@ const crypto = {
   },
   generateKeys: (m, p) => {
     const s = library.bip39.mnemonicToSeed(m, p).slice(0, 32);
-    const kp = library.sodium.crypto_sign_seed_keypair(s);
+    const kp = sodium.crypto_sign_seed_keypair(s);
+    // you can remove the library in front of sodium; 
+    // https://github.com/jedisct1/libsodium.js/issues/116 here is the reference (under sample usage comment)
     return {
       mnemonic: m,
       passphrase: p,

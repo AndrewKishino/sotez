@@ -529,11 +529,11 @@ const rpc = {
     return rpc.sendOperation(from, operation, keys);
   },
   activate: (keys, secret) => {
-    const operation = {
+    const operation = [{
       kind: 'activate_account',
       pkh: keys.pkh,
       secret,
-    };
+    }];
     return rpc.sendOperation(keys.pkh, operation, keys);
   },
   originate: (keys, amount, code, init, spendable, delegatable, delegate, fee) => {

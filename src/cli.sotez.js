@@ -1,12 +1,16 @@
 const { XMLHttpRequest } = require('xmlhttprequest');
+const bs58check = require('bs58check');
+const sodium = require('libsodium-wrappers');
+const bip39 = require('bip39');
+const pbkdf2 = require('pbkdf2');
 
-const defaultProvider = 'http://node.mytezoswallet.com';
+const defaultProvider = 'http://rpc.mytezoswallet.com';
 
 const library = {
-  bs58check: require('bs58check'),
-  sodium: require('libsodium-wrappers'),
-  bip39: require('bip39'),
-  pbkdf2: require('pbkdf2'),
+  bs58check,
+  sodium,
+  bip39,
+  pbkdf2,
 };
 
 const prefix = {
@@ -440,10 +444,16 @@ const rpc = {
     const opResponse = [];
     const promises = [];
     let requiresReveal = false;
+    let ops = [];
     let head;
 
     promises.push(node.query('/chains/main/blocks/head/header'));
-    const ops = [...operation];
+
+    if (Array.isArray(operation)) {
+      ops = [...operation];
+    } else {
+      ops = [operation];
+    }
 
     for (let i = 0; i < ops.length; i += 1) {
       if (['transaction', 'origination', 'delegation'].indexOf(ops[i].kind) >= 0) {
@@ -471,8 +481,8 @@ const rpc = {
           if (typeof op.source === 'undefined') op.source = from;
         }
         if (['reveal', 'transaction', 'origination', 'delegation'].indexOf(op.kind) >= 0) {
-          if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
-          if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
+          if (typeof op.gas_limit === 'undefined') op.gas_limit = '400000';
+          if (typeof op.storage_limit === 'undefined') op.storage_limit = '60000';
           op.counter = (counter += 1).toString();
 
           op.fee = op.fee.toString();
@@ -494,7 +504,7 @@ const rpc = {
         const signed = crypto.sign(opbytes, keys.sk, watermark.generic);
         sopbytes = signed.sbytes;
         // const oh = utility.b58cencode(library.sodium.crypto_generichash(32, utility.hex2buf(sopbytes)), prefix.o);
-        opOb.protocol = 'ProtoALphaALphaALphaALphaALphaALphaALphaALphaDdp3zK';
+        opOb.protocol = head.protocol;
         opOb.signature = signed.edsig;
         return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/preapply/operations`, [opOb]);
       })
@@ -647,7 +657,7 @@ const contract = {
     rpc.sendOperation(from, {
       kind: 'transaction',
       fee: fee.toString(),
-      gas_limit: '2000',
+      gas_limit: '400000',
       amount: utility.mutez(amount).toString(),
       destination: contractArg,
       parameters: utility.sexp2mic(parameter),
@@ -665,9 +675,6 @@ prefix.TZ = new Uint8Array([2, 90, 121]);
 
 // Expose library
 const sotez = {
-  library,
-  prefix,
-  watermark,
   utility,
   crypto,
   node,

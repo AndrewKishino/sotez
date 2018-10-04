@@ -1,5 +1,5 @@
-const isBrowser = () => typeof window !== 'undefined';
+const isNode = require('detect-node');
 
-module.exports = isBrowser()
-  ? require('./src/sotez.browser')
-  : require('./src/sotez.node');
+module.exports = isNode
+  ? require('./dist/sotez.node')
+  : require('./dist/sotez.browser.min');

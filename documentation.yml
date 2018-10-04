@@ -1,0 +1,99 @@
+toc:
+  - name: node
+    children:
+      - setDebugMode
+      - setProvider
+      - resetProvider
+      - query
+
+  - name: rpc
+    children:
+      - account
+      - getBalance
+      - getDelegate
+      - getManager
+      - getCounter
+      - getBaker
+      - getHeader
+      - getHead
+      - getHeadHash
+      - getBallotList
+      - getProposals
+      - getBallots
+      - getListings
+      - getCurrentProposal
+      - getCurrentPeriod
+      - getCurrentQuorum
+      - awaitOperation
+      - call
+      - sendOperation
+      - inject
+      - silentInject
+      - transfer
+      - activate
+      - originate
+      - setDelegate
+      - registerDelegate
+      - typecheckCode
+      - packData
+      - typecheckData
+      - runCode
+
+  - name: contract
+    children:
+      # - hash
+      - originate
+      - storage
+      - load
+      - watch
+      - send
+
+  - name: crypto
+    children:
+      - extractKeys
+      - generateMnemonic
+      - checkAddress
+      - generateKeys
+      - sign
+      - verify
+
+  - name: utility
+    children:
+      - b582int
+      - totez
+      - mutez
+      - b58cencode
+      - b58cdecode
+      - buf2hex
+      - hex2buf
+      - hexNonce
+      - mergebuf
+      # - sexp2mic
+      # - mic2arr
+      # - ml2mic
+      # - formatMoney
+
+  - name: tezos
+    children:
+      - forge
+      - decodeRawBytes
+      - encodeRawBytes
+
+  - name: forge
+    children:
+      - toBytesInt32
+      - toBytesInt32Hex
+      - bool
+      - script
+      - parameters
+      - publicKeyHash
+      - address
+      - zarith
+      - publicKey
+      - op
+
+  - name: ledger
+    children:
+      - getAddress
+      - signOperation
+      - getVersion

@@ -16,11 +16,11 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['babel-polyfill', './src/browser.sotez.js'],
+    main: ['babel-polyfill', './src/sotez.browser.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'sotez.min.js',
+    filename: 'sotez.browser.min.js',
   },
   mode: 'production',
   optimization: {
@@ -33,7 +33,7 @@ module.exports = {
           ecma: 6,
           mangle: true,
         },
-        sourceMap: false,
+        sourceMap: true,
       }),
     ],
   },

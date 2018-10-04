@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  target: 'node',
   resolve: {
     extensions: ['.js'],
     modules: [__dirname, 'node_modules'],
@@ -15,12 +16,11 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['babel-polyfill', './src/cli.sotez.js'],
+    main: ['babel-polyfill', './src/sotez.node.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'sotez.cli.js',
+    filename: 'sotez.node.min.js',
   },
   mode: 'production',
-  target: 'node',
 };

@@ -4,8 +4,8 @@
   "description": "A JS Library for Tezos",
   "main": "index.js",
   "scripts": {
-    "build:all": "npm run build:cli && npm run build:browser",
-    "build:cli": "webpack --config webpack.cli.config.js --progress",
+    "build:all": "npm run build:node && npm run build:browser",
+    "build:node": "webpack --config webpack.node.config.js --progress",
     "build:browser": "webpack --config webpack.browser.config.js --progress"
   },
   "keywords": [
@@ -23,7 +23,7 @@
     "buffer": "^5.2.0",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
-    "xmlhttprequest": "^1.8.0"
+    "xhr2": "^0.1.4"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -44,8 +44,5 @@
   "bugs": {
     "url": "https://github.com/AndrewKishino/sotez/issues"
   },
-  "homepage": "https://github.com/AndrewKishino/sotez#readme",
-  "browser": {
-    "./index.js": "./browser.js"
-  }
+  "homepage": "https://github.com/AndrewKishino/sotez#readme"
 }

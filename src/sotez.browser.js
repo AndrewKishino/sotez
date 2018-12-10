@@ -3,10 +3,11 @@ const bs58check = require('bs58check');
 const sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
 const pbkdf2 = require('pbkdf2');
+const BN = require('bignumber.js');
 
-const MAX_INT = 4294967296;
-const DEFAULT_PROVIDER = 'http://rpc.mytezoswallet.com';
-const DEFAULT_FEE = '50000';
+const DEFAULT_PROVIDER = 'https://rpc.mytezoswallet.com';
+const DEFAULT_FEE = '1278';
+const counters = {};
 
 const prefix = {
   tz1: new Uint8Array([6, 161, 159]),
@@ -21,6 +22,8 @@ const prefix = {
 
   sppk: new Uint8Array([3, 254, 226, 86]),
   p2pk: new Uint8Array([3, 178, 139, 127]),
+
+  edesk: new Uint8Array([7, 90, 60, 179, 41]),
 
   edsk: new Uint8Array([43, 246, 78, 7]),
   edsig: new Uint8Array([9, 245, 205, 134, 18]),
@@ -46,14 +49,16 @@ const watermark = {
 };
 
 const utility = {
-  totez: m => parseInt(m, 10) / 1000000,
-  mutez: (tz) => {
-    const r = tz.toFixed(6) * 1000000;
-    if (r > MAX_INT) {
-      return `${r}`;
+  b582int: (v) => {
+    let rv = new BN(0);
+    const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    for (let i = 0; i < v.length; i++) {
+      rv = rv.plus(new BN(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BN(alpha.length).exponentiatedBy(i))));
     }
-    return r;
+    return rv.toString(16);
   },
+  totez: m => parseInt(m, 10) / 1000000,
+  mutez: tz => new BN(new BN(tz).toFixed(6)).multipliedBy(1000000).toString(),
   b58cencode: (payload, prefixArg) => {
     const n = new Uint8Array(prefixArg.length + payload.length);
     n.set(prefixArg);
@@ -75,7 +80,9 @@ const utility = {
   hexNonce: (length) => {
     const chars = '0123456789abcedf';
     let hex = '';
-    while (length -= 1) hex += chars[(Math.random() * 16) | 0];
+    while (length--) {
+      hex += chars[(Math.random() * 16) | 0];
+    }
     return hex;
   },
   mergebuf: (b1, b2) => {
@@ -97,7 +104,7 @@ const utility = {
       args: [],
     };
     let val = '';
-    for (let i = 0; i < mi.length; i += 1) {
+    for (let i = 0; i < mi.length; i++) {
       if (escaped) {
         val += mi[i];
         escaped = false;
@@ -129,8 +136,8 @@ const utility = {
         sopen = true;
         continue;
       } else if (mi[i] === '\\') escaped = true;
-      else if (mi[i] === '(') pl += 1;
-      else if (mi[i] === ')') pl -= 1;
+      else if (mi[i] === '(') pl++;
+      else if (mi[i] === ')') pl--;
       val += mi[i];
     }
     return ret;
@@ -153,7 +160,7 @@ const utility = {
       }
     } else if (Array.isArray(s)) {
       const sc = s.length;
-      for (let i = 0; i < sc; i += 1) {
+      for (let i = 0; i < sc; i++) {
         const n = me2(s[i]);
         if (typeof n.key !== 'undefined') {
           if (Array.isArray(ret)) {
@@ -186,15 +193,15 @@ const utility = {
     let bl = 0;
     let sopen = false;
     let escaped = false;
-    for (let i = 0; i < mi.length; i += 1) {
+    for (let i = 0; i < mi.length; i++) {
       if (val === '}' || val === ';') {
         val = '';
       }
       if (inseq) {
         if (mi[i] === '}') {
-          bl -= 1;
+          bl--;
         } else if (mi[i] === '{') {
-          bl += 1;
+          bl++;
         }
         if (bl === 0) {
           const st = me(val);
@@ -207,7 +214,7 @@ const utility = {
           inseq = false;
         }
       } else if (mi[i] === '{') {
-        bl += 1;
+        bl++;
         seq = val;
         val = '';
         inseq = true;
@@ -232,9 +239,9 @@ const utility = {
       } else if (mi[i] === '\\') {
         escaped = true;
       } else if (mi[i] === '(') {
-        pl += 1;
+        pl++;
       } else if (mi[i] === ')') {
-        pl -= 1;
+        pl--;
       }
       val += mi[i];
     }
@@ -253,31 +260,6 @@ const utility = {
 
 // TODO: Add p256 and secp256k1 cryptographay
 const crypto = {
-  extractEncryptedKeys: (esk, password) => {
-    if (typeof esk === 'undefined') return false;
-    if (typeof password === 'undefined') return false;
-    if (typeof window.crypto.subtle === 'undefined') return false;
-
-    const esb = utility.b58cdecode(esk, prefix.edesk);
-    const salt = esb.slice(0, 8);
-    const esm = esb.slice(8);
-
-    return window.crypto.subtle.importKey('raw', new TextEncoder('utf-8').encode(password), { name: 'PBKDF2' }, false, ['deriveBits']).then(key => (
-      window.crypto.subtle.deriveBits({
-        name: 'PBKDF2',
-        salt,
-        iterations: 32768,
-        hash: { name: 'SHA-512' },
-      }, key, 256)
-    )).then((key) => {
-      const kp = sodium.crypto_sign_seed_keypair(sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), new Uint8Array(key)));
-      return {
-        sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-        pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-        pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-      };
-    });
-  },
   extractKeys: (sk) => { // eslint-disable-line
     const pref = sk.substr(0, 4);
     switch (pref) {
@@ -368,10 +350,12 @@ const node = {
   activeProvider: DEFAULT_PROVIDER,
   debugMode: false,
   async: true,
+  isZeronet: false,
   setDebugMode: (t) => {
     node.debugMode = t;
   },
-  setProvider: (u) => {
+  setProvider: (u, z) => {
+    if (typeof z !== 'undefined') node.isZeronet = z;
     node.activeProvider = u;
   },
   resetProvider: () => {
@@ -437,13 +421,22 @@ const rpc = {
     delegatable,
     delegate,
     fee = DEFAULT_FEE,
+    gasLimit = '10000',
+    storageLimit = '257',
   }) => {
     const operation = {
       kind: 'origination',
       balance: `${utility.mutez(amount)}`,
       fee: `${fee}`,
-      managerPubkey: keys.pkh,
+      gas_limit: gasLimit,
+      storage_limit: storageLimit,
     };
+
+    if (node.isZeronet) {
+      operation.manager_pubkey = keys.pkh;
+    } else {
+      operation.managerPubkey = keys.pkh;
+    }
 
     if (typeof spendable !== 'undefined') operation.spendable = spendable;
     if (typeof delegatable !== 'undefined') operation.delegatable = delegatable;
@@ -464,12 +457,10 @@ const rpc = {
   getHead: () => node.query('/chains/main/blocks/head'),
   getHeadHash: () => node.query('/chains/main/blocks/head/hash'),
   call: (e, d) => node.query(e, d),
-  sendOperation: (from, operation, keys) => {
+  sendOperation: (from, operation, keys = false, skipPrevalidation = false) => {
     let counter;
     let sopbytes;
     let opOb;
-    let errors = [];
-    const opResponse = [];
     const promises = [];
     let requiresReveal = false;
     let ops = [];
@@ -483,7 +474,7 @@ const rpc = {
       ops = [operation];
     }
 
-    for (let i = 0; i < ops.length; i += 1) {
+    for (let i = 0; i < ops.length; i++) {
       if (['transaction', 'origination', 'delegation'].indexOf(ops[i].kind) >= 0) {
         requiresReveal = true;
         promises.push(node.query(`/chains/main/blocks/head/context/contracts/${from}/counter`));
@@ -494,15 +485,20 @@ const rpc = {
 
     return Promise.all(promises).then(([header, headCounter, manager]) => {
       head = header;
-      if (requiresReveal && typeof manager.key === 'undefined') {
+      if (requiresReveal && keys && typeof manager.key === 'undefined') {
         ops.unshift({
           kind: 'reveal',
-          fee: 0,
+          fee: node.isZeronet ? '100000' : '1269',
           public_key: keys.pk,
           source: from,
+          gas_limit: '10000',
+          storage_limit: '0',
         });
       }
       counter = parseInt(headCounter, 10);
+      if (typeof counters[from] === 'undefined') counters[from] = counter;
+      if (counter > counters[from]) counters[from] = counter;
+      counters[from] = counter;
 
       ops.forEach((op) => {
         if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].indexOf(op.kind) >= 0) {
@@ -511,7 +507,7 @@ const rpc = {
         if (['reveal', 'transaction', 'origination', 'delegation'].indexOf(op.kind) >= 0) {
           if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
           if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
-          op.counter = `${counter += 1}`;
+          op.counter = `${counters[from]++}`;
           op.fee = `${op.fee}`;
           op.gas_limit = `${op.gas_limit}`;
           op.storage_limit = `${op.storage_limit}`;
@@ -525,9 +521,14 @@ const rpc = {
 
       return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
     })
-      .then((f) => {
-        const opbytes = f;
-        opOb.protocol = head.protocol;
+      .then((opbytes) => {
+        if (keys.sk === false) {
+          opOb.protocol = head.protocol;
+          return {
+            opOb,
+            opbytes,
+          };
+        }
         if (!keys) {
           sopbytes = `${opbytes}00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
           opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
@@ -536,28 +537,41 @@ const rpc = {
           sopbytes = signed.sbytes;
           opOb.signature = signed.edsig;
         }
-        return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/preapply/operations`, [opOb]);
-      })
+
+        opOb.protocol = head.protocol;
+        if (skipPrevalidation) {
+          return rpc.silentInject(sopbytes);
+        }
+        return rpc.inject(opOb, sopbytes);
+      });
+  },
+  inject: (opOb, sopbytes) => {
+    const opResponse = [];
+    let errors = [];
+
+    return node.query('/chains/main/blocks/head/helpers/preapply/operations', [opOb])
       .then((f) => {
         if (!Array.isArray(f)) {
-          throw { error: "RPC Fail", errors: [] }; // eslint-disable-line
+          throw new Error({ error: 'RPC Fail', errors: [] });
         }
-        for (let i = 0; i < f.length; i += 1) {
-          for (let j = 0; j < f[i].contents.length; j += 1) {
+        for (let i = 0; i < f.length; i++) {
+          for (let j = 0; j < f[i].contents.length; j++) {
             opResponse.push(f[i].contents[j]);
             if (typeof f[i].contents[j].metadata.operation_result !== 'undefined' && f[i].contents[j].metadata.operation_result.status === 'failed') {
               errors = errors.concat(f[i].contents[j].metadata.operation_result.errors);
             }
           }
         }
-        if (errors.length) throw { error: 'Operation Failed', errors: errors }; // eslint-disable-line
+        if (errors.length) {
+          throw new Error({ error: 'Operation Failed', errors });
+        }
         return node.query('/injection/operation', sopbytes);
-      })
-      .then(f => ({
-        hash: f,
+      }).then(hash => ({
+        hash,
         operations: opResponse,
       }));
   },
+  silentInject: sopbytes => node.query('/injection/operation', sopbytes).then(hash => ({ hash })),
   transfer: ({
     from,
     keys,
@@ -565,7 +579,7 @@ const rpc = {
     amount,
     fee = DEFAULT_FEE,
     parameter = false,
-    gasLimit = '200',
+    gasLimit = '10100',
     storageLimit = '0',
     mutez = false,
     rawParam = false,
@@ -601,17 +615,18 @@ const rpc = {
     delegate,
     fee = DEFAULT_FEE,
     gasLimit = '10000',
-    storageLimit = '10000',
+    storageLimit = '257',
   }) => {
     const _code = utility.ml2mic(code);
+
     const script = {
       code: _code,
       storage: utility.sexp2mic(init),
     };
+
     const operation = {
       kind: 'origination',
       fee: `${fee}`,
-      managerPubkey: keys.pkh,
       storage_limit: storageLimit,
       gas_limit: gasLimit,
       balance: `${utility.mutez(amount)}`,
@@ -620,9 +635,16 @@ const rpc = {
       delegate: (typeof delegate !== 'undefined' && delegate ? delegate : keys.pkh),
       script,
     };
+
+    if (node.isZeronet) {
+      operation.manager_pubkey = keys.pkh;
+    } else {
+      operation.managerPubkey = keys.pkh;
+    }
+
     return rpc.sendOperation(keys.pkh, operation, keys);
   },
-  setDelegate: (from, keys, delegate, fee = DEFAULT_FEE, gasLimit = '0', storageLimit = '0') => {
+  setDelegate: (from, keys, delegate, fee = DEFAULT_FEE, gasLimit = '10000', storageLimit = '0') => {
     const operation = {
       kind: 'delegation',
       fee: `${fee}`,
@@ -632,7 +654,7 @@ const rpc = {
     };
     return rpc.sendOperation(from, operation, keys);
   },
-  registerDelegate: (keys, fee = DEFAULT_FEE, gasLimit = '0', storageLimit = '0') => {
+  registerDelegate: (keys, fee = DEFAULT_FEE, gasLimit = '10000', storageLimit = '0') => {
     const operation = {
       kind: 'delegation',
       fee: `${fee}`,
@@ -650,7 +672,7 @@ const rpc = {
     const check = {
       data: utility.sexp2mic(data),
       type: utility.sexp2mic(type),
-      gas: '400000',
+      gas: '4000000',
     };
     return node.query('/chains/main/blocks/head/helpers/scripts/pack_data', check);
   },
@@ -658,7 +680,7 @@ const rpc = {
     const check = {
       data: utility.sexp2mic(data),
       type: utility.sexp2mic(type),
-      gas: '400000',
+      gas: '4000000',
     };
     return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_data', check);
   },
@@ -677,7 +699,7 @@ const contract = {
   hash: (operationHash, ind) => {
     const ob = utility.b58cdecode(operationHash, prefix.o);
     let tt = [];
-    for (let i = 0; i < ob.length; i += 1) {
+    for (let i = 0; i < ob.length; i++) {
       tt.push(ob[i]);
     }
     tt = tt.concat([
@@ -697,8 +719,8 @@ const contract = {
     delegatable,
     delegate,
     fee = DEFAULT_FEE,
-    gasLimit = '0',
-    storageLimit = '0',
+    gasLimit = '10000',
+    storageLimit = '10000',
   }) => (
     rpc.originate({
       keys,
@@ -761,6 +783,103 @@ const contract = {
   ),
 };
 
+const trezor = {
+  source: (address) => {
+    const tag = (address[0] === 't' ? 0 : 1);
+    const curve = (parseInt(address[2], 10) - 1);
+    const pp = (tag === 1 ? prefix.KT : prefix[`tz${curve + 1}`]);
+    let bytes = utility.b58cdecode(address, pp);
+    if (tag === 1) {
+      bytes = utility.mergebuf(bytes, [0]);
+    } else {
+      bytes = utility.mergebuf([curve], bytes);
+    }
+    return {
+      tag,
+      hash: bytes,
+    };
+  },
+  parameter: (address, opbytes) => {
+    const tag = (address[0] === 't' ? 0 : 1);
+    const curve = (parseInt(address[2], 10) - 1);
+    const pp = (tag === 1 ? prefix.KT : prefix[`tz${curve + 1}`]);
+    let bytes = utility.b58cdecode(address, pp);
+    if (tag === 1) {
+      bytes = utility.mergebuf(bytes, [0]);
+    } else {
+      bytes = utility.mergebuf([curve], bytes);
+    }
+    const hex = utility.buf2hex(utility.mergebuf([tag], bytes));
+    return (opbytes.substr(-46) === `${hex}00` ? false : utility.hex2buf(opbytes.substr(opbytes.indexOf(hex) + hex.length + 2)));
+  },
+  operation: (d) => {
+    const operations = [];
+    let revealOp = false;
+    let op;
+    let p;
+    for (let i = 0; i < d.opOb.contents.length; i++) {
+      op = d.opOb.contents[i];
+      if (op.kind === 'reveal') {
+        if (revealOp) {
+          throw new Error('Can\'t have 2 reveals');
+        }
+        revealOp = {
+          source: trezor.source(op.source),
+          fee: parseInt(op.fee, 10),
+          counter: parseInt(op.counter, 10),
+          gasLimit: parseInt(op.gas_limit, 10),
+          storageLimit: parseInt(op.storage_limit, 10),
+          publicKey: utility.mergebuf([0], utility.b58cdecode(op.public_key, prefix.edpk)),
+        };
+      } else {
+        if (['origination', 'transaction', 'delegation'].includes(op.kind)) {
+          return console.log('err2');
+        }
+        const op2 = {
+          type: op.kind,
+          source: trezor.source(op.source),
+          fee: parseInt(op.fee, 10, 10),
+          counter: parseInt(op.counter, 10),
+          gasLimit: parseInt(op.gas_limit, 10),
+          storageLimit: parseInt(op.storage_limit, 10),
+        };
+        switch (op.kind) {
+          case 'transaction':
+            op2.amount = parseInt(op.amount, 10);
+            op2.destination = trezor.source(op.destination);
+            if (p = trezor.parameter(op.destination, d.opbytes)) op2.parameters = p;
+            break;
+          case 'origination':
+            if (node.isZeronet) op2.manager_pubkey = trezor.source(op.manager_pubkey).hash;
+            else op2.managerPubkey = trezor.source(op.managerPubkey).hash;
+            op2.balance = parseInt(op.balance, 10);
+            op2.spendable = op.spendable;
+            op2.delegatable = op.delegatable;
+            if (typeof op.delegate !== 'undefined') {
+              op2.delegate = trezor.source(op.delegate).hash;
+            }
+            // Script not supported yet...
+            break;
+          case 'delegation':
+            if (typeof op.delegate !== 'undefined') {
+              op2.delegate = trezor.source(op.delegate).hash;
+            }
+            break;
+          default:
+            break;
+        }
+        operations.push(op2);
+      }
+    }
+    if (operations.length > 1) {
+      return console.log('Too many operations');
+    }
+    const operation = operations[0];
+    // const tx = {};
+    return [operation, revealOp];
+  },
+};
+
 // Legacy commands
 utility.ml2tzjson = utility.sexp2mic;
 utility.tzjson2arr = utility.mic2arr;
@@ -776,6 +895,7 @@ const sotez = {
   node,
   rpc,
   contract,
+  trezor,
 };
 
 module.exports = sotez;

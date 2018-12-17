@@ -8,7 +8,8 @@
     "test:dev": "jest --watch",
     "build:all": "npm run build:node && npm run build:browser",
     "build:node": "webpack --config webpack.node.config.js --progress",
-    "build:browser": "webpack --config webpack.browser.config.js --progress"
+    "build:browser": "webpack --config webpack.browser.config.js --progress",
+    "postinstall": "git submodule init && git submodule update && cd ledgerjs && yarn install && yarn build"
   },
   "keywords": [
     "A",

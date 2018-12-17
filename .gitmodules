@@ -1,0 +1,4 @@
+[submodule "ledgerjs"]
+	path = ledgerjs
+	url = https://github.com/tomjack/ledgerjs.git
+	branch = base58-pks

@@ -1,18 +1,17 @@
 const { node, rpc, ledger } = require('./sotez.node');
 
-node.setProvider('https://zeronet-rpc.mytezoswallet.com', true);
+node.setProvider('http://127.0.0.1:8732', true);
 node.setDebugMode(true);
 
-const main = async (destination, tezosLedger) => {
-  const { address } = await ledger.getAddress({
+const main = async (from, destination, tezosLedger) => {
+  const publicKey = await ledger.getAddress({
     curve: 0x02,
     displayConfirm: true,
     appHandler: tezosLedger,
   });
 
   console.log('=====================================================');
-  console.log('---------------- Public Key Provided ----------------');
-  console.log(`Public Key Hash: ${address}`);
+  console.log(`Public Key: ${publicKey}`);
   console.log('=====================================================');
 
   const testTransfer = {
@@ -25,7 +24,7 @@ const main = async (destination, tezosLedger) => {
   };
 
   rpc.sendOperation({
-    from: address,
+    from,
     operation: testTransfer,
   }, {
     useLedger: true,
@@ -38,4 +37,4 @@ const main = async (destination, tezosLedger) => {
 
 ledger
   .initialize()
-  .then(tezosLedger => main('tz1bFvgGhpwgVMBDh1ukhJj1fnnkaMfMzEaT', tezosLedger));
+  .then(tezosLedger => main('', '', tezosLedger));

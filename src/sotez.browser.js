@@ -9,7 +9,7 @@ const BN = require('bignumber.js');
 const LedgerTransport = require('../ledgerjs/packages/hw-transport-u2f').default;
 const LedgerApp = require('../ledgerjs/packages/hw-app-xtz').default;
 
-const DEFAULT_PROVIDER = 'https://rpc.mytezoswallet.com';
+const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = '1278';
 const counters = {};
 
@@ -429,11 +429,8 @@ const ledger = {
     curve = 0x00,
     appHandler,
   }) => {
-    const { publicKey, address } = await appHandler.getAddress(path, displayConfirm, curve);
-    return {
-      publicKey,
-      address,
-    };
+    const { publicKey } = await appHandler.getAddress(path, displayConfirm, curve);
+    return publicKey;
   },
   signOperation: async ({
     path = "44'/1729'/0'/0'",
@@ -441,8 +438,8 @@ const ledger = {
     curve = 0x00,
     appHandler,
   }) => {
-    const { signiture } = await appHandler.signOperation(path, `03${rawTxHex}`, curve);
-    return { signiture };
+    const { signature } = await appHandler.signOperation(path, `03${rawTxHex}`, curve);
+    return { signature };
   },
   getVersion: async (appHandler) => {
     const versionInfo = await appHandler.getVersion();
@@ -588,7 +585,8 @@ const rpc = {
             rawTxHex: opbytes,
             curve,
             appHandler,
-          }).then(({ signiture }) => rpc.silentInject(signiture));
+          }).then(({ signature }) => rpc.silentInject(signature))
+            .catch(e => console.log(e));
         }
         if (keys.sk === false) {
           opOb.protocol = head.protocol;

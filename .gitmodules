@@ -1,4 +1,4 @@
 [submodule "ledgerjs"]
 	path = ledgerjs
-	url = https://github.com/tomjack/ledgerjs.git
-	branch = base58-pks
+	url = https://github.com/obsidiansystems/ledgerjs.git
+	branch = tezos

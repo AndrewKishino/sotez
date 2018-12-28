@@ -3,15 +3,15 @@ const { node, rpc, ledger } = require('./sotez.node');
 node.setProvider('http://127.0.0.1:8732', true);
 node.setDebugMode(true);
 
-const main = async (from, destination, tezosLedger) => {
-  const publicKey = await ledger.getAddress({
-    curve: 0x02,
+const main = async (destination, curve = 0x00, tezosLedger) => {
+  const { address } = await ledger.getAddress({
+    curve,
     displayConfirm: true,
     appHandler: tezosLedger,
   });
 
   console.log('=====================================================');
-  console.log(`Public Key: ${publicKey}`);
+  console.log(`Public Key Hash: ${address}`);
   console.log('=====================================================');
 
   const testTransfer = {
@@ -24,11 +24,11 @@ const main = async (from, destination, tezosLedger) => {
   };
 
   rpc.sendOperation({
-    from,
+    from: address,
     operation: testTransfer,
   }, {
     useLedger: true,
-    curve: 0x02,
+    curve,
     appHandler: tezosLedger,
   })
     .then(response => console.log(`Result: ${response}`))
@@ -37,4 +37,4 @@ const main = async (from, destination, tezosLedger) => {
 
 ledger
   .initialize()
-  .then(tezosLedger => main('', '', tezosLedger));
+  .then(tezosLedger => main('', 0x00, tezosLedger));

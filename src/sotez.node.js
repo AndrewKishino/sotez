@@ -429,7 +429,7 @@ const ledger = {
     curve = 0x00,
     appHandler,
   }) => {
-    const { publicKey } = await appHandler.getAddress(path, displayConfirm, curve);
+    const publicKey = await appHandler.getAddress(path, displayConfirm, curve);
     return publicKey;
   },
   signOperation: async ({
@@ -585,8 +585,15 @@ const rpc = {
             rawTxHex: opbytes,
             curve,
             appHandler,
-          }).then(({ signature }) => rpc.silentInject(signature))
-            .catch(e => console.log(e));
+          }).then(({ signature }) => {
+            const signedOperation = `03${opbytes}${signature}`;
+            console.log('=======================');
+            console.log('opbytes:', opbytes);
+            console.log('signature:', signature);
+            console.log('signedOperation:', signedOperation);
+            console.log('=======================');
+            return rpc.silentInject(signedOperation);
+          }).catch(e => console.log(e));
         }
         if (keys.sk === false) {
           opOb.protocol = head.protocol;

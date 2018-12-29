@@ -1,4 +1,5 @@
 const path = require('path');
+const nodeExternals = require('webpack-node-externals'); // eslint-disable-line
 
 module.exports = {
   target: 'node',
@@ -16,11 +17,13 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['babel-polyfill', './src/sotez.node.js'],
+    main: ['@babel/polyfill', './src/sotez.node.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'sotez.node.min.js',
+    libraryTarget: 'umd',
   },
+  externals: [nodeExternals()],
   mode: 'production',
 };

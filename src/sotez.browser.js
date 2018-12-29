@@ -5,9 +5,8 @@ const bip39 = require('bip39');
 const pbkdf2 = require('pbkdf2');
 const BN = require('bignumber.js');
 
-// ////////////////////////////// EXPERIMENTAL ///////////////////////////////////////
-const LedgerTransport = require('../ledgerjs/packages/hw-transport-u2f').default;
-const LedgerApp = require('../ledgerjs/packages/hw-app-xtz').default;
+const LedgerTransport = require('@ledgerhq/hw-transport-u2f').default;
+const LedgerApp = require('@ledgerhq/hw-app-xtz').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = '1278';
@@ -418,37 +417,39 @@ const node = {
 };
 
 const ledger = {
-  initialize: async () => {
-    const transport = await LedgerTransport.create();
-    const tezosLedger = new LedgerApp(transport);
-    return tezosLedger;
-  },
   getAddress: async ({
     path = "44'/1729'/0'/0'",
     displayConfirm = false,
     curve = 0x00,
-    appHandler,
-  }) => {
-    const publicKey = await appHandler.getAddress(path, displayConfirm, curve);
+  } = {}) => {
+    const transport = await LedgerTransport.create();
+    const tezosLedger = new LedgerApp(transport);
+    const publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
+    transport.close();
     return publicKey;
   },
   signOperation: async ({
     path = "44'/1729'/0'/0'",
     rawTxHex,
     curve = 0x00,
-    appHandler,
-  }) => {
-    const { signature } = await appHandler.signOperation(path, `03${rawTxHex}`, curve);
+  } = {}) => {
+    const transport = await LedgerTransport.create();
+    const tezosLedger = new LedgerApp(transport);
+    const { signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve);
+    transport.close();
     return { signature };
   },
-  getVersion: async (appHandler) => {
-    const versionInfo = await appHandler.getVersion();
+  getVersion: async () => {
+    const transport = await LedgerTransport.create();
+    const tezosLedger = new LedgerApp(transport);
+    const versionInfo = await tezosLedger.getVersion();
+    transport.close();
     return versionInfo;
   },
 };
 
 const rpc = {
-  account: ({
+  account: async ({
     keys,
     amount,
     spendable,
@@ -457,7 +458,21 @@ const rpc = {
     fee = DEFAULT_FEE,
     gasLimit = '10000',
     storageLimit = '257',
-  }) => {
+  }, {
+      useLedger = false,
+      path = "44'/1729'/0'/0'",
+      curve = 0x00,
+    }) => {
+    let publicKeyHash = keys && keys.pkh;
+
+    if (useLedger) {
+      const { address } = await ledger.getAddress({
+        path,
+        curve,
+      });
+      publicKeyHash = address;
+    }
+
     const operation = {
       kind: 'origination',
       balance: `${utility.mutez(amount)}`,
@@ -467,19 +482,19 @@ const rpc = {
     };
 
     if (node.isZeronet) {
-      operation.manager_pubkey = keys.pkh;
+      operation.manager_pubkey = publicKeyHash;
     } else {
-      operation.managerPubkey = keys.pkh;
+      operation.managerPubkey = publicKeyHash;
     }
 
     if (typeof spendable !== 'undefined') operation.spendable = spendable;
     if (typeof delegatable !== 'undefined') operation.delegatable = delegatable;
     if (typeof delegate !== 'undefined' && delegate) operation.delegate = delegate;
     return rpc.sendOperation({
-      from: keys.pkh,
+      from: publicKeyHash,
       operation,
       keys,
-    });
+    }, { useLedger, path, curve });
   },
   getBalance: tz1 => (
     node.query(`/chains/main/blocks/head/context/contracts/${tz1}/balance`)
@@ -504,7 +519,6 @@ const rpc = {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-    appHandler,
   }) => {
     let counter;
     let sopbytes;
@@ -535,14 +549,15 @@ const rpc = {
       head = header;
       if (requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined') {
         let publicKey;
+
         if (useLedger) {
           const ledgerAddress = await ledger.getAddress({
             path,
             curve,
-            appHandler,
           });
           publicKey = ledgerAddress.publicKey; // eslint-disable-line
         }
+
         ops.unshift({
           kind: 'reveal',
           fee: node.isZeronet ? '100000' : '1269',
@@ -552,12 +567,11 @@ const rpc = {
           storage_limit: '0',
         });
       }
+
       counter = parseInt(headCounter, 10);
-      if (typeof counters[from] === 'undefined') counters[from] = counter;
-      if (counter > counters[from]) counters[from] = counter;
       counters[from] = counter;
 
-      ops.forEach((op) => {
+      const constructOps = () => ops.map((op) => {
         if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
           if (typeof op.source === 'undefined') op.source = from;
         }
@@ -569,40 +583,32 @@ const rpc = {
           op.gas_limit = `${op.gas_limit}`;
           op.storage_limit = `${op.storage_limit}`;
         }
-      });
+        return JSON.stringify(op);
+      }).map(op => JSON.parse(op));
 
       opOb = {
         branch: head.hash,
-        contents: ops,
+        contents: constructOps(),
       };
 
       return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
     })
-      .then((opbytes) => {
+      .then(async (opbytes) => {
         if (useLedger) {
-          return ledger.signOperation({
+          const { signature } = await ledger.signOperation({
             path,
             rawTxHex: opbytes,
             curve,
-            appHandler,
-          }).then(({ signature }) => {
-            const signedOperation = `${opbytes}${signature}`;
-            console.log('=======================');
-            console.log('opbytes:', opbytes);
-            console.log('signature:', signature);
-            console.log('signedOperation:', signedOperation);
-            console.log('=======================');
-            return rpc.silentInject(signedOperation);
-          }).catch(e => console.log(e));
-        }
-        if (keys.sk === false) {
+          });
+
+          sopbytes = `${opbytes}${signature}`;
+        } else if (keys.sk === false) {
           opOb.protocol = head.protocol;
           return {
             opOb,
             opbytes,
           };
-        }
-        if (!keys) {
+        } else if (!keys) {
           sopbytes = `${opbytes}00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
           opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
         } else {
@@ -612,7 +618,7 @@ const rpc = {
         }
 
         opOb.protocol = head.protocol;
-        if (skipPrevalidation) {
+        if (skipPrevalidation || useLedger) {
           return rpc.silentInject(sopbytes);
         }
         return rpc.inject(opOb, sopbytes);
@@ -656,7 +662,11 @@ const rpc = {
     storageLimit = '0',
     mutez = false,
     rawParam = false,
-  }) => {
+  }, {
+    useLedger = false,
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  } = {}) => {
     const operation = {
       kind: 'transaction',
       fee: `${fee}`,
@@ -668,7 +678,7 @@ const rpc = {
     if (parameter) {
       operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
     }
-    return rpc.sendOperation({ from, operation, keys });
+    return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
   },
   activate: (keys, secret) => {
     const operation = {
@@ -678,7 +688,7 @@ const rpc = {
     };
     return rpc.sendOperation({ from: keys.pkh, operation, keys });
   },
-  originate: ({
+  originate: async ({
     keys,
     amount,
     code,
@@ -689,13 +699,26 @@ const rpc = {
     fee = DEFAULT_FEE,
     gasLimit = '10000',
     storageLimit = '257',
-  }) => {
+  }, {
+      useLedger = false,
+      path = "44'/1729'/0'/0'",
+      curve = 0x00,
+    } = {}) => {
     const _code = utility.ml2mic(code);
 
     const script = {
       code: _code,
       storage: utility.sexp2mic(init),
     };
+
+    let publicKeyHash = keys && keys.pkh;
+    if (useLedger) {
+      const { address } = await ledger.getAddress({
+        path,
+        curve,
+      });
+      publicKeyHash = address; // eslint-disable-line
+    }
 
     const operation = {
       kind: 'origination',
@@ -705,49 +728,77 @@ const rpc = {
       balance: `${utility.mutez(amount)}`,
       spendable,
       delegatable,
-      delegate: (typeof delegate !== 'undefined' && delegate ? delegate : keys.pkh),
+      delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),
       script,
     };
 
     if (node.isZeronet) {
-      operation.manager_pubkey = keys.pkh;
+      operation.manager_pubkey = publicKeyHash;
     } else {
-      operation.managerPubkey = keys.pkh;
+      operation.managerPubkey = publicKeyHash;
     }
 
-    return rpc.sendOperation({ from: keys.pkh, operation, keys });
+    return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
   },
-  setDelegate: ({
+  setDelegate: async ({
     from,
     keys,
     delegate,
     fee = DEFAULT_FEE,
     gasLimit = '10000',
     storageLimit = '0',
-  }) => {
+  }, {
+      useLedger = false,
+      path = "44'/1729'/0'/0'",
+      curve = 0x00,
+    } = {}) => {
+    let publicKeyHash = keys && keys.pkh;
+
+    if (useLedger) {
+      const { address } = await ledger.getAddress({
+        path,
+        curve,
+      });
+      publicKeyHash = address;
+    }
+
     const operation = {
       kind: 'delegation',
       fee: `${fee}`,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      delegate: (typeof delegate !== 'undefined' ? delegate : keys.pkh),
+      delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
     };
-    return rpc.sendOperation({ from, operation, keys });
+    return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
   },
-  registerDelegate: ({
+  registerDelegate: async ({
     keys,
     fee = DEFAULT_FEE,
     gasLimit = '10000',
     storageLimit = '0',
-  }) => {
+  }, {
+      useLedger = false,
+      path = "44'/1729'/0'/0'",
+      curve = 0x00,
+    } = {}) => {
+    let publicKeyHash = keys && keys.pkh;
+
+    if (useLedger) {
+      const { address } = await ledger.getAddress({
+        path,
+        curve,
+      });
+      publicKeyHash = address;
+    }
+
     const operation = {
       kind: 'delegation',
       fee: `${fee}`,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      delegate: keys.pkh,
+      delegate: publicKeyHash,
     };
-    return rpc.sendOperation({ from: keys.pkh, operation, keys });
+    return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
   },
   typecheckCode: (code) => {
     const _code = utility.ml2mic(code);
@@ -852,7 +903,11 @@ const contract = {
     storageLimit = '0',
     mutez = false,
     rawParam = false,
-  }) => (
+  }, {
+    useLedger = false,
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  } = {}) => (
     rpc.transfer({
       from,
       keys,
@@ -864,7 +919,7 @@ const contract = {
       storageLimit,
       mutez,
       rawParam,
-    })
+    }, { useLedger, path, curve })
   ),
 };
 

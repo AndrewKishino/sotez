@@ -564,7 +564,7 @@ const rpc = {
         if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
           if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
           if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
-          op.counter = `${counters[from]++}`;
+          op.counter = `${++counters[from]}`;
           op.fee = `${op.fee}`;
           op.gas_limit = `${op.gas_limit}`;
           op.storage_limit = `${op.storage_limit}`;
@@ -586,7 +586,7 @@ const rpc = {
             curve,
             appHandler,
           }).then(({ signature }) => {
-            const signedOperation = `03${opbytes}${signature}`;
+            const signedOperation = `${opbytes}${signature}`;
             console.log('=======================');
             console.log('opbytes:', opbytes);
             console.log('signature:', signature);

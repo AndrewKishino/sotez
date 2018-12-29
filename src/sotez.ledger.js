@@ -1,6 +1,6 @@
 const { node, rpc, ledger } = require('./sotez.node');
 
-node.setProvider('http://127.0.0.1:8732', true);
+node.setProvider('https://rpczero.tzbeta.net', true);
 node.setDebugMode(true);
 
 const main = async (destination, curve = 0x00, tezosLedger) => {
@@ -16,7 +16,7 @@ const main = async (destination, curve = 0x00, tezosLedger) => {
 
   const testTransfer = {
     kind: 'transaction',
-    fee: '1278',
+    fee: '1275',
     gas_limit: '10100',
     amount: '1000000',
     destination,
@@ -31,7 +31,7 @@ const main = async (destination, curve = 0x00, tezosLedger) => {
     curve,
     appHandler: tezosLedger,
   })
-    .then(response => console.log(`Result: ${response}`))
+    .then(response => console.log(`Result: ${response.hash}`))
     .catch(e => console.log(`Error: ${e}`));
 };
 

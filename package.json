@@ -1,6 +1,6 @@
 {
   "name": "sotez",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "A JS Library for Tezos",
   "main": "index.js",
   "browser": "browser.js",
@@ -27,7 +27,7 @@
     "bip39": "^2.5.0",
     "bs58check": "^2.1.2",
     "buffer": "^5.2.0",
-    "hw-app-xtz": "https://github.com/AndrewKishino/hw-app-xtz.git",
+    "hw-app-xtz": "git+https://github.com/AndrewKishino/hw-app-xtz.git",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
     "xhr2": "^0.1.4"

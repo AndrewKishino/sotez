@@ -2954,9 +2954,9 @@ https-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
 
-"hw-app-xtz@https://github.com/AndrewKishino/hw-app-xtz.git":
+"hw-app-xtz@git+https://github.com/AndrewKishino/hw-app-xtz.git":
   version "1.0.0"
-  resolved "https://github.com/AndrewKishino/hw-app-xtz.git#2ab112e2c653a47ab780bf49944a134b5f3ba0b0"
+  resolved "git+https://github.com/AndrewKishino/hw-app-xtz.git#2ab112e2c653a47ab780bf49944a134b5f3ba0b0"
   dependencies:
     "@ledgerhq/hw-transport" "^4.21.0"
     blake2b "^2.1.3"

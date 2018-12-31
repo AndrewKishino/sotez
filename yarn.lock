@@ -591,13 +591,6 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@ledgerhq/hw-app-xtz@file:src/hw-app-xtz":
-  version "1.0.0"
-  dependencies:
-    "@ledgerhq/hw-transport" "^4.21.0"
-    blake2b "^2.1.3"
-    bs58check "^2.1.2"
-
 "@ledgerhq/hw-transport-node-hid@^4.33.3":
   version "4.33.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-node-hid/-/hw-transport-node-hid-4.33.3.tgz#5e96dca2be0a23d80814303f262398087b208a6a"
@@ -2960,6 +2953,14 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
+
+hw-app-xtz@AndrewKishino/hw-app-xtz:
+  version "1.0.0"
+  resolved "https://codeload.github.com/AndrewKishino/hw-app-xtz/tar.gz/2ab112e2c653a47ab780bf49944a134b5f3ba0b0"
+  dependencies:
+    "@ledgerhq/hw-transport" "^4.21.0"
+    blake2b "^2.1.3"
+    bs58check "^2.1.2"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
   version "0.4.24"

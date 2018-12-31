@@ -6,7 +6,7 @@ const pbkdf2 = require('pbkdf2');
 const BN = require('bignumber.js');
 
 const LedgerTransport = require('@ledgerhq/hw-transport-u2f').default;
-const LedgerApp = require('@ledgerhq/hw-app-xtz').default;
+const LedgerApp = require('hw-app-xtz').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = '1278';

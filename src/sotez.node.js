@@ -6,7 +6,7 @@ const pbkdf2 = require('pbkdf2');
 const BN = require('bignumber.js');
 
 const LedgerTransport = require('@ledgerhq/hw-transport-node-hid').default;
-const LedgerApp = require('@ledgerhq/hw-app-xtz').default;
+const LedgerApp = require('hw-app-xtz').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = '1278';
@@ -462,7 +462,7 @@ const rpc = {
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
-    }) => {
+    } = {}) => {
     let publicKeyHash = keys && keys.pkh;
 
     if (useLedger) {
@@ -519,7 +519,7 @@ const rpc = {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  }) => {
+  } = {}) => {
     let counter;
     let sopbytes;
     let opOb;

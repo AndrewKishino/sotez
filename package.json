@@ -1,6 +1,6 @@
 {
   "name": "sotez",
-  "version": "0.1.18",
+  "version": "0.1.2",
   "description": "A JS Library for Tezos",
   "main": "index.js",
   "browser": "browser.js",

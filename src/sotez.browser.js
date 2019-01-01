@@ -462,7 +462,7 @@ const rpc = {
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
-    }) => {
+    } = {}) => {
     let publicKeyHash = keys && keys.pkh;
 
     if (useLedger) {
@@ -519,7 +519,7 @@ const rpc = {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  }) => {
+  } = {}) => {
     let counter;
     let sopbytes;
     let opOb;

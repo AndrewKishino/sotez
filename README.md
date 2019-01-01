@@ -2,7 +2,8 @@
 
 # Getting Started
 ```js
-npm install sotez --save
+yarn add sotez
+npm install sotez
 ```
 
 ```js
@@ -282,7 +283,7 @@ postParams: [Optional (default: undefined)]
 Given a contructed operation object, sendOperation will attempt to inject the provided operation(s) into the node.
 
 ```js
-rpc.sendOperation(from, operation, keys)
+rpc.sendOperation({ from, operation, keys })
 ```
 
 Arguments:
@@ -310,7 +311,7 @@ const keys = {
   sk: 'edsk...'
 }
 
-rpc.sendOperation('tz1...', operation, keys)
+rpc.sendOperation({ from: 'tz1...', operation, keys })
   .then(({ hash, operations }) => {
     console.log(hash)
     console.log(operations)
@@ -411,7 +412,7 @@ rpc.originate({
 Sets the delegate for a given originated account.
 
 ```js
-rpc.setDelegate(from, keys, delegate, fee, gasLimit, storageLimit)
+rpc.setDelegate({ from, keys, delegate, fee, gasLimit, storageLimit })
 ```
 
 Arguments:
@@ -451,7 +452,7 @@ const keys = {
   sk: 'edsk...'
 }
 
-rpc.setDelegate('KT1...', keys, 'tz1...')
+rpc.setDelegate({ from: 'KT1...', keys, delegate: 'tz1...' })
   .then(({ hash, operations }) => {
     console.log(hash)
     console.log(operations)
@@ -462,7 +463,7 @@ rpc.setDelegate('KT1...', keys, 'tz1...')
 Sets the delegate for a given originated account.
 
 ```js
-rpc.registerDelegate(from, keys, delegate, gasLimit, storageLimit)
+rpc.registerDelegate({ from, keys, delegate, gasLimit, storageLimit })
 ```
 
 Arguments:
@@ -498,7 +499,7 @@ const keys = {
   sk: 'edsk...'
 }
 
-rpc.registerDelegate('KT1...', keys, 'tz1...')
+rpc.registerDelegate({ from: 'KT1...', keys, delegate: 'tz1...' })
   .then(({ hash, operations }) => {
     console.log(hash)
     console.log(operations)

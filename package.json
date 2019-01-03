@@ -1,6 +1,6 @@
 {
   "name": "sotez",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A JS Library for Tezos",
   "main": "index.js",
   "browser": "browser.js",
@@ -27,7 +27,7 @@
     "bip39": "^2.5.0",
     "bs58check": "^2.1.2",
     "buffer": "^5.2.0",
-    "hw-app-xtz": "git+https://github.com/AndrewKishino/hw-app-xtz.git",
+    "hw-app-xtz": "file:./src/hw-app-xtz/",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
     "xhr2": "^0.1.4"
@@ -42,6 +42,7 @@
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
     "terser-webpack-plugin": "^1.2.1",
+    "unminified-webpack-plugin": "^2.0.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"

@@ -1,8 +1,10 @@
 const path = require('path');
+const UnminifiedWebpackPlugin = require('unminified-webpack-plugin'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 
 module.exports = {
   target: 'web',
+  mode: 'production',
   resolve: {
     extensions: ['.js'],
     modules: [__dirname, 'node_modules'],
@@ -24,7 +26,9 @@ module.exports = {
     filename: 'sotez.browser.min.js',
     libraryTarget: 'umd',
   },
-  mode: 'production',
+  plugins: [
+    new UnminifiedWebpackPlugin(),
+  ],
   optimization: {
     minimizer: [
       new TerserPlugin({

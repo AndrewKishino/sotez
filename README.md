@@ -2,7 +2,6 @@
 
 # Getting Started
 ```js
-yarn add sotez
 npm install sotez
 ```
 

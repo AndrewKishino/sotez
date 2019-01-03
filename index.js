@@ -1,1 +1,1 @@
-module.exports = require('./dist/sotez.node.min');
+module.exports = require('./dist/sotez.node');

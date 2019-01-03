@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "test:dev": "jest --watch",
-    "build": "yarn build:browser && yarn build:node",
+    "build": "npm run build:browser && npm run build:node",
     "build:browser": "webpack --config webpack.browser.config.js --progress",
     "build:node": "webpack --config webpack.node.config.js --progress"
   },
@@ -21,13 +21,14 @@
   "author": "Andrew Kishino",
   "license": "MIT",
   "dependencies": {
+    "@ledgerhq/hw-transport": "^4.32.0",
     "@ledgerhq/hw-transport-node-hid": "^4.33.3",
     "@ledgerhq/hw-transport-u2f": "^4.32.0",
     "bignumber.js": "^8.0.1",
     "bip39": "^2.5.0",
+    "blake2b": "^2.1.3",
     "bs58check": "^2.1.2",
     "buffer": "^5.2.0",
-    "hw-app-xtz": "file:src/hw-app-xtz",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
     "xhr2": "^0.1.4"

@@ -282,7 +282,7 @@ postParams: [Optional (default: undefined)]
 Given a contructed operation object, sendOperation will attempt to inject the provided operation(s) into the node.
 
 ```js
-rpc.sendOperation({ from, operation, keys })
+rpc.sendOperation({ from, operation, keys }, { useLedger, curve, path })
 ```
 
 Arguments:
@@ -299,6 +299,18 @@ operation:
 keys:
   Type: Object
   Description: An object with keys ('pk', 'pkh', 'sk') pertaining to an account
+
+useLedger:
+  Type: Boolean
+  Description: Use ledger to sign operation, Default: false
+
+curve:
+  Type: One of [0x00, 0x01, 0x02]
+  Description: Signing curve. Default: 0x00
+
+path:
+  Type: Object
+  Description: The derivation path. Default: "44'/1729'/0'/0'"
 ```
 
 Ex:
@@ -321,7 +333,7 @@ rpc.sendOperation({ from: 'tz1...', operation, keys })
 Generate and inject a transfer transaction into the node. Can either transfer tez from one account to the other or be used to call Tezos smart contracts with a parameter.
 
 ```js
-rpc.transfer(transferObject)
+rpc.transfer(transferObject, { useLedger, curve, path })
 ```
 
 Arguments:
@@ -338,6 +350,19 @@ transferObject: {
   storageLimit: Number = 0, [Optional (default: 0)]
   mutez: Boolean = false, [Optional (default: false)] (If true, dont convert amount to tez, else use tez)
   rawParam: Boolean [Optional (default: false)] (If true, accept JSON params, else use standard CLI params)
+},
+{
+useLedger:
+  Type: Boolean
+  Description: Use ledger to sign operation, Default: false
+
+curve:
+  Type: One of [0x00, 0x01, 0x02]
+  Description: Signing curve. Default: 0x00
+
+path:
+  Type: Object
+  Description: The derivation path. Default: "44'/1729'/0'/0'"
 }
 ```
 
@@ -871,7 +896,7 @@ publicKey:
 # Development
 ```js
 npm install
-npm run build:all
+npm run build
 ```
 
 ## License

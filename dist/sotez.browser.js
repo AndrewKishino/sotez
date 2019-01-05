@@ -22449,7 +22449,10 @@ var rpc = {
 
               case 9:
                 counter = parseInt(headCounter, 10);
-                counters[from] = counter;
+
+                if (!counters[from] || counters[from] < counter) {
+                  counters[from] = counter;
+                }
 
                 constructOps = function constructOps() {
                   return ops.map(function (op) {
@@ -22550,10 +22553,16 @@ var rpc = {
                   break;
                 }
 
-                return _context6.abrupt("return", rpc.silentInject(sopbytes));
+                return _context6.abrupt("return", rpc.silentInject(sopbytes).catch(function (e) {
+                  counters[from] = counter;
+                  throw e;
+                }));
 
               case 17:
-                return _context6.abrupt("return", rpc.inject(opOb, sopbytes));
+                return _context6.abrupt("return", rpc.inject(opOb, sopbytes).catch(function (e) {
+                  counters[from] = counter;
+                  throw e;
+                }));
 
               case 18:
               case "end":

@@ -569,7 +569,9 @@ const rpc = {
       }
 
       counter = parseInt(headCounter, 10);
-      counters[from] = counter;
+      if (!counters[from] || counters[from] < counter) {
+        counters[from] = counter;
+      }
 
       const constructOps = () => ops.map((op) => {
         if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
@@ -619,9 +621,17 @@ const rpc = {
 
         opOb.protocol = head.protocol;
         if (skipPrevalidation || useLedger) {
-          return rpc.silentInject(sopbytes);
+          return rpc.silentInject(sopbytes)
+            .catch((e) => {
+              counters[from] = counter;
+              throw e;
+            });
         }
-        return rpc.inject(opOb, sopbytes);
+        return rpc.inject(opOb, sopbytes)
+          .catch((e) => {
+            counters[from] = counter;
+            throw e;
+          });
       });
   },
   inject: (opOb, sopbytes) => {

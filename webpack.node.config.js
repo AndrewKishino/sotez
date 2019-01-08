@@ -1,11 +1,12 @@
 const path = require('path');
-const UnminifiedWebpackPlugin = require('unminified-webpack-plugin'); // eslint-disable-line
-const nodeExternals = require('webpack-node-externals'); // eslint-disable-line
 
 module.exports = {
   target: 'node',
   mode: 'production',
-  externals: [nodeExternals()],
+  externals: {
+    'node-hid': 'commonjs node-hid',
+    usb: 'commonjs usb',
+  },
   resolve: {
     extensions: ['.js'],
     modules: [__dirname, 'node_modules'],

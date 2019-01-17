@@ -421,7 +421,7 @@ const ledger = {
     path = "44'/1729'/0'/0'",
     displayConfirm = false,
     curve = 0x00,
-  }) => {
+  } = {}) => {
     const transport = await LedgerTransport.create();
     const tezosLedger = new LedgerApp(transport);
     const publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
@@ -432,7 +432,7 @@ const ledger = {
     path = "44'/1729'/0'/0'",
     rawTxHex,
     curve = 0x00,
-  }) => {
+  } = {}) => {
     const transport = await LedgerTransport.create();
     const tezosLedger = new LedgerApp(transport);
     const { signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve);

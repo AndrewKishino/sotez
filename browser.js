@@ -1,1 +1,1 @@
-module.exports = require('./dist/sotez.browser');
+module.exports = require('./dist/sotez.browser.min');

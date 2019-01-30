@@ -22130,20 +22130,31 @@ var ledger = {
             case 3:
               transport = _context.sent;
               tezosLedger = new LedgerApp(transport);
-              _context.next = 7;
+              _context.prev = 5;
+              _context.next = 8;
               return tezosLedger.getAddress(path, displayConfirm, curve);
 
-            case 7:
+            case 8:
               publicKey = _context.sent;
+              _context.next = 15;
+              break;
+
+            case 11:
+              _context.prev = 11;
+              _context.t0 = _context["catch"](5);
+              transport.close();
+              return _context.abrupt("return", _context.t0);
+
+            case 15:
               transport.close();
               return _context.abrupt("return", publicKey);
 
-            case 10:
+            case 17:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, this);
+      }, _callee, this, [[5, 11]]);
     }));
 
     function getAddress() {
@@ -22164,8 +22175,8 @@ var ledger = {
           curve,
           transport,
           tezosLedger,
-          _ref3,
           signature,
+          _ref3,
           _args2 = arguments;
 
       return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -22179,23 +22190,34 @@ var ledger = {
             case 3:
               transport = _context2.sent;
               tezosLedger = new LedgerApp(transport);
-              _context2.next = 7;
+              _context2.prev = 5;
+              _context2.next = 8;
               return tezosLedger.signOperation(path, "03".concat(rawTxHex), curve);
 
-            case 7:
+            case 8:
               _ref3 = _context2.sent;
               signature = _ref3.signature;
+              _context2.next = 16;
+              break;
+
+            case 12:
+              _context2.prev = 12;
+              _context2.t0 = _context2["catch"](5);
+              transport.close();
+              return _context2.abrupt("return", _context2.t0);
+
+            case 16:
               transport.close();
               return _context2.abrupt("return", {
                 signature: signature
               });
 
-            case 11:
+            case 18:
             case "end":
               return _context2.stop();
           }
         }
-      }, _callee2, this);
+      }, _callee2, this, [[5, 12]]);
     }));
 
     function signOperation() {
@@ -22219,20 +22241,31 @@ var ledger = {
             case 2:
               transport = _context3.sent;
               tezosLedger = new LedgerApp(transport);
-              _context3.next = 6;
+              _context3.prev = 4;
+              _context3.next = 7;
               return tezosLedger.getVersion();
 
-            case 6:
+            case 7:
               versionInfo = _context3.sent;
+              _context3.next = 14;
+              break;
+
+            case 10:
+              _context3.prev = 10;
+              _context3.t0 = _context3["catch"](4);
+              transport.close();
+              return _context3.abrupt("return", _context3.t0);
+
+            case 14:
               transport.close();
               return _context3.abrupt("return", versionInfo);
 
-            case 9:
+            case 16:
             case "end":
               return _context3.stop();
           }
         }
-      }, _callee3, this);
+      }, _callee3, this, [[4, 10]]);
     }));
 
     function getVersion() {
@@ -22242,11 +22275,803 @@ var ledger = {
     return getVersion;
   }()
 };
+var forgeMappings = {
+  /* eslint-disable */
+  opMapping: {
+    '00': 'parameter',
+    '01': 'storage',
+    '02': 'code',
+    '03': 'False',
+    '04': 'Elt',
+    '05': 'Left',
+    '06': 'None',
+    '07': 'Pair',
+    '08': 'Right',
+    '09': 'Some',
+    '0A': 'True',
+    '0B': 'Unit',
+    '0C': 'PACK',
+    '0D': 'UNPACK',
+    '0E': 'BLAKE2B',
+    '0F': 'SHA256',
+    '10': 'SHA512',
+    '11': 'ABS',
+    '12': 'ADD',
+    '13': 'AMOUNT',
+    '14': 'AND',
+    '15': 'BALANCE',
+    '16': 'CAR',
+    '17': 'CDR',
+    '18': 'CHECK_SIGNATURE',
+    '19': 'COMPARE',
+    '1A': 'CONCAT',
+    '1B': 'CONS',
+    '1C': 'CREATE_ACCOUNT',
+    '1D': 'CREATE_CONTRACT',
+    '1E': 'IMPLICIT_ACCOUNT',
+    '1F': 'DIP',
+    '20': 'DROP',
+    '21': 'DUP',
+    '22': 'EDIV',
+    '23': 'EMPTY_MAP',
+    '24': 'EMPTY_SET',
+    '25': 'EQ',
+    '26': 'EXEC',
+    '27': 'FAILWITH',
+    '28': 'GE',
+    '29': 'GET',
+    '2A': 'GT',
+    '2B': 'HASH_KEY',
+    '2C': 'IF',
+    '2D': 'IF_CONS',
+    '2E': 'IF_LEFT',
+    '2F': 'IF_NONE',
+    '30': 'INT',
+    '31': 'LAMBDA',
+    '32': 'LE',
+    '33': 'LEFT',
+    '34': 'LOOP',
+    '35': 'LSL',
+    '36': 'LSR',
+    '37': 'LT',
+    '38': 'MAP',
+    '39': 'MEM',
+    '3A': 'MUL',
+    '3B': 'NEG',
+    '3C': 'NEQ',
+    '3D': 'NIL',
+    '3E': 'NONE',
+    '3F': 'NOT',
+    '40': 'NOW',
+    '41': 'OR',
+    '42': 'PAIR',
+    '43': 'PUSH',
+    '44': 'RIGHT',
+    '45': 'SIZE',
+    '46': 'SOME',
+    '47': 'SOURCE',
+    '48': 'SENDER',
+    '49': 'SELF',
+    '4A': 'STEPS_TO_QUOTA',
+    '4B': 'SUB',
+    '4C': 'SWAP',
+    '4D': 'TRANSFER_TOKENS',
+    '4E': 'SET_DELEGATE',
+    '4F': 'UNIT',
+    '50': 'UPDATE',
+    '51': 'XOR',
+    '52': 'ITER',
+    '53': 'LOOP_LEFT',
+    '54': 'ADDRESS',
+    '55': 'CONTRACT',
+    '56': 'ISNAT',
+    '57': 'CAST',
+    '58': 'RENAME',
+    '59': 'bool',
+    '5A': 'contract',
+    '5B': 'int',
+    '5C': 'key',
+    '5D': 'key_hash',
+    '5E': 'lambda',
+    '5F': 'list',
+    '60': 'map',
+    '61': 'big_map',
+    '62': 'nat',
+    '63': 'option',
+    '64': 'or',
+    '65': 'pair',
+    '66': 'set',
+    '67': 'signature',
+    '68': 'string',
+    '69': 'bytes',
+    '6A': 'mutez',
+    '6B': 'timestamp',
+    '6C': 'unit',
+    '6D': 'operation',
+    '6E': 'address',
+    '6F': 'SLICE'
+  },
+
+  /* eslint-enable */
+  opMappingReverse: {
+    SHA512: '10',
+    ABS: '11',
+    ADD: '12',
+    AMOUNT: '13',
+    AND: '14',
+    BALANCE: '15',
+    CAR: '16',
+    CDR: '17',
+    CHECK_SIGNATURE: '18',
+    COMPARE: '19',
+    DROP: '20',
+    DUP: '21',
+    EDIV: '22',
+    EMPTY_MAP: '23',
+    EMPTY_SET: '24',
+    EQ: '25',
+    EXEC: '26',
+    FAILWITH: '27',
+    GE: '28',
+    GET: '29',
+    INT: '30',
+    LAMBDA: '31',
+    LE: '32',
+    LEFT: '33',
+    LOOP: '34',
+    LSL: '35',
+    LSR: '36',
+    LT: '37',
+    MAP: '38',
+    MEM: '39',
+    NOW: '40',
+    OR: '41',
+    PAIR: '42',
+    PUSH: '43',
+    RIGHT: '44',
+    SIZE: '45',
+    SOME: '46',
+    SOURCE: '47',
+    SENDER: '48',
+    SELF: '49',
+    UPDATE: '50',
+    XOR: '51',
+    ITER: '52',
+    LOOP_LEFT: '53',
+    ADDRESS: '54',
+    CONTRACT: '55',
+    ISNAT: '56',
+    CAST: '57',
+    RENAME: '58',
+    bool: '59',
+    map: '60',
+    big_map: '61',
+    nat: '62',
+    option: '63',
+    or: '64',
+    pair: '65',
+    set: '66',
+    signature: '67',
+    string: '68',
+    bytes: '69',
+    parameter: '00',
+    storage: '01',
+    code: '02',
+    False: '03',
+    Elt: '04',
+    Left: '05',
+    None: '06',
+    Pair: '07',
+    Right: '08',
+    Some: '09',
+    True: '0A',
+    Unit: '0B',
+    PACK: '0C',
+    UNPACK: '0D',
+    BLAKE2B: '0E',
+    SHA256: '0F',
+    CONCAT: '1A',
+    CONS: '1B',
+    CREATE_ACCOUNT: '1C',
+    CREATE_CONTRACT: '1D',
+    IMPLICIT_ACCOUNT: '1E',
+    DIP: '1F',
+    GT: '2A',
+    HASH_KEY: '2B',
+    IF: '2C',
+    IF_CONS: '2D',
+    IF_LEFT: '2E',
+    IF_NONE: '2F',
+    MUL: '3A',
+    NEG: '3B',
+    NEQ: '3C',
+    NIL: '3D',
+    NONE: '3E',
+    NOT: '3F',
+    STEPS_TO_QUOTA: '4A',
+    SUB: '4B',
+    SWAP: '4C',
+    TRANSFER_TOKENS: '4D',
+    SET_DELEGATE: '4E',
+    UNIT: '4F',
+    contract: '5A',
+    int: '5B',
+    key: '5C',
+    key_hash: '5D',
+    lambda: '5E',
+    list: '5F',
+    mutez: '6A',
+    timestamp: '6B',
+    unit: '6C',
+    operation: '6D',
+    address: '6E',
+    SLICE: '6F'
+  },
+  primMapping: {
+    '00': 'int',
+    '01': 'string',
+    '02': 'seq',
+    '03': {
+      name: 'prim',
+      len: 0,
+      annots: false
+    },
+    '04': {
+      name: 'prim',
+      len: 0,
+      annots: true
+    },
+    '05': {
+      name: 'prim',
+      len: 1,
+      annots: false
+    },
+    '06': {
+      name: 'prim',
+      len: 1,
+      annots: true
+    },
+    '07': {
+      name: 'prim',
+      len: 2,
+      annots: false
+    },
+    '08': {
+      name: 'prim',
+      len: 2,
+      annots: true
+    },
+    '09': {
+      name: 'prim',
+      len: 3,
+      annots: true
+    },
+    '0A': 'bytes'
+  },
+  primMappingReverse: {
+    0: {
+      false: '03',
+      true: '04'
+    },
+    1: {
+      false: '05',
+      true: '06'
+    },
+    2: {
+      false: '07',
+      true: '08'
+    },
+    3: {
+      true: '09'
+    }
+  },
+  forgeOpTags: {
+    endorsement: 0,
+    seed_nonce_revelation: 1,
+    double_endorsement_evidence: 2,
+    double_baking_evidence: 3,
+    activate_account: 4,
+    proposals: 5,
+    ballot: 6,
+    reveal: 7,
+    transaction: 8,
+    origination: 9,
+    delegation: 10
+  }
+};
+
+var toBytesInt32 = function toBytesInt32(num) {
+  num = parseInt(num, 10);
+  var arr = new Uint8Array([(num & 0xff000000) >> 24, (num & 0x00ff0000) >> 16, (num & 0x0000ff00) >> 8, num & 0x000000ff]);
+  return arr.buffer;
+};
+
+var toBytesInt32Hex = function toBytesInt32Hex(num) {
+  return utility.buf2hex(toBytesInt32(num));
+};
+
+var forgeBool = function forgeBool(b) {
+  return b ? 'ff' : '00';
+};
+
+var forgeScript = function forgeScript(s) {
+  var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
+  var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
+  return toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2;
+};
+
+var forgeParameters = function forgeParameters(p) {
+  var t = tezos.encodeRawBytes(p).toLowerCase();
+  return toBytesInt32Hex(t.length / 2) + t;
+};
+
+var forgePublicKeyHash = function forgePublicKeyHash(pkh) {
+  var fpkh;
+  var t = parseInt(pkh.substr(2, 1), 10);
+  fpkh = "0".concat((t - 1).toString());
+  fpkh += utility.buf2hex(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
+  return fpkh;
+};
+
+var forgeAddress = function forgeAddress(a) {
+  var fa;
+
+  if (a.substr(0, 1) === 'K') {
+    fa = '01';
+    fa += utility.buf2hex(utility.b58cdecode(a, prefix.KT));
+    fa += '00';
+  } else {
+    fa = '00';
+    fa += forgePublicKeyHash(a);
+  }
+
+  return fa;
+};
+
+var forgeZarith = function forgeZarith(n) {
+  var fn = '';
+  n = parseInt(n, 10);
+
+  while (true) {
+    // eslint-disable-line
+    if (n < 128) {
+      if (n < 16) fn += '0';
+      fn += n.toString(16);
+      break;
+    } else {
+      var b = n % 128;
+      n -= b;
+      n /= 128;
+      b += 128;
+      fn += b.toString(16);
+    }
+  }
+
+  return fn;
+};
+
+var forgePublicKey = function forgePublicKey(pk) {
+  var fpk; // let t;
+
+  switch (pk.substr(0, 2)) {
+    case 'ed':
+      fpk = '00';
+      break;
+
+    case 'sp':
+      fpk = '01';
+      break;
+
+    case 'p2':
+      fpk = '02';
+      break;
+
+    default:
+      break;
+  }
+
+  fpk += utility.buf2hex(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
+  return fpk;
+};
+/* eslint-disable */
+
+
+var forgeOp = function forgeOp(op) {
+  var fop;
+  fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
+
+  switch (forgeMappings.forgeOpTags[op.kind]) {
+    case 0:
+    case 1:
+      fop += utility.buf2hex(toBytesInt32(op.level));
+      if (forgeMappings.forgeOpTags[op.kind] === 0) break;
+      fop += op.nonce;
+      if (forgeMappings.forgeOpTags[op.kind] === 1) break;
+
+    case 2:
+    case 3:
+      throw new Error('Double bake and double endorse forging is not complete');
+      if (forgeMappings.forgeOpTags[op.kind] === 2) break;
+      if (forgeMappings.forgeOpTags[op.kind] === 3) break;
+
+    case 4:
+      fop += utility.buf2hex(utility.b58cdecode(op.pkh, prefix.tz1));
+      fop += op.secret;
+      if (forgeMappings.forgeOpTags[op.kind] === 4) break;
+
+    case 5:
+    case 6:
+      fop += forgePublicKeyHash(op.source);
+      fop += utility.buf2hex(toBytesInt32(op.period));
+
+      if (forgeMappings.forgeOpTags[op.kind] === 5) {
+        throw new Error('Proposal forging is not complete');
+        break;
+      } else if (forgeMappings.forgeOpTags[op.kind] === 6) {
+        fop += utility.buf2hex(utility.b58cdecode(op.proposal, prefix.P));
+        var ballot;
+
+        if (op.ballot === 'yay') {
+          ballot = '00';
+        } else if (op.ballot === 'nay') {
+          ballot = '01';
+        } else {
+          ballot = '02';
+        }
+
+        fop += ballot;
+        break;
+      }
+
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+      fop += forgeAddress(op.source);
+      fop += forgeZarith(op.fee);
+      fop += forgeZarith(op.counter);
+      fop += forgeZarith(op.gas_limit);
+      fop += forgeZarith(op.storage_limit);
+
+      if (forgeMappings.forgeOpTags[op.kind] === 7) {
+        fop += forgePublicKey(op.public_key);
+      } else if (forgeMappings.forgeOpTags[op.kind] === 8) {
+        fop += forgeZarith(op.amount);
+        fop += forgeAddress(op.destination);
+
+        if (typeof op.parameters !== 'undefined' && op.parameters) {
+          fop += forgeBool(true);
+          fop += forgeParameters(op.parameters);
+        } else {
+          fop += forgeBool(false);
+        }
+      } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
+        fop += forgePublicKeyHash(op.managerPubkey);
+        fop += forgeZarith(op.balance);
+        fop += forgeBool(op.spendable);
+        fop += forgeBool(op.delegatable);
+
+        if (typeof op.delegate !== 'undefined' && op.delegate) {
+          fop += forgeBool(true);
+          fop += forgePublicKeyHash(op.delegate);
+        } else {
+          fop += forgeBool(false);
+        }
+
+        if (typeof op.script !== 'undefined' && op.script) {
+          fop += forgeBool(true);
+          fop += forgeScript(op.script);
+        } else {
+          fop += forgeBool(false);
+        }
+      } else if (forgeMappings.forgeOpTags[op.kind] === 10) {
+        if (typeof op.delegate !== 'undefined' && op.delegate) {
+          fop += forgeBool(true);
+          fop += forgePublicKeyHash(op.delegate);
+        } else {
+          fop += forgeBool(false);
+        }
+      }
+
+      break;
+
+    default:
+      break;
+  }
+
+  return fop;
+};
+/* eslint-enable */
+
+
+var tezos = {
+  forge: function () {
+    var _forge = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee4(head, opOb) {
+      var debug,
+          remoteForgedBytes,
+          localForgedBytes,
+          _args4 = arguments;
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              debug = _args4.length > 2 && _args4[2] !== undefined ? _args4[2] : false;
+
+              if (!debug) {
+                _context4.next = 5;
+                break;
+              }
+
+              _context4.next = 4;
+              return node.query("/chains/".concat(head.chain_id, "/blocks/").concat(head.hash, "/helpers/forge/operations"), opOb);
+
+            case 4:
+              remoteForgedBytes = _context4.sent;
+
+            case 5:
+              localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
+              opOb.contents.forEach(function (content) {
+                localForgedBytes += forgeOp(content);
+              });
+
+              if (!debug) {
+                _context4.next = 16;
+                break;
+              }
+
+              console.log('FORGE VALIDATION TEST START');
+              console.log(opOb);
+              console.log(remoteForgedBytes);
+              console.log(localForgedBytes);
+              console.log('FORGE VALIDATION TEST END');
+
+              if (!(localForgedBytes === remoteForgedBytes)) {
+                _context4.next = 15;
+                break;
+              }
+
+              return _context4.abrupt("return", remoteForgedBytes);
+
+            case 15:
+              throw new Error('Forge validatione error - local and remote bytes don\'t match');
+
+            case 16:
+              return _context4.abrupt("return", localForgedBytes);
+
+            case 17:
+            case "end":
+              return _context4.stop();
+          }
+        }
+      }, _callee4, this);
+    }));
+
+    function forge(_x, _x2) {
+      return _forge.apply(this, arguments);
+    }
+
+    return forge;
+  }(),
+  decodeRawBytes: function decodeRawBytes(bytes) {
+    bytes = bytes.toUpperCase();
+    var index = 0;
+
+    var read = function read(len) {
+      return bytes.slice(index, index + len);
+    };
+
+    var rec = function rec() {
+      var b = read(2);
+      var prim = forgeMappings.primMapping[b];
+
+      if (prim instanceof Object) {
+        index += 2;
+        var op = forgeMappings.opMapping[read(2)];
+        index += 2;
+
+        var args = _toConsumableArray(Array(prim.len));
+
+        var result = {
+          prim: op,
+          args: args.map(function () {
+            return rec();
+          }),
+          annots: undefined
+        };
+
+        if (!prim.len) {
+          delete result.args;
+        }
+
+        if (prim.annots) {
+          var annotsLen = parseInt(read(8), 16) * 2;
+          index += 8;
+          var stringHexLst = read(annotsLen).match(/[\dA-F]{2}/g);
+          index += annotsLen;
+
+          if (stringHexLst) {
+            var stringBytes = new Uint8Array(stringHexLst.map(function (x) {
+              return parseInt(x, 16);
+            }));
+            var stringResult = new TextDecoder('utf-8').decode(stringBytes);
+            result.annots = stringResult.split(' ');
+          }
+        } else {
+          delete result.annots;
+        }
+
+        return result;
+      }
+
+      if (b === '0A') {
+        index += 2;
+        var len = read(8);
+        index += 8;
+        var intLen = parseInt(len, 16) * 2;
+        var data = read(intLen);
+        index += intLen;
+        return {
+          bytes: data
+        };
+      }
+
+      if (b === '01') {
+        index += 2;
+
+        var _len = read(8);
+
+        index += 8;
+
+        var _intLen = parseInt(_len, 16) * 2;
+
+        var _data = read(_intLen);
+
+        index += _intLen;
+
+        var matchResult = _data.match(/[\dA-F]{2}/g);
+
+        if (matchResult instanceof Array) {
+          var stringRaw = new Uint8Array(matchResult.map(function (x) {
+            return parseInt(x, 16);
+          }));
+          return {
+            string: new TextDecoder('utf-8').decode(stringRaw)
+          };
+        }
+
+        throw new Error('Input bytes error');
+      }
+
+      if (b === '00') {
+        index += 2;
+        var firstBytes = parseInt(read(2), 16).toString(2).padStart(8, '0');
+        index += 2; // const isPositive = firstBytes[1] === '0';
+
+        var validBytes = [firstBytes.slice(2)];
+        var checknext = firstBytes[0] === '1';
+
+        while (checknext) {
+          var bytesCheck = parseInt(read(2), 16).toString(2).padStart(8, '0');
+          index += 2;
+          validBytes.push(bytesCheck.slice(1));
+          checknext = bytesCheck[0] === '1';
+        }
+
+        var num = new BN(validBytes.reverse().join(''), 2);
+        return {
+          int: num.toString()
+        };
+      }
+
+      if (b === '02') {
+        index += 2;
+
+        var _len2 = read(8);
+
+        index += 8;
+
+        var _intLen2 = parseInt(_len2, 16) * 2; // const data = read(intLen);
+
+
+        var limit = index + _intLen2;
+        var seqLst = [];
+
+        while (limit > index) {
+          seqLst.push(rec());
+        }
+
+        return seqLst;
+      }
+
+      throw new Error("Invalid raw bytes: Byte:".concat(b, " Index:").concat(index));
+    };
+
+    return rec();
+  },
+  encodeRawBytes: function encodeRawBytes(input) {
+    var rec = function rec(inputArg) {
+      var result = [];
+
+      if (inputArg instanceof Array) {
+        result.push('02');
+        var bytes = inputArg.map(function (x) {
+          return rec(x);
+        }).join('');
+        var len = bytes.length / 2;
+        result.push(len.toString(16).padStart(8, '0'));
+        result.push(bytes);
+      } else if (inputArg instanceof Object) {
+        if (inputArg.prim) {
+          var argsLen = inputArg.args ? inputArg.args.length : 0;
+          result.push(forgeMappings.primMappingReverse[argsLen][!!inputArg.annots]);
+          result.push(forgeMappings.opMappingReverse[inputArg.prim]);
+
+          if (inputArg.args) {
+            inputArg.args.forEach(function (arg) {
+              return result.push(rec(arg));
+            });
+          }
+
+          if (inputArg.annots) {
+            var annotsBytes = inputArg.annots.map(function (x) {
+              return utility.buf2hex(new TextEncoder().encode(x));
+            }).join('20');
+            result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
+            result.push(annotsBytes);
+          }
+        } else if (inputArg.bytes) {
+          var _len3 = inputArg.bytes.length / 2;
+
+          result.push('0A');
+          result.push(_len3.toString(16).padStart(8, '0'));
+          result.push(inputArg.bytes);
+        } else if (inputArg.int) {
+          var num = new BN(inputArg.int, 10);
+          var positiveMark = num.toString(2)[0] === '-' ? '1' : '0';
+          var binary = num.toString(2).replace('-', '');
+          var pad;
+
+          if (binary.length <= 6) {
+            pad = 6;
+          } else if ((binary.length - 6) % 7) {
+            pad = (binary.length + 7 - (binary.length - 6)) % 7;
+          } else {
+            pad = binary.length;
+          }
+
+          var splitted = binary.padStart(pad, '0').match(/\d{6,7}/g);
+          var reversed = splitted.reverse();
+          reversed[0] = positiveMark + reversed[0];
+          var numHex = reversed.map(function (x, i) {
+            return parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2).toString(16).padStart(2, '0').join('');
+          });
+          result.push('00');
+          result.push(numHex);
+        } else if (inputArg.string) {
+          var stringBytes = new TextEncoder().encode(inputArg.string);
+          var stringHex = [].slice.call(stringBytes).map(function (x) {
+            return x.toString(16).padStart(2, '0');
+          }).join('');
+          var _len4 = stringBytes.length;
+          result.push('01');
+          result.push(_len4.toString(16).padStart(8, '0'));
+          result.push(stringHex);
+        }
+      }
+
+      return result.join('');
+    };
+
+    return rec(input).toUpperCase();
+  }
+};
 var rpc = {
   account: function () {
     var _account = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee4(_ref4) {
+    regeneratorRuntime.mark(function _callee5(_ref4) {
       var keys,
           amount,
           spendable,
@@ -22269,29 +23094,29 @@ var rpc = {
           _ref6,
           address,
           operation,
-          _args4 = arguments;
+          _args5 = arguments;
 
-      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
               keys = _ref4.keys, amount = _ref4.amount, spendable = _ref4.spendable, delegatable = _ref4.delegatable, delegate = _ref4.delegate, _ref4$fee = _ref4.fee, fee = _ref4$fee === void 0 ? DEFAULT_FEE : _ref4$fee, _ref4$gasLimit = _ref4.gasLimit, gasLimit = _ref4$gasLimit === void 0 ? '10000' : _ref4$gasLimit, _ref4$storageLimit = _ref4.storageLimit, storageLimit = _ref4$storageLimit === void 0 ? '257' : _ref4$storageLimit;
-              _ref5 = _args4.length > 1 && _args4[1] !== undefined ? _args4[1] : {}, _ref5$useLedger = _ref5.useLedger, useLedger = _ref5$useLedger === void 0 ? false : _ref5$useLedger, _ref5$path = _ref5.path, path = _ref5$path === void 0 ? "44'/1729'/0'/0'" : _ref5$path, _ref5$curve = _ref5.curve, curve = _ref5$curve === void 0 ? 0x00 : _ref5$curve;
+              _ref5 = _args5.length > 1 && _args5[1] !== undefined ? _args5[1] : {}, _ref5$useLedger = _ref5.useLedger, useLedger = _ref5$useLedger === void 0 ? false : _ref5$useLedger, _ref5$path = _ref5.path, path = _ref5$path === void 0 ? "44'/1729'/0'/0'" : _ref5$path, _ref5$curve = _ref5.curve, curve = _ref5$curve === void 0 ? 0x00 : _ref5$curve;
               publicKeyHash = keys && keys.pkh;
 
               if (!useLedger) {
-                _context4.next = 9;
+                _context5.next = 9;
                 break;
               }
 
-              _context4.next = 6;
+              _context5.next = 6;
               return ledger.getAddress({
                 path: path,
                 curve: curve
               });
 
             case 6:
-              _ref6 = _context4.sent;
+              _ref6 = _context5.sent;
               address = _ref6.address;
               publicKeyHash = address;
 
@@ -22313,7 +23138,7 @@ var rpc = {
               if (typeof spendable !== 'undefined') operation.spendable = spendable;
               if (typeof delegatable !== 'undefined') operation.delegatable = delegatable;
               if (typeof delegate !== 'undefined' && delegate) operation.delegate = delegate;
-              return _context4.abrupt("return", rpc.sendOperation({
+              return _context5.abrupt("return", rpc.sendOperation({
                 from: publicKeyHash,
                 operation: operation,
                 keys: keys
@@ -22325,13 +23150,13 @@ var rpc = {
 
             case 15:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
-      }, _callee4, this);
+      }, _callee5, this);
     }));
 
-    function account(_x) {
+    function account(_x3) {
       return _account.apply(this, arguments);
     }
 
@@ -22407,34 +23232,34 @@ var rpc = {
     function () {
       var _ref10 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee5(_ref9) {
+      regeneratorRuntime.mark(function _callee6(_ref9) {
         var _ref11, header, headCounter, manager, publicKey, ledgerAddress, constructOps;
 
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
                 _ref11 = _slicedToArray(_ref9, 3), header = _ref11[0], headCounter = _ref11[1], manager = _ref11[2];
                 head = header;
 
                 if (!(requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined')) {
-                  _context5.next = 9;
+                  _context6.next = 9;
                   break;
                 }
 
                 if (!useLedger) {
-                  _context5.next = 8;
+                  _context6.next = 8;
                   break;
                 }
 
-                _context5.next = 6;
+                _context6.next = 6;
                 return ledger.getAddress({
                   path: path,
                   curve: curve
                 });
 
               case 6:
-                ledgerAddress = _context5.sent;
+                ledgerAddress = _context6.sent;
                 publicKey = ledgerAddress.publicKey; // eslint-disable-line
 
               case 8:
@@ -22479,17 +23304,17 @@ var rpc = {
                   branch: head.hash,
                   contents: constructOps()
                 };
-                return _context5.abrupt("return", node.query("/chains/".concat(head.chain_id, "/blocks/").concat(head.hash, "/helpers/forge/operations"), opOb));
+                return _context6.abrupt("return", tezos.forge(head, opOb));
 
               case 14:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
-      return function (_x2) {
+      return function (_x4) {
         return _ref10.apply(this, arguments);
       };
     }()).then(
@@ -22497,19 +23322,19 @@ var rpc = {
     function () {
       var _ref12 = _asyncToGenerator(
       /*#__PURE__*/
-      regeneratorRuntime.mark(function _callee6(opbytes) {
+      regeneratorRuntime.mark(function _callee7(opbytes) {
         var _ref13, signature, signed;
 
-        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
                 if (!useLedger) {
-                  _context6.next = 8;
+                  _context7.next = 8;
                   break;
                 }
 
-                _context6.next = 3;
+                _context7.next = 3;
                 return ledger.signOperation({
                   path: path,
                   rawTxHex: opbytes,
@@ -22517,20 +23342,20 @@ var rpc = {
                 });
 
               case 3:
-                _ref13 = _context6.sent;
+                _ref13 = _context7.sent;
                 signature = _ref13.signature;
                 sopbytes = "".concat(opbytes).concat(signature);
-                _context6.next = 14;
+                _context7.next = 14;
                 break;
 
               case 8:
                 if (!(keys.sk === false)) {
-                  _context6.next = 13;
+                  _context7.next = 13;
                   break;
                 }
 
                 opOb.protocol = head.protocol;
-                return _context6.abrupt("return", {
+                return _context7.abrupt("return", {
                   opOb: opOb,
                   opbytes: opbytes
                 });
@@ -22549,30 +23374,30 @@ var rpc = {
                 opOb.protocol = head.protocol;
 
                 if (!(skipPrevalidation || useLedger)) {
-                  _context6.next = 17;
+                  _context7.next = 17;
                   break;
                 }
 
-                return _context6.abrupt("return", rpc.silentInject(sopbytes).catch(function (e) {
+                return _context7.abrupt("return", rpc.silentInject(sopbytes).catch(function (e) {
                   counters[from] = counter;
                   throw e;
                 }));
 
               case 17:
-                return _context6.abrupt("return", rpc.inject(opOb, sopbytes).catch(function (e) {
+                return _context7.abrupt("return", rpc.inject(opOb, sopbytes).catch(function (e) {
                   counters[from] = counter;
                   throw e;
                 }));
 
               case 18:
               case "end":
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
 
-      return function (_x3) {
+      return function (_x5) {
         return _ref12.apply(this, arguments);
       };
     }());
@@ -22684,7 +23509,7 @@ var rpc = {
   originate: function () {
     var _originate = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee7(_ref16) {
+    regeneratorRuntime.mark(function _callee8(_ref16) {
       var keys,
           amount,
           code,
@@ -22713,14 +23538,14 @@ var rpc = {
           _ref18,
           address,
           operation,
-          _args7 = arguments;
+          _args8 = arguments;
 
-      return regeneratorRuntime.wrap(function _callee7$(_context7) {
+      return regeneratorRuntime.wrap(function _callee8$(_context8) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context8.prev = _context8.next) {
             case 0:
               keys = _ref16.keys, amount = _ref16.amount, code = _ref16.code, init = _ref16.init, _ref16$spendable = _ref16.spendable, spendable = _ref16$spendable === void 0 ? false : _ref16$spendable, _ref16$delegatable = _ref16.delegatable, delegatable = _ref16$delegatable === void 0 ? false : _ref16$delegatable, delegate = _ref16.delegate, _ref16$fee = _ref16.fee, fee = _ref16$fee === void 0 ? DEFAULT_FEE : _ref16$fee, _ref16$gasLimit = _ref16.gasLimit, gasLimit = _ref16$gasLimit === void 0 ? '10000' : _ref16$gasLimit, _ref16$storageLimit = _ref16.storageLimit, storageLimit = _ref16$storageLimit === void 0 ? '257' : _ref16$storageLimit;
-              _ref17 = _args7.length > 1 && _args7[1] !== undefined ? _args7[1] : {}, _ref17$useLedger = _ref17.useLedger, useLedger = _ref17$useLedger === void 0 ? false : _ref17$useLedger, _ref17$path = _ref17.path, path = _ref17$path === void 0 ? "44'/1729'/0'/0'" : _ref17$path, _ref17$curve = _ref17.curve, curve = _ref17$curve === void 0 ? 0x00 : _ref17$curve;
+              _ref17 = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : {}, _ref17$useLedger = _ref17.useLedger, useLedger = _ref17$useLedger === void 0 ? false : _ref17$useLedger, _ref17$path = _ref17.path, path = _ref17$path === void 0 ? "44'/1729'/0'/0'" : _ref17$path, _ref17$curve = _ref17.curve, curve = _ref17$curve === void 0 ? 0x00 : _ref17$curve;
               _code = utility.ml2mic(code);
               script = {
                 code: _code,
@@ -22729,18 +23554,18 @@ var rpc = {
               publicKeyHash = keys && keys.pkh;
 
               if (!useLedger) {
-                _context7.next = 11;
+                _context8.next = 11;
                 break;
               }
 
-              _context7.next = 8;
+              _context8.next = 8;
               return ledger.getAddress({
                 path: path,
                 curve: curve
               });
 
             case 8:
-              _ref18 = _context7.sent;
+              _ref18 = _context8.sent;
               address = _ref18.address;
               publicKeyHash = address; // eslint-disable-line
 
@@ -22763,7 +23588,7 @@ var rpc = {
                 operation.managerPubkey = publicKeyHash;
               }
 
-              return _context7.abrupt("return", rpc.sendOperation({
+              return _context8.abrupt("return", rpc.sendOperation({
                 from: publicKeyHash,
                 operation: operation,
                 keys: keys
@@ -22775,13 +23600,13 @@ var rpc = {
 
             case 14:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
         }
-      }, _callee7, this);
+      }, _callee8, this);
     }));
 
-    function originate(_x4) {
+    function originate(_x6) {
       return _originate.apply(this, arguments);
     }
 
@@ -22790,7 +23615,7 @@ var rpc = {
   setDelegate: function () {
     var _setDelegate = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee8(_ref19) {
+    regeneratorRuntime.mark(function _callee9(_ref19) {
       var from,
           keys,
           delegate,
@@ -22811,29 +23636,29 @@ var rpc = {
           _ref21,
           address,
           operation,
-          _args8 = arguments;
+          _args9 = arguments;
 
-      return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      return regeneratorRuntime.wrap(function _callee9$(_context9) {
         while (1) {
-          switch (_context8.prev = _context8.next) {
+          switch (_context9.prev = _context9.next) {
             case 0:
               from = _ref19.from, keys = _ref19.keys, delegate = _ref19.delegate, _ref19$fee = _ref19.fee, fee = _ref19$fee === void 0 ? DEFAULT_FEE : _ref19$fee, _ref19$gasLimit = _ref19.gasLimit, gasLimit = _ref19$gasLimit === void 0 ? '10000' : _ref19$gasLimit, _ref19$storageLimit = _ref19.storageLimit, storageLimit = _ref19$storageLimit === void 0 ? '0' : _ref19$storageLimit;
-              _ref20 = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : {}, _ref20$useLedger = _ref20.useLedger, useLedger = _ref20$useLedger === void 0 ? false : _ref20$useLedger, _ref20$path = _ref20.path, path = _ref20$path === void 0 ? "44'/1729'/0'/0'" : _ref20$path, _ref20$curve = _ref20.curve, curve = _ref20$curve === void 0 ? 0x00 : _ref20$curve;
+              _ref20 = _args9.length > 1 && _args9[1] !== undefined ? _args9[1] : {}, _ref20$useLedger = _ref20.useLedger, useLedger = _ref20$useLedger === void 0 ? false : _ref20$useLedger, _ref20$path = _ref20.path, path = _ref20$path === void 0 ? "44'/1729'/0'/0'" : _ref20$path, _ref20$curve = _ref20.curve, curve = _ref20$curve === void 0 ? 0x00 : _ref20$curve;
               publicKeyHash = keys && keys.pkh;
 
               if (!useLedger) {
-                _context8.next = 9;
+                _context9.next = 9;
                 break;
               }
 
-              _context8.next = 6;
+              _context9.next = 6;
               return ledger.getAddress({
                 path: path,
                 curve: curve
               });
 
             case 6:
-              _ref21 = _context8.sent;
+              _ref21 = _context9.sent;
               address = _ref21.address;
               publicKeyHash = address;
 
@@ -22845,7 +23670,7 @@ var rpc = {
                 storage_limit: storageLimit,
                 delegate: typeof delegate !== 'undefined' ? delegate : publicKeyHash
               };
-              return _context8.abrupt("return", rpc.sendOperation({
+              return _context9.abrupt("return", rpc.sendOperation({
                 from: from,
                 operation: operation,
                 keys: keys
@@ -22857,13 +23682,13 @@ var rpc = {
 
             case 11:
             case "end":
-              return _context8.stop();
+              return _context9.stop();
           }
         }
-      }, _callee8, this);
+      }, _callee9, this);
     }));
 
-    function setDelegate(_x5) {
+    function setDelegate(_x7) {
       return _setDelegate.apply(this, arguments);
     }
 
@@ -22872,7 +23697,7 @@ var rpc = {
   registerDelegate: function () {
     var _registerDelegate = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee9(_ref22) {
+    regeneratorRuntime.mark(function _callee10(_ref22) {
       var keys,
           _ref22$fee,
           fee,
@@ -22891,29 +23716,29 @@ var rpc = {
           _ref24,
           address,
           operation,
-          _args9 = arguments;
+          _args10 = arguments;
 
-      return regeneratorRuntime.wrap(function _callee9$(_context9) {
+      return regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
-          switch (_context9.prev = _context9.next) {
+          switch (_context10.prev = _context10.next) {
             case 0:
               keys = _ref22.keys, _ref22$fee = _ref22.fee, fee = _ref22$fee === void 0 ? DEFAULT_FEE : _ref22$fee, _ref22$gasLimit = _ref22.gasLimit, gasLimit = _ref22$gasLimit === void 0 ? '10000' : _ref22$gasLimit, _ref22$storageLimit = _ref22.storageLimit, storageLimit = _ref22$storageLimit === void 0 ? '0' : _ref22$storageLimit;
-              _ref23 = _args9.length > 1 && _args9[1] !== undefined ? _args9[1] : {}, _ref23$useLedger = _ref23.useLedger, useLedger = _ref23$useLedger === void 0 ? false : _ref23$useLedger, _ref23$path = _ref23.path, path = _ref23$path === void 0 ? "44'/1729'/0'/0'" : _ref23$path, _ref23$curve = _ref23.curve, curve = _ref23$curve === void 0 ? 0x00 : _ref23$curve;
+              _ref23 = _args10.length > 1 && _args10[1] !== undefined ? _args10[1] : {}, _ref23$useLedger = _ref23.useLedger, useLedger = _ref23$useLedger === void 0 ? false : _ref23$useLedger, _ref23$path = _ref23.path, path = _ref23$path === void 0 ? "44'/1729'/0'/0'" : _ref23$path, _ref23$curve = _ref23.curve, curve = _ref23$curve === void 0 ? 0x00 : _ref23$curve;
               publicKeyHash = keys && keys.pkh;
 
               if (!useLedger) {
-                _context9.next = 9;
+                _context10.next = 9;
                 break;
               }
 
-              _context9.next = 6;
+              _context10.next = 6;
               return ledger.getAddress({
                 path: path,
                 curve: curve
               });
 
             case 6:
-              _ref24 = _context9.sent;
+              _ref24 = _context10.sent;
               address = _ref24.address;
               publicKeyHash = address;
 
@@ -22925,7 +23750,7 @@ var rpc = {
                 storage_limit: storageLimit,
                 delegate: publicKeyHash
               };
-              return _context9.abrupt("return", rpc.sendOperation({
+              return _context10.abrupt("return", rpc.sendOperation({
                 from: publicKeyHash,
                 operation: operation,
                 keys: keys
@@ -22937,13 +23762,13 @@ var rpc = {
 
             case 11:
             case "end":
-              return _context9.stop();
+              return _context10.stop();
           }
         }
-      }, _callee9, this);
+      }, _callee10, this);
     }));
 
-    function registerDelegate(_x6) {
+    function registerDelegate(_x8) {
       return _registerDelegate.apply(this, arguments);
     }
 
@@ -23010,6 +23835,15 @@ var contract = {
         gasLimit = _ref25$gasLimit === void 0 ? '10000' : _ref25$gasLimit,
         _ref25$storageLimit = _ref25.storageLimit,
         storageLimit = _ref25$storageLimit === void 0 ? '10000' : _ref25$storageLimit;
+
+    var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref26$useLedger = _ref26.useLedger,
+        useLedger = _ref26$useLedger === void 0 ? false : _ref26$useLedger,
+        _ref26$path = _ref26.path,
+        path = _ref26$path === void 0 ? "44'/1729'/0'/0'" : _ref26$path,
+        _ref26$curve = _ref26.curve,
+        curve = _ref26$curve === void 0 ? 0x00 : _ref26$curve;
+
     return rpc.originate({
       keys: keys,
       amount: amount,
@@ -23021,6 +23855,10 @@ var contract = {
       fee: fee,
       gasLimit: gasLimit,
       storageLimit: storageLimit
+    }, {
+      useLedger: useLedger,
+      path: path,
+      curve: curve
     });
   },
   storage: function storage(contractAddress) {
@@ -23050,30 +23888,30 @@ var contract = {
     storageCheck();
     return setInterval(storageCheck, timeout * 1000);
   },
-  send: function send(_ref26) {
-    var to = _ref26.to,
-        from = _ref26.from,
-        keys = _ref26.keys,
-        amount = _ref26.amount,
-        parameter = _ref26.parameter,
-        _ref26$fee = _ref26.fee,
-        fee = _ref26$fee === void 0 ? DEFAULT_FEE : _ref26$fee,
-        _ref26$gasLimit = _ref26.gasLimit,
-        gasLimit = _ref26$gasLimit === void 0 ? '2000' : _ref26$gasLimit,
-        _ref26$storageLimit = _ref26.storageLimit,
-        storageLimit = _ref26$storageLimit === void 0 ? '0' : _ref26$storageLimit,
-        _ref26$mutez = _ref26.mutez,
-        mutez = _ref26$mutez === void 0 ? false : _ref26$mutez,
-        _ref26$rawParam = _ref26.rawParam,
-        rawParam = _ref26$rawParam === void 0 ? false : _ref26$rawParam;
+  send: function send(_ref27) {
+    var to = _ref27.to,
+        from = _ref27.from,
+        keys = _ref27.keys,
+        amount = _ref27.amount,
+        parameter = _ref27.parameter,
+        _ref27$fee = _ref27.fee,
+        fee = _ref27$fee === void 0 ? DEFAULT_FEE : _ref27$fee,
+        _ref27$gasLimit = _ref27.gasLimit,
+        gasLimit = _ref27$gasLimit === void 0 ? '2000' : _ref27$gasLimit,
+        _ref27$storageLimit = _ref27.storageLimit,
+        storageLimit = _ref27$storageLimit === void 0 ? '0' : _ref27$storageLimit,
+        _ref27$mutez = _ref27.mutez,
+        mutez = _ref27$mutez === void 0 ? false : _ref27$mutez,
+        _ref27$rawParam = _ref27.rawParam,
+        rawParam = _ref27$rawParam === void 0 ? false : _ref27$rawParam;
 
-    var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref27$useLedger = _ref27.useLedger,
-        useLedger = _ref27$useLedger === void 0 ? false : _ref27$useLedger,
-        _ref27$path = _ref27.path,
-        path = _ref27$path === void 0 ? "44'/1729'/0'/0'" : _ref27$path,
-        _ref27$curve = _ref27.curve,
-        curve = _ref27$curve === void 0 ? 0x00 : _ref27$curve;
+    var _ref28 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref28$useLedger = _ref28.useLedger,
+        useLedger = _ref28$useLedger === void 0 ? false : _ref28$useLedger,
+        _ref28$path = _ref28.path,
+        path = _ref28$path === void 0 ? "44'/1729'/0'/0'" : _ref28$path,
+        _ref28$curve = _ref28.curve,
+        curve = _ref28$curve === void 0 ? 0x00 : _ref28$curve;
 
     return rpc.transfer({
       from: from,
@@ -23107,7 +23945,8 @@ var sotez = {
   node: node,
   rpc: rpc,
   contract: contract,
-  ledger: ledger
+  ledger: ledger,
+  tezos: tezos
 };
 module.exports = sotez;
 

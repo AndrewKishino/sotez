@@ -424,7 +424,13 @@ const ledger = {
   } = {}) => {
     const transport = await LedgerTransport.create();
     const tezosLedger = new LedgerApp(transport);
-    const publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
+    let publicKey;
+    try {
+      publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
+    } catch (e) {
+      transport.close();
+      return e;
+    }
     transport.close();
     return publicKey;
   },
@@ -435,16 +441,677 @@ const ledger = {
   } = {}) => {
     const transport = await LedgerTransport.create();
     const tezosLedger = new LedgerApp(transport);
-    const { signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve);
+    let signature;
+    try {
+      ({ signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve));
+    } catch (e) {
+      transport.close();
+      return e;
+    }
     transport.close();
     return { signature };
   },
   getVersion: async () => {
     const transport = await LedgerTransport.create();
     const tezosLedger = new LedgerApp(transport);
-    const versionInfo = await tezosLedger.getVersion();
+    let versionInfo;
+    try {
+      versionInfo = await tezosLedger.getVersion();
+    } catch (e) {
+      transport.close();
+      return e;
+    }
     transport.close();
     return versionInfo;
+  },
+};
+
+const forgeMappings = {
+  /* eslint-disable */
+  opMapping: {
+    '00': 'parameter',
+    '01': 'storage',
+    '02': 'code',
+    '03': 'False',
+    '04': 'Elt',
+    '05': 'Left',
+    '06': 'None',
+    '07': 'Pair',
+    '08': 'Right',
+    '09': 'Some',
+    '0A': 'True',
+    '0B': 'Unit',
+    '0C': 'PACK',
+    '0D': 'UNPACK',
+    '0E': 'BLAKE2B',
+    '0F': 'SHA256',
+    '10': 'SHA512',
+    '11': 'ABS',
+    '12': 'ADD',
+    '13': 'AMOUNT',
+    '14': 'AND',
+    '15': 'BALANCE',
+    '16': 'CAR',
+    '17': 'CDR',
+    '18': 'CHECK_SIGNATURE',
+    '19': 'COMPARE',
+    '1A': 'CONCAT',
+    '1B': 'CONS',
+    '1C': 'CREATE_ACCOUNT',
+    '1D': 'CREATE_CONTRACT',
+    '1E': 'IMPLICIT_ACCOUNT',
+    '1F': 'DIP',
+    '20': 'DROP',
+    '21': 'DUP',
+    '22': 'EDIV',
+    '23': 'EMPTY_MAP',
+    '24': 'EMPTY_SET',
+    '25': 'EQ',
+    '26': 'EXEC',
+    '27': 'FAILWITH',
+    '28': 'GE',
+    '29': 'GET',
+    '2A': 'GT',
+    '2B': 'HASH_KEY',
+    '2C': 'IF',
+    '2D': 'IF_CONS',
+    '2E': 'IF_LEFT',
+    '2F': 'IF_NONE',
+    '30': 'INT',
+    '31': 'LAMBDA',
+    '32': 'LE',
+    '33': 'LEFT',
+    '34': 'LOOP',
+    '35': 'LSL',
+    '36': 'LSR',
+    '37': 'LT',
+    '38': 'MAP',
+    '39': 'MEM',
+    '3A': 'MUL',
+    '3B': 'NEG',
+    '3C': 'NEQ',
+    '3D': 'NIL',
+    '3E': 'NONE',
+    '3F': 'NOT',
+    '40': 'NOW',
+    '41': 'OR',
+    '42': 'PAIR',
+    '43': 'PUSH',
+    '44': 'RIGHT',
+    '45': 'SIZE',
+    '46': 'SOME',
+    '47': 'SOURCE',
+    '48': 'SENDER',
+    '49': 'SELF',
+    '4A': 'STEPS_TO_QUOTA',
+    '4B': 'SUB',
+    '4C': 'SWAP',
+    '4D': 'TRANSFER_TOKENS',
+    '4E': 'SET_DELEGATE',
+    '4F': 'UNIT',
+    '50': 'UPDATE',
+    '51': 'XOR',
+    '52': 'ITER',
+    '53': 'LOOP_LEFT',
+    '54': 'ADDRESS',
+    '55': 'CONTRACT',
+    '56': 'ISNAT',
+    '57': 'CAST',
+    '58': 'RENAME',
+    '59': 'bool',
+    '5A': 'contract',
+    '5B': 'int',
+    '5C': 'key',
+    '5D': 'key_hash',
+    '5E': 'lambda',
+    '5F': 'list',
+    '60': 'map',
+    '61': 'big_map',
+    '62': 'nat',
+    '63': 'option',
+    '64': 'or',
+    '65': 'pair',
+    '66': 'set',
+    '67': 'signature',
+    '68': 'string',
+    '69': 'bytes',
+    '6A': 'mutez',
+    '6B': 'timestamp',
+    '6C': 'unit',
+    '6D': 'operation',
+    '6E': 'address',
+    '6F': 'SLICE',
+  },
+  /* eslint-enable */
+  opMappingReverse: {
+    SHA512: '10',
+    ABS: '11',
+    ADD: '12',
+    AMOUNT: '13',
+    AND: '14',
+    BALANCE: '15',
+    CAR: '16',
+    CDR: '17',
+    CHECK_SIGNATURE: '18',
+    COMPARE: '19',
+    DROP: '20',
+    DUP: '21',
+    EDIV: '22',
+    EMPTY_MAP: '23',
+    EMPTY_SET: '24',
+    EQ: '25',
+    EXEC: '26',
+    FAILWITH: '27',
+    GE: '28',
+    GET: '29',
+    INT: '30',
+    LAMBDA: '31',
+    LE: '32',
+    LEFT: '33',
+    LOOP: '34',
+    LSL: '35',
+    LSR: '36',
+    LT: '37',
+    MAP: '38',
+    MEM: '39',
+    NOW: '40',
+    OR: '41',
+    PAIR: '42',
+    PUSH: '43',
+    RIGHT: '44',
+    SIZE: '45',
+    SOME: '46',
+    SOURCE: '47',
+    SENDER: '48',
+    SELF: '49',
+    UPDATE: '50',
+    XOR: '51',
+    ITER: '52',
+    LOOP_LEFT: '53',
+    ADDRESS: '54',
+    CONTRACT: '55',
+    ISNAT: '56',
+    CAST: '57',
+    RENAME: '58',
+    bool: '59',
+    map: '60',
+    big_map: '61',
+    nat: '62',
+    option: '63',
+    or: '64',
+    pair: '65',
+    set: '66',
+    signature: '67',
+    string: '68',
+    bytes: '69',
+    parameter: '00',
+    storage: '01',
+    code: '02',
+    False: '03',
+    Elt: '04',
+    Left: '05',
+    None: '06',
+    Pair: '07',
+    Right: '08',
+    Some: '09',
+    True: '0A',
+    Unit: '0B',
+    PACK: '0C',
+    UNPACK: '0D',
+    BLAKE2B: '0E',
+    SHA256: '0F',
+    CONCAT: '1A',
+    CONS: '1B',
+    CREATE_ACCOUNT: '1C',
+    CREATE_CONTRACT: '1D',
+    IMPLICIT_ACCOUNT: '1E',
+    DIP: '1F',
+    GT: '2A',
+    HASH_KEY: '2B',
+    IF: '2C',
+    IF_CONS: '2D',
+    IF_LEFT: '2E',
+    IF_NONE: '2F',
+    MUL: '3A',
+    NEG: '3B',
+    NEQ: '3C',
+    NIL: '3D',
+    NONE: '3E',
+    NOT: '3F',
+    STEPS_TO_QUOTA: '4A',
+    SUB: '4B',
+    SWAP: '4C',
+    TRANSFER_TOKENS: '4D',
+    SET_DELEGATE: '4E',
+    UNIT: '4F',
+    contract: '5A',
+    int: '5B',
+    key: '5C',
+    key_hash: '5D',
+    lambda: '5E',
+    list: '5F',
+    mutez: '6A',
+    timestamp: '6B',
+    unit: '6C',
+    operation: '6D',
+    address: '6E',
+    SLICE: '6F',
+  },
+  primMapping: {
+    '00': 'int',
+    '01': 'string',
+    '02': 'seq',
+    '03': { name: 'prim', len: 0, annots: false },
+    '04': { name: 'prim', len: 0, annots: true },
+    '05': { name: 'prim', len: 1, annots: false },
+    '06': { name: 'prim', len: 1, annots: true },
+    '07': { name: 'prim', len: 2, annots: false },
+    '08': { name: 'prim', len: 2, annots: true },
+    '09': { name: 'prim', len: 3, annots: true },
+    '0A': 'bytes',
+  },
+  primMappingReverse: {
+    0: {
+      false: '03',
+      true: '04',
+    },
+    1: {
+      false: '05',
+      true: '06',
+    },
+    2: {
+      false: '07',
+      true: '08',
+    },
+    3: {
+      true: '09',
+    },
+  },
+  forgeOpTags: {
+    endorsement: 0,
+    seed_nonce_revelation: 1,
+    double_endorsement_evidence: 2,
+    double_baking_evidence: 3,
+    activate_account: 4,
+    proposals: 5,
+    ballot: 6,
+    reveal: 7,
+    transaction: 8,
+    origination: 9,
+    delegation: 10,
+  },
+};
+
+const toBytesInt32 = (num) => {
+  num = parseInt(num, 10);
+  const arr = new Uint8Array([
+    (num & 0xff000000) >> 24,
+    (num & 0x00ff0000) >> 16,
+    (num & 0x0000ff00) >> 8,
+    (num & 0x000000ff),
+  ]);
+  return arr.buffer;
+};
+
+const toBytesInt32Hex = num => utility.buf2hex(toBytesInt32(num));
+
+const forgeBool = b => (b ? 'ff' : '00');
+
+const forgeScript = (s) => {
+  const t1 = tezos.encodeRawBytes(s.code).toLowerCase();
+  const t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
+  return toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2;
+};
+
+const forgeParameters = (p) => {
+  const t = tezos.encodeRawBytes(p).toLowerCase();
+  return toBytesInt32Hex(t.length / 2) + t;
+};
+
+const forgePublicKeyHash = (pkh) => {
+  let fpkh;
+  const t = parseInt(pkh.substr(2, 1), 10);
+  fpkh = `0${(t - 1).toString()}`;
+  fpkh += utility.buf2hex(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
+  return fpkh;
+};
+
+const forgeAddress = (a) => {
+  let fa;
+  if (a.substr(0, 1) === 'K') {
+    fa = '01';
+    fa += utility.buf2hex(utility.b58cdecode(a, prefix.KT));
+    fa += '00';
+  } else {
+    fa = '00';
+    fa += forgePublicKeyHash(a);
+  }
+  return fa;
+};
+
+const forgeZarith = (n) => {
+  let fn = '';
+  n = parseInt(n, 10);
+  while (true) { // eslint-disable-line
+    if (n < 128) {
+      if (n < 16) fn += '0';
+      fn += n.toString(16);
+      break;
+    } else {
+      let b = (n % 128);
+      n -= b;
+      n /= 128;
+      b += 128;
+      fn += b.toString(16);
+    }
+  }
+  return fn;
+};
+
+const forgePublicKey = (pk) => {
+  let fpk;
+  // let t;
+  switch (pk.substr(0, 2)) {
+    case 'ed': fpk = '00'; break;
+    case 'sp': fpk = '01'; break;
+    case 'p2': fpk = '02'; break;
+    default: break;
+  }
+  fpk += utility.buf2hex(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
+  return fpk;
+};
+
+/* eslint-disable */
+const forgeOp = (op) => {
+  let fop;
+  fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
+  switch (forgeMappings.forgeOpTags[op.kind]) {
+    case 0:
+    case 1:
+      fop += utility.buf2hex(toBytesInt32(op.level));
+      if (forgeMappings.forgeOpTags[op.kind] === 0) break;
+      fop += op.nonce;
+      if (forgeMappings.forgeOpTags[op.kind] === 1) break;
+    case 2:
+    case 3:
+      throw new Error('Double bake and double endorse forging is not complete');
+      if (forgeMappings.forgeOpTags[op.kind] === 2) break;
+      if (forgeMappings.forgeOpTags[op.kind] === 3) break;
+    case 4:
+      fop += utility.buf2hex(utility.b58cdecode(op.pkh, prefix.tz1));
+      fop += op.secret;
+      if (forgeMappings.forgeOpTags[op.kind] === 4) break;
+    case 5:
+    case 6:
+      fop += forgePublicKeyHash(op.source);
+      fop += utility.buf2hex(toBytesInt32(op.period));
+      if (forgeMappings.forgeOpTags[op.kind] === 5) {
+        throw new Error('Proposal forging is not complete');
+        break;
+      } else if (forgeMappings.forgeOpTags[op.kind] === 6) {
+        fop += utility.buf2hex(utility.b58cdecode(op.proposal, prefix.P));
+        let ballot;
+        if (op.ballot === 'yay') {
+          ballot = '00';
+        } else if (op.ballot === 'nay') {
+          ballot = '01';
+        } else {
+          ballot = '02';
+        }
+        fop += ballot;
+        break;
+      }
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+      fop += forgeAddress(op.source);
+      fop += forgeZarith(op.fee);
+      fop += forgeZarith(op.counter);
+      fop += forgeZarith(op.gas_limit);
+      fop += forgeZarith(op.storage_limit);
+      if (forgeMappings.forgeOpTags[op.kind] === 7) {
+        fop += forgePublicKey(op.public_key);
+      } else if (forgeMappings.forgeOpTags[op.kind] === 8) {
+        fop += forgeZarith(op.amount);
+        fop += forgeAddress(op.destination);
+        if (typeof op.parameters !== 'undefined' && op.parameters) {
+          fop += forgeBool(true);
+          fop += forgeParameters(op.parameters);
+        } else {
+          fop += forgeBool(false);
+        }
+      } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
+        fop += forgePublicKeyHash(op.managerPubkey);
+        fop += forgeZarith(op.balance);
+        fop += forgeBool(op.spendable);
+        fop += forgeBool(op.delegatable);
+        if (typeof op.delegate !== 'undefined' && op.delegate) {
+          fop += forgeBool(true);
+          fop += forgePublicKeyHash(op.delegate);
+        } else {
+          fop += forgeBool(false);
+        }
+        if (typeof op.script !== 'undefined' && op.script) {
+          fop += forgeBool(true);
+          fop += forgeScript(op.script);
+        } else {
+          fop += forgeBool(false);
+        }
+      } else if (forgeMappings.forgeOpTags[op.kind] === 10) {
+        if (typeof op.delegate !== 'undefined' && op.delegate) {
+          fop += forgeBool(true);
+          fop += forgePublicKeyHash(op.delegate);
+        } else {
+          fop += forgeBool(false);
+        }
+      }
+      break;
+    default:
+      break;
+  }
+  return fop;
+};
+/* eslint-enable */
+
+const tezos = {
+  forge: async (head, opOb, debug = false) => {
+    let remoteForgedBytes;
+
+    if (debug) {
+      remoteForgedBytes = await node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
+    }
+
+    let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
+    opOb.contents.forEach((content) => {
+      localForgedBytes += forgeOp(content);
+    });
+
+    if (debug) {
+      console.log('FORGE VALIDATION TEST START');
+      console.log(opOb);
+      console.log(remoteForgedBytes);
+      console.log(localForgedBytes);
+      console.log('FORGE VALIDATION TEST END');
+      if (localForgedBytes === remoteForgedBytes) {
+        return remoteForgedBytes;
+      }
+      throw new Error('Forge validatione error - local and remote bytes don\'t match');
+    }
+
+    return localForgedBytes;
+  },
+  decodeRawBytes: (bytes) => {
+    bytes = bytes.toUpperCase();
+
+    let index = 0;
+    const read = len => bytes.slice(index, index + len);
+
+    const rec = () => {
+      const b = read(2);
+      const prim = forgeMappings.primMapping[b];
+
+      if (prim instanceof Object) {
+        index += 2;
+        const op = forgeMappings.opMapping[read(2)];
+        index += 2;
+        const args = [...Array(prim.len)];
+        const result = {
+          prim: op,
+          args: args.map(() => rec()),
+          annots: undefined,
+        };
+        if (!prim.len) {
+          delete result.args;
+        }
+        if (prim.annots) {
+          const annotsLen = parseInt(read(8), 16) * 2;
+          index += 8;
+          const stringHexLst = read(annotsLen).match(/[\dA-F]{2}/g);
+          index += annotsLen;
+          if (stringHexLst) {
+            const stringBytes = new Uint8Array(stringHexLst.map(x => parseInt(x, 16)));
+            const stringResult = new TextDecoder('utf-8').decode(stringBytes);
+            result.annots = stringResult.split(' ');
+          }
+        } else {
+          delete result.annots;
+        }
+        return result;
+      }
+
+      if (b === '0A') {
+        index += 2;
+        const len = read(8);
+        index += 8;
+        const intLen = parseInt(len, 16) * 2;
+        const data = read(intLen);
+        index += intLen;
+        return { bytes: data };
+      }
+
+      if (b === '01') {
+        index += 2;
+        const len = read(8);
+        index += 8;
+        const intLen = parseInt(len, 16) * 2;
+        const data = read(intLen);
+        index += intLen;
+
+        const matchResult = data.match(/[\dA-F]{2}/g);
+        if (matchResult instanceof Array) {
+          const stringRaw = new Uint8Array(matchResult.map(x => parseInt(x, 16)));
+          return { string: new TextDecoder('utf-8').decode(stringRaw) };
+        }
+
+        throw new Error('Input bytes error');
+      }
+
+      if (b === '00') {
+        index += 2;
+        const firstBytes = parseInt(read(2), 16).toString(2).padStart(8, '0');
+        index += 2;
+        // const isPositive = firstBytes[1] === '0';
+        const validBytes = [firstBytes.slice(2)];
+        let checknext = firstBytes[0] === '1';
+
+        while (checknext) {
+          const bytesCheck = parseInt(read(2), 16).toString(2).padStart(8, '0');
+          index += 2;
+          validBytes.push(bytesCheck.slice(1));
+          checknext = bytesCheck[0] === '1';
+        }
+
+        const num = new BN(validBytes.reverse().join(''), 2);
+        return { int: num.toString() };
+      }
+
+      if (b === '02') {
+        index += 2;
+        const len = read(8);
+        index += 8;
+        const intLen = parseInt(len, 16) * 2;
+        // const data = read(intLen);
+        const limit = index + intLen;
+
+        const seqLst = [];
+        while (limit > index) {
+          seqLst.push(rec());
+        }
+        return seqLst;
+      }
+      throw new Error(`Invalid raw bytes: Byte:${b} Index:${index}`);
+    };
+
+    return rec();
+  },
+  encodeRawBytes: (input) => {
+    const rec = (inputArg) => {
+      const result = [];
+
+      if (inputArg instanceof Array) {
+        result.push('02');
+        const bytes = inputArg.map(x => rec(x)).join('');
+        const len = bytes.length / 2;
+        result.push(len.toString(16).padStart(8, '0'));
+        result.push(bytes);
+      } else if (inputArg instanceof Object) {
+        if (inputArg.prim) {
+          const argsLen = inputArg.args ? inputArg.args.length : 0;
+          result.push(forgeMappings.primMappingReverse[argsLen][!!inputArg.annots]);
+          result.push(forgeMappings.opMappingReverse[inputArg.prim]);
+          if (inputArg.args) {
+            inputArg.args.forEach(arg => result.push(rec(arg)));
+          }
+          if (inputArg.annots) {
+            const annotsBytes = inputArg.annots.map(x => utility.buf2hex(new TextEncoder().encode(x))).join('20');
+            result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
+            result.push(annotsBytes);
+          }
+        } else if (inputArg.bytes) {
+          const len = inputArg.bytes.length / 2;
+          result.push('0A');
+          result.push(len.toString(16).padStart(8, '0'));
+          result.push(inputArg.bytes);
+        } else if (inputArg.int) {
+          const num = new BN(inputArg.int, 10);
+          const positiveMark = num.toString(2)[0] === '-' ? '1' : '0';
+          const binary = num.toString(2).replace('-', '');
+
+          let pad;
+          if (binary.length <= 6) {
+            pad = 6;
+          } else if ((binary.length - 6) % 7) {
+            pad = (binary.length + 7 - (binary.length - 6)) % 7;
+          } else {
+            pad = binary.length;
+          }
+
+          const splitted = binary.padStart(pad, '0').match(/\d{6,7}/g);
+          const reversed = splitted.reverse();
+
+          reversed[0] = positiveMark + reversed[0];
+          const numHex = reversed.map((x, i) => (
+            parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2)
+              .toString(16)
+              .padStart(2, '0')
+          ).join(''));
+
+          result.push('00');
+          result.push(numHex);
+        } else if (inputArg.string) {
+          const stringBytes = new TextEncoder().encode(inputArg.string);
+          const stringHex = [].slice.call(stringBytes).map(x => x.toString(16).padStart(2, '0')).join('');
+          const len = stringBytes.length;
+          result.push('01');
+          result.push(len.toString(16).padStart(8, '0'));
+          result.push(stringHex);
+        }
+      }
+      return result.join('');
+    };
+
+    return rec(input).toUpperCase();
   },
 };
 
@@ -593,7 +1260,7 @@ const rpc = {
         contents: constructOps(),
       };
 
-      return node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
+      return tezos.forge(head, opOb);
     })
       .then(async (opbytes) => {
         if (useLedger) {
@@ -867,7 +1534,11 @@ const contract = {
     fee = DEFAULT_FEE,
     gasLimit = '10000',
     storageLimit = '10000',
-  }) => (
+  }, {
+    useLedger = false,
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  } = {}) => (
     rpc.originate({
       keys,
       amount,
@@ -879,7 +1550,7 @@ const contract = {
       fee,
       gasLimit,
       storageLimit,
-    })
+    }, { useLedger, path, curve })
   ),
   storage: contractAddress => (
     new Promise((resolve, reject) => (
@@ -949,6 +1620,7 @@ const sotez = {
   rpc,
   contract,
   ledger,
+  tezos,
 };
 
 module.exports = sotez;

@@ -1129,7 +1129,7 @@ tezos.encodeRawBytes = (input) => {
           parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2)
             .toString(16)
             .padStart(2, '0')
-        ).join(''));
+        )).join('');
 
         result.push('00');
         result.push(numHex);

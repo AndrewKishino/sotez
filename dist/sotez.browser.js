@@ -23235,8 +23235,8 @@ tezos.encodeRawBytes = function (input) {
         var reversed = splitted.reverse();
         reversed[0] = positiveMark + reversed[0];
         var numHex = reversed.map(function (x, i) {
-          return parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2).toString(16).padStart(2, '0').join('');
-        });
+          return parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2).toString(16).padStart(2, '0');
+        }).join('');
         result.push('00');
         result.push(numHex);
       } else if (inputArg.string) {

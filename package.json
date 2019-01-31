@@ -28,6 +28,7 @@
     "bs58check": "^2.1.2",
     "buffer": "^5.2.0",
     "detect-node": "^2.0.4",
+    "isomorphic-textencoder": "^1.0.1",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
     "xhr2": "^0.1.4"

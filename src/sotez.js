@@ -1,12 +1,13 @@
-const XMLHttpRequest = XMLHttpRequest || require('xhr2');
-const Buffer = Buffer || require('buffer/').Buffer;
+if (typeof Buffer === 'undefined') Buffer = require('buffer/').Buffer;
+if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2');
 
 const bs58check = require('bs58check');
 const sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
 const pbkdf2 = require('pbkdf2');
-const BN = require('bignumber.js');
+const { BigNumber } = require('bignumber.js');
 const isNode = require('detect-node');
+const { encode } = require('isomorphic-textencoder');
 
 if (isNode) {
   global.__non_webpack_require__ = require;
@@ -62,17 +63,17 @@ const watermark = {
 
 const utility = {};
 utility.b582int = (v) => {
-  let rv = new BN(0);
+  let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   for (let i = 0; i < v.length; i++) {
-    rv = rv.plus(new BN(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BN(alpha.length).exponentiatedBy(i))));
+    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i))));
   }
   return rv.toString(16);
 };
 
 utility.totez = m => parseInt(m, 10) / 1000000;
 
-utility.mutez = tz => new BN(new BN(tz).toFixed(6)).multipliedBy(1000000).toString();
+utility.mutez = tz => new BigNumber(new BigNumber(tz).toFixed(6)).multipliedBy(1000000).toString();
 
 utility.b58cencode = (payload, prefixArg) => {
   const n = new Uint8Array(prefixArg.length + payload.length);
@@ -967,7 +968,7 @@ tezos.forge = async (head, opOb, debug = false) => {
     if (localForgedBytes === remoteForgedBytes) {
       return remoteForgedBytes;
     }
-    throw new Error('Forge validatione error - local and remote bytes don\'t match');
+    throw new Error('Forge validation error - local and remote bytes don\'t match');
   }
 
   return localForgedBytes;
@@ -1054,7 +1055,7 @@ tezos.decodeRawBytes = (bytes) => {
         checknext = bytesCheck[0] === '1';
       }
 
-      const num = new BN(validBytes.reverse().join(''), 2);
+      const num = new BigNumber(validBytes.reverse().join(''), 2);
       return { int: num.toString() };
     }
 
@@ -1097,7 +1098,7 @@ tezos.encodeRawBytes = (input) => {
           inputArg.args.forEach(arg => result.push(rec(arg)));
         }
         if (inputArg.annots) {
-          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(new TextEncoder().encode(x))).join('20');
+          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(encode(x))).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
@@ -1107,7 +1108,7 @@ tezos.encodeRawBytes = (input) => {
         result.push(len.toString(16).padStart(8, '0'));
         result.push(inputArg.bytes);
       } else if (inputArg.int) {
-        const num = new BN(inputArg.int, 10);
+        const num = new BigNumber(inputArg.int, 10);
         const positiveMark = num.toString(2)[0] === '-' ? '1' : '0';
         const binary = num.toString(2).replace('-', '');
 
@@ -1133,7 +1134,7 @@ tezos.encodeRawBytes = (input) => {
         result.push('00');
         result.push(numHex);
       } else if (inputArg.string) {
-        const stringBytes = new TextEncoder().encode(inputArg.string);
+        const stringBytes = encode(inputArg.string);
         const stringHex = [].slice.call(stringBytes).map(x => x.toString(16).padStart(2, '0')).join('');
         const len = stringBytes.length;
         result.push('01');
@@ -1386,7 +1387,7 @@ rpc.transfer = ({
     fee: `${fee}`,
     gas_limit: gasLimit,
     storage_limit: storageLimit,
-    amount: mutez ? amount : `${utility.mutez(amount)}`,
+    amount: mutez ? `${utility.mutez(amount)}` : `${amount}`,
     destination: to,
   };
   if (parameter) {
@@ -1628,8 +1629,8 @@ contract.send = ({
   amount,
   parameter,
   fee = DEFAULT_FEE,
-  gasLimit = '2000',
-  storageLimit = '0',
+  gasLimit = '400000',
+  storageLimit = '60000',
   mutez = false,
   rawParam = false,
 }, {

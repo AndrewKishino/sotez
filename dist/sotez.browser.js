@@ -300,8 +300,8 @@ module.exports = function (it) {
 
 
 
-var base64 = __webpack_require__(360)
-var ieee754 = __webpack_require__(361)
+var base64 = __webpack_require__(359)
+var ieee754 = __webpack_require__(360)
 var isArray = __webpack_require__(153)
 
 exports.Buffer = Buffer
@@ -21760,7 +21760,7 @@ for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++
 /* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+/* WEBPACK VAR INJECTION */(function(Buffer, global) {function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
@@ -21780,9 +21780,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var XMLHttpRequest = XMLHttpRequest || __webpack_require__(359);
-
-var Buffer = Buffer || __webpack_require__(7).Buffer;
+if (typeof Buffer === 'undefined') Buffer = __webpack_require__(7).Buffer;
+if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = __webpack_require__(361);
 
 var bs58check = __webpack_require__(154);
 
@@ -21792,18 +21791,22 @@ var bip39 = __webpack_require__(451);
 
 var pbkdf2 = __webpack_require__(79);
 
-var BN = __webpack_require__(461);
+var _require = __webpack_require__(461),
+    BigNumber = _require.BigNumber;
 
 var isNode = __webpack_require__(462);
 
+var _require2 = __webpack_require__(463),
+    encode = _require2.encode;
+
 if (isNode) {
-  global.__non_webpack_require__ = __webpack_require__(463);
+  global.__non_webpack_require__ = __webpack_require__(465);
 }
 
 var LedgerTransport = isNode ? require('@ledgerhq/hw-transport-node-hid').default // eslint-disable-line
-: __webpack_require__(464).default;
+: __webpack_require__(466).default;
 
-var LedgerApp = __webpack_require__(469).default;
+var LedgerApp = __webpack_require__(471).default;
 
 var DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 var DEFAULT_FEE = '1278';
@@ -21843,11 +21846,11 @@ var watermark = {
 var utility = {};
 
 utility.b582int = function (v) {
-  var rv = new BN(0);
+  var rv = new BigNumber(0);
   var alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
   for (var i = 0; i < v.length; i++) {
-    rv = rv.plus(new BN(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BN(alpha.length).exponentiatedBy(i))));
+    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i))));
   }
 
   return rv.toString(16);
@@ -21858,7 +21861,7 @@ utility.totez = function (m) {
 };
 
 utility.mutez = function (tz) {
-  return new BN(new BN(tz).toFixed(6)).multipliedBy(1000000).toString();
+  return new BigNumber(new BigNumber(tz).toFixed(6)).multipliedBy(1000000).toString();
 };
 
 utility.b58cencode = function (payload, prefixArg) {
@@ -23022,7 +23025,7 @@ function () {
             return _context4.abrupt("return", remoteForgedBytes);
 
           case 15:
-            throw new Error('Forge validatione error - local and remote bytes don\'t match');
+            throw new Error('Forge validation error - local and remote bytes don\'t match');
 
           case 16:
             return _context4.abrupt("return", localForgedBytes);
@@ -23145,7 +23148,7 @@ tezos.decodeRawBytes = function (bytes) {
         checknext = bytesCheck[0] === '1';
       }
 
-      var num = new BN(validBytes.reverse().join(''), 2);
+      var num = new BigNumber(validBytes.reverse().join(''), 2);
       return {
         int: num.toString()
       };
@@ -23203,7 +23206,7 @@ tezos.encodeRawBytes = function (input) {
 
         if (inputArg.annots) {
           var annotsBytes = inputArg.annots.map(function (x) {
-            return utility.buf2hex(new TextEncoder().encode(x));
+            return utility.buf2hex(encode(x));
           }).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
@@ -23215,7 +23218,7 @@ tezos.encodeRawBytes = function (input) {
         result.push(_len3.toString(16).padStart(8, '0'));
         result.push(inputArg.bytes);
       } else if (inputArg.int) {
-        var num = new BN(inputArg.int, 10);
+        var num = new BigNumber(inputArg.int, 10);
         var positiveMark = num.toString(2)[0] === '-' ? '1' : '0';
         var binary = num.toString(2).replace('-', '');
         var pad;
@@ -23237,7 +23240,7 @@ tezos.encodeRawBytes = function (input) {
         result.push('00');
         result.push(numHex);
       } else if (inputArg.string) {
-        var stringBytes = new TextEncoder().encode(inputArg.string);
+        var stringBytes = encode(inputArg.string);
         var stringHex = [].slice.call(stringBytes).map(function (x) {
           return x.toString(16).padStart(2, '0');
         }).join('');
@@ -23673,7 +23676,7 @@ rpc.transfer = function (_ref16) {
     fee: "".concat(fee),
     gas_limit: gasLimit,
     storage_limit: storageLimit,
-    amount: mutez ? amount : "".concat(utility.mutez(amount)),
+    amount: mutez ? "".concat(utility.mutez(amount)) : "".concat(amount),
     destination: to
   };
 
@@ -24108,9 +24111,9 @@ contract.send = function (_ref32) {
       _ref32$fee = _ref32.fee,
       fee = _ref32$fee === void 0 ? DEFAULT_FEE : _ref32$fee,
       _ref32$gasLimit = _ref32.gasLimit,
-      gasLimit = _ref32$gasLimit === void 0 ? '2000' : _ref32$gasLimit,
+      gasLimit = _ref32$gasLimit === void 0 ? '400000' : _ref32$gasLimit,
       _ref32$storageLimit = _ref32.storageLimit,
-      storageLimit = _ref32$storageLimit === void 0 ? '0' : _ref32$storageLimit,
+      storageLimit = _ref32$storageLimit === void 0 ? '60000' : _ref32$storageLimit,
       _ref32$mutez = _ref32.mutez,
       mutez = _ref32$mutez === void 0 ? false : _ref32$mutez,
       _ref32$rawParam = _ref32.rawParam,
@@ -24160,17 +24163,10 @@ var sotez = {
   tezos: tezos
 };
 module.exports = sotez;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7).Buffer, __webpack_require__(14)))
 
 /***/ }),
 /* 359 */
-/***/ (function(module, exports) {
-
-module.exports = XMLHttpRequest;
-
-
-/***/ }),
-/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24328,7 +24324,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 361 */
+/* 360 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -24415,6 +24411,13 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
   buffer[offset + i - d] |= s * 128
 }
+
+
+/***/ }),
+/* 361 */
+/***/ (function(module, exports) {
+
+module.exports = XMLHttpRequest;
 
 
 /***/ }),
@@ -37446,6 +37449,31 @@ module.exports = false;
 
 /***/ }),
 /* 463 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Polyfill TextEncoder for MS Edge
+__webpack_require__(464)
+
+module.exports = {
+  encode: string => new TextEncoder().encode(string),
+  decode: buffer => new TextDecoder().decode(buffer)
+};
+
+
+/***/ }),
+/* 464 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {(function(l){function m(b){b=void 0===b?"utf-8":b;if("utf-8"!==b)throw new RangeError("Failed to construct 'TextEncoder': The encoding label provided ('"+b+"') is invalid.");}function k(b,a){b=void 0===b?"utf-8":b;a=void 0===a?{fatal:!1}:a;if("utf-8"!==b)throw new RangeError("Failed to construct 'TextDecoder': The encoding label provided ('"+b+"') is invalid.");if(a.fatal)throw Error("Failed to construct 'TextDecoder': the 'fatal' option is unsupported.");}if(l.TextEncoder&&l.TextDecoder)return!1;
+Object.defineProperty(m.prototype,"encoding",{value:"utf-8"});m.prototype.encode=function(b,a){a=void 0===a?{stream:!1}:a;if(a.stream)throw Error("Failed to encode: the 'stream' option is unsupported.");a=0;for(var h=b.length,f=0,c=Math.max(32,h+(h>>1)+7),e=new Uint8Array(c>>3<<3);a<h;){var d=b.charCodeAt(a++);if(55296<=d&&56319>=d){if(a<h){var g=b.charCodeAt(a);56320===(g&64512)&&(++a,d=((d&1023)<<10)+(g&1023)+65536)}if(55296<=d&&56319>=d)continue}f+4>e.length&&(c+=8,c*=1+a/b.length*2,c=c>>3<<3,
+g=new Uint8Array(c),g.set(e),e=g);if(0===(d&4294967168))e[f++]=d;else{if(0===(d&4294965248))e[f++]=d>>6&31|192;else if(0===(d&4294901760))e[f++]=d>>12&15|224,e[f++]=d>>6&63|128;else if(0===(d&4292870144))e[f++]=d>>18&7|240,e[f++]=d>>12&63|128,e[f++]=d>>6&63|128;else continue;e[f++]=d&63|128}}return e.slice(0,f)};Object.defineProperty(k.prototype,"encoding",{value:"utf-8"});Object.defineProperty(k.prototype,"fatal",{value:!1});Object.defineProperty(k.prototype,"ignoreBOM",{value:!1});k.prototype.decode=
+function(b,a){a=void 0===a?{stream:!1}:a;if(a.stream)throw Error("Failed to decode: the 'stream' option is unsupported.");b=new Uint8Array(b);a=0;for(var h=b.length,f=[];a<h;){var c=b[a++];if(0===c)break;if(0===(c&128))f.push(c);else if(192===(c&224)){var e=b[a++]&63;f.push((c&31)<<6|e)}else if(224===(c&240)){e=b[a++]&63;var d=b[a++]&63;f.push((c&31)<<12|e<<6|d)}else if(240===(c&248)){e=b[a++]&63;d=b[a++]&63;var g=b[a++]&63;c=(c&7)<<18|e<<12|d<<6|g;65535<c&&(c-=65536,f.push(c>>>10&1023|55296),c=56320|
+c&1023);f.push(c)}}return String.fromCharCode.apply(null,f)};l.TextEncoder=m;l.TextDecoder=k})("undefined"!==typeof window?window:"undefined"!==typeof global?global:this);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(14)))
+
+/***/ }),
+/* 465 */
 /***/ (function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -37456,10 +37484,10 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 463;
+webpackEmptyContext.id = 465;
 
 /***/ }),
-/* 464 */
+/* 466 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37473,9 +37501,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _u2fApi = __webpack_require__(465);
+var _u2fApi = __webpack_require__(467);
 
-var _hwTransport = __webpack_require__(468);
+var _hwTransport = __webpack_require__(470);
 
 var _hwTransport2 = _interopRequireDefault(_hwTransport);
 
@@ -37719,15 +37747,15 @@ exports.default = TransportU2F;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7).Buffer))
 
 /***/ }),
-/* 465 */
+/* 467 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-module.exports = __webpack_require__( 466 );
+module.exports = __webpack_require__( 468 );
 
 /***/ }),
-/* 466 */
+/* 468 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37735,7 +37763,7 @@ module.exports = __webpack_require__( 466 );
 
 module.exports = API;
 
-var chromeApi = __webpack_require__( 467 );
+var chromeApi = __webpack_require__( 469 );
 
 // Feature detection (yes really)
 var isBrowser = ( typeof navigator !== 'undefined' ) && !!navigator.userAgent;
@@ -38050,7 +38078,7 @@ makeDefault( 'sign' );
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(14)))
 
 /***/ }),
-/* 467 */
+/* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38463,7 +38491,7 @@ u2f.register = function(registerRequests, signRequests,
 
 
 /***/ }),
-/* 468 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38944,7 +38972,7 @@ exports.default = Transport;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(14), __webpack_require__(7).Buffer))
 
 /***/ }),
-/* 469 */
+/* 471 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38990,7 +39018,7 @@ var _createClass = function () {
 // FIXME drop:
 
 
-var _utils = __webpack_require__(470);
+var _utils = __webpack_require__(472);
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -39134,7 +39162,7 @@ exports.default = Tezos;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7).Buffer))
 
 /***/ }),
-/* 470 */
+/* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39155,7 +39183,7 @@ var _bs58check = __webpack_require__(154);
 
 var _bs58check2 = _interopRequireDefault(_bs58check);
 
-var _blake2b = __webpack_require__(471);
+var _blake2b = __webpack_require__(473);
 
 var _blake2b2 = _interopRequireDefault(_blake2b);
 
@@ -39343,11 +39371,11 @@ var hashPublicKeyToString = function hashPublicKeyToString(publicKey) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7).Buffer))
 
 /***/ }),
-/* 471 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(191)
-var b2wasm = __webpack_require__(472)
+var b2wasm = __webpack_require__(474)
 
 // 64-bit unsigned addition
 // Sets v[a,a+1] += v[b,b+1]
@@ -39662,11 +39690,11 @@ b2wasm.ready(function (err) {
 
 
 /***/ }),
-/* 472 */
+/* 474 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var assert = __webpack_require__(191)
-var wasm = __webpack_require__(473)()
+var wasm = __webpack_require__(475)()
 
 var head = 64
 var freeList = []
@@ -39796,7 +39824,7 @@ function toHex (n) {
 
 
 /***/ }),
-/* 473 */
+/* 475 */
 /***/ (function(module, exports, __webpack_require__) {
 
 

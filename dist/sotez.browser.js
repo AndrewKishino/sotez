@@ -22774,22 +22774,22 @@ forge.toBytesInt32Hex = function (num) {
   return utility.buf2hex(forge.toBytesInt32(num));
 };
 
-forge.forgeBool = function (b) {
+forge.bool = function (b) {
   return b ? 'ff' : '00';
 };
 
-forge.forgeScript = function (s) {
+forge.script = function (s) {
   var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
   var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
   return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
 };
 
-forge.forgeParameters = function (p) {
+forge.parameters = function (p) {
   var t = tezos.encodeRawBytes(p).toLowerCase();
   return forge.toBytesInt32Hex(t.length / 2) + t;
 };
 
-forge.forgePublicKeyHash = function (pkh) {
+forge.publicKeyHash = function (pkh) {
   var fpkh;
   var t = parseInt(pkh.substr(2, 1), 10);
   fpkh = "0".concat((t - 1).toString());
@@ -22797,7 +22797,7 @@ forge.forgePublicKeyHash = function (pkh) {
   return fpkh;
 };
 
-forge.forgeAddress = function (a) {
+forge.address = function (a) {
   var fa;
 
   if (a.substr(0, 1) === 'K') {
@@ -22806,13 +22806,13 @@ forge.forgeAddress = function (a) {
     fa += '00';
   } else {
     fa = '00';
-    fa += forge.forgePublicKeyHash(a);
+    fa += forge.publicKeyHash(a);
   }
 
   return fa;
 };
 
-forge.forgeZarith = function (n) {
+forge.zarith = function (n) {
   var fn = '';
   n = parseInt(n, 10);
 
@@ -22834,7 +22834,7 @@ forge.forgeZarith = function (n) {
   return fn;
 };
 
-forge.forgePublicKey = function (pk) {
+forge.publicKey = function (pk) {
   var fpk; // let t;
 
   switch (pk.substr(0, 2)) {
@@ -22860,7 +22860,7 @@ forge.forgePublicKey = function (pk) {
 /* eslint-disable */
 
 
-forge.forgeOp = function (op) {
+forge.op = function (op) {
   var fop;
   fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
 
@@ -22885,7 +22885,7 @@ forge.forgeOp = function (op) {
 
     case 5:
     case 6:
-      fop += forge.forgePublicKeyHash(op.source);
+      fop += forge.publicKeyHash(op.source);
       fop += utility.buf2hex(forge.toBytesInt32(op.period));
 
       if (forgeMappings.forgeOpTags[op.kind] === 5) {
@@ -22911,49 +22911,49 @@ forge.forgeOp = function (op) {
     case 8:
     case 9:
     case 10:
-      fop += forge.forgeAddress(op.source);
-      fop += forge.forgeZarith(op.fee);
-      fop += forge.forgeZarith(op.counter);
-      fop += forge.forgeZarith(op.gas_limit);
-      fop += forge.forgeZarith(op.storage_limit);
+      fop += forge.address(op.source);
+      fop += forge.zarith(op.fee);
+      fop += forge.zarith(op.counter);
+      fop += forge.zarith(op.gas_limit);
+      fop += forge.zarith(op.storage_limit);
 
       if (forgeMappings.forgeOpTags[op.kind] === 7) {
-        fop += forge.forgePublicKey(op.public_key);
+        fop += forge.publicKey(op.public_key);
       } else if (forgeMappings.forgeOpTags[op.kind] === 8) {
-        fop += forge.forgeZarith(op.amount);
-        fop += forge.forgeAddress(op.destination);
+        fop += forge.zarith(op.amount);
+        fop += forge.address(op.destination);
 
         if (typeof op.parameters !== 'undefined' && op.parameters) {
-          fop += forge.forgeBool(true);
-          fop += forge.forgeParameters(op.parameters);
+          fop += forge.bool(true);
+          fop += forge.parameters(op.parameters);
         } else {
-          fop += forge.forgeBool(false);
+          fop += forge.bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
-        fop += forge.forgePublicKeyHash(op.managerPubkey);
-        fop += forge.forgeZarith(op.balance);
-        fop += forge.forgeBool(op.spendable);
-        fop += forge.forgeBool(op.delegatable);
+        fop += forge.publicKeyHash(op.managerPubkey);
+        fop += forge.zarith(op.balance);
+        fop += forge.bool(op.spendable);
+        fop += forge.bool(op.delegatable);
 
         if (typeof op.delegate !== 'undefined' && op.delegate) {
-          fop += forge.forgeBool(true);
-          fop += forge.forgePublicKeyHash(op.delegate);
+          fop += forge.bool(true);
+          fop += forge.publicKeyHash(op.delegate);
         } else {
-          fop += forge.forgeBool(false);
+          fop += forge.bool(false);
         }
 
         if (typeof op.script !== 'undefined' && op.script) {
-          fop += forge.forgeBool(true);
-          fop += forge.forgeScript(op.script);
+          fop += forge.bool(true);
+          fop += forge.script(op.script);
         } else {
-          fop += forge.forgeBool(false);
+          fop += forge.bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 10) {
         if (typeof op.delegate !== 'undefined' && op.delegate) {
-          fop += forge.forgeBool(true);
-          fop += forge.forgePublicKeyHash(op.delegate);
+          fop += forge.bool(true);
+          fop += forge.publicKeyHash(op.delegate);
         } else {
-          fop += forge.forgeBool(false);
+          fop += forge.bool(false);
         }
       }
 
@@ -23000,7 +23000,7 @@ function () {
           case 5:
             localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
             opOb.contents.forEach(function (content) {
-              localForgedBytes += forge.forgeOp(content);
+              localForgedBytes += forge.op(content);
             });
 
             if (!debug) {

@@ -19,7 +19,7 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['@babel/polyfill', './src/sotez.browser.js'],
+    main: ['@babel/polyfill', './src/sotez.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

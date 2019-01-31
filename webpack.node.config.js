@@ -21,7 +21,7 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['@babel/polyfill', './src/sotez.node.js'],
+    main: ['@babel/polyfill', './src/sotez.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

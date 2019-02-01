@@ -750,6 +750,7 @@ Ex:
 
 ```js
 crypto.extractKeys('edsk...')
+  .then(keys => console.log(keys));
 ```
 
 ### <a name="generateMnemonic"></a>generateMnemonic

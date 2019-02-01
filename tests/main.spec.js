@@ -1,6 +1,6 @@
 describe('main', () => {
   describe('utility', () => {
-    const main = require('../src/sotez.node');
+    const main = require('../src/sotez');
     const { utility } = main;
 
     test('mintotz', () => {
@@ -45,21 +45,21 @@ describe('main', () => {
       expect(utility.sexp2mic('"456"')).toEqual({ string: '456' });
     });
 
-    test('mic2arr', () => {
+    xtest('mic2arr', () => {
       // todo
     });
 
-    test('ml2mic', () => {
+    xtest('ml2mic', () => {
       // todo
     });
 
-    test('formatMoney', () => {
+    xtest('formatMoney', () => {
       // todo
     });
   });
 
   describe('crypto', () => {
-    const main = require('../src/sotez.node');
+    const main = require('../src/sotez');
     const { crypto } = main;
 
     test('generateMnemonic', () => {
@@ -67,19 +67,19 @@ describe('main', () => {
       expect(string.split(' ')).toHaveLength(15);
     });
 
-    test('checkAddress', () => {
+    xtest('checkAddress', () => {
       // todo
     });
 
-    test('generateKeysNoSeed', () => {
-      const keys = crypto.generateKeysNoSeed();
+    test('generateKeysNoSeed', async () => {
+      const keys = await crypto.generateKeysNoSeed();
       expect(typeof keys.pk).toBe('string');
       expect(typeof keys.sk).toBe('string');
       expect(typeof keys.pkh).toBe('string');
     });
 
-    test('generateKeys', () => {
-      const keys = crypto.generateKeys('test', 'p');
+    test('generateKeys', async () => {
+      const keys = await crypto.generateKeys('test', 'p');
       expect(typeof keys.mnemonic).toBe('string');
       expect(typeof keys.passphrase).toBe('string');
       expect(typeof keys.pk).toBe('string');
@@ -87,8 +87,8 @@ describe('main', () => {
       expect(typeof keys.pkh).toBe('string');
     });
 
-    test('generateKeysFromSeedMulti', () => {
-      const keys = crypto.generateKeysFromSeedMulti('test', 'p', 3);
+    test('generateKeysFromSeedMulti', async () => {
+      const keys = await crypto.generateKeysFromSeedMulti('test', 'p', 3);
       expect(typeof keys.n).toBe('number');
       expect(typeof keys.mnemonic).toBe('string');
       expect(typeof keys.passphrase).toBe('string');
@@ -97,7 +97,7 @@ describe('main', () => {
       expect(typeof keys.pkh).toBe('string');
     });
 
-    test('sign', () => {
+    xtest('sign', () => {
       // todo
       // const keys = crypto.sign('AA5', 'p');
       // expect(typeof keys.bytes).toBe('number');
@@ -106,7 +106,7 @@ describe('main', () => {
       // expect(typeof keys.sbytes).toBe('string');
     });
 
-    test('verify', () => {
+    xtest('verify', () => {
       // todo
       // const keys = crypto.sign('AA5', 'p');
       // expect(typeof keys.bytes).toBe('number');
@@ -121,14 +121,14 @@ describe('main', () => {
     let node;
 
     beforeEach(() => {
-      main = require('../src/sotez.node');
+      main = require('../src/sotez');
       ({ node } = main);
     });
 
     test('init params', () => {
       expect(node.debugMode).toBe(false);
       expect(node.async).toBe(true);
-      expect(node.activeProvider).toBe('https://rpc.mytezoswallet.com');
+      expect(node.activeProvider).toBe(main.DEFAULT_PROVIDER);
     });
 
     test('setDebugMode', () => {
@@ -140,14 +140,14 @@ describe('main', () => {
     });
 
     test('setProvider', () => {
-      node.setProvider('https://tezrpc.me/zeronet');
-      expect(node.activeProvider).toBe('https://tezrpc.me/zeronet');
+      node.setProvider('https://127.0.0.1:9734');
+      expect(node.activeProvider).toBe('https://127.0.0.1:9734');
     });
 
     test('resetProvider', () => {
-      node.setProvider('https://tezrpc.me/zeronet');
+      node.setProvider('https://127.0.0.1:9734');
       node.resetProvider();
-      expect(node.activeProvider).toBe('https://rpc.mytezoswallet.com');
+      expect(node.activeProvider).toBe(main.DEFAULT_PROVIDER);
     });
 
     // describe('query', () => {
@@ -172,7 +172,7 @@ describe('main', () => {
 
     //   test('query on error', () => {
     //     const p = node.query('/test');
-    //     expect(mockXHR.open).toBeCalledWith('POST', 'https://rpc.mytezoswallet.com/test', true);
+    //     expect(mockXHR.open).toBeCalledWith('POST', 'http://127.0.0.1:8732/test', true);
     //     expect(mockXHR.send).toBeCalledWith('{}');
 
     //     mockXHR.statusText = 'test';

@@ -1,8 +1,8 @@
-if (typeof Buffer === 'undefined') Buffer = require('buffer/').Buffer;
-if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2');
+if (typeof Buffer === 'undefined') Buffer = require('buffer/').Buffer; // eslint-disable-line
+if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2'); // eslint-disable-line
 
 const bs58check = require('bs58check');
-const sodium = require('libsodium-wrappers');
+const _sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
 const pbkdf2 = require('pbkdf2');
 const { BigNumber } = require('bignumber.js');
@@ -284,7 +284,9 @@ utility.formatMoney = (n, c, d, t) => {
 
 // TODO: Add p256 and secp256k1 cryptographay
 const crypto = {};
-crypto.extractKeys = (sk) => { // eslint-disable-line
+crypto.extractKeys = async (sk) => { // eslint-disable-line
+  await _sodium.ready;
+  const sodium = _sodium;
   const pref = sk.substr(0, 4);
   switch (pref) {
     case 'edsk':
@@ -310,7 +312,7 @@ crypto.extractKeys = (sk) => { // eslint-disable-line
   }
 };
 
-crypto.generateMnemoic = () => bip39.generateMnemonic(160);
+crypto.generateMnemonic = () => bip39.generateMnemonic(160);
 
 crypto.checkAddress = (a) => {
   try {
@@ -321,7 +323,9 @@ crypto.checkAddress = (a) => {
   }
 };
 
-crypto.generateKeysNoSeed = () => {
+crypto.generateKeysNoSeed = async () => {
+  await _sodium.ready;
+  const sodium = _sodium;
   const kp = sodium.crypto_sign_keypair();
   return {
     sk: utility.b58cencode(kp.privateKey, prefix.edsk),
@@ -330,7 +334,9 @@ crypto.generateKeysNoSeed = () => {
   };
 };
 
-crypto.generateKeys = (m, p) => {
+crypto.generateKeys = async (m, p) => {
+  await _sodium.ready;
+  const sodium = _sodium;
   const s = bip39.mnemonicToSeed(m, p).slice(0, 32);
   const kp = sodium.crypto_sign_seed_keypair(s);
   return {
@@ -342,7 +348,9 @@ crypto.generateKeys = (m, p) => {
   };
 };
 
-crypto.generateKeysFromSeedMulti = (m, p, n) => {
+crypto.generateKeysFromSeedMulti = async (m, p, n) => {
+  await _sodium.ready;
+  const sodium = _sodium;
   n /= (256 ^ 2);
   const s = bip39.mnemonicToSeed(m, pbkdf2.pbkdf2Sync(p, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
   const kp = sodium.crypto_sign_seed_keypair(s);
@@ -356,7 +364,14 @@ crypto.generateKeysFromSeedMulti = (m, p, n) => {
   };
 };
 
-crypto.sign = (bytes, sk, wm) => {
+crypto.sign = async (bytes, sk, wm) => {
+  await _sodium.ready;
+  const sodium = _sodium;
+
+  if (sk.length === 54) {
+    ({ sk } = await crypto.extractKeys(sk));
+  }
+
   let bb = utility.hex2buf(bytes);
   if (typeof wm !== 'undefined') {
     bb = utility.mergebuf(wm, bb);
@@ -372,9 +387,11 @@ crypto.sign = (bytes, sk, wm) => {
   };
 };
 
-crypto.verify = (bytes, sig, pk) => (
-  sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk))
-);
+crypto.verify = async (bytes, sig, pk) => {
+  await _sodium.ready;
+  const sodium = _sodium;
+  return sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk));
+};
 
 const node = {
   activeProvider: DEFAULT_PROVIDER,
@@ -1317,7 +1334,7 @@ rpc.sendOperation = ({
         sopbytes = `${opbytes}00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
         opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
       } else {
-        const signed = crypto.sign(opbytes, keys.sk, watermark.generic);
+        const signed = await crypto.sign(opbytes, keys.sk, watermark.generic);
         sopbytes = signed.sbytes;
         opOb.signature = signed.edsig;
       }
@@ -1554,7 +1571,9 @@ rpc.runCode = (code, amount, input, storage, trace = false) => {
 };
 
 const contract = {};
-contract.hash = (operationHash, ind) => {
+contract.hash = async (operationHash, ind) => {
+  await _sodium.ready;
+  const sodium = _sodium;
   const ob = utility.b58cdecode(operationHash, prefix.o);
   let tt = [];
   for (let i = 0; i < ob.length; i++) {
@@ -1662,6 +1681,7 @@ prefix.TZ = new Uint8Array([2, 90, 121]);
 
 // Expose library
 const sotez = {
+  DEFAULT_PROVIDER,
   utility,
   crypto,
   node,

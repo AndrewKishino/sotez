@@ -19,7 +19,7 @@ const LedgerTransport = isNode
 const LedgerApp = require('./hw-app-xtz/lib/Tezos').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
-const DEFAULT_FEE = '1278';
+const DEFAULT_FEE = 1278;
 const counters = {};
 
 const prefix = {
@@ -62,6 +62,11 @@ const watermark = {
 };
 
 const utility = {};
+/**
+ * @description Convert from base58 to integer
+ * @param {Number} v The b58 value
+ * @returns {String} The converted b58 value
+ */
 utility.b582int = (v) => {
   let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -71,10 +76,26 @@ utility.b582int = (v) => {
   return rv.toString(16);
 };
 
-utility.totez = m => parseInt(m, 10) / 1000000;
+/**
+ * @description Convert from mutez to tez
+ * @param {Number} mutez The amount in mutez to convert to tez
+ * @returns {Integer} The mutez amount converted to tez
+ */
+utility.totez = mutez => parseInt(mutez, 10) / 1000000;
 
-utility.mutez = tz => new BigNumber(new BigNumber(tz).toFixed(6)).multipliedBy(1000000).toString();
+/**
+ * @description Convert from tez to mutez
+ * @param {Number} tez The amount in tez to convert to mutez
+ * @returns {String} The tez amount converted to mutez
+ */
+utility.mutez = tez => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
+/**
+ * @description Base58 encode
+ * @param {String} payload The value to encode
+ * @param {Object} prefixArg The Uint8Array prefix values
+ * @returns {String} The base58 encoded value
+ */
 utility.b58cencode = (payload, prefixArg) => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
@@ -82,8 +103,19 @@ utility.b58cencode = (payload, prefixArg) => {
   return bs58check.encode(Buffer.from(n, 'hex'));
 };
 
+/**
+ * @description Base58 decode
+ * @param {String} payload The value to decode
+ * @param {Object} prefixArg The Uint8Array prefix values
+ * @returns {String} The decoded base58 value
+ */
 utility.b58cdecode = (enc, prefixArg) => bs58check.decode(enc).slice(prefixArg.length);
 
+/**
+ * @description Buffer to hex
+ * @param {Object} buffer The buffer to convert to hex
+ * @returns {String} Converted hex value
+ */
 utility.buf2hex = (buffer) => {
   const byteArray = new Uint8Array(buffer);
   const hexParts = [];
@@ -95,8 +127,18 @@ utility.buf2hex = (buffer) => {
   return hexParts.join('');
 };
 
+/**
+ * @description Hex to Buffer
+ * @param {String} hex The hex to convert to buffer
+ * @returns {Object} Converted buffer value
+ */
 utility.hex2buf = hex => new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
 
+/**
+ * @description Generate a hex nonce
+ * @param {Number} length The length of the nonce
+ * @returns {String} The nonce of the given length
+ */
 utility.hexNonce = (length) => {
   const chars = '0123456789abcedf';
   let hex = '';
@@ -106,6 +148,12 @@ utility.hexNonce = (length) => {
   return hex;
 };
 
+/**
+ * @description Merge two buffers together
+ * @param {Object} b1 The first buffer
+ * @param {Object} b2 The second buffer
+ * @returns {Object} The merged buffer
+ */
 utility.mergebuf = (b1, b2) => {
   const r = new Uint8Array(b1.length + b2.length);
   r.set(b1);
@@ -284,6 +332,11 @@ utility.formatMoney = (n, c, d, t) => {
 
 // TODO: Add p256 and secp256k1 cryptographay
 const crypto = {};
+/**
+ * @description Extract key pairs from a secret key
+ * @param {Object} sk The secret key to extract key pairs from
+ * @returns {Promise} The extracted key pairs
+ */
 crypto.extractKeys = async (sk) => { // eslint-disable-line
   await _sodium.ready;
   const sodium = _sodium;
@@ -312,17 +365,30 @@ crypto.extractKeys = async (sk) => { // eslint-disable-line
   }
 };
 
+/**
+ * @description Generate a mnemonic
+ * @returns {String} The generated mnemonic
+ */
 crypto.generateMnemonic = () => bip39.generateMnemonic(160);
 
-crypto.checkAddress = (a) => {
+/**
+ * @description Check the validity of a tezos implicit address (tz1...)
+ * @param {String} address The address to check
+ * @returns {Boolean} Whether address is valid or not
+ */
+crypto.checkAddress = (address) => {
   try {
-    utility.b58cdecode(a, prefix.tz1);
+    utility.b58cdecode(address, prefix.tz1);
     return true;
   } catch (e) {
     return false;
   }
 };
 
+/**
+ * @description Generate a new key pair without a seed
+ * @returns {Promise} The generated key pair
+ */
 crypto.generateKeysNoSeed = async () => {
   await _sodium.ready;
   const sodium = _sodium;
@@ -334,29 +400,42 @@ crypto.generateKeysNoSeed = async () => {
   };
 };
 
-crypto.generateKeys = async (m, p) => {
+/**
+ * @description Generate a new key pair given a mnemonic and passphrase
+ * @param {String} mnemonic The mnemonic seed
+ * @param {String} passphrase The passphrase used to encrypt the seed
+ * @returns {Promise} The generated key pair
+ */
+crypto.generateKeys = async (mnemonic, passphrase) => {
   await _sodium.ready;
   const sodium = _sodium;
-  const s = bip39.mnemonicToSeed(m, p).slice(0, 32);
+  const s = bip39.mnemonicToSeed(mnemonic, passphrase).slice(0, 32);
   const kp = sodium.crypto_sign_seed_keypair(s);
   return {
-    mnemonic: m,
-    passphrase: p,
+    mnemonic,
+    passphrase,
     sk: utility.b58cencode(kp.privateKey, prefix.edsk),
     pk: utility.b58cencode(kp.publicKey, prefix.edpk),
     pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
   };
 };
 
-crypto.generateKeysFromSeedMulti = async (m, p, n) => {
+/**
+ * @description Generate a new key pair given a mnemonic, passphrase, n
+ * @param {String} mnemonic The mnemonic seed
+ * @param {String} passphrase The passphrase used to encrypt the seed
+ * @param {Number} n
+ * @returns {Promise} The generated key pair
+ */
+crypto.generateKeysFromSeedMulti = async (mnemonic, passphrase, n) => {
   await _sodium.ready;
   const sodium = _sodium;
   n /= (256 ^ 2);
-  const s = bip39.mnemonicToSeed(m, pbkdf2.pbkdf2Sync(p, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
+  const s = bip39.mnemonicToSeed(mnemonic, pbkdf2.pbkdf2Sync(passphrase, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
   const kp = sodium.crypto_sign_seed_keypair(s);
   return {
-    mnemonic: m,
-    passphrase: p,
+    mnemonic,
+    passphrase,
     n,
     sk: utility.b58cencode(kp.privateKey, prefix.edsk),
     pk: utility.b58cencode(kp.publicKey, prefix.edpk),
@@ -364,6 +443,13 @@ crypto.generateKeysFromSeedMulti = async (m, p, n) => {
   };
 };
 
+/**
+ * @description Sign bytes
+ * @param {String} bytes The bytes to sign
+ * @param {String} sk The secret key to sign the bytes with
+ * @param {Object} wm The watermark bytes
+ * @returns {Promise} The signed bytes
+ */
 crypto.sign = async (bytes, sk, wm) => {
   await _sodium.ready;
   const sodium = _sodium;
@@ -387,6 +473,13 @@ crypto.sign = async (bytes, sk, wm) => {
   };
 };
 
+/**
+ * @description Verify signed bytes
+ * @param {String} bytes The signed bytes
+ * @param {String} sig The signature of the signed bytes
+ * @param {String} pk The public key
+ * @returns {Boolean} Whether the signed bytes are valid
+ */
 crypto.verify = async (bytes, sig, pk) => {
   await _sodium.ready;
   const sodium = _sodium;
@@ -400,45 +493,64 @@ const node = {
   isZeronet: false,
 };
 
+/**
+ * @description Enable additional logging by enabling debug mode
+ * @param {Boolen} t Debug mode value
+ */
 node.setDebugMode = (t) => {
   node.debugMode = t;
 };
 
-node.setProvider = (u, z) => {
-  if (typeof z !== 'undefined') node.isZeronet = z;
-  node.activeProvider = u;
+/**
+ * @description Set a new default provider
+ * @param {String} provider The address of the provider
+ * @param {Boolean} isZeronet Whether the provider is a zeronet node
+ */
+node.setProvider = (provider, isZeronet) => {
+  if (typeof z !== 'undefined') node.isZeronet = isZeronet;
+  node.activeProvider = provider;
 };
 
+/**
+ * @description Reset the provider to the default provider
+ */
 node.resetProvider = () => {
   node.activeProvider = DEFAULT_PROVIDER;
 };
 
-node.query = (e, o, t) => {
-  if (typeof o === 'undefined') {
-    if (typeof t === 'undefined') {
-      t = 'GET';
+/**
+ * @description Queries a node given a path and payload
+ * @param {String} path The RPC path to query
+ * @param {String} payload The payload of the query
+ * @param {String} method The request method. Either 'GET' or 'POST'
+ * @returns {Promise} The response of the query
+ */
+node.query = (path, payload, method) => {
+  if (typeof payload === 'undefined') {
+    if (typeof method === 'undefined') {
+      method = 'GET';
     } else {
-      o = {};
+      payload = {};
     }
-  } else if (typeof t === 'undefined') {
-    t = 'POST';
+  } else if (typeof method === 'undefined') {
+    method = 'POST';
   }
   return new Promise((resolve, reject) => {
     try {
       const http = new XMLHttpRequest();
-      http.open(t, node.activeProvider + e, node.async);
+      http.open(method, node.activeProvider + path, node.async);
       http.onload = () => {
         if (node.debugMode) {
-          console.log(e, o, http.responseText);
+          console.log(path, payload, http.responseText);
         }
         if (http.status === 200) {
           if (http.responseText) {
-            let r = JSON.parse(http.responseText);
-            if (typeof r.error !== 'undefined') {
-              reject(r.error);
+            let response = JSON.parse(http.responseText);
+            if (typeof response.error !== 'undefined') {
+              reject(response.error);
             } else {
-              if (typeof r.ok !== 'undefined') r = r.ok;
-              resolve(r);
+              if (typeof response.ok !== 'undefined') response = response.ok;
+              resolve(response);
             }
           } else {
             reject('Empty response returned'); // eslint-disable-line
@@ -452,66 +564,87 @@ node.query = (e, o, t) => {
       http.onerror = () => {
         reject(http.statusText);
       };
-      if (t === 'POST') {
+      if (method === 'POST') {
         http.setRequestHeader('Content-Type', 'application/json');
-        http.send(JSON.stringify(o));
+        http.send(JSON.stringify(payload));
       } else {
         http.send();
       }
-    } catch (err) {
-      reject(err);
+    } catch (e) {
+      reject(e);
     }
   });
 };
 
-const ledger = {
-  getAddress: async ({
-    path = "44'/1729'/0'/0'",
-    displayConfirm = false,
-    curve = 0x00,
-  } = {}) => {
-    const transport = await LedgerTransport.create();
-    const tezosLedger = new LedgerApp(transport);
-    let publicKey;
-    try {
-      publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
-    } catch (e) {
-      transport.close();
-      return e;
-    }
+const ledger = {};
+/**
+ * @description Get the public key and public key hash from the ledger
+ * @param {Object} ledgerParams The parameters of the getAddress function
+ * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
+ * @param {Boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
+ * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} The public key and public key hash
+ */
+ledger.getAddress = async ({
+  path = "44'/1729'/0'/0'",
+  displayConfirm = false,
+  curve = 0x00,
+} = {}) => {
+  const transport = await LedgerTransport.create();
+  const tezosLedger = new LedgerApp(transport);
+  let publicKey;
+  try {
+    publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
+  } catch (e) {
     transport.close();
-    return publicKey;
-  },
-  signOperation: async ({
-    path = "44'/1729'/0'/0'",
-    rawTxHex,
-    curve = 0x00,
-  } = {}) => {
-    const transport = await LedgerTransport.create();
-    const tezosLedger = new LedgerApp(transport);
-    let signature;
-    try {
-      ({ signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve));
-    } catch (e) {
-      transport.close();
-      return e;
-    }
+    return e;
+  }
+  transport.close();
+  return publicKey;
+};
+
+/**
+ * @description Sign an operation with the ledger
+ * @param {Object} ledgerParams The parameters of the signOperation function
+ * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
+ * @param {Boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
+ * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} The signed operation
+ */
+ledger.signOperation = async ({
+  path = "44'/1729'/0'/0'",
+  rawTxHex,
+  curve = 0x00,
+} = {}) => {
+  const transport = await LedgerTransport.create();
+  const tezosLedger = new LedgerApp(transport);
+  let signature;
+  try {
+    ({ signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve));
+  } catch (e) {
     transport.close();
-    return { signature };
-  },
-  getVersion: async () => {
-    const transport = await LedgerTransport.create();
-    const tezosLedger = new LedgerApp(transport);
-    let versionInfo;
-    try {
-      versionInfo = await tezosLedger.getVersion();
-    } catch (e) {
-      transport.close();
-      return e;
-    }
+    return e;
+  }
+  transport.close();
+  return { signature };
+};
+
+/**
+ * @description Show the version of the ledger
+ * @returns {Promise} The version info
+ */
+ledger.getVersion = async () => {
+  const transport = await LedgerTransport.create();
+  const tezosLedger = new LedgerApp(transport);
+  let versionInfo;
+  try {
+    versionInfo = await tezosLedger.getVersion();
+  } catch (e) {
     transport.close();
-    return versionInfo;
-  },
+    return e;
+  }
+  transport.close();
+  return versionInfo;
 };
 
 const forgeMappings = {
@@ -630,121 +763,121 @@ const forgeMappings = {
     '6E': 'address',
     '6F': 'SLICE',
   },
-  /* eslint-enable */
   opMappingReverse: {
-    SHA512: '10',
-    ABS: '11',
-    ADD: '12',
-    AMOUNT: '13',
-    AND: '14',
-    BALANCE: '15',
-    CAR: '16',
-    CDR: '17',
-    CHECK_SIGNATURE: '18',
-    COMPARE: '19',
-    DROP: '20',
-    DUP: '21',
-    EDIV: '22',
-    EMPTY_MAP: '23',
-    EMPTY_SET: '24',
-    EQ: '25',
-    EXEC: '26',
-    FAILWITH: '27',
-    GE: '28',
-    GET: '29',
-    INT: '30',
-    LAMBDA: '31',
-    LE: '32',
-    LEFT: '33',
-    LOOP: '34',
-    LSL: '35',
-    LSR: '36',
-    LT: '37',
-    MAP: '38',
-    MEM: '39',
-    NOW: '40',
-    OR: '41',
-    PAIR: '42',
-    PUSH: '43',
-    RIGHT: '44',
-    SIZE: '45',
-    SOME: '46',
-    SOURCE: '47',
-    SENDER: '48',
-    SELF: '49',
-    UPDATE: '50',
-    XOR: '51',
-    ITER: '52',
-    LOOP_LEFT: '53',
-    ADDRESS: '54',
-    CONTRACT: '55',
-    ISNAT: '56',
-    CAST: '57',
-    RENAME: '58',
-    bool: '59',
-    map: '60',
-    big_map: '61',
-    nat: '62',
-    option: '63',
-    or: '64',
-    pair: '65',
-    set: '66',
-    signature: '67',
-    string: '68',
-    bytes: '69',
-    parameter: '00',
-    storage: '01',
-    code: '02',
-    False: '03',
-    Elt: '04',
-    Left: '05',
-    None: '06',
-    Pair: '07',
-    Right: '08',
-    Some: '09',
-    True: '0A',
-    Unit: '0B',
-    PACK: '0C',
-    UNPACK: '0D',
-    BLAKE2B: '0E',
-    SHA256: '0F',
-    CONCAT: '1A',
-    CONS: '1B',
-    CREATE_ACCOUNT: '1C',
-    CREATE_CONTRACT: '1D',
-    IMPLICIT_ACCOUNT: '1E',
-    DIP: '1F',
-    GT: '2A',
-    HASH_KEY: '2B',
-    IF: '2C',
-    IF_CONS: '2D',
-    IF_LEFT: '2E',
-    IF_NONE: '2F',
-    MUL: '3A',
-    NEG: '3B',
-    NEQ: '3C',
-    NIL: '3D',
-    NONE: '3E',
-    NOT: '3F',
-    STEPS_TO_QUOTA: '4A',
-    SUB: '4B',
-    SWAP: '4C',
-    TRANSFER_TOKENS: '4D',
-    SET_DELEGATE: '4E',
-    UNIT: '4F',
-    contract: '5A',
-    int: '5B',
-    key: '5C',
-    key_hash: '5D',
-    lambda: '5E',
-    list: '5F',
-    mutez: '6A',
-    timestamp: '6B',
-    unit: '6C',
-    operation: '6D',
-    address: '6E',
-    SLICE: '6F',
+    'SHA512': '10',
+    'ABS': '11',
+    'ADD': '12',
+    'AMOUNT': '13',
+    'AND': '14',
+    'BALANCE': '15',
+    'CAR': '16',
+    'CDR': '17',
+    'CHECK_SIGNATURE': '18',
+    'COMPARE': '19',
+    'DROP': '20',
+    'DUP': '21',
+    'EDIV': '22',
+    'EMPTY_MAP': '23',
+    'EMPTY_SET': '24',
+    'EQ': '25',
+    'EXEC': '26',
+    'FAILWITH': '27',
+    'GE': '28',
+    'GET': '29',
+    'INT': '30',
+    'LAMBDA': '31',
+    'LE': '32',
+    'LEFT': '33',
+    'LOOP': '34',
+    'LSL': '35',
+    'LSR': '36',
+    'LT': '37',
+    'MAP': '38',
+    'MEM': '39',
+    'NOW': '40',
+    'OR': '41',
+    'PAIR': '42',
+    'PUSH': '43',
+    'RIGHT': '44',
+    'SIZE': '45',
+    'SOME': '46',
+    'SOURCE': '47',
+    'SENDER': '48',
+    'SELF': '49',
+    'UPDATE': '50',
+    'XOR': '51',
+    'ITER': '52',
+    'LOOP_LEFT': '53',
+    'ADDRESS': '54',
+    'CONTRACT': '55',
+    'ISNAT': '56',
+    'CAST': '57',
+    'RENAME': '58',
+    'bool': '59',
+    'map': '60',
+    'big_map': '61',
+    'nat': '62',
+    'option': '63',
+    'or': '64',
+    'pair': '65',
+    'set': '66',
+    'signature': '67',
+    'string': '68',
+    'bytes': '69',
+    'parameter': '00',
+    'storage': '01',
+    'code': '02',
+    'False': '03',
+    'Elt': '04',
+    'Left': '05',
+    'None': '06',
+    'Pair': '07',
+    'Right': '08',
+    'Some': '09',
+    'True': '0A',
+    'Unit': '0B',
+    'PACK': '0C',
+    'UNPACK': '0D',
+    'BLAKE2B': '0E',
+    'SHA256': '0F',
+    'CONCAT': '1A',
+    'CONS': '1B',
+    'CREATE_ACCOUNT': '1C',
+    'CREATE_CONTRACT': '1D',
+    'IMPLICIT_ACCOUNT': '1E',
+    'DIP': '1F',
+    'GT': '2A',
+    'HASH_KEY': '2B',
+    'IF': '2C',
+    'IF_CONS': '2D',
+    'IF_LEFT': '2E',
+    'IF_NONE': '2F',
+    'MUL': '3A',
+    'NEG': '3B',
+    'NEQ': '3C',
+    'NIL': '3D',
+    'NONE': '3E',
+    'NOT': '3F',
+    'STEPS_TO_QUOTA': '4A',
+    'SUB': '4B',
+    'SWAP': '4C',
+    'TRANSFER_TOKENS': '4D',
+    'SET_DELEGATE': '4E',
+    'UNIT': '4F',
+    'contract': '5A',
+    'int': '5B',
+    'key': '5C',
+    'key_hash': '5D',
+    'lambda': '5E',
+    'list': '5F',
+    'mutez': '6A',
+    'timestamp': '6B',
+    'unit': '6C',
+    'operation': '6D',
+    'address': '6E',
+    'SLICE': '6F',
   },
+  /* eslint-enable */
   primMapping: {
     '00': 'int',
     '01': 'string',
@@ -791,6 +924,11 @@ const forgeMappings = {
 };
 
 const forge = {};
+/**
+ * @description Convert bytes from Int32
+ * @param {Number} num Number to convert to bytes
+ * @returns {Object} The converted number
+ */
 forge.toBytesInt32 = (num) => {
   num = parseInt(num, 10);
   const arr = new Uint8Array([
@@ -802,21 +940,48 @@ forge.toBytesInt32 = (num) => {
   return arr.buffer;
 };
 
+/**
+ * @description Convert hex from Int32
+ * @param {Number} num Number to convert to hex
+ * @returns {String} The converted number
+ */
 forge.toBytesInt32Hex = num => utility.buf2hex(forge.toBytesInt32(num));
 
-forge.bool = b => (b ? 'ff' : '00');
+/**
+ * @description Forge boolean
+ * @param {Boolean} bool Boolean value to convert
+ * @returns {String} The converted boolean
+ */
+forge.bool = bool => (bool ? 'ff' : '00');
 
-forge.script = (s) => {
-  const t1 = tezos.encodeRawBytes(s.code).toLowerCase();
-  const t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
+/**
+ * @description Forge script bytes
+ * @param {Object} script Script to forge
+ * @param {Object} script.code Script code
+ * @param {Object} script.storage Script storage
+ * @returns {String} Forged script bytes
+ */
+forge.script = (script) => {
+  const t1 = tezos.encodeRawBytes(script.code).toLowerCase();
+  const t2 = tezos.encodeRawBytes(script.storage).toLowerCase();
   return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
 };
 
-forge.parameters = (p) => {
-  const t = tezos.encodeRawBytes(p).toLowerCase();
+/**
+ * @description Forge parameter bytes
+ * @param {String} parameter Script to forge
+ * @returns {String} Forged parameter bytes
+ */
+forge.parameters = (parameter) => {
+  const t = tezos.encodeRawBytes(parameter).toLowerCase();
   return forge.toBytesInt32Hex(t.length / 2) + t;
 };
 
+/**
+ * @description Forge public key hash bytes
+ * @param {String} pkh Public key hash to forge
+ * @returns {String} Forged public key hash bytes
+ */
 forge.publicKeyHash = (pkh) => {
   let fpkh;
   const t = parseInt(pkh.substr(2, 1), 10);
@@ -825,19 +990,29 @@ forge.publicKeyHash = (pkh) => {
   return fpkh;
 };
 
-forge.address = (a) => {
+/**
+ * @description Forge address bytes
+ * @param {String} address Address to forge
+ * @returns {String} Forged address bytes
+ */
+forge.address = (address) => {
   let fa;
-  if (a.substr(0, 1) === 'K') {
+  if (address.substr(0, 1) === 'K') {
     fa = '01';
-    fa += utility.buf2hex(utility.b58cdecode(a, prefix.KT));
+    fa += utility.buf2hex(utility.b58cdecode(address, prefix.KT));
     fa += '00';
   } else {
     fa = '00';
-    fa += forge.publicKeyHash(a);
+    fa += forge.publicKeyHash(address);
   }
   return fa;
 };
 
+/**
+ * @description Forge zarith bytes
+ * @param {Number} n Zarith to forge
+ * @returns {String} Forged zarith bytes
+ */
 forge.zarith = (n) => {
   let fn = '';
   n = parseInt(n, 10);
@@ -857,9 +1032,13 @@ forge.zarith = (n) => {
   return fn;
 };
 
+/**
+ * @description Forge public key bytes
+ * @param {Number} pk Public key to forge
+ * @returns {String} Forged public key bytes
+ */
 forge.publicKey = (pk) => {
   let fpk;
-  // let t;
   switch (pk.substr(0, 2)) {
     case 'ed': fpk = '00'; break;
     case 'sp': fpk = '01'; break;
@@ -870,8 +1049,13 @@ forge.publicKey = (pk) => {
   return fpk;
 };
 
-/* eslint-disable */
+/**
+ * @description Forge operation bytes
+ * @param {Number} op Operation to forge
+ * @returns {String} Forged operation bytes
+ */
 forge.op = (op) => {
+  /* eslint-disable */
   let fop;
   fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
   switch (forgeMappings.forgeOpTags[op.kind]) {
@@ -960,10 +1144,17 @@ forge.op = (op) => {
       break;
   }
   return fop;
+  /* eslint-enable */
 };
-/* eslint-enable */
 
 const tezos = {};
+/**
+ * @description Forge operation bytes
+ * @param {Object} head The current head of the chain
+ * @param {Object} opOb The operation object(s)
+ * @param {Boolean} [debug=false] Enable extra logging for debugging
+ * @returns {String} Forged operation bytes
+ */
 tezos.forge = async (head, opOb, debug = false) => {
   let remoteForgedBytes;
 
@@ -991,6 +1182,11 @@ tezos.forge = async (head, opOb, debug = false) => {
   return localForgedBytes;
 };
 
+/**
+ * @description Decode raw bytes
+ * @param {String} bytes The bytes to decode
+ * @returns {Object} Decoded raw bytes
+ */
 tezos.decodeRawBytes = (bytes) => {
   bytes = bytes.toUpperCase();
 
@@ -1096,6 +1292,11 @@ tezos.decodeRawBytes = (bytes) => {
   return rec();
 };
 
+/**
+ * @description Encode raw bytes
+ * @param {Object} input The value to encode
+ * @returns {Object} Encoded value as bytes
+ */
 tezos.encodeRawBytes = (input) => {
   const rec = (inputArg) => {
     const result = [];
@@ -1166,6 +1367,23 @@ tezos.encodeRawBytes = (input) => {
 };
 
 const rpc = {};
+/**
+ * @description Originate a new account
+ * @param {Object} paramObject The parameters for the origination
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {Boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject={}] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.account = async ({
   keys,
   amount,
@@ -1173,8 +1391,8 @@ rpc.account = async ({
   delegatable,
   delegate,
   fee = DEFAULT_FEE,
-  gasLimit = '10000',
-  storageLimit = '257',
+  gasLimit = 10000,
+  storageLimit = 257,
 }, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
@@ -1194,8 +1412,8 @@ rpc.account = async ({
     kind: 'origination',
     balance: `${utility.mutez(amount)}`,
     fee: `${fee}`,
-    gas_limit: gasLimit,
-    storage_limit: storageLimit,
+    gas_limit: `${gasLimit}`,
+    storage_limit: `${storageLimit}`,
   };
 
   if (node.isZeronet) {
@@ -1214,22 +1432,62 @@ rpc.account = async ({
   }, { useLedger, path, curve });
 };
 
-rpc.getBalance = tz1 => (
-  node.query(`/chains/main/blocks/head/context/contracts/${tz1}/balance`)
+/**
+ * @description Get the balance for an address
+ * @param {String} address The address for which to retrieve the balance
+ * @returns {Promise} The balance of the address
+ */
+rpc.getBalance = address => (
+  node.query(`/chains/main/blocks/head/context/contracts/${address}/balance`)
     .then(r => r)
 );
 
-rpc.getDelegate = tz1 => (
-  node.query(`/chains/main/blocks/head/context/contracts/${tz1}/delegate`)
+/**
+ * @description Get the delegate for an address
+ * @param {String} address The address for which to retrieve the delegate
+ * @returns {Promise} The address of the delegate if a delegate is registered
+ */
+rpc.getDelegate = address => (
+  node.query(`/chains/main/blocks/head/context/contracts/${address}/delegate`)
     .then((r) => {
       if (r) { return r; }
       return false;
     }).catch(() => false)
 );
 
+/**
+ * @description Get the current head block of the chain
+ * @returns {Promise} The current head block
+ */
 rpc.getHead = () => node.query('/chains/main/blocks/head');
+
+/**
+ * @description Get the current head block hash of the chain
+ * @returns {Promise} The current head block hash
+ */
 rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
-rpc.call = (e, d) => node.query(e, d);
+
+/**
+ * @description Get the current head block hash of the chain
+ * @param {String} path The path to query
+ * @param {Object} payload The payload of the request
+ * @returns {Promise} The response of the rpc call
+ */
+rpc.call = (path, payload) => node.query(path, payload);
+
+/**
+ * @description Send an operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object|Array} paramObject.operation The operation to include in the transaction
+ * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
+ * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.sendOperation = ({
   from,
   operation,
@@ -1355,6 +1613,13 @@ rpc.sendOperation = ({
     });
 };
 
+
+/**
+ * @description Inject an operation
+ * @param {Object} opOb The operation object
+ * @param {Object} sopbytes The signed operation bytes
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.inject = (opOb, sopbytes) => {
   const opResponse = [];
   let errors = [];
@@ -1382,7 +1647,32 @@ rpc.inject = (opOb, sopbytes) => {
     }));
 };
 
+/**
+ * @description Inject an operation without prevalidation
+ * @param {Object} sopbytes The signed operation bytes
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.silentInject = sopbytes => node.query('/injection/operation', sopbytes).then(hash => ({ hash }));
+
+/**
+ * @description Transfer operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {String} paramObject.to The address of the recipient
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {String} [paramObject.parameter=false] The parameter for the transaction
+ * @param {Number} [paramObject.gasLimit=10100] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
+ * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.transfer = ({
   from,
   keys,
@@ -1390,8 +1680,8 @@ rpc.transfer = ({
   amount,
   fee = DEFAULT_FEE,
   parameter = false,
-  gasLimit = '10100',
-  storageLimit = '0',
+  gasLimit = 10100,
+  storageLimit = 0,
   mutez = false,
   rawParam = false,
 }, {
@@ -1402,8 +1692,8 @@ rpc.transfer = ({
   const operation = {
     kind: 'transaction',
     fee: `${fee}`,
-    gas_limit: gasLimit,
-    storage_limit: storageLimit,
+    gas_limit: `${gasLimit}`,
+    storage_limit: `${storageLimit}`,
     amount: mutez ? `${utility.mutez(amount)}` : `${amount}`,
     destination: to,
   };
@@ -1413,6 +1703,12 @@ rpc.transfer = ({
   return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
 };
 
+/**
+ * @description Activate an account
+ * @param {Object} keys The keys containing the public key hash
+ * @param {String} secret The secret to activate the account
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.activate = (keys, secret) => {
   const operation = {
     kind: 'activate_account',
@@ -1422,6 +1718,25 @@ rpc.activate = (keys, secret) => {
   return rpc.sendOperation({ from: keys.pkh, operation, keys });
 };
 
+/**
+ * @description Originate a new contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.code The code to deploy for the contract
+ * @param {String} paramObject.init The initial storage of the contract
+ * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.originate = async ({
   keys,
   amount,
@@ -1431,8 +1746,8 @@ rpc.originate = async ({
   delegatable = false,
   delegate,
   fee = DEFAULT_FEE,
-  gasLimit = '10000',
-  storageLimit = '257',
+  gasLimit = 10000,
+  storageLimit = 257,
 }, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
@@ -1457,8 +1772,8 @@ rpc.originate = async ({
   const operation = {
     kind: 'origination',
     fee: `${fee}`,
-    storage_limit: storageLimit,
-    gas_limit: gasLimit,
+    gas_limit: `${gasLimit}`,
+    storage_limit: `${storageLimit}`,
     balance: `${utility.mutez(amount)}`,
     spendable,
     delegatable,
@@ -1475,13 +1790,28 @@ rpc.originate = async ({
   return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
 };
 
+/**
+ * @description Set a delegate for an account
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.setDelegate = async ({
   from,
   keys,
   delegate,
   fee = DEFAULT_FEE,
-  gasLimit = '10000',
-  storageLimit = '0',
+  gasLimit = 10000,
+  storageLimit = 0,
 }, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
@@ -1500,18 +1830,31 @@ rpc.setDelegate = async ({
   const operation = {
     kind: 'delegation',
     fee: `${fee}`,
-    gas_limit: gasLimit,
-    storage_limit: storageLimit,
+    gas_limit: `${gasLimit}`,
+    storage_limit: `${storageLimit}`,
     delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
   };
   return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
 };
 
+/**
+ * @description Register an account as a delegate
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 rpc.registerDelegate = async ({
   keys,
   fee = DEFAULT_FEE,
-  gasLimit = '10000',
-  storageLimit = '0',
+  gasLimit = 10000,
+  storageLimit = 0,
 }, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
@@ -1530,18 +1873,29 @@ rpc.registerDelegate = async ({
   const operation = {
     kind: 'delegation',
     fee: `${fee}`,
-    gas_limit: gasLimit,
-    storage_limit: storageLimit,
-    delegate: publicKeyHash,
+    gas_limit: `${gasLimit}`,
+    storage_limit: `${storageLimit}`,
+    delegate: `${publicKeyHash}`,
   };
   return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
 };
 
+/**
+ * @description Typechecks the provided code
+ * @param {String} code The code to typecheck
+ * @returns {Promise} Typecheck result
+ */
 rpc.typecheckCode = (code) => {
   const _code = utility.ml2mic(code);
   return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_code', { program: _code, gas: '10000' });
 };
 
+/**
+ * @description Serializes a piece of data to a binary representation
+ * @param {String} data
+ * @param {String} type
+ * @returns {Promise} Serialized data
+ */
 rpc.packData = (data, type) => {
   const check = {
     data: utility.sexp2mic(data),
@@ -1551,6 +1905,12 @@ rpc.packData = (data, type) => {
   return node.query('/chains/main/blocks/head/helpers/scripts/pack_data', check);
 };
 
+/**
+ * @description Typechecks data against a type
+ * @param {String} data
+ * @param {String} type
+ * @returns {Promise} Typecheck result
+ */
 rpc.typecheckData = (data, type) => {
   const check = {
     data: utility.sexp2mic(data),
@@ -1560,6 +1920,15 @@ rpc.typecheckData = (data, type) => {
   return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_data', check);
 };
 
+/**
+ * @description Runs or traces code against an input and storage
+ * @param {String} code Code to run
+ * @param {Number} amount Amount to send
+ * @param {String} input Input to run though code
+ * @param {String} storage State of storage
+ * @param {Boolean} [trace=false] Whether to trace
+ * @returns {Promise} Run results
+ */
 rpc.runCode = (code, amount, input, storage, trace = false) => {
   const ep = trace ? 'trace_code' : 'run_code';
   return node.query(`/chains/main/blocks/head/helpers/scripts/${ep}`, {
@@ -1588,6 +1957,25 @@ contract.hash = async (operationHash, ind) => {
   return utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), prefix.KT);
 };
 
+/**
+ * @description Originate a new contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.code The code to deploy for the contract
+ * @param {String} paramObject.init The initial storage of the contract
+ * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=10000] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 contract.originate = ({
   keys,
   amount,
@@ -1597,8 +1985,8 @@ contract.originate = ({
   delegatable,
   delegate,
   fee = DEFAULT_FEE,
-  gasLimit = '10000',
-  storageLimit = '10000',
+  gasLimit = 10000,
+  storageLimit = 10000,
 }, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
@@ -1618,6 +2006,11 @@ contract.originate = ({
   }, { useLedger, path, curve })
 );
 
+/**
+ * @description Get the current storage of a contract
+ * @param {String} contractAddress The address of the contract
+ * @returns {Promise} The storage of the contract
+ */
 contract.storage = contractAddress => (
   new Promise((resolve, reject) => (
     node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}/storage`)
@@ -1626,7 +2019,20 @@ contract.storage = contractAddress => (
   ))
 );
 
+/**
+ * @description Get the contract at a given address
+ * @param {String} contractAddress The address of the contract
+ * @returns {Promise} The contract
+ */
 contract.load = contractAddress => node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}`);
+
+/**
+ * @description Watch a contract's storage based on a given interval
+ * @param {String} contractAddress The address of the contract
+ * @param {Number} timeout The interval between checks in milliseconds
+ * @param {requestCallback} callback The callback to fire when a change is detected
+ * @returns {Object} The setInterval object
+ */
 contract.watch = (contractAddress, timeout, callback) => {
   let storage = [];
   const storageCheck = () => {
@@ -1641,6 +2047,25 @@ contract.watch = (contractAddress, timeout, callback) => {
   return setInterval(storageCheck, timeout * 1000);
 };
 
+/**
+ * @description Send to contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.to The address of the recipient
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.parameter The parameter for the transaction
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=400000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=60000] The storage limit to set for the transaction
+ * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
+ * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 contract.send = ({
   to,
   from,
@@ -1648,8 +2073,8 @@ contract.send = ({
   amount,
   parameter,
   fee = DEFAULT_FEE,
-  gasLimit = '400000',
-  storageLimit = '60000',
+  gasLimit = 400000,
+  storageLimit = 60000,
   mutez = false,
   rawParam = false,
 }, {
@@ -1680,7 +2105,7 @@ utility.tztomin = utility.mutez;
 prefix.TZ = new Uint8Array([2, 90, 121]);
 
 // Expose library
-const sotez = {
+module.exports = {
   DEFAULT_PROVIDER,
   utility,
   crypto,
@@ -1689,6 +2114,5 @@ const sotez = {
   contract,
   ledger,
   tezos,
+  forge,
 };
-
-module.exports = sotez;

@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "npm run build:browser && npm run build:node",
+    "build": "npm run build:browser && npm run build:node && npm run docs",
     "build:browser": "webpack --config webpack.browser.config.js --progress",
-    "build:node": "webpack --config webpack.node.config.js --progress"
+    "build:node": "webpack --config webpack.node.config.js --progress",
+    "docs": "documentation build src/sotez.js --shallow --config documentation.yml -f md -o docs/documentation.md"
   },
   "keywords": [
     "A",
@@ -37,16 +38,22 @@
     "@babel/core": "^7.2.2",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
-    "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^8.0.4",
+    "documentation": "^9.1.1",
     "eslint": "^5.11.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "jest": "^23.6.0",
+    "jest": "^24.0.0",
+    "terser": "3.14.0",
     "terser-webpack-plugin": "^1.2.1",
     "unminified-webpack-plugin": "^2.0.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/node_modules/regenerator-runtime/runtime"
+    ]
   },
   "repository": {
     "type": "git",

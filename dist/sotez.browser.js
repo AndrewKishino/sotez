@@ -21810,7 +21810,7 @@ var LedgerTransport = isNode ? require('@ledgerhq/hw-transport-node-hid').defaul
 var LedgerApp = __webpack_require__(471).default;
 
 var DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
-var DEFAULT_FEE = '1278';
+var DEFAULT_FEE = 1278;
 var counters = {};
 var prefix = {
   tz1: new Uint8Array([6, 161, 159]),
@@ -21845,6 +21845,11 @@ var watermark = {
   generic: new Uint8Array([3])
 };
 var utility = {};
+/**
+ * @description Convert from base58 to integer
+ * @param {Number} v The b58 value
+ * @returns {String} The converted b58 value
+ */
 
 utility.b582int = function (v) {
   var rv = new BigNumber(0);
@@ -21856,14 +21861,33 @@ utility.b582int = function (v) {
 
   return rv.toString(16);
 };
+/**
+ * @description Convert from mutez to tez
+ * @param {Number} mutez The amount in mutez to convert to tez
+ * @returns {Integer} The mutez amount converted to tez
+ */
 
-utility.totez = function (m) {
-  return parseInt(m, 10) / 1000000;
-};
 
-utility.mutez = function (tz) {
-  return new BigNumber(new BigNumber(tz).toFixed(6)).multipliedBy(1000000).toString();
+utility.totez = function (mutez) {
+  return parseInt(mutez, 10) / 1000000;
 };
+/**
+ * @description Convert from tez to mutez
+ * @param {Number} tez The amount in tez to convert to mutez
+ * @returns {String} The tez amount converted to mutez
+ */
+
+
+utility.mutez = function (tez) {
+  return new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
+};
+/**
+ * @description Base58 encode
+ * @param {String} payload The value to encode
+ * @param {Object} prefixArg The Uint8Array prefix values
+ * @returns {String} The base58 encoded value
+ */
+
 
 utility.b58cencode = function (payload, prefixArg) {
   var n = new Uint8Array(prefixArg.length + payload.length);
@@ -21871,10 +21895,23 @@ utility.b58cencode = function (payload, prefixArg) {
   n.set(payload, prefixArg.length);
   return bs58check.encode(Buffer.from(n, 'hex'));
 };
+/**
+ * @description Base58 decode
+ * @param {String} payload The value to decode
+ * @param {Object} prefixArg The Uint8Array prefix values
+ * @returns {String} The decoded base58 value
+ */
+
 
 utility.b58cdecode = function (enc, prefixArg) {
   return bs58check.decode(enc).slice(prefixArg.length);
 };
+/**
+ * @description Buffer to hex
+ * @param {Object} buffer The buffer to convert to hex
+ * @returns {String} Converted hex value
+ */
+
 
 utility.buf2hex = function (buffer) {
   var byteArray = new Uint8Array(buffer);
@@ -21886,12 +21923,24 @@ utility.buf2hex = function (buffer) {
   });
   return hexParts.join('');
 };
+/**
+ * @description Hex to Buffer
+ * @param {String} hex The hex to convert to buffer
+ * @returns {Object} Converted buffer value
+ */
+
 
 utility.hex2buf = function (hex) {
   return new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) {
     return parseInt(h, 16);
   }));
 };
+/**
+ * @description Generate a hex nonce
+ * @param {Number} length The length of the nonce
+ * @returns {String} The nonce of the given length
+ */
+
 
 utility.hexNonce = function (length) {
   var chars = '0123456789abcedf';
@@ -21903,6 +21952,13 @@ utility.hexNonce = function (length) {
 
   return hex;
 };
+/**
+ * @description Merge two buffers together
+ * @param {Object} b1 The first buffer
+ * @param {Object} b2 The second buffer
+ * @returns {Object} The merged buffer
+ */
+
 
 utility.mergebuf = function (b1, b2) {
   var r = new Uint8Array(b1.length + b2.length);
@@ -22109,6 +22165,11 @@ utility.formatMoney = function (n, c, d, t) {
 
 
 var crypto = {};
+/**
+ * @description Extract key pairs from a secret key
+ * @param {Object} sk The secret key to extract key pairs from
+ * @returns {Promise} The extracted key pairs
+ */
 
 crypto.extractKeys =
 /*#__PURE__*/
@@ -22176,19 +22237,35 @@ function () {
     return _ref.apply(this, arguments);
   };
 }();
+/**
+ * @description Generate a mnemonic
+ * @returns {String} The generated mnemonic
+ */
+
 
 crypto.generateMnemonic = function () {
   return bip39.generateMnemonic(160);
 };
+/**
+ * @description Check the validity of a tezos implicit address (tz1...)
+ * @param {String} address The address to check
+ * @returns {Boolean} Whether address is valid or not
+ */
 
-crypto.checkAddress = function (a) {
+
+crypto.checkAddress = function (address) {
   try {
-    utility.b58cdecode(a, prefix.tz1);
+    utility.b58cdecode(address, prefix.tz1);
     return true;
   } catch (e) {
     return false;
   }
 };
+/**
+ * @description Generate a new key pair without a seed
+ * @returns {Promise} The generated key pair
+ */
+
 
 crypto.generateKeysNoSeed =
 /*#__PURE__*/
@@ -22219,13 +22296,19 @@ regeneratorRuntime.mark(function _callee2() {
     }
   }, _callee2, this);
 }));
+/**
+ * @description Generate a new key pair given a mnemonic and passphrase
+ * @param {String} mnemonic The mnemonic seed
+ * @param {String} passphrase The passphrase used to encrypt the seed
+ * @returns {Promise} The generated key pair
+ */
 
 crypto.generateKeys =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(m, p) {
+  regeneratorRuntime.mark(function _callee3(mnemonic, passphrase) {
     var sodium, s, kp;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
@@ -22236,11 +22319,11 @@ function () {
 
           case 2:
             sodium = _sodium;
-            s = bip39.mnemonicToSeed(m, p).slice(0, 32);
+            s = bip39.mnemonicToSeed(mnemonic, passphrase).slice(0, 32);
             kp = sodium.crypto_sign_seed_keypair(s);
             return _context3.abrupt("return", {
-              mnemonic: m,
-              passphrase: p,
+              mnemonic: mnemonic,
+              passphrase: passphrase,
               sk: utility.b58cencode(kp.privateKey, prefix.edsk),
               pk: utility.b58cencode(kp.publicKey, prefix.edpk),
               pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
@@ -22258,13 +22341,21 @@ function () {
     return _ref3.apply(this, arguments);
   };
 }();
+/**
+ * @description Generate a new key pair given a mnemonic, passphrase, n
+ * @param {String} mnemonic The mnemonic seed
+ * @param {String} passphrase The passphrase used to encrypt the seed
+ * @param {Number} n
+ * @returns {Promise} The generated key pair
+ */
+
 
 crypto.generateKeysFromSeedMulti =
 /*#__PURE__*/
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(m, p, n) {
+  regeneratorRuntime.mark(function _callee4(mnemonic, passphrase, n) {
     var sodium, s, kp;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -22276,11 +22367,11 @@ function () {
           case 2:
             sodium = _sodium;
             n /= 256 ^ 2;
-            s = bip39.mnemonicToSeed(m, pbkdf2.pbkdf2Sync(p, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
+            s = bip39.mnemonicToSeed(mnemonic, pbkdf2.pbkdf2Sync(passphrase, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
             kp = sodium.crypto_sign_seed_keypair(s);
             return _context4.abrupt("return", {
-              mnemonic: m,
-              passphrase: p,
+              mnemonic: mnemonic,
+              passphrase: passphrase,
               n: n,
               sk: utility.b58cencode(kp.privateKey, prefix.edsk),
               pk: utility.b58cencode(kp.publicKey, prefix.edpk),
@@ -22299,6 +22390,14 @@ function () {
     return _ref4.apply(this, arguments);
   };
 }();
+/**
+ * @description Sign bytes
+ * @param {String} bytes The bytes to sign
+ * @param {String} sk The secret key to sign the bytes with
+ * @param {Object} wm The watermark bytes
+ * @returns {Promise} The signed bytes
+ */
+
 
 crypto.sign =
 /*#__PURE__*/
@@ -22359,6 +22458,14 @@ function () {
     return _ref5.apply(this, arguments);
   };
 }();
+/**
+ * @description Verify signed bytes
+ * @param {String} bytes The signed bytes
+ * @param {String} sig The signature of the signed bytes
+ * @param {String} pk The public key
+ * @returns {Boolean} Whether the signed bytes are valid
+ */
+
 
 crypto.verify =
 /*#__PURE__*/
@@ -22397,50 +22504,72 @@ var node = {
   async: true,
   isZeronet: false
 };
+/**
+ * @description Enable additional logging by enabling debug mode
+ * @param {Boolen} t Debug mode value
+ */
 
 node.setDebugMode = function (t) {
   node.debugMode = t;
 };
+/**
+ * @description Set a new default provider
+ * @param {String} provider The address of the provider
+ * @param {Boolean} isZeronet Whether the provider is a zeronet node
+ */
 
-node.setProvider = function (u, z) {
-  if (typeof z !== 'undefined') node.isZeronet = z;
-  node.activeProvider = u;
+
+node.setProvider = function (provider, isZeronet) {
+  if (typeof z !== 'undefined') node.isZeronet = isZeronet;
+  node.activeProvider = provider;
 };
+/**
+ * @description Reset the provider to the default provider
+ */
+
 
 node.resetProvider = function () {
   node.activeProvider = DEFAULT_PROVIDER;
 };
+/**
+ * @description Queries a node given a path and payload
+ * @param {String} path The RPC path to query
+ * @param {String} payload The payload of the query
+ * @param {String} method The request method. Either 'GET' or 'POST'
+ * @returns {Promise} The response of the query
+ */
 
-node.query = function (e, o, t) {
-  if (typeof o === 'undefined') {
-    if (typeof t === 'undefined') {
-      t = 'GET';
+
+node.query = function (path, payload, method) {
+  if (typeof payload === 'undefined') {
+    if (typeof method === 'undefined') {
+      method = 'GET';
     } else {
-      o = {};
+      payload = {};
     }
-  } else if (typeof t === 'undefined') {
-    t = 'POST';
+  } else if (typeof method === 'undefined') {
+    method = 'POST';
   }
 
   return new Promise(function (resolve, reject) {
     try {
       var http = new XMLHttpRequest();
-      http.open(t, node.activeProvider + e, node.async);
+      http.open(method, node.activeProvider + path, node.async);
 
       http.onload = function () {
         if (node.debugMode) {
-          console.log(e, o, http.responseText);
+          console.log(path, payload, http.responseText);
         }
 
         if (http.status === 200) {
           if (http.responseText) {
-            var r = JSON.parse(http.responseText);
+            var response = JSON.parse(http.responseText);
 
-            if (typeof r.error !== 'undefined') {
-              reject(r.error);
+            if (typeof response.error !== 'undefined') {
+              reject(response.error);
             } else {
-              if (typeof r.ok !== 'undefined') r = r.ok;
-              resolve(r);
+              if (typeof response.ok !== 'undefined') response = response.ok;
+              resolve(response);
             }
           } else {
             reject('Empty response returned'); // eslint-disable-line
@@ -22456,191 +22585,195 @@ node.query = function (e, o, t) {
         reject(http.statusText);
       };
 
-      if (t === 'POST') {
+      if (method === 'POST') {
         http.setRequestHeader('Content-Type', 'application/json');
-        http.send(JSON.stringify(o));
+        http.send(JSON.stringify(payload));
       } else {
         http.send();
       }
-    } catch (err) {
-      reject(err);
+    } catch (e) {
+      reject(e);
     }
   });
 };
 
-var ledger = {
-  getAddress: function () {
-    var _getAddress = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee7() {
-      var _ref8,
-          _ref8$path,
-          path,
-          _ref8$displayConfirm,
-          displayConfirm,
-          _ref8$curve,
-          curve,
-          transport,
-          tezosLedger,
-          publicKey,
-          _args7 = arguments;
+var ledger = {};
+/**
+ * @description Get the public key and public key hash from the ledger
+ * @param {Object} ledgerParams The parameters of the getAddress function
+ * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
+ * @param {Boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
+ * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} The public key and public key hash
+ */
 
-      return regeneratorRuntime.wrap(function _callee7$(_context7) {
-        while (1) {
-          switch (_context7.prev = _context7.next) {
-            case 0:
-              _ref8 = _args7.length > 0 && _args7[0] !== undefined ? _args7[0] : {}, _ref8$path = _ref8.path, path = _ref8$path === void 0 ? "44'/1729'/0'/0'" : _ref8$path, _ref8$displayConfirm = _ref8.displayConfirm, displayConfirm = _ref8$displayConfirm === void 0 ? false : _ref8$displayConfirm, _ref8$curve = _ref8.curve, curve = _ref8$curve === void 0 ? 0x00 : _ref8$curve;
-              _context7.next = 3;
-              return LedgerTransport.create();
+ledger.getAddress =
+/*#__PURE__*/
+_asyncToGenerator(
+/*#__PURE__*/
+regeneratorRuntime.mark(function _callee7() {
+  var _ref9,
+      _ref9$path,
+      path,
+      _ref9$displayConfirm,
+      displayConfirm,
+      _ref9$curve,
+      curve,
+      transport,
+      tezosLedger,
+      publicKey,
+      _args7 = arguments;
 
-            case 3:
-              transport = _context7.sent;
-              tezosLedger = new LedgerApp(transport);
-              _context7.prev = 5;
-              _context7.next = 8;
-              return tezosLedger.getAddress(path, displayConfirm, curve);
+  return regeneratorRuntime.wrap(function _callee7$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          _ref9 = _args7.length > 0 && _args7[0] !== undefined ? _args7[0] : {}, _ref9$path = _ref9.path, path = _ref9$path === void 0 ? "44'/1729'/0'/0'" : _ref9$path, _ref9$displayConfirm = _ref9.displayConfirm, displayConfirm = _ref9$displayConfirm === void 0 ? false : _ref9$displayConfirm, _ref9$curve = _ref9.curve, curve = _ref9$curve === void 0 ? 0x00 : _ref9$curve;
+          _context7.next = 3;
+          return LedgerTransport.create();
 
-            case 8:
-              publicKey = _context7.sent;
-              _context7.next = 15;
-              break;
+        case 3:
+          transport = _context7.sent;
+          tezosLedger = new LedgerApp(transport);
+          _context7.prev = 5;
+          _context7.next = 8;
+          return tezosLedger.getAddress(path, displayConfirm, curve);
 
-            case 11:
-              _context7.prev = 11;
-              _context7.t0 = _context7["catch"](5);
-              transport.close();
-              return _context7.abrupt("return", _context7.t0);
+        case 8:
+          publicKey = _context7.sent;
+          _context7.next = 15;
+          break;
 
-            case 15:
-              transport.close();
-              return _context7.abrupt("return", publicKey);
+        case 11:
+          _context7.prev = 11;
+          _context7.t0 = _context7["catch"](5);
+          transport.close();
+          return _context7.abrupt("return", _context7.t0);
 
-            case 17:
-            case "end":
-              return _context7.stop();
-          }
-        }
-      }, _callee7, this, [[5, 11]]);
-    }));
+        case 15:
+          transport.close();
+          return _context7.abrupt("return", publicKey);
 
-    function getAddress() {
-      return _getAddress.apply(this, arguments);
+        case 17:
+        case "end":
+          return _context7.stop();
+      }
     }
+  }, _callee7, this, [[5, 11]]);
+}));
+/**
+ * @description Sign an operation with the ledger
+ * @param {Object} ledgerParams The parameters of the signOperation function
+ * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
+ * @param {Boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
+ * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} The signed operation
+ */
 
-    return getAddress;
-  }(),
-  signOperation: function () {
-    var _signOperation = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee8() {
-      var _ref9,
-          _ref9$path,
-          path,
-          rawTxHex,
-          _ref9$curve,
-          curve,
-          transport,
-          tezosLedger,
-          signature,
-          _ref10,
-          _args8 = arguments;
+ledger.signOperation =
+/*#__PURE__*/
+_asyncToGenerator(
+/*#__PURE__*/
+regeneratorRuntime.mark(function _callee8() {
+  var _ref11,
+      _ref11$path,
+      path,
+      rawTxHex,
+      _ref11$curve,
+      curve,
+      transport,
+      tezosLedger,
+      signature,
+      _ref12,
+      _args8 = arguments;
 
-      return regeneratorRuntime.wrap(function _callee8$(_context8) {
-        while (1) {
-          switch (_context8.prev = _context8.next) {
-            case 0:
-              _ref9 = _args8.length > 0 && _args8[0] !== undefined ? _args8[0] : {}, _ref9$path = _ref9.path, path = _ref9$path === void 0 ? "44'/1729'/0'/0'" : _ref9$path, rawTxHex = _ref9.rawTxHex, _ref9$curve = _ref9.curve, curve = _ref9$curve === void 0 ? 0x00 : _ref9$curve;
-              _context8.next = 3;
-              return LedgerTransport.create();
+  return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    while (1) {
+      switch (_context8.prev = _context8.next) {
+        case 0:
+          _ref11 = _args8.length > 0 && _args8[0] !== undefined ? _args8[0] : {}, _ref11$path = _ref11.path, path = _ref11$path === void 0 ? "44'/1729'/0'/0'" : _ref11$path, rawTxHex = _ref11.rawTxHex, _ref11$curve = _ref11.curve, curve = _ref11$curve === void 0 ? 0x00 : _ref11$curve;
+          _context8.next = 3;
+          return LedgerTransport.create();
 
-            case 3:
-              transport = _context8.sent;
-              tezosLedger = new LedgerApp(transport);
-              _context8.prev = 5;
-              _context8.next = 8;
-              return tezosLedger.signOperation(path, "03".concat(rawTxHex), curve);
+        case 3:
+          transport = _context8.sent;
+          tezosLedger = new LedgerApp(transport);
+          _context8.prev = 5;
+          _context8.next = 8;
+          return tezosLedger.signOperation(path, "03".concat(rawTxHex), curve);
 
-            case 8:
-              _ref10 = _context8.sent;
-              signature = _ref10.signature;
-              _context8.next = 16;
-              break;
+        case 8:
+          _ref12 = _context8.sent;
+          signature = _ref12.signature;
+          _context8.next = 16;
+          break;
 
-            case 12:
-              _context8.prev = 12;
-              _context8.t0 = _context8["catch"](5);
-              transport.close();
-              return _context8.abrupt("return", _context8.t0);
+        case 12:
+          _context8.prev = 12;
+          _context8.t0 = _context8["catch"](5);
+          transport.close();
+          return _context8.abrupt("return", _context8.t0);
 
-            case 16:
-              transport.close();
-              return _context8.abrupt("return", {
-                signature: signature
-              });
+        case 16:
+          transport.close();
+          return _context8.abrupt("return", {
+            signature: signature
+          });
 
-            case 18:
-            case "end":
-              return _context8.stop();
-          }
-        }
-      }, _callee8, this, [[5, 12]]);
-    }));
-
-    function signOperation() {
-      return _signOperation.apply(this, arguments);
+        case 18:
+        case "end":
+          return _context8.stop();
+      }
     }
+  }, _callee8, this, [[5, 12]]);
+}));
+/**
+ * @description Show the version of the ledger
+ * @returns {Promise} The version info
+ */
 
-    return signOperation;
-  }(),
-  getVersion: function () {
-    var _getVersion = _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee9() {
-      var transport, tezosLedger, versionInfo;
-      return regeneratorRuntime.wrap(function _callee9$(_context9) {
-        while (1) {
-          switch (_context9.prev = _context9.next) {
-            case 0:
-              _context9.next = 2;
-              return LedgerTransport.create();
+ledger.getVersion =
+/*#__PURE__*/
+_asyncToGenerator(
+/*#__PURE__*/
+regeneratorRuntime.mark(function _callee9() {
+  var transport, tezosLedger, versionInfo;
+  return regeneratorRuntime.wrap(function _callee9$(_context9) {
+    while (1) {
+      switch (_context9.prev = _context9.next) {
+        case 0:
+          _context9.next = 2;
+          return LedgerTransport.create();
 
-            case 2:
-              transport = _context9.sent;
-              tezosLedger = new LedgerApp(transport);
-              _context9.prev = 4;
-              _context9.next = 7;
-              return tezosLedger.getVersion();
+        case 2:
+          transport = _context9.sent;
+          tezosLedger = new LedgerApp(transport);
+          _context9.prev = 4;
+          _context9.next = 7;
+          return tezosLedger.getVersion();
 
-            case 7:
-              versionInfo = _context9.sent;
-              _context9.next = 14;
-              break;
+        case 7:
+          versionInfo = _context9.sent;
+          _context9.next = 14;
+          break;
 
-            case 10:
-              _context9.prev = 10;
-              _context9.t0 = _context9["catch"](4);
-              transport.close();
-              return _context9.abrupt("return", _context9.t0);
+        case 10:
+          _context9.prev = 10;
+          _context9.t0 = _context9["catch"](4);
+          transport.close();
+          return _context9.abrupt("return", _context9.t0);
 
-            case 14:
-              transport.close();
-              return _context9.abrupt("return", versionInfo);
+        case 14:
+          transport.close();
+          return _context9.abrupt("return", versionInfo);
 
-            case 16:
-            case "end":
-              return _context9.stop();
-          }
-        }
-      }, _callee9, this, [[4, 10]]);
-    }));
-
-    function getVersion() {
-      return _getVersion.apply(this, arguments);
+        case 16:
+        case "end":
+          return _context9.stop();
+      }
     }
-
-    return getVersion;
-  }()
-};
+  }, _callee9, this, [[4, 10]]);
+}));
 var forgeMappings = {
   /* eslint-disable */
   opMapping: {
@@ -22757,122 +22890,122 @@ var forgeMappings = {
     '6E': 'address',
     '6F': 'SLICE'
   },
+  opMappingReverse: {
+    'SHA512': '10',
+    'ABS': '11',
+    'ADD': '12',
+    'AMOUNT': '13',
+    'AND': '14',
+    'BALANCE': '15',
+    'CAR': '16',
+    'CDR': '17',
+    'CHECK_SIGNATURE': '18',
+    'COMPARE': '19',
+    'DROP': '20',
+    'DUP': '21',
+    'EDIV': '22',
+    'EMPTY_MAP': '23',
+    'EMPTY_SET': '24',
+    'EQ': '25',
+    'EXEC': '26',
+    'FAILWITH': '27',
+    'GE': '28',
+    'GET': '29',
+    'INT': '30',
+    'LAMBDA': '31',
+    'LE': '32',
+    'LEFT': '33',
+    'LOOP': '34',
+    'LSL': '35',
+    'LSR': '36',
+    'LT': '37',
+    'MAP': '38',
+    'MEM': '39',
+    'NOW': '40',
+    'OR': '41',
+    'PAIR': '42',
+    'PUSH': '43',
+    'RIGHT': '44',
+    'SIZE': '45',
+    'SOME': '46',
+    'SOURCE': '47',
+    'SENDER': '48',
+    'SELF': '49',
+    'UPDATE': '50',
+    'XOR': '51',
+    'ITER': '52',
+    'LOOP_LEFT': '53',
+    'ADDRESS': '54',
+    'CONTRACT': '55',
+    'ISNAT': '56',
+    'CAST': '57',
+    'RENAME': '58',
+    'bool': '59',
+    'map': '60',
+    'big_map': '61',
+    'nat': '62',
+    'option': '63',
+    'or': '64',
+    'pair': '65',
+    'set': '66',
+    'signature': '67',
+    'string': '68',
+    'bytes': '69',
+    'parameter': '00',
+    'storage': '01',
+    'code': '02',
+    'False': '03',
+    'Elt': '04',
+    'Left': '05',
+    'None': '06',
+    'Pair': '07',
+    'Right': '08',
+    'Some': '09',
+    'True': '0A',
+    'Unit': '0B',
+    'PACK': '0C',
+    'UNPACK': '0D',
+    'BLAKE2B': '0E',
+    'SHA256': '0F',
+    'CONCAT': '1A',
+    'CONS': '1B',
+    'CREATE_ACCOUNT': '1C',
+    'CREATE_CONTRACT': '1D',
+    'IMPLICIT_ACCOUNT': '1E',
+    'DIP': '1F',
+    'GT': '2A',
+    'HASH_KEY': '2B',
+    'IF': '2C',
+    'IF_CONS': '2D',
+    'IF_LEFT': '2E',
+    'IF_NONE': '2F',
+    'MUL': '3A',
+    'NEG': '3B',
+    'NEQ': '3C',
+    'NIL': '3D',
+    'NONE': '3E',
+    'NOT': '3F',
+    'STEPS_TO_QUOTA': '4A',
+    'SUB': '4B',
+    'SWAP': '4C',
+    'TRANSFER_TOKENS': '4D',
+    'SET_DELEGATE': '4E',
+    'UNIT': '4F',
+    'contract': '5A',
+    'int': '5B',
+    'key': '5C',
+    'key_hash': '5D',
+    'lambda': '5E',
+    'list': '5F',
+    'mutez': '6A',
+    'timestamp': '6B',
+    'unit': '6C',
+    'operation': '6D',
+    'address': '6E',
+    'SLICE': '6F'
+  },
 
   /* eslint-enable */
-  opMappingReverse: {
-    SHA512: '10',
-    ABS: '11',
-    ADD: '12',
-    AMOUNT: '13',
-    AND: '14',
-    BALANCE: '15',
-    CAR: '16',
-    CDR: '17',
-    CHECK_SIGNATURE: '18',
-    COMPARE: '19',
-    DROP: '20',
-    DUP: '21',
-    EDIV: '22',
-    EMPTY_MAP: '23',
-    EMPTY_SET: '24',
-    EQ: '25',
-    EXEC: '26',
-    FAILWITH: '27',
-    GE: '28',
-    GET: '29',
-    INT: '30',
-    LAMBDA: '31',
-    LE: '32',
-    LEFT: '33',
-    LOOP: '34',
-    LSL: '35',
-    LSR: '36',
-    LT: '37',
-    MAP: '38',
-    MEM: '39',
-    NOW: '40',
-    OR: '41',
-    PAIR: '42',
-    PUSH: '43',
-    RIGHT: '44',
-    SIZE: '45',
-    SOME: '46',
-    SOURCE: '47',
-    SENDER: '48',
-    SELF: '49',
-    UPDATE: '50',
-    XOR: '51',
-    ITER: '52',
-    LOOP_LEFT: '53',
-    ADDRESS: '54',
-    CONTRACT: '55',
-    ISNAT: '56',
-    CAST: '57',
-    RENAME: '58',
-    bool: '59',
-    map: '60',
-    big_map: '61',
-    nat: '62',
-    option: '63',
-    or: '64',
-    pair: '65',
-    set: '66',
-    signature: '67',
-    string: '68',
-    bytes: '69',
-    parameter: '00',
-    storage: '01',
-    code: '02',
-    False: '03',
-    Elt: '04',
-    Left: '05',
-    None: '06',
-    Pair: '07',
-    Right: '08',
-    Some: '09',
-    True: '0A',
-    Unit: '0B',
-    PACK: '0C',
-    UNPACK: '0D',
-    BLAKE2B: '0E',
-    SHA256: '0F',
-    CONCAT: '1A',
-    CONS: '1B',
-    CREATE_ACCOUNT: '1C',
-    CREATE_CONTRACT: '1D',
-    IMPLICIT_ACCOUNT: '1E',
-    DIP: '1F',
-    GT: '2A',
-    HASH_KEY: '2B',
-    IF: '2C',
-    IF_CONS: '2D',
-    IF_LEFT: '2E',
-    IF_NONE: '2F',
-    MUL: '3A',
-    NEG: '3B',
-    NEQ: '3C',
-    NIL: '3D',
-    NONE: '3E',
-    NOT: '3F',
-    STEPS_TO_QUOTA: '4A',
-    SUB: '4B',
-    SWAP: '4C',
-    TRANSFER_TOKENS: '4D',
-    SET_DELEGATE: '4E',
-    UNIT: '4F',
-    contract: '5A',
-    int: '5B',
-    key: '5C',
-    key_hash: '5D',
-    lambda: '5E',
-    list: '5F',
-    mutez: '6A',
-    timestamp: '6B',
-    unit: '6C',
-    operation: '6D',
-    address: '6E',
-    SLICE: '6F'
-  },
   primMapping: {
     '00': 'int',
     '01': 'string',
@@ -22946,31 +23079,68 @@ var forgeMappings = {
   }
 };
 var forge = {};
+/**
+ * @description Convert bytes from Int32
+ * @param {Number} num Number to convert to bytes
+ * @returns {Object} The converted number
+ */
 
 forge.toBytesInt32 = function (num) {
   num = parseInt(num, 10);
   var arr = new Uint8Array([(num & 0xff000000) >> 24, (num & 0x00ff0000) >> 16, (num & 0x0000ff00) >> 8, num & 0x000000ff]);
   return arr.buffer;
 };
+/**
+ * @description Convert hex from Int32
+ * @param {Number} num Number to convert to hex
+ * @returns {String} The converted number
+ */
+
 
 forge.toBytesInt32Hex = function (num) {
   return utility.buf2hex(forge.toBytesInt32(num));
 };
+/**
+ * @description Forge boolean
+ * @param {Boolean} bool Boolean value to convert
+ * @returns {String} The converted boolean
+ */
 
-forge.bool = function (b) {
-  return b ? 'ff' : '00';
+
+forge.bool = function (bool) {
+  return bool ? 'ff' : '00';
 };
+/**
+ * @description Forge script bytes
+ * @param {Object} script Script to forge
+ * @param {Object} script.code Script code
+ * @param {Object} script.storage Script storage
+ * @returns {String} Forged script bytes
+ */
 
-forge.script = function (s) {
-  var t1 = tezos.encodeRawBytes(s.code).toLowerCase();
-  var t2 = tezos.encodeRawBytes(s.storage).toLowerCase();
+
+forge.script = function (script) {
+  var t1 = tezos.encodeRawBytes(script.code).toLowerCase();
+  var t2 = tezos.encodeRawBytes(script.storage).toLowerCase();
   return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
 };
+/**
+ * @description Forge parameter bytes
+ * @param {String} parameter Script to forge
+ * @returns {String} Forged parameter bytes
+ */
 
-forge.parameters = function (p) {
-  var t = tezos.encodeRawBytes(p).toLowerCase();
+
+forge.parameters = function (parameter) {
+  var t = tezos.encodeRawBytes(parameter).toLowerCase();
   return forge.toBytesInt32Hex(t.length / 2) + t;
 };
+/**
+ * @description Forge public key hash bytes
+ * @param {String} pkh Public key hash to forge
+ * @returns {String} Forged public key hash bytes
+ */
+
 
 forge.publicKeyHash = function (pkh) {
   var fpkh;
@@ -22979,21 +23149,33 @@ forge.publicKeyHash = function (pkh) {
   fpkh += utility.buf2hex(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
   return fpkh;
 };
+/**
+ * @description Forge address bytes
+ * @param {String} address Address to forge
+ * @returns {String} Forged address bytes
+ */
 
-forge.address = function (a) {
+
+forge.address = function (address) {
   var fa;
 
-  if (a.substr(0, 1) === 'K') {
+  if (address.substr(0, 1) === 'K') {
     fa = '01';
-    fa += utility.buf2hex(utility.b58cdecode(a, prefix.KT));
+    fa += utility.buf2hex(utility.b58cdecode(address, prefix.KT));
     fa += '00';
   } else {
     fa = '00';
-    fa += forge.publicKeyHash(a);
+    fa += forge.publicKeyHash(address);
   }
 
   return fa;
 };
+/**
+ * @description Forge zarith bytes
+ * @param {Number} n Zarith to forge
+ * @returns {String} Forged zarith bytes
+ */
+
 
 forge.zarith = function (n) {
   var fn = '';
@@ -23016,9 +23198,15 @@ forge.zarith = function (n) {
 
   return fn;
 };
+/**
+ * @description Forge public key bytes
+ * @param {Number} pk Public key to forge
+ * @returns {String} Forged public key bytes
+ */
+
 
 forge.publicKey = function (pk) {
-  var fpk; // let t;
+  var fpk;
 
   switch (pk.substr(0, 2)) {
     case 'ed':
@@ -23040,10 +23228,15 @@ forge.publicKey = function (pk) {
   fpk += utility.buf2hex(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
   return fpk;
 };
-/* eslint-disable */
+/**
+ * @description Forge operation bytes
+ * @param {Number} op Operation to forge
+ * @returns {String} Forged operation bytes
+ */
 
 
 forge.op = function (op) {
+  /* eslint-disable */
   var fop;
   fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
 
@@ -23147,16 +23340,22 @@ forge.op = function (op) {
   }
 
   return fop;
+  /* eslint-enable */
 };
-/* eslint-enable */
-
 
 var tezos = {};
+/**
+ * @description Forge operation bytes
+ * @param {Object} head The current head of the chain
+ * @param {Object} opOb The operation object(s)
+ * @param {Boolean} [debug=false] Enable extra logging for debugging
+ * @returns {String} Forged operation bytes
+ */
 
 tezos.forge =
 /*#__PURE__*/
 function () {
-  var _ref11 = _asyncToGenerator(
+  var _ref14 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee10(head, opOb) {
     var debug,
@@ -23219,9 +23418,15 @@ function () {
   }));
 
   return function (_x13, _x14) {
-    return _ref11.apply(this, arguments);
+    return _ref14.apply(this, arguments);
   };
 }();
+/**
+ * @description Decode raw bytes
+ * @param {String} bytes The bytes to decode
+ * @returns {Object} Decoded raw bytes
+ */
+
 
 tezos.decodeRawBytes = function (bytes) {
   bytes = bytes.toUpperCase();
@@ -23359,6 +23564,12 @@ tezos.decodeRawBytes = function (bytes) {
 
   return rec();
 };
+/**
+ * @description Encode raw bytes
+ * @param {Object} input The value to encode
+ * @returns {Object} Encoded value as bytes
+ */
+
 
 tezos.encodeRawBytes = function (input) {
   var rec = function rec(inputArg) {
@@ -23438,33 +23649,50 @@ tezos.encodeRawBytes = function (input) {
 };
 
 var rpc = {};
+/**
+ * @description Originate a new account
+ * @param {Object} paramObject The parameters for the origination
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {Boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject={}] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 
 rpc.account =
 /*#__PURE__*/
 function () {
-  var _ref13 = _asyncToGenerator(
+  var _ref16 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee11(_ref12) {
+  regeneratorRuntime.mark(function _callee11(_ref15) {
     var keys,
         amount,
         spendable,
         delegatable,
         delegate,
-        _ref12$fee,
+        _ref15$fee,
         fee,
-        _ref12$gasLimit,
+        _ref15$gasLimit,
         gasLimit,
-        _ref12$storageLimit,
+        _ref15$storageLimit,
         storageLimit,
-        _ref14,
-        _ref14$useLedger,
+        _ref17,
+        _ref17$useLedger,
         useLedger,
-        _ref14$path,
+        _ref17$path,
         path,
-        _ref14$curve,
+        _ref17$curve,
         curve,
         publicKeyHash,
-        _ref15,
+        _ref18,
         address,
         operation,
         _args11 = arguments;
@@ -23473,8 +23701,8 @@ function () {
       while (1) {
         switch (_context11.prev = _context11.next) {
           case 0:
-            keys = _ref12.keys, amount = _ref12.amount, spendable = _ref12.spendable, delegatable = _ref12.delegatable, delegate = _ref12.delegate, _ref12$fee = _ref12.fee, fee = _ref12$fee === void 0 ? DEFAULT_FEE : _ref12$fee, _ref12$gasLimit = _ref12.gasLimit, gasLimit = _ref12$gasLimit === void 0 ? '10000' : _ref12$gasLimit, _ref12$storageLimit = _ref12.storageLimit, storageLimit = _ref12$storageLimit === void 0 ? '257' : _ref12$storageLimit;
-            _ref14 = _args11.length > 1 && _args11[1] !== undefined ? _args11[1] : {}, _ref14$useLedger = _ref14.useLedger, useLedger = _ref14$useLedger === void 0 ? false : _ref14$useLedger, _ref14$path = _ref14.path, path = _ref14$path === void 0 ? "44'/1729'/0'/0'" : _ref14$path, _ref14$curve = _ref14.curve, curve = _ref14$curve === void 0 ? 0x00 : _ref14$curve;
+            keys = _ref15.keys, amount = _ref15.amount, spendable = _ref15.spendable, delegatable = _ref15.delegatable, delegate = _ref15.delegate, _ref15$fee = _ref15.fee, fee = _ref15$fee === void 0 ? DEFAULT_FEE : _ref15$fee, _ref15$gasLimit = _ref15.gasLimit, gasLimit = _ref15$gasLimit === void 0 ? 10000 : _ref15$gasLimit, _ref15$storageLimit = _ref15.storageLimit, storageLimit = _ref15$storageLimit === void 0 ? 257 : _ref15$storageLimit;
+            _ref17 = _args11.length > 1 && _args11[1] !== undefined ? _args11[1] : {}, _ref17$useLedger = _ref17.useLedger, useLedger = _ref17$useLedger === void 0 ? false : _ref17$useLedger, _ref17$path = _ref17.path, path = _ref17$path === void 0 ? "44'/1729'/0'/0'" : _ref17$path, _ref17$curve = _ref17.curve, curve = _ref17$curve === void 0 ? 0x00 : _ref17$curve;
             publicKeyHash = keys && keys.pkh;
 
             if (!useLedger) {
@@ -23489,8 +23717,8 @@ function () {
             });
 
           case 6:
-            _ref15 = _context11.sent;
-            address = _ref15.address;
+            _ref18 = _context11.sent;
+            address = _ref18.address;
             publicKeyHash = address;
 
           case 9:
@@ -23498,8 +23726,8 @@ function () {
               kind: 'origination',
               balance: "".concat(utility.mutez(amount)),
               fee: "".concat(fee),
-              gas_limit: gasLimit,
-              storage_limit: storageLimit
+              gas_limit: "".concat(gasLimit),
+              storage_limit: "".concat(storageLimit)
             };
 
             if (node.isZeronet) {
@@ -23530,18 +23758,30 @@ function () {
   }));
 
   return function (_x15) {
-    return _ref13.apply(this, arguments);
+    return _ref16.apply(this, arguments);
   };
 }();
+/**
+ * @description Get the balance for an address
+ * @param {String} address The address for which to retrieve the balance
+ * @returns {Promise} The balance of the address
+ */
 
-rpc.getBalance = function (tz1) {
-  return node.query("/chains/main/blocks/head/context/contracts/".concat(tz1, "/balance")).then(function (r) {
+
+rpc.getBalance = function (address) {
+  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/balance")).then(function (r) {
     return r;
   });
 };
+/**
+ * @description Get the delegate for an address
+ * @param {String} address The address for which to retrieve the delegate
+ * @returns {Promise} The address of the delegate if a delegate is registered
+ */
 
-rpc.getDelegate = function (tz1) {
-  return node.query("/chains/main/blocks/head/context/contracts/".concat(tz1, "/delegate")).then(function (r) {
+
+rpc.getDelegate = function (address) {
+  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/delegate")).then(function (r) {
     if (r) {
       return r;
     }
@@ -23551,34 +23791,65 @@ rpc.getDelegate = function (tz1) {
     return false;
   });
 };
+/**
+ * @description Get the current head block of the chain
+ * @returns {Promise} The current head block
+ */
+
 
 rpc.getHead = function () {
   return node.query('/chains/main/blocks/head');
 };
+/**
+ * @description Get the current head block hash of the chain
+ * @returns {Promise} The current head block hash
+ */
+
 
 rpc.getHeadHash = function () {
   return node.query('/chains/main/blocks/head/hash');
 };
+/**
+ * @description Get the current head block hash of the chain
+ * @param {String} path The path to query
+ * @param {Object} payload The payload of the request
+ * @returns {Promise} The response of the rpc call
+ */
 
-rpc.call = function (e, d) {
-  return node.query(e, d);
+
+rpc.call = function (path, payload) {
+  return node.query(path, payload);
 };
+/**
+ * @description Send an operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object|Array} paramObject.operation The operation to include in the transaction
+ * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
+ * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 
-rpc.sendOperation = function (_ref16) {
-  var from = _ref16.from,
-      operation = _ref16.operation,
-      _ref16$keys = _ref16.keys,
-      keys = _ref16$keys === void 0 ? false : _ref16$keys,
-      _ref16$skipPrevalidat = _ref16.skipPrevalidation,
-      skipPrevalidation = _ref16$skipPrevalidat === void 0 ? false : _ref16$skipPrevalidat;
 
-  var _ref17 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref17$useLedger = _ref17.useLedger,
-      useLedger = _ref17$useLedger === void 0 ? false : _ref17$useLedger,
-      _ref17$path = _ref17.path,
-      path = _ref17$path === void 0 ? "44'/1729'/0'/0'" : _ref17$path,
-      _ref17$curve = _ref17.curve,
-      curve = _ref17$curve === void 0 ? 0x00 : _ref17$curve;
+rpc.sendOperation = function (_ref19) {
+  var from = _ref19.from,
+      operation = _ref19.operation,
+      _ref19$keys = _ref19.keys,
+      keys = _ref19$keys === void 0 ? false : _ref19$keys,
+      _ref19$skipPrevalidat = _ref19.skipPrevalidation,
+      skipPrevalidation = _ref19$skipPrevalidat === void 0 ? false : _ref19$skipPrevalidat;
+
+  var _ref20 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref20$useLedger = _ref20.useLedger,
+      useLedger = _ref20$useLedger === void 0 ? false : _ref20$useLedger,
+      _ref20$path = _ref20.path,
+      path = _ref20$path === void 0 ? "44'/1729'/0'/0'" : _ref20$path,
+      _ref20$curve = _ref20.curve,
+      curve = _ref20$curve === void 0 ? 0x00 : _ref20$curve;
 
   var counter;
   var sopbytes;
@@ -23607,16 +23878,16 @@ rpc.sendOperation = function (_ref16) {
   return Promise.all(promises).then(
   /*#__PURE__*/
   function () {
-    var _ref19 = _asyncToGenerator(
+    var _ref22 = _asyncToGenerator(
     /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee12(_ref18) {
-      var _ref20, header, headCounter, manager, publicKey, ledgerAddress, constructOps;
+    regeneratorRuntime.mark(function _callee12(_ref21) {
+      var _ref23, header, headCounter, manager, publicKey, ledgerAddress, constructOps;
 
       return regeneratorRuntime.wrap(function _callee12$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
             case 0:
-              _ref20 = _slicedToArray(_ref18, 3), header = _ref20[0], headCounter = _ref20[1], manager = _ref20[2];
+              _ref23 = _slicedToArray(_ref21, 3), header = _ref23[0], headCounter = _ref23[1], manager = _ref23[2];
               head = header;
 
               if (!(requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined')) {
@@ -23692,15 +23963,15 @@ rpc.sendOperation = function (_ref16) {
     }));
 
     return function (_x16) {
-      return _ref19.apply(this, arguments);
+      return _ref22.apply(this, arguments);
     };
   }()).then(
   /*#__PURE__*/
   function () {
-    var _ref21 = _asyncToGenerator(
+    var _ref24 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee13(opbytes) {
-      var _ref22, signature, signed;
+      var _ref25, signature, signed;
 
       return regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
@@ -23719,8 +23990,8 @@ rpc.sendOperation = function (_ref16) {
               });
 
             case 3:
-              _ref22 = _context13.sent;
-              signature = _ref22.signature;
+              _ref25 = _context13.sent;
+              signature = _ref25.signature;
               sopbytes = "".concat(opbytes).concat(signature);
               _context13.next = 23;
               break;
@@ -23785,10 +24056,17 @@ rpc.sendOperation = function (_ref16) {
     }));
 
     return function (_x17) {
-      return _ref21.apply(this, arguments);
+      return _ref24.apply(this, arguments);
     };
   }());
 };
+/**
+ * @description Inject an operation
+ * @param {Object} opOb The operation object
+ * @param {Object} sopbytes The signed operation bytes
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.inject = function (opOb, sopbytes) {
   var opResponse = [];
@@ -23826,6 +24104,12 @@ rpc.inject = function (opOb, sopbytes) {
     };
   });
 };
+/**
+ * @description Inject an operation without prevalidation
+ * @param {Object} sopbytes The signed operation bytes
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.silentInject = function (sopbytes) {
   return node.query('/injection/operation', sopbytes).then(function (hash) {
@@ -23834,38 +24118,58 @@ rpc.silentInject = function (sopbytes) {
     };
   });
 };
+/**
+ * @description Transfer operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {String} paramObject.to The address of the recipient
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {String} [paramObject.parameter=false] The parameter for the transaction
+ * @param {Number} [paramObject.gasLimit=10100] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
+ * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 
-rpc.transfer = function (_ref23) {
-  var from = _ref23.from,
-      keys = _ref23.keys,
-      to = _ref23.to,
-      amount = _ref23.amount,
-      _ref23$fee = _ref23.fee,
-      fee = _ref23$fee === void 0 ? DEFAULT_FEE : _ref23$fee,
-      _ref23$parameter = _ref23.parameter,
-      parameter = _ref23$parameter === void 0 ? false : _ref23$parameter,
-      _ref23$gasLimit = _ref23.gasLimit,
-      gasLimit = _ref23$gasLimit === void 0 ? '10100' : _ref23$gasLimit,
-      _ref23$storageLimit = _ref23.storageLimit,
-      storageLimit = _ref23$storageLimit === void 0 ? '0' : _ref23$storageLimit,
-      _ref23$mutez = _ref23.mutez,
-      mutez = _ref23$mutez === void 0 ? false : _ref23$mutez,
-      _ref23$rawParam = _ref23.rawParam,
-      rawParam = _ref23$rawParam === void 0 ? false : _ref23$rawParam;
 
-  var _ref24 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref24$useLedger = _ref24.useLedger,
-      useLedger = _ref24$useLedger === void 0 ? false : _ref24$useLedger,
-      _ref24$path = _ref24.path,
-      path = _ref24$path === void 0 ? "44'/1729'/0'/0'" : _ref24$path,
-      _ref24$curve = _ref24.curve,
-      curve = _ref24$curve === void 0 ? 0x00 : _ref24$curve;
+rpc.transfer = function (_ref26) {
+  var from = _ref26.from,
+      keys = _ref26.keys,
+      to = _ref26.to,
+      amount = _ref26.amount,
+      _ref26$fee = _ref26.fee,
+      fee = _ref26$fee === void 0 ? DEFAULT_FEE : _ref26$fee,
+      _ref26$parameter = _ref26.parameter,
+      parameter = _ref26$parameter === void 0 ? false : _ref26$parameter,
+      _ref26$gasLimit = _ref26.gasLimit,
+      gasLimit = _ref26$gasLimit === void 0 ? 10100 : _ref26$gasLimit,
+      _ref26$storageLimit = _ref26.storageLimit,
+      storageLimit = _ref26$storageLimit === void 0 ? 0 : _ref26$storageLimit,
+      _ref26$mutez = _ref26.mutez,
+      mutez = _ref26$mutez === void 0 ? false : _ref26$mutez,
+      _ref26$rawParam = _ref26.rawParam,
+      rawParam = _ref26$rawParam === void 0 ? false : _ref26$rawParam;
+
+  var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref27$useLedger = _ref27.useLedger,
+      useLedger = _ref27$useLedger === void 0 ? false : _ref27$useLedger,
+      _ref27$path = _ref27.path,
+      path = _ref27$path === void 0 ? "44'/1729'/0'/0'" : _ref27$path,
+      _ref27$curve = _ref27.curve,
+      curve = _ref27$curve === void 0 ? 0x00 : _ref27$curve;
 
   var operation = {
     kind: 'transaction',
     fee: "".concat(fee),
-    gas_limit: gasLimit,
-    storage_limit: storageLimit,
+    gas_limit: "".concat(gasLimit),
+    storage_limit: "".concat(storageLimit),
     amount: mutez ? "".concat(utility.mutez(amount)) : "".concat(amount),
     destination: to
   };
@@ -23884,6 +24188,13 @@ rpc.transfer = function (_ref23) {
     curve: curve
   });
 };
+/**
+ * @description Activate an account
+ * @param {Object} keys The keys containing the public key hash
+ * @param {String} secret The secret to activate the account
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.activate = function (keys, secret) {
   var operation = {
@@ -23897,39 +24208,59 @@ rpc.activate = function (keys, secret) {
     keys: keys
   });
 };
+/**
+ * @description Originate a new contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.code The code to deploy for the contract
+ * @param {String} paramObject.init The initial storage of the contract
+ * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.originate =
 /*#__PURE__*/
 function () {
-  var _ref26 = _asyncToGenerator(
+  var _ref29 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee14(_ref25) {
+  regeneratorRuntime.mark(function _callee14(_ref28) {
     var keys,
         amount,
         code,
         init,
-        _ref25$spendable,
+        _ref28$spendable,
         spendable,
-        _ref25$delegatable,
+        _ref28$delegatable,
         delegatable,
         delegate,
-        _ref25$fee,
+        _ref28$fee,
         fee,
-        _ref25$gasLimit,
+        _ref28$gasLimit,
         gasLimit,
-        _ref25$storageLimit,
+        _ref28$storageLimit,
         storageLimit,
-        _ref27,
-        _ref27$useLedger,
+        _ref30,
+        _ref30$useLedger,
         useLedger,
-        _ref27$path,
+        _ref30$path,
         path,
-        _ref27$curve,
+        _ref30$curve,
         curve,
         _code,
         script,
         publicKeyHash,
-        _ref28,
+        _ref31,
         address,
         operation,
         _args14 = arguments;
@@ -23938,8 +24269,8 @@ function () {
       while (1) {
         switch (_context14.prev = _context14.next) {
           case 0:
-            keys = _ref25.keys, amount = _ref25.amount, code = _ref25.code, init = _ref25.init, _ref25$spendable = _ref25.spendable, spendable = _ref25$spendable === void 0 ? false : _ref25$spendable, _ref25$delegatable = _ref25.delegatable, delegatable = _ref25$delegatable === void 0 ? false : _ref25$delegatable, delegate = _ref25.delegate, _ref25$fee = _ref25.fee, fee = _ref25$fee === void 0 ? DEFAULT_FEE : _ref25$fee, _ref25$gasLimit = _ref25.gasLimit, gasLimit = _ref25$gasLimit === void 0 ? '10000' : _ref25$gasLimit, _ref25$storageLimit = _ref25.storageLimit, storageLimit = _ref25$storageLimit === void 0 ? '257' : _ref25$storageLimit;
-            _ref27 = _args14.length > 1 && _args14[1] !== undefined ? _args14[1] : {}, _ref27$useLedger = _ref27.useLedger, useLedger = _ref27$useLedger === void 0 ? false : _ref27$useLedger, _ref27$path = _ref27.path, path = _ref27$path === void 0 ? "44'/1729'/0'/0'" : _ref27$path, _ref27$curve = _ref27.curve, curve = _ref27$curve === void 0 ? 0x00 : _ref27$curve;
+            keys = _ref28.keys, amount = _ref28.amount, code = _ref28.code, init = _ref28.init, _ref28$spendable = _ref28.spendable, spendable = _ref28$spendable === void 0 ? false : _ref28$spendable, _ref28$delegatable = _ref28.delegatable, delegatable = _ref28$delegatable === void 0 ? false : _ref28$delegatable, delegate = _ref28.delegate, _ref28$fee = _ref28.fee, fee = _ref28$fee === void 0 ? DEFAULT_FEE : _ref28$fee, _ref28$gasLimit = _ref28.gasLimit, gasLimit = _ref28$gasLimit === void 0 ? 10000 : _ref28$gasLimit, _ref28$storageLimit = _ref28.storageLimit, storageLimit = _ref28$storageLimit === void 0 ? 257 : _ref28$storageLimit;
+            _ref30 = _args14.length > 1 && _args14[1] !== undefined ? _args14[1] : {}, _ref30$useLedger = _ref30.useLedger, useLedger = _ref30$useLedger === void 0 ? false : _ref30$useLedger, _ref30$path = _ref30.path, path = _ref30$path === void 0 ? "44'/1729'/0'/0'" : _ref30$path, _ref30$curve = _ref30.curve, curve = _ref30$curve === void 0 ? 0x00 : _ref30$curve;
             _code = utility.ml2mic(code);
             script = {
               code: _code,
@@ -23959,16 +24290,16 @@ function () {
             });
 
           case 8:
-            _ref28 = _context14.sent;
-            address = _ref28.address;
+            _ref31 = _context14.sent;
+            address = _ref31.address;
             publicKeyHash = address;
 
           case 11:
             operation = {
               kind: 'origination',
               fee: "".concat(fee),
-              storage_limit: storageLimit,
-              gas_limit: gasLimit,
+              gas_limit: "".concat(gasLimit),
+              storage_limit: "".concat(storageLimit),
               balance: "".concat(utility.mutez(amount)),
               spendable: spendable,
               delegatable: delegatable,
@@ -24001,34 +24332,50 @@ function () {
   }));
 
   return function (_x18) {
-    return _ref26.apply(this, arguments);
+    return _ref29.apply(this, arguments);
   };
 }();
+/**
+ * @description Set a delegate for an account
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.setDelegate =
 /*#__PURE__*/
 function () {
-  var _ref30 = _asyncToGenerator(
+  var _ref33 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee15(_ref29) {
+  regeneratorRuntime.mark(function _callee15(_ref32) {
     var from,
         keys,
         delegate,
-        _ref29$fee,
+        _ref32$fee,
         fee,
-        _ref29$gasLimit,
+        _ref32$gasLimit,
         gasLimit,
-        _ref29$storageLimit,
+        _ref32$storageLimit,
         storageLimit,
-        _ref31,
-        _ref31$useLedger,
+        _ref34,
+        _ref34$useLedger,
         useLedger,
-        _ref31$path,
+        _ref34$path,
         path,
-        _ref31$curve,
+        _ref34$curve,
         curve,
         publicKeyHash,
-        _ref32,
+        _ref35,
         address,
         operation,
         _args15 = arguments;
@@ -24037,8 +24384,8 @@ function () {
       while (1) {
         switch (_context15.prev = _context15.next) {
           case 0:
-            from = _ref29.from, keys = _ref29.keys, delegate = _ref29.delegate, _ref29$fee = _ref29.fee, fee = _ref29$fee === void 0 ? DEFAULT_FEE : _ref29$fee, _ref29$gasLimit = _ref29.gasLimit, gasLimit = _ref29$gasLimit === void 0 ? '10000' : _ref29$gasLimit, _ref29$storageLimit = _ref29.storageLimit, storageLimit = _ref29$storageLimit === void 0 ? '0' : _ref29$storageLimit;
-            _ref31 = _args15.length > 1 && _args15[1] !== undefined ? _args15[1] : {}, _ref31$useLedger = _ref31.useLedger, useLedger = _ref31$useLedger === void 0 ? false : _ref31$useLedger, _ref31$path = _ref31.path, path = _ref31$path === void 0 ? "44'/1729'/0'/0'" : _ref31$path, _ref31$curve = _ref31.curve, curve = _ref31$curve === void 0 ? 0x00 : _ref31$curve;
+            from = _ref32.from, keys = _ref32.keys, delegate = _ref32.delegate, _ref32$fee = _ref32.fee, fee = _ref32$fee === void 0 ? DEFAULT_FEE : _ref32$fee, _ref32$gasLimit = _ref32.gasLimit, gasLimit = _ref32$gasLimit === void 0 ? 10000 : _ref32$gasLimit, _ref32$storageLimit = _ref32.storageLimit, storageLimit = _ref32$storageLimit === void 0 ? 0 : _ref32$storageLimit;
+            _ref34 = _args15.length > 1 && _args15[1] !== undefined ? _args15[1] : {}, _ref34$useLedger = _ref34.useLedger, useLedger = _ref34$useLedger === void 0 ? false : _ref34$useLedger, _ref34$path = _ref34.path, path = _ref34$path === void 0 ? "44'/1729'/0'/0'" : _ref34$path, _ref34$curve = _ref34.curve, curve = _ref34$curve === void 0 ? 0x00 : _ref34$curve;
             publicKeyHash = keys && keys.pkh;
 
             if (!useLedger) {
@@ -24053,16 +24400,16 @@ function () {
             });
 
           case 6:
-            _ref32 = _context15.sent;
-            address = _ref32.address;
+            _ref35 = _context15.sent;
+            address = _ref35.address;
             publicKeyHash = address;
 
           case 9:
             operation = {
               kind: 'delegation',
               fee: "".concat(fee),
-              gas_limit: gasLimit,
-              storage_limit: storageLimit,
+              gas_limit: "".concat(gasLimit),
+              storage_limit: "".concat(storageLimit),
               delegate: typeof delegate !== 'undefined' ? delegate : publicKeyHash
             };
             return _context15.abrupt("return", rpc.sendOperation({
@@ -24084,32 +24431,46 @@ function () {
   }));
 
   return function (_x19) {
-    return _ref30.apply(this, arguments);
+    return _ref33.apply(this, arguments);
   };
 }();
+/**
+ * @description Register an account as a delegate
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
+
 
 rpc.registerDelegate =
 /*#__PURE__*/
 function () {
-  var _ref34 = _asyncToGenerator(
+  var _ref37 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee16(_ref33) {
+  regeneratorRuntime.mark(function _callee16(_ref36) {
     var keys,
-        _ref33$fee,
+        _ref36$fee,
         fee,
-        _ref33$gasLimit,
+        _ref36$gasLimit,
         gasLimit,
-        _ref33$storageLimit,
+        _ref36$storageLimit,
         storageLimit,
-        _ref35,
-        _ref35$useLedger,
+        _ref38,
+        _ref38$useLedger,
         useLedger,
-        _ref35$path,
+        _ref38$path,
         path,
-        _ref35$curve,
+        _ref38$curve,
         curve,
         publicKeyHash,
-        _ref36,
+        _ref39,
         address,
         operation,
         _args16 = arguments;
@@ -24118,8 +24479,8 @@ function () {
       while (1) {
         switch (_context16.prev = _context16.next) {
           case 0:
-            keys = _ref33.keys, _ref33$fee = _ref33.fee, fee = _ref33$fee === void 0 ? DEFAULT_FEE : _ref33$fee, _ref33$gasLimit = _ref33.gasLimit, gasLimit = _ref33$gasLimit === void 0 ? '10000' : _ref33$gasLimit, _ref33$storageLimit = _ref33.storageLimit, storageLimit = _ref33$storageLimit === void 0 ? '0' : _ref33$storageLimit;
-            _ref35 = _args16.length > 1 && _args16[1] !== undefined ? _args16[1] : {}, _ref35$useLedger = _ref35.useLedger, useLedger = _ref35$useLedger === void 0 ? false : _ref35$useLedger, _ref35$path = _ref35.path, path = _ref35$path === void 0 ? "44'/1729'/0'/0'" : _ref35$path, _ref35$curve = _ref35.curve, curve = _ref35$curve === void 0 ? 0x00 : _ref35$curve;
+            keys = _ref36.keys, _ref36$fee = _ref36.fee, fee = _ref36$fee === void 0 ? DEFAULT_FEE : _ref36$fee, _ref36$gasLimit = _ref36.gasLimit, gasLimit = _ref36$gasLimit === void 0 ? 10000 : _ref36$gasLimit, _ref36$storageLimit = _ref36.storageLimit, storageLimit = _ref36$storageLimit === void 0 ? 0 : _ref36$storageLimit;
+            _ref38 = _args16.length > 1 && _args16[1] !== undefined ? _args16[1] : {}, _ref38$useLedger = _ref38.useLedger, useLedger = _ref38$useLedger === void 0 ? false : _ref38$useLedger, _ref38$path = _ref38.path, path = _ref38$path === void 0 ? "44'/1729'/0'/0'" : _ref38$path, _ref38$curve = _ref38.curve, curve = _ref38$curve === void 0 ? 0x00 : _ref38$curve;
             publicKeyHash = keys && keys.pkh;
 
             if (!useLedger) {
@@ -24134,17 +24495,17 @@ function () {
             });
 
           case 6:
-            _ref36 = _context16.sent;
-            address = _ref36.address;
+            _ref39 = _context16.sent;
+            address = _ref39.address;
             publicKeyHash = address;
 
           case 9:
             operation = {
               kind: 'delegation',
               fee: "".concat(fee),
-              gas_limit: gasLimit,
-              storage_limit: storageLimit,
-              delegate: publicKeyHash
+              gas_limit: "".concat(gasLimit),
+              storage_limit: "".concat(storageLimit),
+              delegate: "".concat(publicKeyHash)
             };
             return _context16.abrupt("return", rpc.sendOperation({
               from: publicKeyHash,
@@ -24165,9 +24526,15 @@ function () {
   }));
 
   return function (_x20) {
-    return _ref34.apply(this, arguments);
+    return _ref37.apply(this, arguments);
   };
 }();
+/**
+ * @description Typechecks the provided code
+ * @param {String} code The code to typecheck
+ * @returns {Promise} Typecheck result
+ */
+
 
 rpc.typecheckCode = function (code) {
   var _code = utility.ml2mic(code);
@@ -24177,6 +24544,13 @@ rpc.typecheckCode = function (code) {
     gas: '10000'
   });
 };
+/**
+ * @description Serializes a piece of data to a binary representation
+ * @param {String} data
+ * @param {String} type
+ * @returns {Promise} Serialized data
+ */
+
 
 rpc.packData = function (data, type) {
   var check = {
@@ -24186,6 +24560,13 @@ rpc.packData = function (data, type) {
   };
   return node.query('/chains/main/blocks/head/helpers/scripts/pack_data', check);
 };
+/**
+ * @description Typechecks data against a type
+ * @param {String} data
+ * @param {String} type
+ * @returns {Promise} Typecheck result
+ */
+
 
 rpc.typecheckData = function (data, type) {
   var check = {
@@ -24195,6 +24576,16 @@ rpc.typecheckData = function (data, type) {
   };
   return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_data', check);
 };
+/**
+ * @description Runs or traces code against an input and storage
+ * @param {String} code Code to run
+ * @param {Number} amount Amount to send
+ * @param {String} input Input to run though code
+ * @param {String} storage State of storage
+ * @param {Boolean} [trace=false] Whether to trace
+ * @returns {Promise} Run results
+ */
+
 
 rpc.runCode = function (code, amount, input, storage) {
   var trace = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
@@ -24212,7 +24603,7 @@ var contract = {};
 contract.hash =
 /*#__PURE__*/
 function () {
-  var _ref37 = _asyncToGenerator(
+  var _ref40 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee17(operationHash, ind) {
     var sodium, ob, tt, i;
@@ -24244,32 +24635,52 @@ function () {
   }));
 
   return function (_x21, _x22) {
-    return _ref37.apply(this, arguments);
+    return _ref40.apply(this, arguments);
   };
 }();
+/**
+ * @description Originate a new contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.code The code to deploy for the contract
+ * @param {String} paramObject.init The initial storage of the contract
+ * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
+ * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
+ * @param {String} [paramObject.delegate] The delegate for the new account
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=10000] The storage limit to set for the transaction
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 
-contract.originate = function (_ref38) {
-  var keys = _ref38.keys,
-      amount = _ref38.amount,
-      code = _ref38.code,
-      init = _ref38.init,
-      spendable = _ref38.spendable,
-      delegatable = _ref38.delegatable,
-      delegate = _ref38.delegate,
-      _ref38$fee = _ref38.fee,
-      fee = _ref38$fee === void 0 ? DEFAULT_FEE : _ref38$fee,
-      _ref38$gasLimit = _ref38.gasLimit,
-      gasLimit = _ref38$gasLimit === void 0 ? '10000' : _ref38$gasLimit,
-      _ref38$storageLimit = _ref38.storageLimit,
-      storageLimit = _ref38$storageLimit === void 0 ? '10000' : _ref38$storageLimit;
 
-  var _ref39 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref39$useLedger = _ref39.useLedger,
-      useLedger = _ref39$useLedger === void 0 ? false : _ref39$useLedger,
-      _ref39$path = _ref39.path,
-      path = _ref39$path === void 0 ? "44'/1729'/0'/0'" : _ref39$path,
-      _ref39$curve = _ref39.curve,
-      curve = _ref39$curve === void 0 ? 0x00 : _ref39$curve;
+contract.originate = function (_ref41) {
+  var keys = _ref41.keys,
+      amount = _ref41.amount,
+      code = _ref41.code,
+      init = _ref41.init,
+      spendable = _ref41.spendable,
+      delegatable = _ref41.delegatable,
+      delegate = _ref41.delegate,
+      _ref41$fee = _ref41.fee,
+      fee = _ref41$fee === void 0 ? DEFAULT_FEE : _ref41$fee,
+      _ref41$gasLimit = _ref41.gasLimit,
+      gasLimit = _ref41$gasLimit === void 0 ? 10000 : _ref41$gasLimit,
+      _ref41$storageLimit = _ref41.storageLimit,
+      storageLimit = _ref41$storageLimit === void 0 ? 10000 : _ref41$storageLimit;
+
+  var _ref42 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref42$useLedger = _ref42.useLedger,
+      useLedger = _ref42$useLedger === void 0 ? false : _ref42$useLedger,
+      _ref42$path = _ref42.path,
+      path = _ref42$path === void 0 ? "44'/1729'/0'/0'" : _ref42$path,
+      _ref42$curve = _ref42.curve,
+      curve = _ref42$curve === void 0 ? 0x00 : _ref42$curve;
 
   return rpc.originate({
     keys: keys,
@@ -24288,6 +24699,12 @@ contract.originate = function (_ref38) {
     curve: curve
   });
 };
+/**
+ * @description Get the current storage of a contract
+ * @param {String} contractAddress The address of the contract
+ * @returns {Promise} The storage of the contract
+ */
+
 
 contract.storage = function (contractAddress) {
   return new Promise(function (resolve, reject) {
@@ -24298,10 +24715,24 @@ contract.storage = function (contractAddress) {
     });
   });
 };
+/**
+ * @description Get the contract at a given address
+ * @param {String} contractAddress The address of the contract
+ * @returns {Promise} The contract
+ */
+
 
 contract.load = function (contractAddress) {
   return node.query("/chains/main/blocks/head/context/contracts/".concat(contractAddress));
 };
+/**
+ * @description Watch a contract's storage based on a given interval
+ * @param {String} contractAddress The address of the contract
+ * @param {Number} timeout The interval between checks in milliseconds
+ * @param {requestCallback} callback The callback to fire when a change is detected
+ * @returns {Object} The setInterval object
+ */
+
 
 contract.watch = function (contractAddress, timeout, callback) {
   var storage = [];
@@ -24318,31 +24749,51 @@ contract.watch = function (contractAddress, timeout, callback) {
   storageCheck();
   return setInterval(storageCheck, timeout * 1000);
 };
+/**
+ * @description Send to contract
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.to The address of the recipient
+ * @param {Object} paramObject.from The address sending the operation
+ * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
+ * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+ * @param {String} paramObject.parameter The parameter for the transaction
+ * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
+ * @param {Number} [paramObject.gasLimit=400000] The gas limit to set for the transaction
+ * @param {Number} [paramObject.storageLimit=60000] The storage limit to set for the transaction
+ * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
+ * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
 
-contract.send = function (_ref40) {
-  var to = _ref40.to,
-      from = _ref40.from,
-      keys = _ref40.keys,
-      amount = _ref40.amount,
-      parameter = _ref40.parameter,
-      _ref40$fee = _ref40.fee,
-      fee = _ref40$fee === void 0 ? DEFAULT_FEE : _ref40$fee,
-      _ref40$gasLimit = _ref40.gasLimit,
-      gasLimit = _ref40$gasLimit === void 0 ? '400000' : _ref40$gasLimit,
-      _ref40$storageLimit = _ref40.storageLimit,
-      storageLimit = _ref40$storageLimit === void 0 ? '60000' : _ref40$storageLimit,
-      _ref40$mutez = _ref40.mutez,
-      mutez = _ref40$mutez === void 0 ? false : _ref40$mutez,
-      _ref40$rawParam = _ref40.rawParam,
-      rawParam = _ref40$rawParam === void 0 ? false : _ref40$rawParam;
 
-  var _ref41 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref41$useLedger = _ref41.useLedger,
-      useLedger = _ref41$useLedger === void 0 ? false : _ref41$useLedger,
-      _ref41$path = _ref41.path,
-      path = _ref41$path === void 0 ? "44'/1729'/0'/0'" : _ref41$path,
-      _ref41$curve = _ref41.curve,
-      curve = _ref41$curve === void 0 ? 0x00 : _ref41$curve;
+contract.send = function (_ref43) {
+  var to = _ref43.to,
+      from = _ref43.from,
+      keys = _ref43.keys,
+      amount = _ref43.amount,
+      parameter = _ref43.parameter,
+      _ref43$fee = _ref43.fee,
+      fee = _ref43$fee === void 0 ? DEFAULT_FEE : _ref43$fee,
+      _ref43$gasLimit = _ref43.gasLimit,
+      gasLimit = _ref43$gasLimit === void 0 ? 400000 : _ref43$gasLimit,
+      _ref43$storageLimit = _ref43.storageLimit,
+      storageLimit = _ref43$storageLimit === void 0 ? 60000 : _ref43$storageLimit,
+      _ref43$mutez = _ref43.mutez,
+      mutez = _ref43$mutez === void 0 ? false : _ref43$mutez,
+      _ref43$rawParam = _ref43.rawParam,
+      rawParam = _ref43$rawParam === void 0 ? false : _ref43$rawParam;
+
+  var _ref44 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref44$useLedger = _ref44.useLedger,
+      useLedger = _ref44$useLedger === void 0 ? false : _ref44$useLedger,
+      _ref44$path = _ref44.path,
+      path = _ref44$path === void 0 ? "44'/1729'/0'/0'" : _ref44$path,
+      _ref44$curve = _ref44.curve,
+      curve = _ref44$curve === void 0 ? 0x00 : _ref44$curve;
 
   return rpc.transfer({
     from: from,
@@ -24370,7 +24821,7 @@ utility.mintotz = utility.totez;
 utility.tztomin = utility.mutez;
 prefix.TZ = new Uint8Array([2, 90, 121]); // Expose library
 
-var sotez = {
+module.exports = {
   DEFAULT_PROVIDER: DEFAULT_PROVIDER,
   utility: utility,
   crypto: crypto,
@@ -24378,9 +24829,9 @@ var sotez = {
   rpc: rpc,
   contract: contract,
   ledger: ledger,
-  tezos: tezos
+  tezos: tezos,
+  forge: forge
 };
-module.exports = sotez;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7).Buffer, __webpack_require__(14)))
 
 /***/ }),

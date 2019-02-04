@@ -1,7 +1,7 @@
-describe('main', () => {
+describe('sotez', () => {
   describe('utility', () => {
-    const main = require('../src/sotez');
-    const { utility } = main;
+    const sotez = require('../src/sotez');
+    const { utility } = sotez;
 
     test('mintotz', () => {
       const num1 = 1000000;
@@ -59,8 +59,8 @@ describe('main', () => {
   });
 
   describe('crypto', () => {
-    const main = require('../src/sotez');
-    const { crypto } = main;
+    const sotez = require('../src/sotez');
+    const { crypto } = sotez;
 
     test('generateMnemonic', () => {
       const string = crypto.generateMnemonic();
@@ -117,18 +117,18 @@ describe('main', () => {
   });
 
   describe('node', () => {
-    let main;
+    let sotez;
     let node;
 
     beforeEach(() => {
-      main = require('../src/sotez');
-      ({ node } = main);
+      sotez = require('../src/sotez');
+      ({ node } = sotez);
     });
 
     test('init params', () => {
       expect(node.debugMode).toBe(false);
       expect(node.async).toBe(true);
-      expect(node.activeProvider).toBe(main.DEFAULT_PROVIDER);
+      expect(node.activeProvider).toBe(sotez.DEFAULT_PROVIDER);
     });
 
     test('setDebugMode', () => {
@@ -147,7 +147,7 @@ describe('main', () => {
     test('resetProvider', () => {
       node.setProvider('https://127.0.0.1:9734');
       node.resetProvider();
-      expect(node.activeProvider).toBe(main.DEFAULT_PROVIDER);
+      expect(node.activeProvider).toBe(sotez.DEFAULT_PROVIDER);
     });
 
     // describe('query', () => {

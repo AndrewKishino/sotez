@@ -115,7 +115,7 @@ Send an operation
 #### Parameters
 
 -   `paramObject` **[Object][4]** The parameters for the operation
-    -   `paramObject.from` **[Object][4]** The address sending the operation
+    -   `paramObject.from` **[String][1]** The address sending the operation
     -   `paramObject.operation` **([Object][4] \| [Array][6])** The operation to include in the transaction
     -   `paramObject.keys` **([Object][4] \| [Boolean][2])** The keys for which to originate the account (optional, default `false`)
     -   `paramObject.skipPrevalidation` **[Boolean][2]** Skip prevalidation before injecting operation (optional, default `false`)
@@ -133,7 +133,7 @@ Inject an operation
 #### Parameters
 
 -   `opOb` **[Object][4]** The operation object
--   `sopbytes` **[Object][4]** The signed operation bytes
+-   `sopbytes` **[String][1]** The signed operation bytes
 
 Returns **[Promise][3]** Object containing the injected operation hash
 
@@ -143,7 +143,7 @@ Inject an operation without prevalidation
 
 #### Parameters
 
--   `sopbytes` **[Object][4]** The signed operation bytes
+-   `sopbytes` **[String][1]** The signed operation bytes
 
 Returns **[Promise][3]** Object containing the injected operation hash
 
@@ -213,7 +213,7 @@ Set a delegate for an account
 #### Parameters
 
 -   `paramObject` **[Object][4]** The parameters for the operation
-    -   `paramObject.from` **[Object][4]** The address sending the operation
+    -   `paramObject.from` **[String][1]** The address sending the operation
     -   `paramObject.keys` **[Object][4]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
     -   `paramObject.fee` **[Number][5]** The fee to set for the transaction (optional, default `1278`)
@@ -406,12 +406,6 @@ Check the validity of a tezos implicit address (tz1...)
 
 Returns **[Boolean][2]** Whether address is valid or not
 
-### generateKeysNoSeed
-
-Generate a new key pair without a seed
-
-Returns **[Promise][3]** The generated key pair
-
 ### generateKeys
 
 Generate a new key pair given a mnemonic and passphrase
@@ -420,18 +414,6 @@ Generate a new key pair given a mnemonic and passphrase
 
 -   `mnemonic` **[String][1]** The mnemonic seed
 -   `passphrase` **[String][1]** The passphrase used to encrypt the seed
-
-Returns **[Promise][3]** The generated key pair
-
-### generateKeysFromSeedMulti
-
-Generate a new key pair given a mnemonic, passphrase, n
-
-#### Parameters
-
--   `mnemonic` **[String][1]** The mnemonic seed
--   `passphrase` **[String][1]** The passphrase used to encrypt the seed
--   `n` **[Number][5]** 
 
 Returns **[Promise][3]** The generated key pair
 
@@ -593,19 +575,7 @@ Encode raw bytes
 
 -   `input` **[Object][4]** The value to encode
 
-Returns **[Object][4]** Encoded value as bytes
-
-### calculateFee
-
-Calculate transaction fee based on operation inputs. WIP!
-
-#### Parameters
-
--   `numOfOps` **[Number][5]** Number of operations in the transaction
--   `amount` **[Number][5]** The amount total amount being sent
--   `counter` **[Number][5]** The current counter of the sender
-
-Returns **[Number][5]** The calculated transaction fee
+Returns **[String][1]** Encoded value as bytes
 
 ## forge
 
@@ -649,8 +619,8 @@ Forge script bytes
 #### Parameters
 
 -   `script` **[Object][4]** Script to forge
-    -   `script.code` **[Object][4]** Script code
-    -   `script.storage` **[Object][4]** Script storage
+    -   `script.code` **[String][1]** Script code
+    -   `script.storage` **[String][1]** Script storage
 
 Returns **[String][1]** Forged script bytes
 
@@ -710,7 +680,7 @@ Forge operation bytes
 
 #### Parameters
 
--   `op` **[Number][5]** Operation to forge
+-   `op` **[Object][4]** Operation to forge
 
 Returns **[String][1]** Forged operation bytes
 

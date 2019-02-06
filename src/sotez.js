@@ -1366,6 +1366,17 @@ tezos.encodeRawBytes = (input) => {
   return rec(input).toUpperCase();
 };
 
+/**
+ * @description Calculate transaction fee based on operation inputs. WIP!
+ * @param  {Number} numOfOps Number of operations in the transaction
+ * @param  {Number} amount   The amount total amount being sent
+ * @param  {Number} counter  The current counter of the sender
+ * @return {Number}          The calculated transaction fee
+ */
+tezos.calculateFee = (numOfOps, amount, counter) => (
+  Math.ceil(198 / numOfOps) + 1071 + (Math.floor((Math.log2(amount) / 7)) + 1) + (Math.floor((Math.log2(counter) / 7)) + 1)
+);
+
 const rpc = {};
 /**
  * @description Originate a new account

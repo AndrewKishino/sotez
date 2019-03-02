@@ -4,7 +4,6 @@ if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2'); // 
 const bs58check = require('bs58check');
 const _sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
-const pbkdf2 = require('pbkdf2');
 const { BigNumber } = require('bignumber.js');
 const isNode = require('detect-node');
 const { encode } = require('isomorphic-textencoder');
@@ -386,21 +385,6 @@ crypto.checkAddress = (address) => {
 };
 
 /**
- * @description Generate a new key pair without a seed
- * @returns {Promise} The generated key pair
- */
-crypto.generateKeysNoSeed = async () => {
-  await _sodium.ready;
-  const sodium = _sodium;
-  const kp = sodium.crypto_sign_keypair();
-  return {
-    sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-    pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-    pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-  };
-};
-
-/**
  * @description Generate a new key pair given a mnemonic and passphrase
  * @param {String} mnemonic The mnemonic seed
  * @param {String} passphrase The passphrase used to encrypt the seed
@@ -414,29 +398,6 @@ crypto.generateKeys = async (mnemonic, passphrase) => {
   return {
     mnemonic,
     passphrase,
-    sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-    pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-    pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-  };
-};
-
-/**
- * @description Generate a new key pair given a mnemonic, passphrase, n
- * @param {String} mnemonic The mnemonic seed
- * @param {String} passphrase The passphrase used to encrypt the seed
- * @param {Number} n
- * @returns {Promise} The generated key pair
- */
-crypto.generateKeysFromSeedMulti = async (mnemonic, passphrase, n) => {
-  await _sodium.ready;
-  const sodium = _sodium;
-  n /= (256 ^ 2);
-  const s = bip39.mnemonicToSeed(mnemonic, pbkdf2.pbkdf2Sync(passphrase, n.toString(36).slice(2), 0, 32, 'sha512').toString()).slice(0, 32);
-  const kp = sodium.crypto_sign_seed_keypair(s);
-  return {
-    mnemonic,
-    passphrase,
-    n,
     sk: utility.b58cencode(kp.privateKey, prefix.edsk),
     pk: utility.b58cencode(kp.publicKey, prefix.edpk),
     pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
@@ -541,11 +502,14 @@ node.query = (path, payload, method) => {
       http.open(method, node.activeProvider + path, node.async);
       http.onload = () => {
         if (node.debugMode) {
-          console.log(path, payload, http.responseText);
+          console.log('Node call', path, payload);
         }
         if (http.status === 200) {
           if (http.responseText) {
             let response = JSON.parse(http.responseText);
+            if (node.debugMode) {
+              console.log('Node response', path, payload, response);
+            }
             if (typeof response.error !== 'undefined') {
               reject(response.error);
             } else {
@@ -957,8 +921,8 @@ forge.bool = bool => (bool ? 'ff' : '00');
 /**
  * @description Forge script bytes
  * @param {Object} script Script to forge
- * @param {Object} script.code Script code
- * @param {Object} script.storage Script storage
+ * @param {String} script.code Script code
+ * @param {String} script.storage Script storage
  * @returns {String} Forged script bytes
  */
 forge.script = (script) => {
@@ -1051,7 +1015,7 @@ forge.publicKey = (pk) => {
 
 /**
  * @description Forge operation bytes
- * @param {Number} op Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
 forge.op = (op) => {
@@ -1295,7 +1259,7 @@ tezos.decodeRawBytes = (bytes) => {
 /**
  * @description Encode raw bytes
  * @param {Object} input The value to encode
- * @returns {Object} Encoded value as bytes
+ * @returns {String} Encoded value as bytes
  */
 tezos.encodeRawBytes = (input) => {
   const rec = (inputArg) => {
@@ -1455,6 +1419,22 @@ rpc.getDelegate = address => (
     }).catch(() => false)
 );
 
+rpc.getManager = address => (
+  node.query(`/chains/main/blocks/head/context/contracts/${address}/manager_key`)
+);
+
+rpc.getCounter = address => (
+  node.query(`/chains/main/blocks/head/context/contracts/${address}/counter`)
+);
+
+rpc.getBaker = address => (
+  node.query(`/chains/main/blocks/head/context/delegates/${address}`)
+);
+
+rpc.getHeader = () => (
+  node.query('/chains/main/blocks/head/header')
+);
+
 /**
  * @description Get the current head block of the chain
  * @returns {Promise} The current head block
@@ -1467,6 +1447,78 @@ rpc.getHead = () => node.query('/chains/main/blocks/head');
  */
 rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
 
+rpc.getBallotList = () => (
+  node.query('/chains/main/blocks/head/votes/ballot_list')
+);
+
+rpc.getProposals = () => (
+  node.query('/chains/main/blocks/head/votes/proposals')
+);
+
+rpc.getBallots = () => (
+  node.query('/chains/main/blocks/head/votes/ballots')
+);
+
+rpc.getListings = () => (
+  node.query('/chains/main/blocks/head/votes/listings')
+);
+
+rpc.getCurrentProposal = () => (
+  node.query('/chains/main/blocks/head/votes/current_proposal')
+);
+
+rpc.getCurrentPeriod = () => (
+  node.query('/chains/main/blocks/head/votes/current_period_kind')
+);
+
+rpc.getCurrentQuorum = () => (
+  node.query('/chains/main/blocks/head/votes/current_quorum')
+);
+
+rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
+  if (timeout <= 0) {
+    throw new Error('Timeout must be more than 0');
+  }
+
+  if (interval <= 0) {
+    throw new Error('Interval must be more than 0');
+  }
+
+  const timeoutAt = Math.ceil(timeout / interval) + 1;
+  let count = 0;
+  let found = false;
+
+  const operationCheck = (operation) => {
+    if (operation.hash === hash) {
+      found = true;
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    const repeater = () => (
+      rpc
+        .getHead()
+        .then((head) => {
+          count++;
+
+          for (let i = 3; i >= 0; i--) {
+            head.operations[i].forEach(operationCheck);
+          }
+
+          if (found) {
+            resolve(head.hash);
+          } else if (count >= timeoutAt) {
+            reject(new Error('Timeout'));
+          } else {
+            setTimeout(repeater, interval);
+          }
+        })
+    );
+
+    repeater();
+  });
+};
+
 /**
  * @description Get the current head block hash of the chain
  * @param {String} path The path to query
@@ -1478,7 +1530,7 @@ rpc.call = (path, payload) => node.query(path, payload);
 /**
  * @description Send an operation
  * @param {Object} paramObject The parameters for the operation
- * @param {Object} paramObject.from The address sending the operation
+ * @param {String} paramObject.from The address sending the operation
  * @param {Object|Array} paramObject.operation The operation to include in the transaction
  * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
  * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
@@ -1517,8 +1569,8 @@ rpc.sendOperation = ({
   for (let i = 0; i < ops.length; i++) {
     if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
       requiresReveal = true;
-      promises.push(node.query(`/chains/main/blocks/head/context/contracts/${from}/counter`));
-      promises.push(node.query(`/chains/main/blocks/head/context/contracts/${from}/manager_key`));
+      promises.push(rpc.getCounter(from));
+      promises.push(rpc.getManager(from));
       break;
     }
   }
@@ -1617,7 +1669,7 @@ rpc.sendOperation = ({
 /**
  * @description Inject an operation
  * @param {Object} opOb The operation object
- * @param {Object} sopbytes The signed operation bytes
+ * @param {String} sopbytes The signed operation bytes
  * @returns {Promise} Object containing the injected operation hash
  */
 rpc.inject = (opOb, sopbytes) => {
@@ -1649,7 +1701,7 @@ rpc.inject = (opOb, sopbytes) => {
 
 /**
  * @description Inject an operation without prevalidation
- * @param {Object} sopbytes The signed operation bytes
+ * @param {String} sopbytes The signed operation bytes
  * @returns {Promise} Object containing the injected operation hash
  */
 rpc.silentInject = sopbytes => node.query('/injection/operation', sopbytes).then(hash => ({ hash }));
@@ -1793,7 +1845,7 @@ rpc.originate = async ({
 /**
  * @description Set a delegate for an account
  * @param {Object} paramObject The parameters for the operation
- * @param {Object} paramObject.from The address sending the operation
+ * @param {String} paramObject.from The address sending the operation
  * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
  * @param {String} [paramObject.delegate] The delegate for the new account
  * @param {Number} [paramObject.fee=1278] The fee to set for the transaction

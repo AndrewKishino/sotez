@@ -11,8 +11,20 @@ toc:
       - account
       - getBalance
       - getDelegate
+      - getManager
+      - getCounter
+      - getBaker
+      - getHeader
       - getHead
       - getHeadHash
+      - getBallotList
+      - getProposals
+      - getBallots
+      - getListings
+      - getCurrentProposal
+      - getCurrentPeriod
+      - getCurrentQuorum
+      - awaitOperation
       - call
       - sendOperation
       - inject
@@ -41,9 +53,7 @@ toc:
       - extractKeys
       - generateMnemonic
       - checkAddress
-      - generateKeysNoSeed
       - generateKeys
-      - generateKeysFromSeedMulti
       - sign
       - verify
 

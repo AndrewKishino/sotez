@@ -67,23 +67,59 @@ Returns **[Promise][3]** Object containing the injected operation hash
 
 ### getBalance
 
-Get the balance for an address
+Get the balance for a contract
 
 #### Parameters
 
--   `address` **[String][1]** The address for which to retrieve the balance
+-   `address` **[String][1]** The contract for which to retrieve the balance
 
-Returns **[Promise][3]** The balance of the address
+Returns **[Promise][3]** The balance of the contract
 
 ### getDelegate
 
-Get the delegate for an address
+Get the delegate for a contract
 
 #### Parameters
 
--   `address` **[String][1]** The address for which to retrieve the delegate
+-   `address` **[String][1]** The contract for which to retrieve the delegate
 
-Returns **[Promise][3]** The address of the delegate if a delegate is registered
+Returns **[Promise][3]** The delegate of a contract, if any
+
+### getManager
+
+Get the manager for a contract
+
+#### Parameters
+
+-   `address` **[String][1]** The contract for which to retrieve the manager
+
+Returns **[Promise][3]** The manager of a contract
+
+### getCounter
+
+Get the counter for an contract
+
+#### Parameters
+
+-   `address` **[String][1]** The contract for which to retrieve the counter
+
+Returns **[Promise][3]** The counter of a contract, if any
+
+### getBaker
+
+Get the baker information for an address
+
+#### Parameters
+
+-   `address` **[String][1]** The contract for which to retrieve the baker information
+
+Returns **[Promise][3]** The information of the delegate address
+
+### getHeader
+
+Get the header of the current head
+
+Returns **[Promise][3]** The whole block header
 
 ### getHead
 
@@ -95,7 +131,61 @@ Returns **[Promise][3]** The current head block
 
 Get the current head block hash of the chain
 
-Returns **[Promise][3]** The current head block hash
+Returns **[Promise][3]** The block's hash, its unique identifier
+
+### getBallotList
+
+Ballots casted so far during a voting period
+
+Returns **[Promise][3]** Ballots casted so far during a voting period
+
+### getProposals
+
+List of proposals with number of supporters
+
+Returns **[Promise][3]** List of proposals with number of supporters
+
+### getBallots
+
+Sum of ballots casted so far during a voting period
+
+Returns **[Promise][3]** Sum of ballots casted so far during a voting period
+
+### getListings
+
+List of delegates with their voting weight, in number of rolls
+
+Returns **[Promise][3]** The ballots of the current voting period
+
+### getCurrentProposal
+
+Current proposal under evaluation
+
+Returns **[Promise][3]** Current proposal under evaluation
+
+### getCurrentPeriod
+
+Current period kind
+
+Returns **[Promise][3]** Current period kind
+
+### getCurrentQuorum
+
+Current expected quorum
+
+Returns **[Promise][3]** Current expected quorum
+
+### awaitOperation
+
+Check for the inclusion of an operation in new blocks
+
+#### Parameters
+
+-   `hash` **[String][1]** The operation hash to check
+-   `interval` **[Number][5]** The interval to check new blocks (optional, default `10`)
+-   `timeout` **[Number][5]** The time before the operation times out (optional, default `180`)
+
+Returns **[Promise][3]** The hash of the block in which the operation was included
 
 ### call
 
@@ -107,6 +197,40 @@ Get the current head block hash of the chain
 -   `payload` **[Object][4]** The payload of the request
 
 Returns **[Promise][3]** The response of the rpc call
+
+### prepareOperation
+
+Prepares an operation
+
+#### Parameters
+
+-   `paramObject` **[Object][4]** The parameters for the operation
+    -   `paramObject.from` **[String][1]** The address sending the operation
+    -   `paramObject.operation` **([Object][4] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.keys` **([Object][4] \| [Boolean][2])** The keys for which to originate the account (optional, default `false`)
+-   `ledgerObject` **[Object][4]?** The ledger parameters for the operation (optional, default `{}`)
+    -   `ledgerObject.useLedger` **[Boolean][2]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
+    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+
+Returns **[Promise][3]** Object containing the prepared operation
+
+### simulateOperation
+
+Simulate an operation
+
+#### Parameters
+
+-   `paramObject` **[Object][4]** The parameters for the operation
+    -   `paramObject.from` **[String][1]** The address sending the operation
+    -   `paramObject.operation` **([Object][4] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.keys` **([Object][4] \| [Boolean][2])** The keys for which to originate the account (optional, default `false`)
+-   `ledgerObject` **[Object][4]?** The ledger parameters for the operation (optional, default `{}`)
+    -   `ledgerObject.useLedger` **[Boolean][2]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
+    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+
+Returns **[Promise][3]** The simulated operation result
 
 ### sendOperation
 
@@ -177,7 +301,7 @@ Activate an account
 
 #### Parameters
 
--   `keys` **[Object][4]** The keys containing the public key hash
+-   `pkh` **[Object][4]** The public key hash of the account
 -   `secret` **[String][1]** The secret to activate the account
 
 Returns **[Promise][3]** Object containing the injected operation hash
@@ -553,7 +677,7 @@ Forge operation bytes
 
 -   `head` **[Object][4]** The current head of the chain
 -   `opOb` **[Object][4]** The operation object(s)
--   `debug` **[Boolean][2]** Enable extra logging for debugging (optional, default `false`)
+-   `validateLocalForge` **[Boolean][2]** Validate locally forged bytes against node forged bytes (optional, default `false`)
 
 Returns **[String][1]** Forged operation bytes
 

@@ -22,7 +22,7 @@ node.query('/chains/main/blocks/head')
 ```
 
 # Documentation
-Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Documentation).
+Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki).
 
 # Development
 ```js

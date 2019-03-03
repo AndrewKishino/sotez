@@ -1116,13 +1116,13 @@ const tezos = {};
  * @description Forge operation bytes
  * @param {Object} head The current head of the chain
  * @param {Object} opOb The operation object(s)
- * @param {Boolean} [debug=false] Enable extra logging for debugging
+ * @param {Boolean} [validateLocalForge=false] Validate locally forged bytes against node forged bytes
  * @returns {String} Forged operation bytes
  */
-tezos.forge = async (head, opOb, debug = false) => {
+tezos.forge = async (head, opOb, validateLocalForge = false) => {
   let remoteForgedBytes;
 
-  if (debug) {
+  if (validateLocalForge) {
     remoteForgedBytes = await node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
   }
 
@@ -1131,19 +1131,21 @@ tezos.forge = async (head, opOb, debug = false) => {
     localForgedBytes += forge.op(content);
   });
 
-  if (debug) {
-    console.log('FORGE VALIDATION TEST START');
-    console.log(opOb);
-    console.log(remoteForgedBytes);
-    console.log(localForgedBytes);
-    console.log('FORGE VALIDATION TEST END');
+  opOb.protocol = head.protocol;
+  if (validateLocalForge) {
     if (localForgedBytes === remoteForgedBytes) {
-      return remoteForgedBytes;
+      return {
+        opbytes: localForgedBytes,
+        opOb,
+      };
     }
     throw new Error('Forge validation error - local and remote bytes don\'t match');
   }
 
-  return localForgedBytes;
+  return {
+    opbytes: localForgedBytes,
+    opOb,
+  };
 };
 
 /**
@@ -1397,9 +1399,9 @@ rpc.account = async ({
 };
 
 /**
- * @description Get the balance for an address
- * @param {String} address The address for which to retrieve the balance
- * @returns {Promise} The balance of the address
+ * @description Get the balance for a contract
+ * @param {String} address The contract for which to retrieve the balance
+ * @returns {Promise} The balance of the contract
  */
 rpc.getBalance = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/balance`)
@@ -1407,9 +1409,9 @@ rpc.getBalance = address => (
 );
 
 /**
- * @description Get the delegate for an address
- * @param {String} address The address for which to retrieve the delegate
- * @returns {Promise} The address of the delegate if a delegate is registered
+ * @description Get the delegate for a contract
+ * @param {String} address The contract for which to retrieve the delegate
+ * @returns {Promise} The delegate of a contract, if any
  */
 rpc.getDelegate = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/delegate`)
@@ -1419,18 +1421,37 @@ rpc.getDelegate = address => (
     }).catch(() => false)
 );
 
+/**
+ * @description Get the manager for a contract
+ * @param {String} address The contract for which to retrieve the manager
+ * @returns {Promise} The manager of a contract
+ */
 rpc.getManager = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/manager_key`)
 );
 
+/**
+ * @description Get the counter for an contract
+ * @param {String} address The contract for which to retrieve the counter
+ * @returns {Promise} The counter of a contract, if any
+ */
 rpc.getCounter = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/counter`)
 );
 
+/**
+ * @description Get the baker information for an address
+ * @param {String} address The contract for which to retrieve the baker information
+ * @returns {Promise} The information of the delegate address
+ */
 rpc.getBaker = address => (
   node.query(`/chains/main/blocks/head/context/delegates/${address}`)
 );
 
+/**
+ * @description Get the header of the current head
+ * @returns {Promise} The whole block header
+ */
 rpc.getHeader = () => (
   node.query('/chains/main/blocks/head/header')
 );
@@ -1443,38 +1464,73 @@ rpc.getHead = () => node.query('/chains/main/blocks/head');
 
 /**
  * @description Get the current head block hash of the chain
- * @returns {Promise} The current head block hash
+ * @returns {Promise} The block's hash, its unique identifier
  */
 rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
 
+/**
+ * @description Ballots casted so far during a voting period
+ * @returns {Promise} Ballots casted so far during a voting period
+ */
 rpc.getBallotList = () => (
   node.query('/chains/main/blocks/head/votes/ballot_list')
 );
 
+/**
+ * @description List of proposals with number of supporters
+ * @returns {Promise} List of proposals with number of supporters
+ */
 rpc.getProposals = () => (
   node.query('/chains/main/blocks/head/votes/proposals')
 );
 
+/**
+ * @description Sum of ballots casted so far during a voting period
+ * @returns {Promise} Sum of ballots casted so far during a voting period
+ */
 rpc.getBallots = () => (
   node.query('/chains/main/blocks/head/votes/ballots')
 );
 
+/**
+ * @description List of delegates with their voting weight, in number of rolls
+ * @returns {Promise} The ballots of the current voting period
+ */
 rpc.getListings = () => (
   node.query('/chains/main/blocks/head/votes/listings')
 );
 
+/**
+ * @description Current proposal under evaluation
+ * @returns {Promise} Current proposal under evaluation
+ */
 rpc.getCurrentProposal = () => (
   node.query('/chains/main/blocks/head/votes/current_proposal')
 );
 
+/**
+ * @description Current period kind
+ * @returns {Promise} Current period kind
+ */
 rpc.getCurrentPeriod = () => (
   node.query('/chains/main/blocks/head/votes/current_period_kind')
 );
 
+/**
+ * @description Current expected quorum
+ * @returns {Promise} Current expected quorum
+ */
 rpc.getCurrentQuorum = () => (
   node.query('/chains/main/blocks/head/votes/current_quorum')
 );
 
+/**
+ * @description Check for the inclusion of an operation in new blocks
+ * @param {String} hash The operation hash to check
+ * @param {Number} [interval=10] The interval to check new blocks
+ * @param {Number} [timeout=180] The time before the operation times out
+ * @returns {Promise} The hash of the block in which the operation was included
+ */
 rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
   if (timeout <= 0) {
     throw new Error('Timeout must be more than 0');
@@ -1496,8 +1552,7 @@ rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
 
   return new Promise((resolve, reject) => {
     const repeater = () => (
-      rpc
-        .getHead()
+      rpc.getHead()
         .then((head) => {
           count++;
 
@@ -1528,30 +1583,27 @@ rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
 rpc.call = (path, payload) => node.query(path, payload);
 
 /**
- * @description Send an operation
+ * @description Prepares an operation
  * @param {Object} paramObject The parameters for the operation
  * @param {String} paramObject.from The address sending the operation
  * @param {Object|Array} paramObject.operation The operation to include in the transaction
  * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
- * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
  * @param {Object} [ledgerObject] The ledger parameters for the operation
  * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
  * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
  * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
- * @returns {Promise} Object containing the injected operation hash
+ * @returns {Promise} Object containing the prepared operation
  */
-rpc.sendOperation = ({
+rpc.prepareOperation = ({
   from,
   operation,
   keys = false,
-  skipPrevalidation = false,
 }, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
   curve = 0x00,
 } = {}) => {
   let counter;
-  let sopbytes;
   let opOb;
   const promises = [];
   let requiresReveal = false;
@@ -1623,45 +1675,112 @@ rpc.sendOperation = ({
       contents: constructOps(),
     };
 
-    return tezos.forge(head, opOb);
-  })
-    .then(async (opbytes) => {
-      if (useLedger) {
-        const { signature } = await ledger.signOperation({
-          path,
-          rawTxHex: opbytes,
-          curve,
-        });
+    const fullOp = await tezos.forge(head, opOb);
+    return {
+      ...fullOp,
+      counter,
+    };
+  });
+};
 
-        sopbytes = `${opbytes}${signature}`;
-      } else if (keys.sk === false) {
-        opOb.protocol = head.protocol;
-        return {
-          opOb,
-          opbytes,
-        };
-      } else if (!keys) {
-        sopbytes = `${opbytes}00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`;
-        opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
-      } else {
-        const signed = await crypto.sign(opbytes, keys.sk, watermark.generic);
-        sopbytes = signed.sbytes;
-        opOb.signature = signed.edsig;
-      }
+/**
+ * @description Simulate an operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.from The address sending the operation
+ * @param {Object|Array} paramObject.operation The operation to include in the transaction
+ * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} The simulated operation result
+ */
+rpc.simulateOperation = ({
+  from,
+  operation,
+  keys = false,
+}, {
+  useLedger = false,
+  path = "44'/1729'/0'/0'",
+  curve = 0x00,
+} = {}) => (
+  rpc.prepareOperation({
+    from,
+    operation,
+    keys,
+  }, {
+    useLedger,
+    path,
+    curve,
+  }).then(fullOp => (
+    node.query('/chains/main/blocks/head/helpers/scripts/run_operation', fullOp.opOb)
+  ))
+);
 
-      opOb.protocol = head.protocol;
-      if (skipPrevalidation || useLedger) {
-        return rpc.silentInject(sopbytes)
-          .catch((e) => {
-            counters[from] = counter;
-            throw e;
-          });
-      }
-      return rpc.inject(opOb, sopbytes)
-        .catch((e) => {
-          counters[from] = counter;
-          throw e;
-        });
+/**
+ * @description Send an operation
+ * @param {Object} paramObject The parameters for the operation
+ * @param {String} paramObject.from The address sending the operation
+ * @param {Object|Array} paramObject.operation The operation to include in the transaction
+ * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
+ * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
+ * @param {Object} [ledgerObject] The ledger parameters for the operation
+ * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
+ * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
+ * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @returns {Promise} Object containing the injected operation hash
+ */
+rpc.sendOperation = async ({
+  from,
+  operation,
+  keys = false,
+  skipPrevalidation = false,
+}, {
+    useLedger = false,
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  } = {}) => {
+  const fullOp = await rpc.prepareOperation({
+    from,
+    operation,
+    keys,
+  }, {
+    useLedger,
+    path,
+    curve,
+  });
+
+  if (useLedger) {
+    const { signature } = await ledger.signOperation({
+      path,
+      rawTxHex: fullOp.opbytes,
+      curve,
+    });
+    fullOp.opbytes += signature;
+  } else if (keys.sk === false) {
+    const { counter, ...rest } = fullOp;
+    return rest;
+  } else if (!keys) {
+    fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+    fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+  } else {
+    const signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
+    fullOp.opbytes = signed.sbytes;
+    fullOp.opOb.signature = signed.edsig;
+  }
+
+  if (skipPrevalidation || useLedger) {
+    return rpc.silentInject(fullOp.opbytes)
+      .catch((e) => {
+        counters[from] = fullOp.counter;
+        throw e;
+      });
+  }
+
+  return rpc.inject(fullOp.opOb, fullOp.opbytes)
+    .catch((e) => {
+      counters[from] = fullOp.counter;
+      throw e;
     });
 };
 

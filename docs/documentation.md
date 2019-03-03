@@ -301,7 +301,7 @@ Activate an account
 
 #### Parameters
 
--   `keys` **[Object][4]** The keys containing the public key hash
+-   `pkh` **[Object][4]** The public key hash of the account
 -   `secret` **[String][1]** The secret to activate the account
 
 Returns **[Promise][3]** Object containing the injected operation hash

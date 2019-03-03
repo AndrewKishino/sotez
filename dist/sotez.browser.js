@@ -24067,7 +24067,7 @@ rpc.awaitOperation = function (hash) {
         } else if (count >= timeoutAt) {
           reject(new Error('Timeout'));
         } else {
-          setTimeout(repeater, interval);
+          setTimeout(repeater, interval * 1000);
         }
       });
     };
@@ -24545,22 +24545,22 @@ rpc.transfer = function (_ref28) {
 };
 /**
  * @description Activate an account
- * @param {Object} keys The keys containing the public key hash
+ * @param {Object} pkh The public key hash of the account
  * @param {String} secret The secret to activate the account
  * @returns {Promise} Object containing the injected operation hash
  */
 
 
-rpc.activate = function (keys, secret) {
+rpc.activate = function (pkh, secret) {
   var operation = {
     kind: 'activate_account',
-    pkh: keys.pkh,
+    pkh: pkh,
     secret: secret
   };
   return rpc.sendOperation({
-    from: keys.pkh,
+    from: pkh,
     operation: operation,
-    keys: keys
+    keys: false
   });
 };
 /**

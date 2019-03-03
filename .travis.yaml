@@ -4,8 +4,8 @@ node_js:
   - "8"
 jobs:
   include:
-    - stage: "Compile"
+    - stage: "Build"
       script: build
 
-    - stage: "Unit Tests"
+    - stage: "Test"
       script: test

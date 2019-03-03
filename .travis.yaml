@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "node"
+  - "8"
+jobs:
+  include:
+    - stage: "Compile"
+      script: build
+
+    - stage: "Unit Tests"
+      script: test

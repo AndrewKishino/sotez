@@ -4,8 +4,7 @@ node_js:
   - 8
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y libudev-dev
-  - sudo apt-get install -y libusb-1.0-0-dev
+  - sudo apt-get install -y libudev-dev libusb-1.0-0-dev
 jobs:
   include:
     - stage: Test

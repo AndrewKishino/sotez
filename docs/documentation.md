@@ -13,6 +13,12 @@ Enable additional logging by enabling debug mode
 
 -   `t` **Boolen** Debug mode value
 
+#### Examples
+
+```javascript
+node.setDebugMode(true);
+```
+
 ### setProvider
 
 Set a new default provider
@@ -22,9 +28,21 @@ Set a new default provider
 -   `provider` **[String][1]** The address of the provider
 -   `isZeronet` **[Boolean][2]** Whether the provider is a zeronet node
 
+#### Examples
+
+```javascript
+node.setProvider('http://127.0.0.1:8732');
+```
+
 ### resetProvider
 
 Reset the provider to the default provider
+
+#### Examples
+
+```javascript
+node.resetProvider();
+```
 
 ### query
 
@@ -36,12 +54,35 @@ Queries a node given a path and payload
 -   `payload` **[String][1]** The payload of the query
 -   `method` **[String][1]** The request method. Either 'GET' or 'POST'
 
+#### Examples
+
+```javascript
+node.query('/chains/main/blocks/head')
+ .then(head => console.log(head));
+```
+
 Returns **[Promise][3]** The response of the query
 
 ## rpc
 
 
 
+
+### setForgeLocal
+
+Sets the forging strategy to either local or remote
+
+#### Parameters
+
+-   `useLocal` **[Boolean][2]** Forge strategy true - local | false - remote (optional, default `true`)
+
+### setLocalForgeValidation
+
+Whether to validate locally forged operations against remotely forged operations
+
+#### Parameters
+
+-   `localValidation` **[Boolean][2]** Validate local forge (optional, default `false`)
 
 ### account
 
@@ -73,6 +114,13 @@ Get the balance for a contract
 
 -   `address` **[String][1]** The contract for which to retrieve the balance
 
+#### Examples
+
+```javascript
+rpc.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+  .then(balance => console.log(balance))
+```
+
 Returns **[Promise][3]** The balance of the contract
 
 ### getDelegate
@@ -82,6 +130,13 @@ Get the delegate for a contract
 #### Parameters
 
 -   `address` **[String][1]** The contract for which to retrieve the delegate
+
+#### Examples
+
+```javascript
+rpc.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+  .then(delegate => console.log(delegate))
+```
 
 Returns **[Promise][3]** The delegate of a contract, if any
 
@@ -93,6 +148,13 @@ Get the manager for a contract
 
 -   `address` **[String][1]** The contract for which to retrieve the manager
 
+#### Examples
+
+```javascript
+rpc.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+  .then(({ manager, key }) => console.log(manager, key))
+```
+
 Returns **[Promise][3]** The manager of a contract
 
 ### getCounter
@@ -102,6 +164,13 @@ Get the counter for an contract
 #### Parameters
 
 -   `address` **[String][1]** The contract for which to retrieve the counter
+
+#### Examples
+
+```javascript
+rpc.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+  .then(counter => console.log(counter))
+```
 
 Returns **[Promise][3]** The counter of a contract, if any
 
@@ -113,11 +182,42 @@ Get the baker information for an address
 
 -   `address` **[String][1]** The contract for which to retrieve the baker information
 
+#### Examples
+
+```javascript
+rpc.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+  .then(({
+    balance,
+    frozen_balance,
+    frozen_balance_by_cycle,
+    staking_balance,
+    delegated_contracts
+    delegated_balance
+    deactivated,
+    grace_period,
+  }) => console.log(
+    balance,
+    frozen_balance,
+    frozen_balance_by_cycle,
+    staking_balance,
+    delegated_contracts
+    delegated_balance
+    deactivated,
+    grace_period,
+  ))
+```
+
 Returns **[Promise][3]** The information of the delegate address
 
 ### getHeader
 
 Get the header of the current head
+
+#### Examples
+
+```javascript
+rpc.getHeader().then(header => console.log(header))
+```
 
 Returns **[Promise][3]** The whole block header
 
@@ -125,11 +225,23 @@ Returns **[Promise][3]** The whole block header
 
 Get the current head block of the chain
 
+#### Examples
+
+```javascript
+rpc.getHead().then(head => console.log(head))
+```
+
 Returns **[Promise][3]** The current head block
 
 ### getHeadHash
 
 Get the current head block hash of the chain
+
+#### Examples
+
+```javascript
+rpc.getHeadHash().then(headHash => console.log(headHash))
+```
 
 Returns **[Promise][3]** The block's hash, its unique identifier
 
@@ -137,11 +249,26 @@ Returns **[Promise][3]** The block's hash, its unique identifier
 
 Ballots casted so far during a voting period
 
+#### Examples
+
+```javascript
+rpc.getBallotList().then(ballotList => console.log(ballotList))
+```
+
 Returns **[Promise][3]** Ballots casted so far during a voting period
 
 ### getProposals
 
 List of proposals with number of supporters
+
+#### Examples
+
+```javascript
+rpc.getProposals().then(proposals => {
+  console.log(proposals[0][0], proposals[0][1])
+  console.log(proposals[1][0], proposals[1][1])
+)
+```
 
 Returns **[Promise][3]** List of proposals with number of supporters
 
@@ -149,11 +276,23 @@ Returns **[Promise][3]** List of proposals with number of supporters
 
 Sum of ballots casted so far during a voting period
 
+#### Examples
+
+```javascript
+rpc.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
+```
+
 Returns **[Promise][3]** Sum of ballots casted so far during a voting period
 
 ### getListings
 
 List of delegates with their voting weight, in number of rolls
+
+#### Examples
+
+```javascript
+rpc.getListings().then(listings => console.log(listings))
+```
 
 Returns **[Promise][3]** The ballots of the current voting period
 
@@ -161,17 +300,35 @@ Returns **[Promise][3]** The ballots of the current voting period
 
 Current proposal under evaluation
 
+#### Examples
+
+```javascript
+rpc.getCurrentProposal().then(currentProposal => console.log(currentProposal))
+```
+
 Returns **[Promise][3]** Current proposal under evaluation
 
 ### getCurrentPeriod
 
 Current period kind
 
+#### Examples
+
+```javascript
+rpc.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod))
+```
+
 Returns **[Promise][3]** Current period kind
 
 ### getCurrentQuorum
 
 Current expected quorum
+
+#### Examples
+
+```javascript
+rpc.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum))
+```
 
 Returns **[Promise][3]** Current expected quorum
 
@@ -184,6 +341,13 @@ Check for the inclusion of an operation in new blocks
 -   `hash` **[String][1]** The operation hash to check
 -   `interval` **[Number][5]** The interval to check new blocks (optional, default `10`)
 -   `timeout` **[Number][5]** The time before the operation times out (optional, default `180`)
+
+#### Examples
+
+```javascript
+rpc.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
+ .then((hash) => console.log(hash));
+```
 
 Returns **[Promise][3]** The hash of the block in which the operation was included
 
@@ -213,6 +377,27 @@ Prepares an operation
     -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
+#### Examples
+
+```javascript
+rpc.prepareOperation({
+  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  operation: {
+    kind: 'transaction',
+    fee: '50000',
+    gas_limit: '10200',
+    storage_limit: '0',
+    amount: '1000',
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  },
+  keys: {
+    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  },
+}).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
+```
+
 Returns **[Promise][3]** Object containing the prepared operation
 
 ### simulateOperation
@@ -229,6 +414,27 @@ Simulate an operation
     -   `ledgerObject.useLedger` **[Boolean][2]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
     -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+
+#### Examples
+
+```javascript
+rpc.simulateOperation({
+  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  operation: {
+    kind: 'transaction',
+    fee: '50000',
+    gas_limit: '10200',
+    storage_limit: '0',
+    amount: '1000',
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  },
+  keys: {
+    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  },
+}).then(result => console.log(result));
+```
 
 Returns **[Promise][3]** The simulated operation result
 
@@ -247,6 +453,37 @@ Send an operation
     -   `ledgerObject.useLedger` **[Boolean][2]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
     -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+
+#### Examples
+
+```javascript
+const keys = {
+  sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+  pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+  pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+};
+
+const operation = {
+  kind: 'transaction',
+  fee: '50000',
+  gas_limit: '10200',
+  storage_limit: '0',
+  amount: '1000',
+  destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+};
+
+rpc.sendOperation({
+  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  operation,
+  keys,
+}).then(result => console.log(result));
+
+rpc.sendOperation({
+  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  operation: [operation, operation],
+  keys,
+}).then(result => console.log(result));
+```
 
 Returns **[Promise][3]** Object containing the injected operation hash
 
@@ -293,6 +530,22 @@ Transfer operation
     -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
+#### Examples
+
+```javascript
+rpc.transfer({
+  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  amount: '1000000',
+  keys: {
+    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  },
+  fee: '1278',
+}).then(result => console.log(result))
+```
+
 Returns **[Promise][3]** Object containing the injected operation hash
 
 ### activate
@@ -303,6 +556,13 @@ Activate an account
 
 -   `pkh` **[Object][4]** The public key hash of the account
 -   `secret` **[String][1]** The secret to activate the account
+
+#### Examples
+
+```javascript
+rpc.activate(pkh, secret)
+  .then((activateOperation) => console.log(activateOperation))
+```
 
 Returns **[Promise][3]** Object containing the injected operation hash
 
@@ -512,6 +772,13 @@ Extract key pairs from a secret key
 
 -   `sk` **[Object][4]** The secret key to extract key pairs from
 
+#### Examples
+
+```javascript
+crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
+  .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
+```
+
 Returns **[Promise][3]** The extracted key pairs
 
 ### generateMnemonic
@@ -539,6 +806,13 @@ Generate a new key pair given a mnemonic and passphrase
 -   `mnemonic` **[String][1]** The mnemonic seed
 -   `passphrase` **[String][1]** The passphrase used to encrypt the seed
 
+#### Examples
+
+```javascript
+crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
+  .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh))
+```
+
 Returns **[Promise][3]** The generated key pair
 
 ### sign
@@ -550,6 +824,15 @@ Sign bytes
 -   `bytes` **[String][1]** The bytes to sign
 -   `sk` **[String][1]** The secret key to sign the bytes with
 -   `wm` **[Object][4]** The watermark bytes
+
+#### Examples
+
+```javascript
+import { watermark } from 'sotez';
+
+crypto.sign(opbytes, keys.sk, watermark.generic)
+  .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
+```
 
 Returns **[Promise][3]** The signed bytes
 
@@ -675,9 +958,26 @@ Forge operation bytes
 
 #### Parameters
 
--   `head` **[Object][4]** The current head of the chain
+-   `head` **[Object][4]** The current head object of the chain
 -   `opOb` **[Object][4]** The operation object(s)
--   `validateLocalForge` **[Boolean][2]** Validate locally forged bytes against node forged bytes (optional, default `false`)
+
+#### Examples
+
+```javascript
+tezos.forge(head, {
+  branch: head.hash,
+  contents: [{
+    kind: 'transaction',
+    source: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+    fee: '50000',
+    counter: '31204',
+    gas_limit: '10200',
+    storage_limit: '0',
+    amount: '100000000',
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  }],
+}).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
+```
 
 Returns **[String][1]** Forged operation bytes
 
@@ -824,6 +1124,16 @@ Get the public key and public key hash from the ledger
     -   `ledgerParams.displayConfirm` **[Boolean][2]** Whether to display a confirmation the ledger (optional, default `false`)
     -   `ledgerParams.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
+#### Examples
+
+```javascript
+ledger.getAddress({
+  path = "44'/1729'/0'/0'",
+  displayConfirm = true,
+  curve = 0x00,
+}).then(({ address, publicKey }) => console.log(address, publicKey))
+```
+
 Returns **[Promise][3]** The public key and public key hash
 
 ### signOperation
@@ -832,16 +1142,33 @@ Sign an operation with the ledger
 
 #### Parameters
 
--   `ledgerParams` **[Object][4]** The parameters of the signOperation function (optional, default `{}`)
+-   `ledgerParams` **[Object][4]** The parameters of the signOperation function
     -   `ledgerParams.path` **[string][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[Boolean][2]** The transaction hex for the ledger to sign
     -   `ledgerParams.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+
+#### Examples
+
+```javascript
+ledger.signOperation({
+  path = "44'/1729'/0'/0'",
+  rawTxHex,
+  curve = 0x00,
+}).then(({ signature }) => console.log(signature))
+```
 
 Returns **[Promise][3]** The signed operation
 
 ### getVersion
 
 Show the version of the ledger
+
+#### Examples
+
+```javascript
+ledger.getVersion()
+  .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp))
+```
 
 Returns **[Promise][3]** The version info
 

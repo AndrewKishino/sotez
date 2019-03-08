@@ -1,4 +1,5 @@
 # Sotez - A JS Library for Tezos
+[![Build Status](https://travis-ci.org/AndrewKishino/sotez.svg?branch=master)](https://travis-ci.org/AndrewKishino/sotez)
 
 # Getting Started
 ```js

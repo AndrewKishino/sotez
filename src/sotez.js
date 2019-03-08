@@ -6,7 +6,7 @@ const _sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
 const { BigNumber } = require('bignumber.js');
 const isNode = require('detect-node');
-const { encode } = require('isomorphic-textencoder');
+require('text-encoding');
 
 if (isNode) {
   global.__non_webpack_require__ = require;
@@ -335,6 +335,9 @@ const crypto = {};
  * @description Extract key pairs from a secret key
  * @param {Object} sk The secret key to extract key pairs from
  * @returns {Promise} The extracted key pairs
+ * @example
+ * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
+ *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
 crypto.extractKeys = async (sk) => { // eslint-disable-line
   await _sodium.ready;
@@ -389,6 +392,9 @@ crypto.checkAddress = (address) => {
  * @param {String} mnemonic The mnemonic seed
  * @param {String} passphrase The passphrase used to encrypt the seed
  * @returns {Promise} The generated key pair
+ * @example
+ * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
+ *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh))
  */
 crypto.generateKeys = async (mnemonic, passphrase) => {
   await _sodium.ready;
@@ -410,6 +416,11 @@ crypto.generateKeys = async (mnemonic, passphrase) => {
  * @param {String} sk The secret key to sign the bytes with
  * @param {Object} wm The watermark bytes
  * @returns {Promise} The signed bytes
+ * @example
+ * import { watermark } from 'sotez';
+ *
+ * crypto.sign(opbytes, keys.sk, watermark.generic)
+ *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
  */
 crypto.sign = async (bytes, sk, wm) => {
   await _sodium.ready;
@@ -457,6 +468,8 @@ const node = {
 /**
  * @description Enable additional logging by enabling debug mode
  * @param {Boolen} t Debug mode value
+ * @example
+ * node.setDebugMode(true);
  */
 node.setDebugMode = (t) => {
   node.debugMode = t;
@@ -466,6 +479,8 @@ node.setDebugMode = (t) => {
  * @description Set a new default provider
  * @param {String} provider The address of the provider
  * @param {Boolean} isZeronet Whether the provider is a zeronet node
+ * @example
+ * node.setProvider('http://127.0.0.1:8732');
  */
 node.setProvider = (provider, isZeronet) => {
   if (typeof z !== 'undefined') node.isZeronet = isZeronet;
@@ -474,6 +489,8 @@ node.setProvider = (provider, isZeronet) => {
 
 /**
  * @description Reset the provider to the default provider
+ * @example
+ * node.resetProvider();
  */
 node.resetProvider = () => {
   node.activeProvider = DEFAULT_PROVIDER;
@@ -485,6 +502,9 @@ node.resetProvider = () => {
  * @param {String} payload The payload of the query
  * @param {String} method The request method. Either 'GET' or 'POST'
  * @returns {Promise} The response of the query
+ * @example
+ * node.query('/chains/main/blocks/head')
+ *  .then(head => console.log(head));
  */
 node.query = (path, payload, method) => {
   if (typeof payload === 'undefined') {
@@ -548,6 +568,12 @@ const ledger = {};
  * @param {Boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
  * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The public key and public key hash
+ * @example
+ * ledger.getAddress({
+ *   path = "44'/1729'/0'/0'",
+ *   displayConfirm = true,
+ *   curve = 0x00,
+ * }).then(({ address, publicKey }) => console.log(address, publicKey))
  */
 ledger.getAddress = async ({
   path = "44'/1729'/0'/0'",
@@ -574,12 +600,18 @@ ledger.getAddress = async ({
  * @param {Boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
  * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The signed operation
+ * @example
+ * ledger.signOperation({
+ *   path = "44'/1729'/0'/0'",
+ *   rawTxHex,
+ *   curve = 0x00,
+ * }).then(({ signature }) => console.log(signature))
  */
 ledger.signOperation = async ({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
-} = {}) => {
+}) => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let signature;
@@ -596,6 +628,9 @@ ledger.signOperation = async ({
 /**
  * @description Show the version of the ledger
  * @returns {Promise} The version info
+ * @example
+ * ledger.getVersion()
+ *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp))
  */
 ledger.getVersion = async () => {
   const transport = await LedgerTransport.create();
@@ -611,280 +646,176 @@ ledger.getVersion = async () => {
   return versionInfo;
 };
 
-const forgeMappings = {
-  /* eslint-disable */
-  opMapping: {
-    '00': 'parameter',
-    '01': 'storage',
-    '02': 'code',
-    '03': 'False',
-    '04': 'Elt',
-    '05': 'Left',
-    '06': 'None',
-    '07': 'Pair',
-    '08': 'Right',
-    '09': 'Some',
-    '0A': 'True',
-    '0B': 'Unit',
-    '0C': 'PACK',
-    '0D': 'UNPACK',
-    '0E': 'BLAKE2B',
-    '0F': 'SHA256',
-    '10': 'SHA512',
-    '11': 'ABS',
-    '12': 'ADD',
-    '13': 'AMOUNT',
-    '14': 'AND',
-    '15': 'BALANCE',
-    '16': 'CAR',
-    '17': 'CDR',
-    '18': 'CHECK_SIGNATURE',
-    '19': 'COMPARE',
-    '1A': 'CONCAT',
-    '1B': 'CONS',
-    '1C': 'CREATE_ACCOUNT',
-    '1D': 'CREATE_CONTRACT',
-    '1E': 'IMPLICIT_ACCOUNT',
-    '1F': 'DIP',
-    '20': 'DROP',
-    '21': 'DUP',
-    '22': 'EDIV',
-    '23': 'EMPTY_MAP',
-    '24': 'EMPTY_SET',
-    '25': 'EQ',
-    '26': 'EXEC',
-    '27': 'FAILWITH',
-    '28': 'GE',
-    '29': 'GET',
-    '2A': 'GT',
-    '2B': 'HASH_KEY',
-    '2C': 'IF',
-    '2D': 'IF_CONS',
-    '2E': 'IF_LEFT',
-    '2F': 'IF_NONE',
-    '30': 'INT',
-    '31': 'LAMBDA',
-    '32': 'LE',
-    '33': 'LEFT',
-    '34': 'LOOP',
-    '35': 'LSL',
-    '36': 'LSR',
-    '37': 'LT',
-    '38': 'MAP',
-    '39': 'MEM',
-    '3A': 'MUL',
-    '3B': 'NEG',
-    '3C': 'NEQ',
-    '3D': 'NIL',
-    '3E': 'NONE',
-    '3F': 'NOT',
-    '40': 'NOW',
-    '41': 'OR',
-    '42': 'PAIR',
-    '43': 'PUSH',
-    '44': 'RIGHT',
-    '45': 'SIZE',
-    '46': 'SOME',
-    '47': 'SOURCE',
-    '48': 'SENDER',
-    '49': 'SELF',
-    '4A': 'STEPS_TO_QUOTA',
-    '4B': 'SUB',
-    '4C': 'SWAP',
-    '4D': 'TRANSFER_TOKENS',
-    '4E': 'SET_DELEGATE',
-    '4F': 'UNIT',
-    '50': 'UPDATE',
-    '51': 'XOR',
-    '52': 'ITER',
-    '53': 'LOOP_LEFT',
-    '54': 'ADDRESS',
-    '55': 'CONTRACT',
-    '56': 'ISNAT',
-    '57': 'CAST',
-    '58': 'RENAME',
-    '59': 'bool',
-    '5A': 'contract',
-    '5B': 'int',
-    '5C': 'key',
-    '5D': 'key_hash',
-    '5E': 'lambda',
-    '5F': 'list',
-    '60': 'map',
-    '61': 'big_map',
-    '62': 'nat',
-    '63': 'option',
-    '64': 'or',
-    '65': 'pair',
-    '66': 'set',
-    '67': 'signature',
-    '68': 'string',
-    '69': 'bytes',
-    '6A': 'mutez',
-    '6B': 'timestamp',
-    '6C': 'unit',
-    '6D': 'operation',
-    '6E': 'address',
-    '6F': 'SLICE',
+const forgeMappings = {};
+/* eslint-disable */
+forgeMappings.opMapping = {
+  '00': 'parameter',
+  '01': 'storage',
+  '02': 'code',
+  '03': 'False',
+  '04': 'Elt',
+  '05': 'Left',
+  '06': 'None',
+  '07': 'Pair',
+  '08': 'Right',
+  '09': 'Some',
+  '0A': 'True',
+  '0B': 'Unit',
+  '0C': 'PACK',
+  '0D': 'UNPACK',
+  '0E': 'BLAKE2B',
+  '0F': 'SHA256',
+  '10': 'SHA512',
+  '11': 'ABS',
+  '12': 'ADD',
+  '13': 'AMOUNT',
+  '14': 'AND',
+  '15': 'BALANCE',
+  '16': 'CAR',
+  '17': 'CDR',
+  '18': 'CHECK_SIGNATURE',
+  '19': 'COMPARE',
+  '1A': 'CONCAT',
+  '1B': 'CONS',
+  '1C': 'CREATE_ACCOUNT',
+  '1D': 'CREATE_CONTRACT',
+  '1E': 'IMPLICIT_ACCOUNT',
+  '1F': 'DIP',
+  '20': 'DROP',
+  '21': 'DUP',
+  '22': 'EDIV',
+  '23': 'EMPTY_MAP',
+  '24': 'EMPTY_SET',
+  '25': 'EQ',
+  '26': 'EXEC',
+  '27': 'FAILWITH',
+  '28': 'GE',
+  '29': 'GET',
+  '2A': 'GT',
+  '2B': 'HASH_KEY',
+  '2C': 'IF',
+  '2D': 'IF_CONS',
+  '2E': 'IF_LEFT',
+  '2F': 'IF_NONE',
+  '30': 'INT',
+  '31': 'LAMBDA',
+  '32': 'LE',
+  '33': 'LEFT',
+  '34': 'LOOP',
+  '35': 'LSL',
+  '36': 'LSR',
+  '37': 'LT',
+  '38': 'MAP',
+  '39': 'MEM',
+  '3A': 'MUL',
+  '3B': 'NEG',
+  '3C': 'NEQ',
+  '3D': 'NIL',
+  '3E': 'NONE',
+  '3F': 'NOT',
+  '40': 'NOW',
+  '41': 'OR',
+  '42': 'PAIR',
+  '43': 'PUSH',
+  '44': 'RIGHT',
+  '45': 'SIZE',
+  '46': 'SOME',
+  '47': 'SOURCE',
+  '48': 'SENDER',
+  '49': 'SELF',
+  '4A': 'STEPS_TO_QUOTA',
+  '4B': 'SUB',
+  '4C': 'SWAP',
+  '4D': 'TRANSFER_TOKENS',
+  '4E': 'SET_DELEGATE',
+  '4F': 'UNIT',
+  '50': 'UPDATE',
+  '51': 'XOR',
+  '52': 'ITER',
+  '53': 'LOOP_LEFT',
+  '54': 'ADDRESS',
+  '55': 'CONTRACT',
+  '56': 'ISNAT',
+  '57': 'CAST',
+  '58': 'RENAME',
+  '59': 'bool',
+  '5A': 'contract',
+  '5B': 'int',
+  '5C': 'key',
+  '5D': 'key_hash',
+  '5E': 'lambda',
+  '5F': 'list',
+  '60': 'map',
+  '61': 'big_map',
+  '62': 'nat',
+  '63': 'option',
+  '64': 'or',
+  '65': 'pair',
+  '66': 'set',
+  '67': 'signature',
+  '68': 'string',
+  '69': 'bytes',
+  '6A': 'mutez',
+  '6B': 'timestamp',
+  '6C': 'unit',
+  '6D': 'operation',
+  '6E': 'address',
+  '6F': 'SLICE',
+};
+/* eslint-enable */
+
+forgeMappings.opMappingReverse = (() => {
+  const result = {};
+  Object.keys(forgeMappings.opMapping).forEach((key) => {
+    result[forgeMappings.opMapping[key]] = key;
+  });
+  return result;
+})();
+
+forgeMappings.primMapping = {
+  '00': 'int',
+  '01': 'string',
+  '02': 'seq',
+  '03': { name: 'prim', len: 0, annots: false },
+  '04': { name: 'prim', len: 0, annots: true },
+  '05': { name: 'prim', len: 1, annots: false },
+  '06': { name: 'prim', len: 1, annots: true },
+  '07': { name: 'prim', len: 2, annots: false },
+  '08': { name: 'prim', len: 2, annots: true },
+  '09': { name: 'prim', len: 3, annots: true },
+  '0A': 'bytes',
+};
+
+forgeMappings.primMappingReverse = {
+  0: {
+    false: '03',
+    true: '04',
   },
-  opMappingReverse: {
-    'SHA512': '10',
-    'ABS': '11',
-    'ADD': '12',
-    'AMOUNT': '13',
-    'AND': '14',
-    'BALANCE': '15',
-    'CAR': '16',
-    'CDR': '17',
-    'CHECK_SIGNATURE': '18',
-    'COMPARE': '19',
-    'DROP': '20',
-    'DUP': '21',
-    'EDIV': '22',
-    'EMPTY_MAP': '23',
-    'EMPTY_SET': '24',
-    'EQ': '25',
-    'EXEC': '26',
-    'FAILWITH': '27',
-    'GE': '28',
-    'GET': '29',
-    'INT': '30',
-    'LAMBDA': '31',
-    'LE': '32',
-    'LEFT': '33',
-    'LOOP': '34',
-    'LSL': '35',
-    'LSR': '36',
-    'LT': '37',
-    'MAP': '38',
-    'MEM': '39',
-    'NOW': '40',
-    'OR': '41',
-    'PAIR': '42',
-    'PUSH': '43',
-    'RIGHT': '44',
-    'SIZE': '45',
-    'SOME': '46',
-    'SOURCE': '47',
-    'SENDER': '48',
-    'SELF': '49',
-    'UPDATE': '50',
-    'XOR': '51',
-    'ITER': '52',
-    'LOOP_LEFT': '53',
-    'ADDRESS': '54',
-    'CONTRACT': '55',
-    'ISNAT': '56',
-    'CAST': '57',
-    'RENAME': '58',
-    'bool': '59',
-    'map': '60',
-    'big_map': '61',
-    'nat': '62',
-    'option': '63',
-    'or': '64',
-    'pair': '65',
-    'set': '66',
-    'signature': '67',
-    'string': '68',
-    'bytes': '69',
-    'parameter': '00',
-    'storage': '01',
-    'code': '02',
-    'False': '03',
-    'Elt': '04',
-    'Left': '05',
-    'None': '06',
-    'Pair': '07',
-    'Right': '08',
-    'Some': '09',
-    'True': '0A',
-    'Unit': '0B',
-    'PACK': '0C',
-    'UNPACK': '0D',
-    'BLAKE2B': '0E',
-    'SHA256': '0F',
-    'CONCAT': '1A',
-    'CONS': '1B',
-    'CREATE_ACCOUNT': '1C',
-    'CREATE_CONTRACT': '1D',
-    'IMPLICIT_ACCOUNT': '1E',
-    'DIP': '1F',
-    'GT': '2A',
-    'HASH_KEY': '2B',
-    'IF': '2C',
-    'IF_CONS': '2D',
-    'IF_LEFT': '2E',
-    'IF_NONE': '2F',
-    'MUL': '3A',
-    'NEG': '3B',
-    'NEQ': '3C',
-    'NIL': '3D',
-    'NONE': '3E',
-    'NOT': '3F',
-    'STEPS_TO_QUOTA': '4A',
-    'SUB': '4B',
-    'SWAP': '4C',
-    'TRANSFER_TOKENS': '4D',
-    'SET_DELEGATE': '4E',
-    'UNIT': '4F',
-    'contract': '5A',
-    'int': '5B',
-    'key': '5C',
-    'key_hash': '5D',
-    'lambda': '5E',
-    'list': '5F',
-    'mutez': '6A',
-    'timestamp': '6B',
-    'unit': '6C',
-    'operation': '6D',
-    'address': '6E',
-    'SLICE': '6F',
+  1: {
+    false: '05',
+    true: '06',
   },
-  /* eslint-enable */
-  primMapping: {
-    '00': 'int',
-    '01': 'string',
-    '02': 'seq',
-    '03': { name: 'prim', len: 0, annots: false },
-    '04': { name: 'prim', len: 0, annots: true },
-    '05': { name: 'prim', len: 1, annots: false },
-    '06': { name: 'prim', len: 1, annots: true },
-    '07': { name: 'prim', len: 2, annots: false },
-    '08': { name: 'prim', len: 2, annots: true },
-    '09': { name: 'prim', len: 3, annots: true },
-    '0A': 'bytes',
+  2: {
+    false: '07',
+    true: '08',
   },
-  primMappingReverse: {
-    0: {
-      false: '03',
-      true: '04',
-    },
-    1: {
-      false: '05',
-      true: '06',
-    },
-    2: {
-      false: '07',
-      true: '08',
-    },
-    3: {
-      true: '09',
-    },
+  3: {
+    true: '09',
   },
-  forgeOpTags: {
-    endorsement: 0,
-    seed_nonce_revelation: 1,
-    double_endorsement_evidence: 2,
-    double_baking_evidence: 3,
-    activate_account: 4,
-    proposals: 5,
-    ballot: 6,
-    reveal: 7,
-    transaction: 8,
-    origination: 9,
-    delegation: 10,
-  },
+};
+
+forgeMappings.forgeOpTags = {
+  endorsement: 0,
+  seed_nonce_revelation: 1,
+  double_endorsement_evidence: 2,
+  double_baking_evidence: 3,
+  activate_account: 4,
+  proposals: 5,
+  ballot: 6,
+  reveal: 7,
+  transaction: 8,
+  origination: 9,
+  delegation: 10,
 };
 
 const forge = {};
@@ -979,16 +910,19 @@ forge.address = (address) => {
  */
 forge.zarith = (n) => {
   let fn = '';
-  n = parseInt(n, 10);
+  let nn = parseInt(n, 10);
+  if (Number.isNaN(nn)) {
+    throw new TypeError(`Error forging zarith ${n}`);
+  }
   while (true) { // eslint-disable-line
-    if (n < 128) {
-      if (n < 16) fn += '0';
-      fn += n.toString(16);
+    if (nn < 128) {
+      if (nn < 16) fn += '0';
+      fn += nn.toString(16);
       break;
     } else {
-      let b = (n % 128);
-      n -= b;
-      n /= 128;
+      let b = (nn % 128);
+      nn -= b;
+      nn /= 128;
       b += 128;
       fn += b.toString(16);
     }
@@ -1114,16 +1048,38 @@ forge.op = (op) => {
 const tezos = {};
 /**
  * @description Forge operation bytes
- * @param {Object} head The current head of the chain
+ * @param {Object} head The current head object of the chain
  * @param {Object} opOb The operation object(s)
- * @param {Boolean} [validateLocalForge=false] Validate locally forged bytes against node forged bytes
  * @returns {String} Forged operation bytes
+ * @example
+ * tezos.forge(head, {
+ *   branch: head.hash,
+ *   contents: [{
+ *     kind: 'transaction',
+ *     source: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *     fee: '50000',
+ *     counter: '31204',
+ *     gas_limit: '10200',
+ *     storage_limit: '0',
+ *     amount: '100000000',
+ *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   }],
+ * }).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
  */
-tezos.forge = async (head, opOb, validateLocalForge = false) => {
+tezos.forge = async (head, opOb) => {
   let remoteForgedBytes;
 
-  if (validateLocalForge) {
+  if (!rpc.localForge || rpc.validateLocalForge) {
     remoteForgedBytes = await node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
+  }
+
+  opOb.protocol = head.protocol;
+
+  if (!rpc.localForge) {
+    return {
+      opbytes: remoteForgedBytes,
+      opOb,
+    };
   }
 
   let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
@@ -1131,8 +1087,7 @@ tezos.forge = async (head, opOb, validateLocalForge = false) => {
     localForgedBytes += forge.op(content);
   });
 
-  opOb.protocol = head.protocol;
-  if (validateLocalForge) {
+  if (rpc.validateLocalForge) {
     if (localForgedBytes === remoteForgedBytes) {
       return {
         opbytes: localForgedBytes,
@@ -1282,7 +1237,7 @@ tezos.encodeRawBytes = (input) => {
           inputArg.args.forEach(arg => result.push(rec(arg)));
         }
         if (inputArg.annots) {
-          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(encode(x))).join('20');
+          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(new TextEncoder().encode(x))).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
@@ -1318,7 +1273,7 @@ tezos.encodeRawBytes = (input) => {
         result.push('00');
         result.push(numHex);
       } else if (inputArg.string) {
-        const stringBytes = encode(inputArg.string);
+        const stringBytes = new TextEncoder().encode(inputArg.string);
         const stringHex = [].slice.call(stringBytes).map(x => x.toString(16).padStart(2, '0')).join('');
         const len = stringBytes.length;
         result.push('01');
@@ -1332,7 +1287,27 @@ tezos.encodeRawBytes = (input) => {
   return rec(input).toUpperCase();
 };
 
-const rpc = {};
+const rpc = {
+  localForge: true,
+  validateLocalForge: false,
+};
+
+/**
+ * @description Sets the forging strategy to either local or remote
+ * @param {Boolean} [useLocal=true] Forge strategy true - local | false - remote
+ */
+rpc.setForgeLocal = (useLocal = true) => {
+  rpc.localForge = useLocal;
+};
+
+/**
+ * @description Whether to validate locally forged operations against remotely forged operations
+ * @param {Boolean} [localValidation=false] Validate local forge
+ */
+rpc.setLocalForgeValidation = (localValidation = false) => {
+  rpc.validateLocalForge = localValidation;
+};
+
 /**
  * @description Originate a new account
  * @param {Object} paramObject The parameters for the origination
@@ -1402,6 +1377,9 @@ rpc.account = async ({
  * @description Get the balance for a contract
  * @param {String} address The contract for which to retrieve the balance
  * @returns {Promise} The balance of the contract
+ * @example
+ * rpc.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+ *   .then(balance => console.log(balance))
  */
 rpc.getBalance = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/balance`)
@@ -1412,6 +1390,9 @@ rpc.getBalance = address => (
  * @description Get the delegate for a contract
  * @param {String} address The contract for which to retrieve the delegate
  * @returns {Promise} The delegate of a contract, if any
+ * @example
+ * rpc.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+ *   .then(delegate => console.log(delegate))
  */
 rpc.getDelegate = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/delegate`)
@@ -1425,6 +1406,9 @@ rpc.getDelegate = address => (
  * @description Get the manager for a contract
  * @param {String} address The contract for which to retrieve the manager
  * @returns {Promise} The manager of a contract
+ * @example
+ * rpc.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+ *   .then(({ manager, key }) => console.log(manager, key))
  */
 rpc.getManager = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/manager_key`)
@@ -1434,6 +1418,9 @@ rpc.getManager = address => (
  * @description Get the counter for an contract
  * @param {String} address The contract for which to retrieve the counter
  * @returns {Promise} The counter of a contract, if any
+ * @example
+ * rpc.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+ *   .then(counter => console.log(counter))
  */
 rpc.getCounter = address => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/counter`)
@@ -1443,6 +1430,27 @@ rpc.getCounter = address => (
  * @description Get the baker information for an address
  * @param {String} address The contract for which to retrieve the baker information
  * @returns {Promise} The information of the delegate address
+ * @example
+ * rpc.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+ *   .then(({
+ *     balance,
+ *     frozen_balance,
+ *     frozen_balance_by_cycle,
+ *     staking_balance,
+ *     delegated_contracts
+ *     delegated_balance
+ *     deactivated,
+ *     grace_period,
+ *   }) => console.log(
+ *     balance,
+ *     frozen_balance,
+ *     frozen_balance_by_cycle,
+ *     staking_balance,
+ *     delegated_contracts
+ *     delegated_balance
+ *     deactivated,
+ *     grace_period,
+ *   ))
  */
 rpc.getBaker = address => (
   node.query(`/chains/main/blocks/head/context/delegates/${address}`)
@@ -1451,6 +1459,8 @@ rpc.getBaker = address => (
 /**
  * @description Get the header of the current head
  * @returns {Promise} The whole block header
+ * @example
+ * rpc.getHeader().then(header => console.log(header))
  */
 rpc.getHeader = () => (
   node.query('/chains/main/blocks/head/header')
@@ -1459,18 +1469,24 @@ rpc.getHeader = () => (
 /**
  * @description Get the current head block of the chain
  * @returns {Promise} The current head block
+ * @example
+ * rpc.getHead().then(head => console.log(head))
  */
 rpc.getHead = () => node.query('/chains/main/blocks/head');
 
 /**
  * @description Get the current head block hash of the chain
  * @returns {Promise} The block's hash, its unique identifier
+ * @example
+ * rpc.getHeadHash().then(headHash => console.log(headHash))
  */
 rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
 
 /**
  * @description Ballots casted so far during a voting period
  * @returns {Promise} Ballots casted so far during a voting period
+ * @example
+ * rpc.getBallotList().then(ballotList => console.log(ballotList))
  */
 rpc.getBallotList = () => (
   node.query('/chains/main/blocks/head/votes/ballot_list')
@@ -1479,6 +1495,11 @@ rpc.getBallotList = () => (
 /**
  * @description List of proposals with number of supporters
  * @returns {Promise} List of proposals with number of supporters
+ * @example
+ * rpc.getProposals().then(proposals => {
+ *   console.log(proposals[0][0], proposals[0][1])
+ *   console.log(proposals[1][0], proposals[1][1])
+ * )
  */
 rpc.getProposals = () => (
   node.query('/chains/main/blocks/head/votes/proposals')
@@ -1487,6 +1508,8 @@ rpc.getProposals = () => (
 /**
  * @description Sum of ballots casted so far during a voting period
  * @returns {Promise} Sum of ballots casted so far during a voting period
+ * @example
+ * rpc.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
  */
 rpc.getBallots = () => (
   node.query('/chains/main/blocks/head/votes/ballots')
@@ -1495,6 +1518,8 @@ rpc.getBallots = () => (
 /**
  * @description List of delegates with their voting weight, in number of rolls
  * @returns {Promise} The ballots of the current voting period
+ * @example
+ * rpc.getListings().then(listings => console.log(listings))
  */
 rpc.getListings = () => (
   node.query('/chains/main/blocks/head/votes/listings')
@@ -1503,6 +1528,8 @@ rpc.getListings = () => (
 /**
  * @description Current proposal under evaluation
  * @returns {Promise} Current proposal under evaluation
+ * @example
+ * rpc.getCurrentProposal().then(currentProposal => console.log(currentProposal))
  */
 rpc.getCurrentProposal = () => (
   node.query('/chains/main/blocks/head/votes/current_proposal')
@@ -1511,6 +1538,8 @@ rpc.getCurrentProposal = () => (
 /**
  * @description Current period kind
  * @returns {Promise} Current period kind
+ * @example
+ * rpc.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod))
  */
 rpc.getCurrentPeriod = () => (
   node.query('/chains/main/blocks/head/votes/current_period_kind')
@@ -1519,6 +1548,8 @@ rpc.getCurrentPeriod = () => (
 /**
  * @description Current expected quorum
  * @returns {Promise} Current expected quorum
+ * @example
+ * rpc.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum))
  */
 rpc.getCurrentQuorum = () => (
   node.query('/chains/main/blocks/head/votes/current_quorum')
@@ -1530,6 +1561,9 @@ rpc.getCurrentQuorum = () => (
  * @param {Number} [interval=10] The interval to check new blocks
  * @param {Number} [timeout=180] The time before the operation times out
  * @returns {Promise} The hash of the block in which the operation was included
+ * @example
+ * rpc.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
+ *  .then((hash) => console.log(hash));
  */
 rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
   if (timeout <= 0) {
@@ -1593,6 +1627,23 @@ rpc.call = (path, payload) => node.query(path, payload);
  * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
  * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} Object containing the prepared operation
+ * @example
+ * rpc.prepareOperation({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   operation: {
+ *     kind: 'transaction',
+ *     fee: '50000',
+ *     gas_limit: '10200',
+ *     storage_limit: '0',
+ *     amount: '1000',
+ *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   },
+ *   keys: {
+ *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+ *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+ *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   },
+ * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
  */
 rpc.prepareOperation = ({
   from,
@@ -1610,7 +1661,7 @@ rpc.prepareOperation = ({
   let ops = [];
   let head;
 
-  promises.push(node.query('/chains/main/blocks/head/header'));
+  promises.push(rpc.getHeader());
 
   if (Array.isArray(operation)) {
     ops = [...operation];
@@ -1676,6 +1727,7 @@ rpc.prepareOperation = ({
     };
 
     const fullOp = await tezos.forge(head, opOb);
+
     return {
       ...fullOp,
       counter,
@@ -1694,6 +1746,23 @@ rpc.prepareOperation = ({
  * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
  * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The simulated operation result
+ * @example
+ * rpc.simulateOperation({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   operation: {
+ *     kind: 'transaction',
+ *     fee: '50000',
+ *     gas_limit: '10200',
+ *     storage_limit: '0',
+ *     amount: '1000',
+ *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   },
+ *   keys: {
+ *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+ *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+ *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   },
+ * }).then(result => console.log(result));
  */
 rpc.simulateOperation = ({
   from,
@@ -1729,6 +1798,33 @@ rpc.simulateOperation = ({
  * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
  * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} Object containing the injected operation hash
+ * @example
+ * const keys = {
+ *   sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+ *   pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+ *   pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ * };
+ *
+ * const operation = {
+ *   kind: 'transaction',
+ *   fee: '50000',
+ *   gas_limit: '10200',
+ *   storage_limit: '0',
+ *   amount: '1000',
+ *   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ * };
+ *
+ * rpc.sendOperation({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   operation,
+ *   keys,
+ * }).then(result => console.log(result));
+ *
+ * rpc.sendOperation({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   operation: [operation, operation],
+ *   keys,
+ * }).then(result => console.log(result));
  */
 rpc.sendOperation = async ({
   from,
@@ -1783,7 +1879,6 @@ rpc.sendOperation = async ({
       throw e;
     });
 };
-
 
 /**
  * @description Inject an operation
@@ -1843,6 +1938,18 @@ rpc.silentInject = sopbytes => node.query('/injection/operation', sopbytes).then
  * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
  * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} Object containing the injected operation hash
+ * @example
+ * rpc.transfer({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   amount: '1000000',
+ *   keys: {
+ *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+ *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+ *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   },
+ *   fee: '1278',
+ * }).then(result => console.log(result))
  */
 rpc.transfer = ({
   from,
@@ -1879,6 +1986,9 @@ rpc.transfer = ({
  * @param {Object} pkh The public key hash of the account
  * @param {String} secret The secret to activate the account
  * @returns {Promise} Object containing the injected operation hash
+ * @example
+ * rpc.activate(pkh, secret)
+ *   .then((activateOperation) => console.log(activateOperation))
  */
 rpc.activate = (pkh, secret) => {
   const operation = {

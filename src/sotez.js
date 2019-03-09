@@ -6,7 +6,9 @@ const _sodium = require('libsodium-wrappers');
 const bip39 = require('bip39');
 const { BigNumber } = require('bignumber.js');
 const isNode = require('detect-node');
-require('text-encoding');
+
+const textEncode = string => new Uint8Array(Buffer.from(string, 'utf8'));
+const textDecode = buffer => Buffer.from(buffer).toString('utf8');
 
 if (isNode) {
   global.__non_webpack_require__ = require;
@@ -1138,7 +1140,7 @@ tezos.decodeRawBytes = (bytes) => {
         index += annotsLen;
         if (stringHexLst) {
           const stringBytes = new Uint8Array(stringHexLst.map(x => parseInt(x, 16)));
-          const stringResult = new TextDecoder('utf-8').decode(stringBytes);
+          const stringResult = textDecode(stringBytes);
           result.annots = stringResult.split(' ');
         }
       } else {
@@ -1168,7 +1170,7 @@ tezos.decodeRawBytes = (bytes) => {
       const matchResult = data.match(/[\dA-F]{2}/g);
       if (matchResult instanceof Array) {
         const stringRaw = new Uint8Array(matchResult.map(x => parseInt(x, 16)));
-        return { string: new TextDecoder('utf-8').decode(stringRaw) };
+        return { string: textDecode(stringRaw) };
       }
 
       throw new Error('Input bytes error');
@@ -1237,7 +1239,7 @@ tezos.encodeRawBytes = (input) => {
           inputArg.args.forEach(arg => result.push(rec(arg)));
         }
         if (inputArg.annots) {
-          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(new TextEncoder().encode(x))).join('20');
+          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(textEncode(x))).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
@@ -1273,7 +1275,7 @@ tezos.encodeRawBytes = (input) => {
         result.push('00');
         result.push(numHex);
       } else if (inputArg.string) {
-        const stringBytes = new TextEncoder().encode(inputArg.string);
+        const stringBytes = textEncode(inputArg.string);
         const stringHex = [].slice.call(stringBytes).map(x => x.toString(16).padStart(2, '0')).join('');
         const len = stringBytes.length;
         result.push('01');
@@ -1713,6 +1715,7 @@ rpc.prepareOperation = ({
       if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
         if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
         if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
+        if (typeof op.amount !== 'undefined') op.amount = `${op.amount}`;
         op.counter = `${++counters[from]}`;
         op.fee = `${op.fee}`;
         op.gas_limit = `${op.gas_limit}`;

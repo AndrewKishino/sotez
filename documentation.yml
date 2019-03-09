@@ -8,6 +8,8 @@ toc:
 
   - name: rpc
     children:
+      - setForgeLocal
+      - setLocalForgeValidation
       - account
       - getBalance
       - getDelegate

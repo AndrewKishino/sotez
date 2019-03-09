@@ -30,7 +30,6 @@
     "detect-node": "^2.0.4",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
-    "text-encoding": "^0.7.0",
     "xhr2": "^0.1.4"
   },
   "devDependencies": {

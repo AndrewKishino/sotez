@@ -1,3 +1,5 @@
+// @flow
+// $FlowFixMe
 if (typeof Buffer === 'undefined') Buffer = require('buffer/').Buffer; // eslint-disable-line
 if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2'); // eslint-disable-line
 
@@ -15,15 +17,17 @@ if (isNode) {
 }
 
 const LedgerTransport = isNode
+  // $FlowFixMe
   ? __non_webpack_require__('@ledgerhq/hw-transport-node-hid').default // eslint-disable-line
+  // $FlowFixMe
   : require('@ledgerhq/hw-transport-u2f').default;
 const LedgerApp = require('./hw-app-xtz/lib/Tezos').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = 1278;
-const counters = {};
+const counters: { [PKH]: number } = {};
 
-const prefix = {
+const prefix: Prefix = {
   tz1: new Uint8Array([6, 161, 159]),
   tz2: new Uint8Array([6, 161, 161]),
   tz3: new Uint8Array([6, 161, 164]),
@@ -56,23 +60,23 @@ const prefix = {
   id: new Uint8Array([153, 103]),
 };
 
-const watermark = {
+const watermark: Watermark = {
   block: new Uint8Array([1]),
   endorsement: new Uint8Array([2]),
   generic: new Uint8Array([3]),
 };
 
-const utility = {};
+const utility: Utility = {};
 /**
  * @description Convert from base58 to integer
- * @param {Number} v The b58 value
+ * @param {String} v The b58 value
  * @returns {String} The converted b58 value
  */
-utility.b582int = (v) => {
+utility.b582int = (v: string): string => {
   let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   for (let i = 0; i < v.length; i++) {
-    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i))));
+    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i])).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i)));
   }
   return rv.toString(16);
 };
@@ -80,16 +84,16 @@ utility.b582int = (v) => {
 /**
  * @description Convert from mutez to tez
  * @param {Number} mutez The amount in mutez to convert to tez
- * @returns {Integer} The mutez amount converted to tez
+ * @returns {Number} The mutez amount converted to tez
  */
-utility.totez = mutez => parseInt(mutez, 10) / 1000000;
+utility.totez = (mutez: number): number => parseInt(mutez, 10) / 1000000;
 
 /**
  * @description Convert from tez to mutez
  * @param {Number} tez The amount in tez to convert to mutez
  * @returns {String} The tez amount converted to mutez
  */
-utility.mutez = tez => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
+utility.mutez = (tez: number): number => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
  * @description Base58 encode
@@ -97,10 +101,12 @@ utility.mutez = tez => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The base58 encoded value
  */
-utility.b58cencode = (payload, prefixArg) => {
+utility.b58cencode = (payload: string, prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
+  // $FlowFixMe
   n.set(payload, prefixArg.length);
+  // $FlowFixMe
   return bs58check.encode(Buffer.from(n, 'hex'));
 };
 
@@ -110,14 +116,15 @@ utility.b58cencode = (payload, prefixArg) => {
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The decoded base58 value
  */
-utility.b58cdecode = (enc, prefixArg) => bs58check.decode(enc).slice(prefixArg.length);
+utility.b58cdecode = (enc: string, prefixArg: Uint8Array): string => bs58check.decode(enc).slice(prefixArg.length);
 
 /**
  * @description Buffer to hex
  * @param {Object} buffer The buffer to convert to hex
  * @returns {String} Converted hex value
  */
-utility.buf2hex = (buffer) => {
+utility.buf2hex = (buffer: Uint8Array | string): string => {
+  // $FlowFixMe
   const byteArray = new Uint8Array(buffer);
   const hexParts = [];
   byteArray.forEach((byte) => {
@@ -133,14 +140,17 @@ utility.buf2hex = (buffer) => {
  * @param {String} hex The hex to convert to buffer
  * @returns {Object} Converted buffer value
  */
-utility.hex2buf = hex => new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
+utility.hex2buf = (hex: string): Uint8Array => (
+  // $FlowFixMe
+  new Uint8Array(hex.match(/[\da-f]{2}/gi).map((h: string) => parseInt(h, 16)))
+);
 
 /**
  * @description Generate a hex nonce
  * @param {Number} length The length of the nonce
  * @returns {String} The nonce of the given length
  */
-utility.hexNonce = (length) => {
+utility.hexNonce = (length: number): string => {
   const chars = '0123456789abcedf';
   let hex = '';
   while (length--) {
@@ -155,14 +165,14 @@ utility.hexNonce = (length) => {
  * @param {Object} b2 The second buffer
  * @returns {Object} The merged buffer
  */
-utility.mergebuf = (b1, b2) => {
+utility.mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   const r = new Uint8Array(b1.length + b2.length);
   r.set(b1);
   r.set(b2, b1.length);
   return r;
 };
 
-utility.sexp2mic = function me(mi) {
+utility.sexp2mic = function me(mi: string): any {
   mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -214,8 +224,8 @@ utility.sexp2mic = function me(mi) {
   return ret;
 };
 
-utility.mic2arr = function me2(s) {
-  let ret = [];
+utility.mic2arr = function me2(s: any): any {
+  let ret: any = [];
   if (Object.prototype.hasOwnProperty.call(s, 'prim')) {
     if (s.prim === 'Pair') {
       ret.push(me2(s.args[0]));
@@ -257,7 +267,7 @@ utility.mic2arr = function me2(s) {
   return ret;
 };
 
-utility.ml2mic = function me(mi) {
+utility.ml2mic = function me(mi: string): any {
   const ret = [];
   let inseq = false;
   let seq = '';
@@ -302,7 +312,7 @@ utility.ml2mic = function me(mi) {
         val = '';
         continue;
       }
-      ret.push(utility.ml2tzjson(val));
+      ret.push(utility.sexp2mic(val));
       val = '';
       continue;
     } else if (mi[i] === '"' && sopen) {
@@ -321,18 +331,8 @@ utility.ml2mic = function me(mi) {
   return ret;
 };
 
-utility.formatMoney = (n, c, d, t) => {
-  const cc = isNaN(c = Math.abs(c)) ? 2 : c; // eslint-disable-line
-  const dd = d === undefined ? '.' : d;
-  const tt = t === undefined ? ',' : t;
-  const s = n < 0 ? '-' : '';
-  const i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(cc), 10));
-  const j = i.length > 3 ? i.length % 3 : 0;
-  return s + (j ? i.substr(0, j) + tt : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${tt}`) + (cc ? dd + Math.abs(n - i).toFixed(c).slice(2) : '');
-};
-
 // TODO: Add p256 and secp256k1 cryptographay
-const crypto = {};
+const crypto: Crypto = {};
 /**
  * @description Extract key pairs from a secret key
  * @param {Object} sk The secret key to extract key pairs from
@@ -341,8 +341,14 @@ const crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-crypto.extractKeys = async (sk) => { // eslint-disable-line
-  await _sodium.ready;
+// $FlowFixMe
+crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-line
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
+
   const sodium = _sodium;
   const pref = sk.substr(0, 4);
   switch (pref) {
@@ -365,7 +371,11 @@ crypto.extractKeys = async (sk) => { // eslint-disable-line
       }
       break;
     default:
-      return false;
+      return {
+        sk: '',
+        pk: '',
+        pkh: '',
+      };
   }
 };
 
@@ -373,14 +383,14 @@ crypto.extractKeys = async (sk) => { // eslint-disable-line
  * @description Generate a mnemonic
  * @returns {String} The generated mnemonic
  */
-crypto.generateMnemonic = () => bip39.generateMnemonic(160);
+crypto.generateMnemonic = (): string => bip39.generateMnemonic(160);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
  * @param {String} address The address to check
  * @returns {Boolean} Whether address is valid or not
  */
-crypto.checkAddress = (address) => {
+crypto.checkAddress = (address: string): boolean => {
   try {
     utility.b58cdecode(address, prefix.tz1);
     return true;
@@ -398,8 +408,13 @@ crypto.checkAddress = (address) => {
  * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh))
  */
-crypto.generateKeys = async (mnemonic, passphrase) => {
-  await _sodium.ready;
+crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
+
   const sodium = _sodium;
   const s = bip39.mnemonicToSeed(mnemonic, passphrase).slice(0, 32);
   const kp = sodium.crypto_sign_seed_keypair(s);
@@ -424,12 +439,20 @@ crypto.generateKeys = async (mnemonic, passphrase) => {
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
  */
-crypto.sign = async (bytes, sk, wm) => {
-  await _sodium.ready;
-  const sodium = _sodium;
+crypto.sign = async (bytes: string, sk: string, wm: Uint8Array): Promise<Signed> => {
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
 
+  const sodium = _sodium;
   if (sk.length === 54) {
-    ({ sk } = await crypto.extractKeys(sk));
+    try {
+      ({ sk } = await crypto.extractKeys(sk));
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   let bb = utility.hex2buf(bytes);
@@ -454,18 +477,22 @@ crypto.sign = async (bytes, sk, wm) => {
  * @param {String} pk The public key
  * @returns {Boolean} Whether the signed bytes are valid
  */
-crypto.verify = async (bytes, sig, pk) => {
-  await _sodium.ready;
+crypto.verify = async (bytes: string, sig: string, pk: string): Promise<number> => {
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
+
   const sodium = _sodium;
   return sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk));
 };
 
-const node = {
-  activeProvider: DEFAULT_PROVIDER,
-  debugMode: false,
-  async: true,
-  isZeronet: false,
-};
+const node: _Node = {};
+node.activeProvider = DEFAULT_PROVIDER;
+node.debugMode = false;
+node.async = true;
+node.isZeronet = false;
 
 /**
  * @description Enable additional logging by enabling debug mode
@@ -473,7 +500,7 @@ const node = {
  * @example
  * node.setDebugMode(true);
  */
-node.setDebugMode = (t) => {
+node.setDebugMode = (t: boolean): void => {
   node.debugMode = t;
 };
 
@@ -484,8 +511,8 @@ node.setDebugMode = (t) => {
  * @example
  * node.setProvider('http://127.0.0.1:8732');
  */
-node.setProvider = (provider, isZeronet) => {
-  if (typeof z !== 'undefined') node.isZeronet = isZeronet;
+node.setProvider = (provider: string, isZeronet: boolean) => {
+  if (typeof isZeronet !== 'undefined') node.isZeronet = isZeronet;
   node.activeProvider = provider;
 };
 
@@ -494,7 +521,7 @@ node.setProvider = (provider, isZeronet) => {
  * @example
  * node.resetProvider();
  */
-node.resetProvider = () => {
+node.resetProvider = (): void => {
   node.activeProvider = DEFAULT_PROVIDER;
 };
 
@@ -508,7 +535,7 @@ node.resetProvider = () => {
  * node.query('/chains/main/blocks/head')
  *  .then(head => console.log(head));
  */
-node.query = (path, payload, method) => {
+node.query = (path: string, payload: ?any, method: ?string): Promise<any> => {
   if (typeof payload === 'undefined') {
     if (typeof method === 'undefined') {
       method = 'GET';
@@ -521,6 +548,7 @@ node.query = (path, payload, method) => {
   return new Promise((resolve, reject) => {
     try {
       const http = new XMLHttpRequest();
+      // $FlowFixMe
       http.open(method, node.activeProvider + path, node.async);
       http.onload = () => {
         if (node.debugMode) {
@@ -562,7 +590,7 @@ node.query = (path, payload, method) => {
   });
 };
 
-const ledger = {};
+const ledger: Ledger = {};
 /**
  * @description Get the public key and public key hash from the ledger
  * @param {Object} ledgerParams The parameters of the getAddress function
@@ -581,7 +609,7 @@ ledger.getAddress = async ({
   path = "44'/1729'/0'/0'",
   displayConfirm = false,
   curve = 0x00,
-} = {}) => {
+}: LedgerGetAddress = {}): Promise<{ address: string, publicKey: string }> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let publicKey;
@@ -607,13 +635,13 @@ ledger.getAddress = async ({
  *   path = "44'/1729'/0'/0'",
  *   rawTxHex,
  *   curve = 0x00,
- * }).then(({ signature }) => console.log(signature))
+ * }).then((signature) => console.log(signature))
  */
 ledger.signOperation = async ({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
-}) => {
+}: LedgerSignOperation): Promise<string> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let signature;
@@ -624,7 +652,7 @@ ledger.signOperation = async ({
     return e;
   }
   transport.close();
-  return { signature };
+  return signature;
 };
 
 /**
@@ -634,7 +662,7 @@ ledger.signOperation = async ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp))
  */
-ledger.getVersion = async () => {
+ledger.getVersion = async (): Promise<LedgerGetVersion> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let versionInfo;
@@ -788,23 +816,25 @@ forgeMappings.primMapping = {
   '0A': 'bytes',
 };
 
+/* eslint-disable */
 forgeMappings.primMappingReverse = {
-  0: {
+  '0': {
     false: '03',
     true: '04',
   },
-  1: {
+  '1': {
     false: '05',
     true: '06',
   },
-  2: {
+  '2': {
     false: '07',
     true: '08',
   },
-  3: {
+  '3': {
     true: '09',
   },
 };
+/* eslint-enable */
 
 forgeMappings.forgeOpTags = {
   endorsement: 0,
@@ -820,13 +850,13 @@ forgeMappings.forgeOpTags = {
   delegation: 10,
 };
 
-const forge = {};
+const forge: Forge = {};
 /**
  * @description Convert bytes from Int32
  * @param {Number} num Number to convert to bytes
  * @returns {Object} The converted number
  */
-forge.toBytesInt32 = (num) => {
+forge.toBytesInt32 = (num: number): ArrayBuffer => {
   num = parseInt(num, 10);
   const arr = new Uint8Array([
     (num & 0xff000000) >> 24,
@@ -842,14 +872,15 @@ forge.toBytesInt32 = (num) => {
  * @param {Number} num Number to convert to hex
  * @returns {String} The converted number
  */
-forge.toBytesInt32Hex = num => utility.buf2hex(forge.toBytesInt32(num));
+// $FlowFixMe
+forge.toBytesInt32Hex = (num: number): string => utility.buf2hex(forge.toBytesInt32(num));
 
 /**
  * @description Forge boolean
  * @param {Boolean} bool Boolean value to convert
  * @returns {String} The converted boolean
  */
-forge.bool = bool => (bool ? 'ff' : '00');
+forge.bool = (bool: boolean): string => (bool ? 'ff' : '00');
 
 /**
  * @description Forge script bytes
@@ -858,7 +889,7 @@ forge.bool = bool => (bool ? 'ff' : '00');
  * @param {String} script.storage Script storage
  * @returns {String} Forged script bytes
  */
-forge.script = (script) => {
+forge.script = (script: { code: string, storage: string }): string => {
   const t1 = tezos.encodeRawBytes(script.code).toLowerCase();
   const t2 = tezos.encodeRawBytes(script.storage).toLowerCase();
   return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
@@ -869,7 +900,7 @@ forge.script = (script) => {
  * @param {String} parameter Script to forge
  * @returns {String} Forged parameter bytes
  */
-forge.parameters = (parameter) => {
+forge.parameters = (parameter: string): string => {
   const t = tezos.encodeRawBytes(parameter).toLowerCase();
   return forge.toBytesInt32Hex(t.length / 2) + t;
 };
@@ -879,7 +910,7 @@ forge.parameters = (parameter) => {
  * @param {String} pkh Public key hash to forge
  * @returns {String} Forged public key hash bytes
  */
-forge.publicKeyHash = (pkh) => {
+forge.publicKeyHash = (pkh: string): string => {
   let fpkh;
   const t = parseInt(pkh.substr(2, 1), 10);
   fpkh = `0${(t - 1).toString()}`;
@@ -892,7 +923,7 @@ forge.publicKeyHash = (pkh) => {
  * @param {String} address Address to forge
  * @returns {String} Forged address bytes
  */
-forge.address = (address) => {
+forge.address = (address: string): string => {
   let fa;
   if (address.substr(0, 1) === 'K') {
     fa = '01';
@@ -910,7 +941,7 @@ forge.address = (address) => {
  * @param {Number} n Zarith to forge
  * @returns {String} Forged zarith bytes
  */
-forge.zarith = (n) => {
+forge.zarith = (n: string): string => {
   let fn = '';
   let nn = parseInt(n, 10);
   if (Number.isNaN(nn)) {
@@ -937,8 +968,8 @@ forge.zarith = (n) => {
  * @param {Number} pk Public key to forge
  * @returns {String} Forged public key bytes
  */
-forge.publicKey = (pk) => {
-  let fpk;
+forge.publicKey = (pk: string): string => {
+  let fpk = '';
   switch (pk.substr(0, 2)) {
     case 'ed': fpk = '00'; break;
     case 'sp': fpk = '01'; break;
@@ -954,13 +985,14 @@ forge.publicKey = (pk) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-forge.op = (op) => {
+forge.op = (op: ConstructedOperation): string => {
   /* eslint-disable */
-  let fop;
+  let fop = '';
   fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
   switch (forgeMappings.forgeOpTags[op.kind]) {
     case 0:
     case 1:
+      // $FlowFixMe
       fop += utility.buf2hex(forge.toBytesInt32(op.level));
       if (forgeMappings.forgeOpTags[op.kind] === 0) break;
       fop += op.nonce;
@@ -968,8 +1000,8 @@ forge.op = (op) => {
     case 2:
     case 3:
       throw new Error('Double bake and double endorse forging is not complete');
-      if (forgeMappings.forgeOpTags[op.kind] === 2) break;
-      if (forgeMappings.forgeOpTags[op.kind] === 3) break;
+      // if (forgeMappings.forgeOpTags[op.kind] === 2) break;
+      // if (forgeMappings.forgeOpTags[op.kind] === 3) break;
     case 4:
       fop += utility.buf2hex(utility.b58cdecode(op.pkh, prefix.tz1));
       fop += op.secret;
@@ -977,10 +1009,10 @@ forge.op = (op) => {
     case 5:
     case 6:
       fop += forge.publicKeyHash(op.source);
+      // $FlowFixMe
       fop += utility.buf2hex(forge.toBytesInt32(op.period));
       if (forgeMappings.forgeOpTags[op.kind] === 5) {
         throw new Error('Proposal forging is not complete');
-        break;
       } else if (forgeMappings.forgeOpTags[op.kind] === 6) {
         fop += utility.buf2hex(utility.b58cdecode(op.proposal, prefix.P));
         let ballot;
@@ -1047,7 +1079,7 @@ forge.op = (op) => {
   /* eslint-enable */
 };
 
-const tezos = {};
+const tezos: Tezos = {};
 /**
  * @description Forge operation bytes
  * @param {Object} head The current head object of the chain
@@ -1068,8 +1100,8 @@ const tezos = {};
  *   }],
  * }).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
  */
-tezos.forge = async (head, opOb) => {
-  let remoteForgedBytes;
+tezos.forge = async (head: Head, opOb: OperationObject, counter: number): Promise<ForgedBytes> => {
+  let remoteForgedBytes = '';
 
   if (!rpc.localForge || rpc.validateLocalForge) {
     remoteForgedBytes = await node.query(`/chains/${head.chain_id}/blocks/${head.hash}/helpers/forge/operations`, opOb);
@@ -1081,11 +1113,12 @@ tezos.forge = async (head, opOb) => {
     return {
       opbytes: remoteForgedBytes,
       opOb,
+      counter,
     };
   }
 
   let localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
-  opOb.contents.forEach((content) => {
+  opOb.contents.forEach((content: ConstructedOperation): void => {
     localForgedBytes += forge.op(content);
   });
 
@@ -1094,6 +1127,7 @@ tezos.forge = async (head, opOb) => {
       return {
         opbytes: localForgedBytes,
         opOb,
+        counter,
       };
     }
     throw new Error('Forge validation error - local and remote bytes don\'t match');
@@ -1102,6 +1136,7 @@ tezos.forge = async (head, opOb) => {
   return {
     opbytes: localForgedBytes,
     opOb,
+    counter,
   };
 };
 
@@ -1110,7 +1145,7 @@ tezos.forge = async (head, opOb) => {
  * @param {String} bytes The bytes to decode
  * @returns {Object} Decoded raw bytes
  */
-tezos.decodeRawBytes = (bytes) => {
+tezos.decodeRawBytes = (bytes: string): any => {
   bytes = bytes.toUpperCase();
 
   let index = 0;
@@ -1220,7 +1255,7 @@ tezos.decodeRawBytes = (bytes) => {
  * @param {Object} input The value to encode
  * @returns {String} Encoded value as bytes
  */
-tezos.encodeRawBytes = (input) => {
+tezos.encodeRawBytes = (input: any): string => {
   const rec = (inputArg) => {
     const result = [];
 
@@ -1289,16 +1324,15 @@ tezos.encodeRawBytes = (input) => {
   return rec(input).toUpperCase();
 };
 
-const rpc = {
-  localForge: true,
-  validateLocalForge: false,
-};
+const rpc: Rpc = {};
+rpc.localForge = true;
+rpc.validateLocalForge = false;
 
-/**
+/*
  * @description Sets the forging strategy to either local or remote
  * @param {Boolean} [useLocal=true] Forge strategy true - local | false - remote
  */
-rpc.setForgeLocal = (useLocal = true) => {
+rpc.setForgeLocal = (useLocal: boolean = true): void => {
   rpc.localForge = useLocal;
 };
 
@@ -1306,7 +1340,7 @@ rpc.setForgeLocal = (useLocal = true) => {
  * @description Whether to validate locally forged operations against remotely forged operations
  * @param {Boolean} [localValidation=false] Validate local forge
  */
-rpc.setLocalForgeValidation = (localValidation = false) => {
+rpc.setLocalForgeValidation = (localValidation: boolean = false): void => {
   rpc.validateLocalForge = localValidation;
 };
 
@@ -1336,12 +1370,15 @@ rpc.account = async ({
   fee = DEFAULT_FEE,
   gasLimit = 10000,
   storageLimit = 257,
-}, {
+}: AccountParams, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  } = {}) => {
-  let publicKeyHash = keys && keys.pkh;
+  }: LedgerDefault = {}): Promise<any> => {
+  let publicKeyHash: PKH = '';
+  if (keys && keys.pkh) {
+    publicKeyHash = keys.pkh;
+  }
 
   if (useLedger) {
     const { address } = await ledger.getAddress({
@@ -1351,23 +1388,23 @@ rpc.account = async ({
     publicKeyHash = address;
   }
 
-  const operation = {
+  const params = {};
+  if (typeof spendable !== 'undefined') params.spendable = spendable;
+  if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
+  if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
+
+  const managerKey = node.isZeronet ? 'managerPubkey' : 'manager_pubkey';
+
+  const operation: Array<Operation> = [{
     kind: 'origination',
-    balance: `${utility.mutez(amount)}`,
-    fee: `${fee}`,
-    gas_limit: `${gasLimit}`,
-    storage_limit: `${storageLimit}`,
-  };
+    balance: utility.mutez(amount),
+    fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
+    [managerKey]: publicKeyHash,
+    ...params,
+  }];
 
-  if (node.isZeronet) {
-    operation.manager_pubkey = publicKeyHash;
-  } else {
-    operation.managerPubkey = publicKeyHash;
-  }
-
-  if (typeof spendable !== 'undefined') operation.spendable = spendable;
-  if (typeof delegatable !== 'undefined') operation.delegatable = delegatable;
-  if (typeof delegate !== 'undefined' && delegate) operation.delegate = delegate;
   return rpc.sendOperation({
     from: publicKeyHash,
     operation,
@@ -1383,9 +1420,8 @@ rpc.account = async ({
  * rpc.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
  *   .then(balance => console.log(balance))
  */
-rpc.getBalance = address => (
+rpc.getBalance = (address: string): Promise<string> => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/balance`)
-    .then(r => r)
 );
 
 /**
@@ -1396,12 +1432,12 @@ rpc.getBalance = address => (
  * rpc.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
  *   .then(delegate => console.log(delegate))
  */
-rpc.getDelegate = address => (
+rpc.getDelegate = (address: string): Promise<string | boolean> => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/delegate`)
-    .then((r) => {
-      if (r) { return r; }
+    .then((delegate) => {
+      if (delegate) { return delegate; }
       return false;
-    }).catch(() => false)
+    })
 );
 
 /**
@@ -1412,7 +1448,7 @@ rpc.getDelegate = address => (
  * rpc.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
  *   .then(({ manager, key }) => console.log(manager, key))
  */
-rpc.getManager = address => (
+rpc.getManager = (address: string): Promise<{ manager: string, key: string }> => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/manager_key`)
 );
 
@@ -1424,7 +1460,7 @@ rpc.getManager = address => (
  * rpc.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
  *   .then(counter => console.log(counter))
  */
-rpc.getCounter = address => (
+rpc.getCounter = (address: string): Promise<string> => (
   node.query(`/chains/main/blocks/head/context/contracts/${address}/counter`)
 );
 
@@ -1439,8 +1475,8 @@ rpc.getCounter = address => (
  *     frozen_balance,
  *     frozen_balance_by_cycle,
  *     staking_balance,
- *     delegated_contracts
- *     delegated_balance
+ *     delegated_contracts,
+ *     delegated_balance,
  *     deactivated,
  *     grace_period,
  *   }) => console.log(
@@ -1448,13 +1484,13 @@ rpc.getCounter = address => (
  *     frozen_balance,
  *     frozen_balance_by_cycle,
  *     staking_balance,
- *     delegated_contracts
- *     delegated_balance
+ *     delegated_contracts,
+ *     delegated_balance,
  *     deactivated,
  *     grace_period,
  *   ))
  */
-rpc.getBaker = address => (
+rpc.getBaker = (address: string): Promise<Baker> => (
   node.query(`/chains/main/blocks/head/context/delegates/${address}`)
 );
 
@@ -1464,7 +1500,7 @@ rpc.getBaker = address => (
  * @example
  * rpc.getHeader().then(header => console.log(header))
  */
-rpc.getHeader = () => (
+rpc.getHeader = (): Promise<Header> => (
   node.query('/chains/main/blocks/head/header')
 );
 
@@ -1490,7 +1526,7 @@ rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
  * @example
  * rpc.getBallotList().then(ballotList => console.log(ballotList))
  */
-rpc.getBallotList = () => (
+rpc.getBallotList = (): Promise<Array<any>> => (
   node.query('/chains/main/blocks/head/votes/ballot_list')
 );
 
@@ -1503,7 +1539,7 @@ rpc.getBallotList = () => (
  *   console.log(proposals[1][0], proposals[1][1])
  * )
  */
-rpc.getProposals = () => (
+rpc.getProposals = (): Promise<Array<any>> => (
   node.query('/chains/main/blocks/head/votes/proposals')
 );
 
@@ -1513,7 +1549,7 @@ rpc.getProposals = () => (
  * @example
  * rpc.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
  */
-rpc.getBallots = () => (
+rpc.getBallots = (): Promise<{ yay: number, nay: number, pass: number }> => (
   node.query('/chains/main/blocks/head/votes/ballots')
 );
 
@@ -1523,7 +1559,7 @@ rpc.getBallots = () => (
  * @example
  * rpc.getListings().then(listings => console.log(listings))
  */
-rpc.getListings = () => (
+rpc.getListings = (): Promise<Array<any>> => (
   node.query('/chains/main/blocks/head/votes/listings')
 );
 
@@ -1533,7 +1569,7 @@ rpc.getListings = () => (
  * @example
  * rpc.getCurrentProposal().then(currentProposal => console.log(currentProposal))
  */
-rpc.getCurrentProposal = () => (
+rpc.getCurrentProposal = (): Promise<string> => (
   node.query('/chains/main/blocks/head/votes/current_proposal')
 );
 
@@ -1553,7 +1589,7 @@ rpc.getCurrentPeriod = () => (
  * @example
  * rpc.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum))
  */
-rpc.getCurrentQuorum = () => (
+rpc.getCurrentQuorum = (): Promise<number> => (
   node.query('/chains/main/blocks/head/votes/current_quorum')
 );
 
@@ -1567,7 +1603,7 @@ rpc.getCurrentQuorum = () => (
  * rpc.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
  *  .then((hash) => console.log(hash));
  */
-rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
+rpc.awaitOperation = (hash: string, interval: number = 10, timeout: number = 180): Promise<string> => {
   if (timeout <= 0) {
     throw new Error('Timeout must be more than 0');
   }
@@ -1580,16 +1616,16 @@ rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
   let count = 0;
   let found = false;
 
-  const operationCheck = (operation) => {
+  const operationCheck = (operation: Operation): void => {
     if (operation.hash === hash) {
       found = true;
     }
   };
 
   return new Promise((resolve, reject) => {
-    const repeater = () => (
+    const repeater = (): Promise<string | void> => (
       rpc.getHead()
-        .then((head) => {
+        .then((head: Head) => {
           count++;
 
           for (let i = 3; i >= 0; i--) {
@@ -1616,7 +1652,7 @@ rpc.awaitOperation = (hash, interval = 10, timeout = 180) => {
  * @param {Object} payload The payload of the request
  * @returns {Promise} The response of the rpc call
  */
-rpc.call = (path, payload) => node.query(path, payload);
+rpc.call = (path: string, payload: ?OperationObject): Promise<any> => node.query(path, payload);
 
 /**
  * @description Prepares an operation
@@ -1650,18 +1686,18 @@ rpc.call = (path, payload) => node.query(path, payload);
 rpc.prepareOperation = ({
   from,
   operation,
-  keys = false,
-}, {
+  keys,
+}: OperationParams, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
   curve = 0x00,
-} = {}) => {
+}: LedgerDefault = {}): Promise<ForgedBytes> => {
   let counter;
-  let opOb;
+  const opOb: OperationObject = {};
   const promises = [];
   let requiresReveal = false;
   let ops = [];
-  let head;
+  let head: Header;
 
   promises.push(rpc.getHeader());
 
@@ -1680,27 +1716,28 @@ rpc.prepareOperation = ({
     }
   }
 
-  return Promise.all(promises).then(async ([header, headCounter, manager]) => {
+  return Promise.all(promises).then(async ([header, headCounter, manager]: Array<any>): Promise<ForgedBytes> => {
     head = header;
     if (requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined') {
-      let publicKey;
+      let publicKey = keys && keys.pk;
 
       if (useLedger) {
-        const ledgerAddress = await ledger.getAddress({
+        ({ publicKey } = await ledger.getAddress({
           path,
           curve,
-        });
-        publicKey = ledgerAddress.publicKey; // eslint-disable-line
+        }));
       }
 
-      ops.unshift({
+      const reveal: Operation = {
         kind: 'reveal',
-        fee: node.isZeronet ? '100000' : '1269',
-        public_key: publicKey || keys.pk,
+        fee: node.isZeronet ? 100000 : 1269,
+        public_key: publicKey,
         source: from,
-        gas_limit: '10000',
-        storage_limit: '0',
-      });
+        gas_limit: 10000,
+        storage_limit: 0,
+      };
+
+      ops.unshift(reveal);
     }
 
     counter = parseInt(headCounter, 10);
@@ -1708,29 +1745,45 @@ rpc.prepareOperation = ({
       counters[from] = counter;
     }
 
-    const constructOps = () => ops.map((op) => {
-      if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-        if (typeof op.source === 'undefined') op.source = from;
-      }
-      if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-        if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
-        if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
-        if (typeof op.amount !== 'undefined') op.amount = `${op.amount}`;
-        op.counter = `${++counters[from]}`;
-        op.fee = `${op.fee}`;
-        op.gas_limit = `${op.gas_limit}`;
-        op.storage_limit = `${op.storage_limit}`;
-      }
-      return JSON.stringify(op);
-    }).map(op => JSON.parse(op));
+    const constructOps = (cOps: Array<Operation>): Array<ConstructedOperation> => cOps
+      .map((op: Operation): string => {
+        // $FlowFixMe
+        const constructedOp: ConstructedOperation = { ...op };
+        if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
+          if (typeof op.source === 'undefined') constructedOp.source = from;
+        }
+        if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
+          if (typeof op.amount === 'undefined') {
+            constructedOp.amount = '0';
+          } else {
+            constructedOp.amount = `${op.amount}`;
+          }
+          if (typeof op.fee === 'undefined') {
+            constructedOp.fee = '0';
+          } else {
+            constructedOp.fee = `${op.fee}`;
+          }
+          if (typeof op.gas_limit === 'undefined') {
+            constructedOp.gas_limit = '0';
+          } else {
+            constructedOp.gas_limit = `${op.gas_limit}`;
+          }
+          if (typeof op.storage_limit === 'undefined') {
+            constructedOp.storage_limit = '0';
+          } else {
+            constructedOp.storage_limit = `${op.storage_limit}`;
+          }
+          if (typeof op.balance !== 'undefined') constructedOp.balance = `${constructedOp.balance}`;
+          constructedOp.counter = `${++counters[from]}`;
+        }
+        return JSON.stringify(constructedOp);
+      })
+      .map((op: string) => JSON.parse(op));
 
-    opOb = {
-      branch: head.hash,
-      contents: constructOps(),
-    };
+    opOb.branch = head.hash;
+    opOb.contents = constructOps(ops);
 
-    const fullOp = await tezos.forge(head, opOb);
-
+    const fullOp = await tezos.forge(head, opOb, counter);
     return {
       ...fullOp,
       counter,
@@ -1770,12 +1823,12 @@ rpc.prepareOperation = ({
 rpc.simulateOperation = ({
   from,
   operation,
-  keys = false,
-}, {
+  keys,
+}: OperationParams, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
   curve = 0x00,
-} = {}) => (
+}: LedgerDefault = {}): Promise<any> => (
   rpc.prepareOperation({
     from,
     operation,
@@ -1832,14 +1885,14 @@ rpc.simulateOperation = ({
 rpc.sendOperation = async ({
   from,
   operation,
-  keys = false,
+  keys,
   skipPrevalidation = false,
-}, {
+}: OperationParams, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  } = {}) => {
-  const fullOp = await rpc.prepareOperation({
+  }: LedgerDefault = {}): Promise<any> => {
+  const fullOp: ForgedBytes = await rpc.prepareOperation({
     from,
     operation,
     keys,
@@ -1850,20 +1903,17 @@ rpc.sendOperation = async ({
   });
 
   if (useLedger) {
-    const { signature } = await ledger.signOperation({
+    const signature = await ledger.signOperation({
       path,
       rawTxHex: fullOp.opbytes,
       curve,
     });
     fullOp.opbytes += signature;
-  } else if (keys.sk === false) {
-    const { counter, ...rest } = fullOp;
-    return rest;
   } else if (!keys) {
     fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
     fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
   } else {
-    const signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
+    const signed: Signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
     fullOp.opbytes = signed.sbytes;
     fullOp.opOb.signature = signed.edsig;
   }
@@ -1889,7 +1939,7 @@ rpc.sendOperation = async ({
  * @param {String} sopbytes The signed operation bytes
  * @returns {Promise} Object containing the injected operation hash
  */
-rpc.inject = (opOb, sopbytes) => {
+rpc.inject = (opOb: OperationObject, sopbytes: string): Promise<any> => {
   const opResponse = [];
   let errors = [];
 
@@ -1921,7 +1971,9 @@ rpc.inject = (opOb, sopbytes) => {
  * @param {String} sopbytes The signed operation bytes
  * @returns {Promise} Object containing the injected operation hash
  */
-rpc.silentInject = sopbytes => node.query('/injection/operation', sopbytes).then(hash => ({ hash }));
+rpc.silentInject = (sopbytes: string): Promise<any> => (
+  node.query('/injection/operation', sopbytes).then(hash => ({ hash }))
+);
 
 /**
  * @description Transfer operation
@@ -1959,29 +2011,29 @@ rpc.transfer = ({
   keys,
   to,
   amount,
+  parameter,
   fee = DEFAULT_FEE,
-  parameter = false,
   gasLimit = 10100,
   storageLimit = 0,
   mutez = false,
   rawParam = false,
-}, {
+}: RpcParams, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
   curve = 0x00,
-} = {}) => {
-  const operation = {
+}: LedgerDefault = {}): Promise<any> => {
+  const operation: Operation = {
     kind: 'transaction',
-    fee: `${fee}`,
-    gas_limit: `${gasLimit}`,
-    storage_limit: `${storageLimit}`,
-    amount: mutez ? `${utility.mutez(amount)}` : `${amount}`,
+    fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
+    amount: mutez ? utility.mutez(amount) : amount,
     destination: to,
   };
   if (parameter) {
     operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
   }
-  return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
+  return rpc.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
 };
 
 /**
@@ -1993,13 +2045,13 @@ rpc.transfer = ({
  * rpc.activate(pkh, secret)
  *   .then((activateOperation) => console.log(activateOperation))
  */
-rpc.activate = (pkh, secret) => {
+rpc.activate = (pkh: string, secret: string): Promise<any> => {
   const operation = {
     kind: 'activate_account',
     pkh,
     secret,
   };
-  return rpc.sendOperation({ from: pkh, operation, keys: false });
+  return rpc.sendOperation({ from: pkh, operation: [operation] }, { useLedger: false });
 };
 
 /**
@@ -2032,11 +2084,11 @@ rpc.originate = async ({
   fee = DEFAULT_FEE,
   gasLimit = 10000,
   storageLimit = 257,
-}, {
+}: ContractParams, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  } = {}) => {
+  }: LedgerDefault = {}): Promise<any> => {
   const _code = utility.ml2mic(code);
 
   const script = {
@@ -2053,12 +2105,12 @@ rpc.originate = async ({
     publicKeyHash = address;
   }
 
-  const operation = {
+  const operation: Operation = {
     kind: 'origination',
-    fee: `${fee}`,
-    gas_limit: `${gasLimit}`,
-    storage_limit: `${storageLimit}`,
-    balance: `${utility.mutez(amount)}`,
+    fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
+    balance: utility.mutez(amount),
     spendable,
     delegatable,
     delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),
@@ -2071,7 +2123,7 @@ rpc.originate = async ({
     operation.managerPubkey = publicKeyHash;
   }
 
-  return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
+  return rpc.sendOperation({ from: publicKeyHash, operation: [operation], keys }, { useLedger, path, curve });
 };
 
 /**
@@ -2096,11 +2148,11 @@ rpc.setDelegate = async ({
   fee = DEFAULT_FEE,
   gasLimit = 10000,
   storageLimit = 0,
-}, {
+}: RpcParams, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  } = {}) => {
+  }: LedgerDefault = {}): Promise<any> => {
   let publicKeyHash = keys && keys.pkh;
 
   if (useLedger) {
@@ -2113,12 +2165,12 @@ rpc.setDelegate = async ({
 
   const operation = {
     kind: 'delegation',
-    fee: `${fee}`,
-    gas_limit: `${gasLimit}`,
-    storage_limit: `${storageLimit}`,
+    fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
     delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
   };
-  return rpc.sendOperation({ from, operation, keys }, { useLedger, path, curve });
+  return rpc.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
 };
 
 /**
@@ -2139,11 +2191,11 @@ rpc.registerDelegate = async ({
   fee = DEFAULT_FEE,
   gasLimit = 10000,
   storageLimit = 0,
-}, {
+}: RpcParams, {
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
-  } = {}) => {
+  }: LedgerDefault = {}): Promise<any> => {
   let publicKeyHash = keys && keys.pkh;
 
   if (useLedger) {
@@ -2156,12 +2208,12 @@ rpc.registerDelegate = async ({
 
   const operation = {
     kind: 'delegation',
-    fee: `${fee}`,
-    gas_limit: `${gasLimit}`,
-    storage_limit: `${storageLimit}`,
-    delegate: `${publicKeyHash}`,
+    fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
+    delegate: publicKeyHash,
   };
-  return rpc.sendOperation({ from: publicKeyHash, operation, keys }, { useLedger, path, curve });
+  return rpc.sendOperation({ from: publicKeyHash, operation: [operation], keys }, { useLedger, path, curve });
 };
 
 /**
@@ -2169,7 +2221,7 @@ rpc.registerDelegate = async ({
  * @param {String} code The code to typecheck
  * @returns {Promise} Typecheck result
  */
-rpc.typecheckCode = (code) => {
+rpc.typecheckCode = (code: string): Promise<any> => {
   const _code = utility.ml2mic(code);
   return node.query('/chains/main/blocks/head/helpers/scripts/typecheck_code', { program: _code, gas: '10000' });
 };
@@ -2180,7 +2232,7 @@ rpc.typecheckCode = (code) => {
  * @param {String} type
  * @returns {Promise} Serialized data
  */
-rpc.packData = (data, type) => {
+rpc.packData = (data: string, type: string): Promise<any> => {
   const check = {
     data: utility.sexp2mic(data),
     type: utility.sexp2mic(type),
@@ -2195,7 +2247,7 @@ rpc.packData = (data, type) => {
  * @param {String} type
  * @returns {Promise} Typecheck result
  */
-rpc.typecheckData = (data, type) => {
+rpc.typecheckData = (data: string, type: string): Promise<any> => {
   const check = {
     data: utility.sexp2mic(data),
     type: utility.sexp2mic(type),
@@ -2213,7 +2265,7 @@ rpc.typecheckData = (data, type) => {
  * @param {Boolean} [trace=false] Whether to trace
  * @returns {Promise} Run results
  */
-rpc.runCode = (code, amount, input, storage, trace = false) => {
+rpc.runCode = (code: string, amount: number, input: string, storage: string, trace: boolean = false): Promise<any> => {
   const ep = trace ? 'trace_code' : 'run_code';
   return node.query(`/chains/main/blocks/head/helpers/scripts/${ep}`, {
     script: utility.ml2mic(code),
@@ -2223,9 +2275,14 @@ rpc.runCode = (code, amount, input, storage, trace = false) => {
   });
 };
 
-const contract = {};
-contract.hash = async (operationHash, ind) => {
-  await _sodium.ready;
+const contract: Contract = {};
+contract.hash = async (operationHash: string, ind: number) => {
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
+
   const sodium = _sodium;
   const ob = utility.b58cdecode(operationHash, prefix.o);
   let tt = [];
@@ -2238,6 +2295,7 @@ contract.hash = async (operationHash, ind) => {
     (ind & 0x0000ff00) >> 8,
     (ind & 0x000000ff),
   ]);
+  // $FlowFixMe
   return utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), prefix.KT);
 };
 
@@ -2271,11 +2329,11 @@ contract.originate = ({
   fee = DEFAULT_FEE,
   gasLimit = 10000,
   storageLimit = 10000,
-}, {
+}: ContractParams, {
   useLedger = false,
   path = "44'/1729'/0'/0'",
   curve = 0x00,
-} = {}) => (
+}: LedgerDefault = {}): Promise<any> => (
   rpc.originate({
     keys,
     amount,
@@ -2295,12 +2353,8 @@ contract.originate = ({
  * @param {String} contractAddress The address of the contract
  * @returns {Promise} The storage of the contract
  */
-contract.storage = contractAddress => (
-  new Promise((resolve, reject) => (
-    node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}/storage`)
-      .then(r => resolve(r))
-      .catch(e => reject(e))
-  ))
+contract.storage = (contractAddress: string): Promise<any> => (
+  node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}/storage`)
 );
 
 /**
@@ -2308,7 +2362,9 @@ contract.storage = contractAddress => (
  * @param {String} contractAddress The address of the contract
  * @returns {Promise} The contract
  */
-contract.load = contractAddress => node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}`);
+contract.load = (contractAddress: string): Promise<any> => (
+  node.query(`/chains/main/blocks/head/context/contracts/${contractAddress}`)
+);
 
 /**
  * @description Watch a contract's storage based on a given interval
@@ -2317,7 +2373,7 @@ contract.load = contractAddress => node.query(`/chains/main/blocks/head/context/
  * @param {requestCallback} callback The callback to fire when a change is detected
  * @returns {Object} The setInterval object
  */
-contract.watch = (contractAddress, timeout, callback) => {
+contract.watch = (contractAddress: string, timeout: number, callback: (any) => any): IntervalID => {
   let storage = [];
   const storageCheck = () => {
     contract.storage(contractAddress).then((response) => {
@@ -2330,55 +2386,6 @@ contract.watch = (contractAddress, timeout, callback) => {
   storageCheck();
   return setInterval(storageCheck, timeout * 1000);
 };
-
-/**
- * @description Send to contract
- * @param {Object} paramObject The parameters for the operation
- * @param {String} paramObject.to The address of the recipient
- * @param {Object} paramObject.from The address sending the operation
- * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
- * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
- * @param {String} paramObject.parameter The parameter for the transaction
- * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
- * @param {Number} [paramObject.gasLimit=400000] The gas limit to set for the transaction
- * @param {Number} [paramObject.storageLimit=60000] The storage limit to set for the transaction
- * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
- * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
- * @param {Object} [ledgerObject] The ledger parameters for the operation
- * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
- * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
- * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
- * @returns {Promise} Object containing the injected operation hash
- */
-contract.send = ({
-  to,
-  from,
-  keys,
-  amount,
-  parameter,
-  fee = DEFAULT_FEE,
-  gasLimit = 400000,
-  storageLimit = 60000,
-  mutez = false,
-  rawParam = false,
-}, {
-  useLedger = false,
-  path = "44'/1729'/0'/0'",
-  curve = 0x00,
-} = {}) => (
-  rpc.transfer({
-    from,
-    keys,
-    to,
-    amount,
-    fee,
-    parameter,
-    gasLimit,
-    storageLimit,
-    mutez,
-    rawParam,
-  }, { useLedger, path, curve })
-);
 
 // Legacy commands
 utility.ml2tzjson = utility.sexp2mic;

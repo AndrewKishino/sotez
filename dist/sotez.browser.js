@@ -17235,7 +17235,7 @@ module.exports = withPublic
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StatusCodes = exports.DBNotReset = exports.DBWrongPassword = exports.NoDBPathGiven = exports.GenuineCheckFailed = exports.PairingFailed = exports.SyncError = exports.FeeRequired = exports.FeeNotLoaded = exports.CantScanQRCode = exports.ETHAddressNonEIP = exports.WrongDeviceForAccount = exports.WebsocketConnectionFailed = exports.WebsocketConnectionError = exports.UserRefusedOnDevice = exports.UserRefusedAllowManager = exports.UserRefusedFirmwareUpdate = exports.UserRefusedAddress = exports.UpdateYourApp = exports.UnexpectedBootloader = exports.TimeoutTagged = exports.PasswordIncorrectError = exports.PasswordsDontMatchError = exports.NotEnoughBalanceBecauseDestinationNotCreated = exports.NotEnoughBalance = exports.NoAddressesFound = exports.NetworkDown = exports.ManagerUninstallBTCDep = exports.ManagerNotEnoughSpaceError = exports.ManagerDeviceLockedError = exports.ManagerAppRelyOnBTCError = exports.ManagerAppAlreadyInstalledError = exports.LedgerAPINotAvailable = exports.LedgerAPIErrorWithMessage = exports.LedgerAPIError = exports.UnknownMCU = exports.LatestMCUInstalledError = exports.InvalidAddressBecauseDestinationIsAlsoSource = exports.InvalidAddress = exports.HardResetFail = exports.FeeEstimationFailed = exports.EnpointConfigError = exports.DisconnectedDeviceDuringOperation = exports.DisconnectedDevice = exports.DeviceSocketNoBulkStatus = exports.DeviceSocketFail = exports.DeviceNameInvalid = exports.DeviceOnDashboardExpected = exports.DeviceNotGenuineError = exports.DeviceGenuineSocketEarlyClose = exports.DeviceAppVerifyNotSupported = exports.CantOpenDevice = exports.BtcUnmatchedApp = exports.BluetoothRequired = exports.AccountNameRequiredError = undefined;
+exports.StatusCodes = exports.DBNotReset = exports.DBWrongPassword = exports.NoDBPathGiven = exports.GenuineCheckFailed = exports.PairingFailed = exports.SyncError = exports.FeeRequired = exports.FeeNotLoaded = exports.CantScanQRCode = exports.ETHAddressNonEIP = exports.WrongDeviceForAccount = exports.WebsocketConnectionFailed = exports.WebsocketConnectionError = exports.WebUSBInterfaceNotAvailable = exports.WebUSBUserCancelled = exports.UserRefusedOnDevice = exports.UserRefusedAllowManager = exports.UserRefusedFirmwareUpdate = exports.UserRefusedAddress = exports.UpdateYourApp = exports.UnexpectedBootloader = exports.TimeoutTagged = exports.PasswordIncorrectError = exports.PasswordsDontMatchError = exports.NotEnoughBalanceBecauseDestinationNotCreated = exports.NotEnoughBalance = exports.NoAddressesFound = exports.NetworkDown = exports.ManagerUninstallBTCDep = exports.ManagerNotEnoughSpaceError = exports.ManagerDeviceLockedError = exports.ManagerAppRelyOnBTCError = exports.ManagerAppAlreadyInstalledError = exports.LedgerAPINotAvailable = exports.LedgerAPIErrorWithMessage = exports.LedgerAPIError = exports.UnknownMCU = exports.LatestMCUInstalledError = exports.InvalidAddressBecauseDestinationIsAlsoSource = exports.InvalidAddress = exports.HardResetFail = exports.FeeEstimationFailed = exports.EnpointConfigError = exports.DisconnectedDeviceDuringOperation = exports.DisconnectedDevice = exports.DeviceSocketNoBulkStatus = exports.DeviceSocketFail = exports.DeviceNameInvalid = exports.DeviceOnDashboardExpected = exports.DeviceNotGenuineError = exports.DeviceGenuineSocketEarlyClose = exports.DeviceAppVerifyNotSupported = exports.CantOpenDevice = exports.BtcUnmatchedApp = exports.BluetoothRequired = exports.AccountNameRequiredError = undefined;
 exports.TransportError = TransportError;
 exports.getAltStatusMessage = getAltStatusMessage;
 exports.TransportStatusError = TransportStatusError;
@@ -17284,6 +17284,8 @@ var UserRefusedAddress = exports.UserRefusedAddress = (0, _helpers.createCustomE
 var UserRefusedFirmwareUpdate = exports.UserRefusedFirmwareUpdate = (0, _helpers.createCustomErrorClass)("UserRefusedFirmwareUpdate");
 var UserRefusedAllowManager = exports.UserRefusedAllowManager = (0, _helpers.createCustomErrorClass)("UserRefusedAllowManager");
 var UserRefusedOnDevice = exports.UserRefusedOnDevice = (0, _helpers.createCustomErrorClass)("UserRefusedOnDevice"); // TODO rename because it's just for transaction refusal
+var WebUSBUserCancelled = exports.WebUSBUserCancelled = (0, _helpers.createCustomErrorClass)("WebUSBUserCancelled");
+var WebUSBInterfaceNotAvailable = exports.WebUSBInterfaceNotAvailable = (0, _helpers.createCustomErrorClass)("WebUSBInterfaceNotAvailable");
 var WebsocketConnectionError = exports.WebsocketConnectionError = (0, _helpers.createCustomErrorClass)("WebsocketConnectionError");
 var WebsocketConnectionFailed = exports.WebsocketConnectionFailed = (0, _helpers.createCustomErrorClass)("WebsocketConnectionFailed");
 var WrongDeviceForAccount = exports.WrongDeviceForAccount = (0, _helpers.createCustomErrorClass)("WrongDeviceForAccount");
@@ -21944,21 +21946,17 @@ for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++
 /* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(Buffer, global) {function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+/* WEBPACK VAR INJECTION */(function(Buffer, global) {function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
 function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -21972,6 +21970,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+// $FlowFixMe
 if (typeof Buffer === 'undefined') Buffer = __webpack_require__(7).Buffer; // eslint-disable-line
 
 if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = __webpack_require__(363); // eslint-disable-line
@@ -21999,7 +21998,9 @@ if (isNode) {
   global.__non_webpack_require__ = __webpack_require__(465);
 }
 
-var LedgerTransport = isNode ? require('@ledgerhq/hw-transport-node-hid').default // eslint-disable-line
+var LedgerTransport = isNode // $FlowFixMe
+? require('@ledgerhq/hw-transport-node-hid').default // eslint-disable-line
+// $FlowFixMe
 : __webpack_require__(466).default;
 
 var LedgerApp = __webpack_require__(472).default;
@@ -22042,7 +22043,7 @@ var watermark = {
 var utility = {};
 /**
  * @description Convert from base58 to integer
- * @param {Number} v The b58 value
+ * @param {String} v The b58 value
  * @returns {String} The converted b58 value
  */
 
@@ -22051,7 +22052,7 @@ utility.b582int = function (v) {
   var alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
   for (var i = 0; i < v.length; i++) {
-    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i]).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i))));
+    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i])).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i)));
   }
 
   return rv.toString(16);
@@ -22059,7 +22060,7 @@ utility.b582int = function (v) {
 /**
  * @description Convert from mutez to tez
  * @param {Number} mutez The amount in mutez to convert to tez
- * @returns {Integer} The mutez amount converted to tez
+ * @returns {Number} The mutez amount converted to tez
  */
 
 
@@ -22086,8 +22087,10 @@ utility.mutez = function (tez) {
 
 utility.b58cencode = function (payload, prefixArg) {
   var n = new Uint8Array(prefixArg.length + payload.length);
-  n.set(prefixArg);
-  n.set(payload, prefixArg.length);
+  n.set(prefixArg); // $FlowFixMe
+
+  n.set(payload, prefixArg.length); // $FlowFixMe
+
   return bs58check.encode(Buffer.from(n, 'hex'));
 };
 /**
@@ -22109,6 +22112,7 @@ utility.b58cdecode = function (enc, prefixArg) {
 
 
 utility.buf2hex = function (buffer) {
+  // $FlowFixMe
   var byteArray = new Uint8Array(buffer);
   var hexParts = [];
   byteArray.forEach(function (byte) {
@@ -22126,9 +22130,11 @@ utility.buf2hex = function (buffer) {
 
 
 utility.hex2buf = function (hex) {
-  return new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) {
-    return parseInt(h, 16);
-  }));
+  return (// $FlowFixMe
+    new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) {
+      return parseInt(h, 16);
+    }))
+  );
 };
 /**
  * @description Generate a hex nonce
@@ -22326,7 +22332,7 @@ utility.ml2mic = function me(mi) {
         continue;
       }
 
-      ret.push(utility.ml2tzjson(val));
+      ret.push(utility.sexp2mic(val));
       val = '';
       continue;
     } else if (mi[i] === '"' && sopen) {
@@ -22345,17 +22351,6 @@ utility.ml2mic = function me(mi) {
   }
 
   return ret;
-};
-
-utility.formatMoney = function (n, c, d, t) {
-  var cc = isNaN(c = Math.abs(c)) ? 2 : c; // eslint-disable-line
-
-  var dd = d === undefined ? '.' : d;
-  var tt = t === undefined ? ',' : t;
-  var s = n < 0 ? '-' : '';
-  var i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(cc), 10));
-  var j = i.length > 3 ? i.length % 3 : 0;
-  return s + (j ? i.substr(0, j) + tt : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1".concat(tt)) + (cc ? dd + Math.abs(n - i).toFixed(c).slice(2) : '');
 }; // TODO: Add p256 and secp256k1 cryptographay
 
 
@@ -22368,6 +22363,7 @@ var crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
+// $FlowFixMe
 
 crypto.extractKeys =
 /*#__PURE__*/
@@ -22380,19 +22376,29 @@ function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            _context.prev = 0;
+            _context.next = 3;
             return _sodium.ready;
 
-          case 2:
-            sodium = _sodium;
-            pref = sk.substr(0, 4);
-            _context.t0 = pref;
-            _context.next = _context.t0 === 'edsk' ? 7 : 14;
+          case 3:
+            _context.next = 8;
             break;
 
-          case 7:
+          case 5:
+            _context.prev = 5;
+            _context.t0 = _context["catch"](0);
+            throw new Error(_context.t0);
+
+          case 8:
+            sodium = _sodium;
+            pref = sk.substr(0, 4);
+            _context.t1 = pref;
+            _context.next = _context.t1 === 'edsk' ? 13 : 20;
+            break;
+
+          case 13:
             if (!(sk.length === 98)) {
-              _context.next = 9;
+              _context.next = 15;
               break;
             }
 
@@ -22402,9 +22408,9 @@ function () {
               sk: sk
             });
 
-          case 9:
+          case 15:
             if (!(sk.length === 54)) {
-              _context.next = 13;
+              _context.next = 19;
               break;
             }
 
@@ -22417,18 +22423,22 @@ function () {
               pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
             });
 
-          case 13:
-            return _context.abrupt("break", 15);
+          case 19:
+            return _context.abrupt("break", 21);
 
-          case 14:
-            return _context.abrupt("return", false);
+          case 20:
+            return _context.abrupt("return", {
+              sk: '',
+              pk: '',
+              pkh: ''
+            });
 
-          case 15:
+          case 21:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[0, 5]]);
   }));
 
   return function (_x) {
@@ -22481,10 +22491,20 @@ function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            _context2.prev = 0;
+            _context2.next = 3;
             return _sodium.ready;
 
-          case 2:
+          case 3:
+            _context2.next = 8;
+            break;
+
+          case 5:
+            _context2.prev = 5;
+            _context2.t0 = _context2["catch"](0);
+            throw new Error(_context2.t0);
+
+          case 8:
             sodium = _sodium;
             s = bip39.mnemonicToSeed(mnemonic, passphrase).slice(0, 32);
             kp = sodium.crypto_sign_seed_keypair(s);
@@ -22496,12 +22516,12 @@ function () {
               pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1)
             });
 
-          case 6:
+          case 12:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2);
+    }, _callee2, null, [[0, 5]]);
   }));
 
   return function (_x2, _x3) {
@@ -22534,25 +22554,43 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
+            _context3.prev = 0;
+            _context3.next = 3;
             return _sodium.ready;
 
-          case 2:
+          case 3:
+            _context3.next = 8;
+            break;
+
+          case 5:
+            _context3.prev = 5;
+            _context3.t0 = _context3["catch"](0);
+            throw new Error(_context3.t0);
+
+          case 8:
             sodium = _sodium;
 
             if (!(sk.length === 54)) {
-              _context3.next = 8;
+              _context3.next = 20;
               break;
             }
 
-            _context3.next = 6;
+            _context3.prev = 10;
+            _context3.next = 13;
             return crypto.extractKeys(sk);
 
-          case 6:
+          case 13:
             _ref4 = _context3.sent;
             sk = _ref4.sk;
+            _context3.next = 20;
+            break;
 
-          case 8:
+          case 17:
+            _context3.prev = 17;
+            _context3.t1 = _context3["catch"](10);
+            throw new Error(_context3.t1);
+
+          case 20:
             bb = utility.hex2buf(bytes);
 
             if (typeof wm !== 'undefined') {
@@ -22569,12 +22607,12 @@ function () {
               sbytes: sbytes
             });
 
-          case 14:
+          case 26:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3);
+    }, _callee3, null, [[0, 5], [10, 17]]);
   }));
 
   return function (_x4, _x5, _x6) {
@@ -22601,19 +22639,29 @@ function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
+            _context4.prev = 0;
+            _context4.next = 3;
             return _sodium.ready;
 
-          case 2:
+          case 3:
+            _context4.next = 8;
+            break;
+
+          case 5:
+            _context4.prev = 5;
+            _context4.t0 = _context4["catch"](0);
+            throw new Error(_context4.t0);
+
+          case 8:
             sodium = _sodium;
             return _context4.abrupt("return", sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk)));
 
-          case 4:
+          case 10:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4);
+    }, _callee4, null, [[0, 5]]);
   }));
 
   return function (_x7, _x8, _x9) {
@@ -22621,12 +22669,11 @@ function () {
   };
 }();
 
-var node = {
-  activeProvider: DEFAULT_PROVIDER,
-  debugMode: false,
-  async: true,
-  isZeronet: false
-};
+var node = {};
+node.activeProvider = DEFAULT_PROVIDER;
+node.debugMode = false;
+node.async = true;
+node.isZeronet = false;
 /**
  * @description Enable additional logging by enabling debug mode
  * @param {Boolen} t Debug mode value
@@ -22647,7 +22694,7 @@ node.setDebugMode = function (t) {
 
 
 node.setProvider = function (provider, isZeronet) {
-  if (typeof z !== 'undefined') node.isZeronet = isZeronet;
+  if (typeof isZeronet !== 'undefined') node.isZeronet = isZeronet;
   node.activeProvider = provider;
 };
 /**
@@ -22685,7 +22732,8 @@ node.query = function (path, payload, method) {
 
   return new Promise(function (resolve, reject) {
     try {
-      var http = new XMLHttpRequest();
+      var http = new XMLHttpRequest(); // $FlowFixMe
+
       http.open(method, node.activeProvider + path, node.async);
 
       http.onload = function () {
@@ -22815,7 +22863,7 @@ regeneratorRuntime.mark(function _callee5() {
  *   path = "44'/1729'/0'/0'",
  *   rawTxHex,
  *   curve = 0x00,
- * }).then(({ signature }) => console.log(signature))
+ * }).then((signature) => console.log(signature))
  */
 
 ledger.signOperation =
@@ -22855,9 +22903,7 @@ function () {
 
           case 16:
             transport.close();
-            return _context6.abrupt("return", {
-              signature: signature
-            });
+            return _context6.abrupt("return", signature);
 
           case 18:
           case "end":
@@ -23090,23 +23136,27 @@ forgeMappings.primMapping = {
   },
   '0A': 'bytes'
 };
+/* eslint-disable */
+
 forgeMappings.primMappingReverse = {
-  0: {
+  '0': {
     false: '03',
     true: '04'
   },
-  1: {
+  '1': {
     false: '05',
     true: '06'
   },
-  2: {
+  '2': {
     false: '07',
     true: '08'
   },
-  3: {
+  '3': {
     true: '09'
   }
 };
+/* eslint-enable */
+
 forgeMappings.forgeOpTags = {
   endorsement: 0,
   seed_nonce_revelation: 1,
@@ -23137,6 +23187,7 @@ forge.toBytesInt32 = function (num) {
  * @param {Number} num Number to convert to hex
  * @returns {String} The converted number
  */
+// $FlowFixMe
 
 
 forge.toBytesInt32Hex = function (num) {
@@ -23252,7 +23303,7 @@ forge.zarith = function (n) {
 
 
 forge.publicKey = function (pk) {
-  var fpk;
+  var fpk = '';
 
   switch (pk.substr(0, 2)) {
     case 'ed':
@@ -23283,12 +23334,13 @@ forge.publicKey = function (pk) {
 
 forge.op = function (op) {
   /* eslint-disable */
-  var fop;
+  var fop = '';
   fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
 
   switch (forgeMappings.forgeOpTags[op.kind]) {
     case 0:
     case 1:
+      // $FlowFixMe
       fop += utility.buf2hex(forge.toBytesInt32(op.level));
       if (forgeMappings.forgeOpTags[op.kind] === 0) break;
       fop += op.nonce;
@@ -23297,8 +23349,8 @@ forge.op = function (op) {
     case 2:
     case 3:
       throw new Error('Double bake and double endorse forging is not complete');
-      if (forgeMappings.forgeOpTags[op.kind] === 2) break;
-      if (forgeMappings.forgeOpTags[op.kind] === 3) break;
+    // if (forgeMappings.forgeOpTags[op.kind] === 2) break;
+    // if (forgeMappings.forgeOpTags[op.kind] === 3) break;
 
     case 4:
       fop += utility.buf2hex(utility.b58cdecode(op.pkh, prefix.tz1));
@@ -23307,12 +23359,12 @@ forge.op = function (op) {
 
     case 5:
     case 6:
-      fop += forge.publicKeyHash(op.source);
+      fop += forge.publicKeyHash(op.source); // $FlowFixMe
+
       fop += utility.buf2hex(forge.toBytesInt32(op.period));
 
       if (forgeMappings.forgeOpTags[op.kind] === 5) {
         throw new Error('Proposal forging is not complete');
-        break;
       } else if (forgeMappings.forgeOpTags[op.kind] === 6) {
         fop += utility.buf2hex(utility.b58cdecode(op.proposal, prefix.P));
         var ballot;
@@ -23416,67 +23468,72 @@ tezos.forge =
 function () {
   var _ref12 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee8(head, opOb) {
+  regeneratorRuntime.mark(function _callee8(head, opOb, counter) {
     var remoteForgedBytes, localForgedBytes;
     return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
         switch (_context8.prev = _context8.next) {
           case 0:
+            remoteForgedBytes = '';
+
             if (!(!rpc.localForge || rpc.validateLocalForge)) {
-              _context8.next = 4;
+              _context8.next = 5;
               break;
             }
 
-            _context8.next = 3;
+            _context8.next = 4;
             return node.query("/chains/".concat(head.chain_id, "/blocks/").concat(head.hash, "/helpers/forge/operations"), opOb);
 
-          case 3:
+          case 4:
             remoteForgedBytes = _context8.sent;
 
-          case 4:
+          case 5:
             opOb.protocol = head.protocol;
 
             if (rpc.localForge) {
-              _context8.next = 7;
+              _context8.next = 8;
               break;
             }
 
             return _context8.abrupt("return", {
               opbytes: remoteForgedBytes,
-              opOb: opOb
+              opOb: opOb,
+              counter: counter
             });
 
-          case 7:
+          case 8:
             localForgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
             opOb.contents.forEach(function (content) {
               localForgedBytes += forge.op(content);
             });
 
             if (!rpc.validateLocalForge) {
-              _context8.next = 13;
+              _context8.next = 14;
               break;
             }
 
             if (!(localForgedBytes === remoteForgedBytes)) {
-              _context8.next = 12;
+              _context8.next = 13;
               break;
             }
 
             return _context8.abrupt("return", {
               opbytes: localForgedBytes,
-              opOb: opOb
+              opOb: opOb,
+              counter: counter
             });
-
-          case 12:
-            throw new Error('Forge validation error - local and remote bytes don\'t match');
 
           case 13:
-            return _context8.abrupt("return", {
-              opbytes: localForgedBytes,
-              opOb: opOb
-            });
+            throw new Error('Forge validation error - local and remote bytes don\'t match');
 
           case 14:
+            return _context8.abrupt("return", {
+              opbytes: localForgedBytes,
+              opOb: opOb,
+              counter: counter
+            });
+
+          case 15:
           case "end":
             return _context8.stop();
         }
@@ -23484,7 +23541,7 @@ function () {
     }, _callee8);
   }));
 
-  return function (_x11, _x12) {
+  return function (_x11, _x12, _x13) {
     return _ref12.apply(this, arguments);
   };
 }();
@@ -23715,11 +23772,10 @@ tezos.encodeRawBytes = function (input) {
   return rec(input).toUpperCase();
 };
 
-var rpc = {
-  localForge: true,
-  validateLocalForge: false
-};
-/**
+var rpc = {};
+rpc.localForge = true;
+rpc.validateLocalForge = false;
+/*
  * @description Sets the forging strategy to either local or remote
  * @param {Boolean} [useLocal=true] Forge strategy true - local | false - remote
  */
@@ -23784,6 +23840,8 @@ function () {
         publicKeyHash,
         _ref16,
         address,
+        params,
+        managerKey,
         operation,
         _args9 = arguments;
 
@@ -23793,42 +23851,41 @@ function () {
           case 0:
             keys = _ref13.keys, amount = _ref13.amount, spendable = _ref13.spendable, delegatable = _ref13.delegatable, delegate = _ref13.delegate, _ref13$fee = _ref13.fee, fee = _ref13$fee === void 0 ? DEFAULT_FEE : _ref13$fee, _ref13$gasLimit = _ref13.gasLimit, gasLimit = _ref13$gasLimit === void 0 ? 10000 : _ref13$gasLimit, _ref13$storageLimit = _ref13.storageLimit, storageLimit = _ref13$storageLimit === void 0 ? 257 : _ref13$storageLimit;
             _ref15 = _args9.length > 1 && _args9[1] !== undefined ? _args9[1] : {}, _ref15$useLedger = _ref15.useLedger, useLedger = _ref15$useLedger === void 0 ? false : _ref15$useLedger, _ref15$path = _ref15.path, path = _ref15$path === void 0 ? "44'/1729'/0'/0'" : _ref15$path, _ref15$curve = _ref15.curve, curve = _ref15$curve === void 0 ? 0x00 : _ref15$curve;
-            publicKeyHash = keys && keys.pkh;
+            publicKeyHash = '';
+
+            if (keys && keys.pkh) {
+              publicKeyHash = keys.pkh;
+            }
 
             if (!useLedger) {
-              _context9.next = 9;
+              _context9.next = 10;
               break;
             }
 
-            _context9.next = 6;
+            _context9.next = 7;
             return ledger.getAddress({
               path: path,
               curve: curve
             });
 
-          case 6:
+          case 7:
             _ref16 = _context9.sent;
             address = _ref16.address;
             publicKeyHash = address;
 
-          case 9:
-            operation = {
+          case 10:
+            params = {};
+            if (typeof spendable !== 'undefined') params.spendable = spendable;
+            if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
+            if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
+            managerKey = node.isZeronet ? 'managerPubkey' : 'manager_pubkey';
+            operation = [_objectSpread(_defineProperty({
               kind: 'origination',
-              balance: "".concat(utility.mutez(amount)),
-              fee: "".concat(fee),
-              gas_limit: "".concat(gasLimit),
-              storage_limit: "".concat(storageLimit)
-            };
-
-            if (node.isZeronet) {
-              operation.manager_pubkey = publicKeyHash;
-            } else {
-              operation.managerPubkey = publicKeyHash;
-            }
-
-            if (typeof spendable !== 'undefined') operation.spendable = spendable;
-            if (typeof delegatable !== 'undefined') operation.delegatable = delegatable;
-            if (typeof delegate !== 'undefined' && delegate) operation.delegate = delegate;
+              balance: utility.mutez(amount),
+              fee: fee,
+              gas_limit: gasLimit,
+              storage_limit: storageLimit
+            }, managerKey, publicKeyHash), params)];
             return _context9.abrupt("return", rpc.sendOperation({
               from: publicKeyHash,
               operation: operation,
@@ -23839,7 +23896,7 @@ function () {
               curve: curve
             }));
 
-          case 15:
+          case 17:
           case "end":
             return _context9.stop();
         }
@@ -23847,7 +23904,7 @@ function () {
     }, _callee9);
   }));
 
-  return function (_x13) {
+  return function (_x14) {
     return _ref14.apply(this, arguments);
   };
 }();
@@ -23862,9 +23919,7 @@ function () {
 
 
 rpc.getBalance = function (address) {
-  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/balance")).then(function (r) {
-    return r;
-  });
+  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/balance"));
 };
 /**
  * @description Get the delegate for a contract
@@ -23877,13 +23932,11 @@ rpc.getBalance = function (address) {
 
 
 rpc.getDelegate = function (address) {
-  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/delegate")).then(function (r) {
-    if (r) {
-      return r;
+  return node.query("/chains/main/blocks/head/context/contracts/".concat(address, "/delegate")).then(function (delegate) {
+    if (delegate) {
+      return delegate;
     }
 
-    return false;
-  }).catch(function () {
     return false;
   });
 };
@@ -23924,8 +23977,8 @@ rpc.getCounter = function (address) {
  *     frozen_balance,
  *     frozen_balance_by_cycle,
  *     staking_balance,
- *     delegated_contracts
- *     delegated_balance
+ *     delegated_contracts,
+ *     delegated_balance,
  *     deactivated,
  *     grace_period,
  *   }) => console.log(
@@ -23933,8 +23986,8 @@ rpc.getCounter = function (address) {
  *     frozen_balance,
  *     frozen_balance_by_cycle,
  *     staking_balance,
- *     delegated_contracts
- *     delegated_balance
+ *     delegated_contracts,
+ *     delegated_balance,
  *     deactivated,
  *     grace_period,
  *   ))
@@ -24158,8 +24211,7 @@ rpc.call = function (path, payload) {
 rpc.prepareOperation = function (_ref17) {
   var from = _ref17.from,
       operation = _ref17.operation,
-      _ref17$keys = _ref17.keys,
-      keys = _ref17$keys === void 0 ? false : _ref17$keys;
+      keys = _ref17.keys;
 
   var _ref18 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
       _ref18$useLedger = _ref18.useLedger,
@@ -24170,7 +24222,7 @@ rpc.prepareOperation = function (_ref17) {
       curve = _ref18$curve === void 0 ? 0x00 : _ref18$curve;
 
   var counter;
-  var opOb;
+  var opOb = {};
   var promises = [];
   var requiresReveal = false;
   var ops = [];
@@ -24198,7 +24250,7 @@ rpc.prepareOperation = function (_ref17) {
     var _ref20 = _asyncToGenerator(
     /*#__PURE__*/
     regeneratorRuntime.mark(function _callee10(_ref19) {
-      var _ref21, header, headCounter, manager, publicKey, ledgerAddress, constructOps, fullOp;
+      var _ref21, header, headCounter, manager, publicKey, _ref22, reveal, constructOps, fullOp;
 
       return regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
@@ -24208,78 +24260,101 @@ rpc.prepareOperation = function (_ref17) {
               head = header;
 
               if (!(requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined')) {
+                _context10.next = 11;
+                break;
+              }
+
+              publicKey = keys && keys.pk;
+
+              if (!useLedger) {
                 _context10.next = 9;
                 break;
               }
 
-              if (!useLedger) {
-                _context10.next = 8;
-                break;
-              }
-
-              _context10.next = 6;
+              _context10.next = 7;
               return ledger.getAddress({
                 path: path,
                 curve: curve
               });
 
-            case 6:
-              ledgerAddress = _context10.sent;
-              publicKey = ledgerAddress.publicKey; // eslint-disable-line
-
-            case 8:
-              ops.unshift({
-                kind: 'reveal',
-                fee: node.isZeronet ? '100000' : '1269',
-                public_key: publicKey || keys.pk,
-                source: from,
-                gas_limit: '10000',
-                storage_limit: '0'
-              });
+            case 7:
+              _ref22 = _context10.sent;
+              publicKey = _ref22.publicKey;
 
             case 9:
+              reveal = {
+                kind: 'reveal',
+                fee: node.isZeronet ? 100000 : 1269,
+                public_key: publicKey,
+                source: from,
+                gas_limit: 10000,
+                storage_limit: 0
+              };
+              ops.unshift(reveal);
+
+            case 11:
               counter = parseInt(headCounter, 10);
 
               if (!counters[from] || counters[from] < counter) {
                 counters[from] = counter;
               }
 
-              constructOps = function constructOps() {
-                return ops.map(function (op) {
+              constructOps = function constructOps(cOps) {
+                return cOps.map(function (op) {
+                  // $FlowFixMe
+                  var constructedOp = _objectSpread({}, op);
+
                   if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-                    if (typeof op.source === 'undefined') op.source = from;
+                    if (typeof op.source === 'undefined') constructedOp.source = from;
                   }
 
                   if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-                    if (typeof op.gas_limit === 'undefined') op.gas_limit = '0';
-                    if (typeof op.storage_limit === 'undefined') op.storage_limit = '0';
-                    if (typeof op.amount !== 'undefined') op.amount = "".concat(op.amount);
-                    op.counter = "".concat(++counters[from]);
-                    op.fee = "".concat(op.fee);
-                    op.gas_limit = "".concat(op.gas_limit);
-                    op.storage_limit = "".concat(op.storage_limit);
+                    if (typeof op.amount === 'undefined') {
+                      constructedOp.amount = '0';
+                    } else {
+                      constructedOp.amount = "".concat(op.amount);
+                    }
+
+                    if (typeof op.fee === 'undefined') {
+                      constructedOp.fee = '0';
+                    } else {
+                      constructedOp.fee = "".concat(op.fee);
+                    }
+
+                    if (typeof op.gas_limit === 'undefined') {
+                      constructedOp.gas_limit = '0';
+                    } else {
+                      constructedOp.gas_limit = "".concat(op.gas_limit);
+                    }
+
+                    if (typeof op.storage_limit === 'undefined') {
+                      constructedOp.storage_limit = '0';
+                    } else {
+                      constructedOp.storage_limit = "".concat(op.storage_limit);
+                    }
+
+                    if (typeof op.balance !== 'undefined') constructedOp.balance = "".concat(constructedOp.balance);
+                    constructedOp.counter = "".concat(++counters[from]);
                   }
 
-                  return JSON.stringify(op);
+                  return JSON.stringify(constructedOp);
                 }).map(function (op) {
                   return JSON.parse(op);
                 });
               };
 
-              opOb = {
-                branch: head.hash,
-                contents: constructOps()
-              };
-              _context10.next = 15;
-              return tezos.forge(head, opOb);
+              opOb.branch = head.hash;
+              opOb.contents = constructOps(ops);
+              _context10.next = 18;
+              return tezos.forge(head, opOb, counter);
 
-            case 15:
+            case 18:
               fullOp = _context10.sent;
               return _context10.abrupt("return", _objectSpread({}, fullOp, {
                 counter: counter
               }));
 
-            case 17:
+            case 20:
             case "end":
               return _context10.stop();
           }
@@ -24287,7 +24362,7 @@ rpc.prepareOperation = function (_ref17) {
       }, _callee10);
     }));
 
-    return function (_x14) {
+    return function (_x15) {
       return _ref20.apply(this, arguments);
     };
   }());
@@ -24323,19 +24398,18 @@ rpc.prepareOperation = function (_ref17) {
  */
 
 
-rpc.simulateOperation = function (_ref22) {
-  var from = _ref22.from,
-      operation = _ref22.operation,
-      _ref22$keys = _ref22.keys,
-      keys = _ref22$keys === void 0 ? false : _ref22$keys;
+rpc.simulateOperation = function (_ref23) {
+  var from = _ref23.from,
+      operation = _ref23.operation,
+      keys = _ref23.keys;
 
-  var _ref23 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref23$useLedger = _ref23.useLedger,
-      useLedger = _ref23$useLedger === void 0 ? false : _ref23$useLedger,
-      _ref23$path = _ref23.path,
-      path = _ref23$path === void 0 ? "44'/1729'/0'/0'" : _ref23$path,
-      _ref23$curve = _ref23.curve,
-      curve = _ref23$curve === void 0 ? 0x00 : _ref23$curve;
+  var _ref24 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref24$useLedger = _ref24.useLedger,
+      useLedger = _ref24$useLedger === void 0 ? false : _ref24$useLedger,
+      _ref24$path = _ref24.path,
+      path = _ref24$path === void 0 ? "44'/1729'/0'/0'" : _ref24$path,
+      _ref24$curve = _ref24.curve,
+      curve = _ref24$curve === void 0 ? 0x00 : _ref24$curve;
 
   return rpc.prepareOperation({
     from: from,
@@ -24394,27 +24468,23 @@ rpc.simulateOperation = function (_ref22) {
 rpc.sendOperation =
 /*#__PURE__*/
 function () {
-  var _ref25 = _asyncToGenerator(
+  var _ref26 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee11(_ref24) {
+  regeneratorRuntime.mark(function _callee11(_ref25) {
     var from,
         operation,
-        _ref24$keys,
         keys,
-        _ref24$skipPrevalidat,
+        _ref25$skipPrevalidat,
         skipPrevalidation,
-        _ref26,
-        _ref26$useLedger,
+        _ref27,
+        _ref27$useLedger,
         useLedger,
-        _ref26$path,
+        _ref27$path,
         path,
-        _ref26$curve,
+        _ref27$curve,
         curve,
         fullOp,
-        _ref27,
         signature,
-        counter,
-        rest,
         signed,
         _args11 = arguments;
 
@@ -24422,8 +24492,8 @@ function () {
       while (1) {
         switch (_context11.prev = _context11.next) {
           case 0:
-            from = _ref24.from, operation = _ref24.operation, _ref24$keys = _ref24.keys, keys = _ref24$keys === void 0 ? false : _ref24$keys, _ref24$skipPrevalidat = _ref24.skipPrevalidation, skipPrevalidation = _ref24$skipPrevalidat === void 0 ? false : _ref24$skipPrevalidat;
-            _ref26 = _args11.length > 1 && _args11[1] !== undefined ? _args11[1] : {}, _ref26$useLedger = _ref26.useLedger, useLedger = _ref26$useLedger === void 0 ? false : _ref26$useLedger, _ref26$path = _ref26.path, path = _ref26$path === void 0 ? "44'/1729'/0'/0'" : _ref26$path, _ref26$curve = _ref26.curve, curve = _ref26$curve === void 0 ? 0x00 : _ref26$curve;
+            from = _ref25.from, operation = _ref25.operation, keys = _ref25.keys, _ref25$skipPrevalidat = _ref25.skipPrevalidation, skipPrevalidation = _ref25$skipPrevalidat === void 0 ? false : _ref25$skipPrevalidat;
+            _ref27 = _args11.length > 1 && _args11[1] !== undefined ? _args11[1] : {}, _ref27$useLedger = _ref27.useLedger, useLedger = _ref27$useLedger === void 0 ? false : _ref27$useLedger, _ref27$path = _ref27.path, path = _ref27$path === void 0 ? "44'/1729'/0'/0'" : _ref27$path, _ref27$curve = _ref27.curve, curve = _ref27$curve === void 0 ? 0x00 : _ref27$curve;
             _context11.next = 4;
             return rpc.prepareOperation({
               from: from,
@@ -24439,7 +24509,7 @@ function () {
             fullOp = _context11.sent;
 
             if (!useLedger) {
-              _context11.next = 13;
+              _context11.next = 12;
               break;
             }
 
@@ -24451,44 +24521,34 @@ function () {
             });
 
           case 8:
-            _ref27 = _context11.sent;
-            signature = _ref27.signature;
+            signature = _context11.sent;
             fullOp.opbytes += signature;
-            _context11.next = 28;
+            _context11.next = 22;
             break;
 
-          case 13:
-            if (!(keys.sk === false)) {
-              _context11.next = 18;
-              break;
-            }
-
-            counter = fullOp.counter, rest = _objectWithoutProperties(fullOp, ["counter"]);
-            return _context11.abrupt("return", rest);
-
-          case 18:
+          case 12:
             if (keys) {
-              _context11.next = 23;
+              _context11.next = 17;
               break;
             }
 
             fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
             fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
-            _context11.next = 28;
+            _context11.next = 22;
             break;
 
-          case 23:
-            _context11.next = 25;
+          case 17:
+            _context11.next = 19;
             return crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
 
-          case 25:
+          case 19:
             signed = _context11.sent;
             fullOp.opbytes = signed.sbytes;
             fullOp.opOb.signature = signed.edsig;
 
-          case 28:
+          case 22:
             if (!(skipPrevalidation || useLedger)) {
-              _context11.next = 30;
+              _context11.next = 24;
               break;
             }
 
@@ -24497,13 +24557,13 @@ function () {
               throw e;
             }));
 
-          case 30:
+          case 24:
             return _context11.abrupt("return", rpc.inject(fullOp.opOb, fullOp.opbytes).catch(function (e) {
               counters[from] = fullOp.counter;
               throw e;
             }));
 
-          case 31:
+          case 25:
           case "end":
             return _context11.stop();
         }
@@ -24511,8 +24571,8 @@ function () {
     }, _callee11);
   }));
 
-  return function (_x15) {
-    return _ref25.apply(this, arguments);
+  return function (_x16) {
+    return _ref26.apply(this, arguments);
   };
 }();
 /**
@@ -24611,10 +24671,9 @@ rpc.transfer = function (_ref28) {
       keys = _ref28.keys,
       to = _ref28.to,
       amount = _ref28.amount,
+      parameter = _ref28.parameter,
       _ref28$fee = _ref28.fee,
       fee = _ref28$fee === void 0 ? DEFAULT_FEE : _ref28$fee,
-      _ref28$parameter = _ref28.parameter,
-      parameter = _ref28$parameter === void 0 ? false : _ref28$parameter,
       _ref28$gasLimit = _ref28.gasLimit,
       gasLimit = _ref28$gasLimit === void 0 ? 10100 : _ref28$gasLimit,
       _ref28$storageLimit = _ref28.storageLimit,
@@ -24634,10 +24693,10 @@ rpc.transfer = function (_ref28) {
 
   var operation = {
     kind: 'transaction',
-    fee: "".concat(fee),
-    gas_limit: "".concat(gasLimit),
-    storage_limit: "".concat(storageLimit),
-    amount: mutez ? "".concat(utility.mutez(amount)) : "".concat(amount),
+    fee: fee,
+    gas_limit: gasLimit,
+    storage_limit: storageLimit,
+    amount: mutez ? utility.mutez(amount) : amount,
     destination: to
   };
 
@@ -24647,7 +24706,7 @@ rpc.transfer = function (_ref28) {
 
   return rpc.sendOperation({
     from: from,
-    operation: operation,
+    operation: [operation],
     keys: keys
   }, {
     useLedger: useLedger,
@@ -24674,8 +24733,9 @@ rpc.activate = function (pkh, secret) {
   };
   return rpc.sendOperation({
     from: pkh,
-    operation: operation,
-    keys: false
+    operation: [operation]
+  }, {
+    useLedger: false
   });
 };
 /**
@@ -24767,10 +24827,10 @@ function () {
           case 11:
             operation = {
               kind: 'origination',
-              fee: "".concat(fee),
-              gas_limit: "".concat(gasLimit),
-              storage_limit: "".concat(storageLimit),
-              balance: "".concat(utility.mutez(amount)),
+              fee: fee,
+              gas_limit: gasLimit,
+              storage_limit: storageLimit,
+              balance: utility.mutez(amount),
               spendable: spendable,
               delegatable: delegatable,
               delegate: typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash,
@@ -24785,7 +24845,7 @@ function () {
 
             return _context12.abrupt("return", rpc.sendOperation({
               from: publicKeyHash,
-              operation: operation,
+              operation: [operation],
               keys: keys
             }, {
               useLedger: useLedger,
@@ -24801,7 +24861,7 @@ function () {
     }, _callee12);
   }));
 
-  return function (_x16) {
+  return function (_x17) {
     return _ref31.apply(this, arguments);
   };
 }();
@@ -24877,14 +24937,14 @@ function () {
           case 9:
             operation = {
               kind: 'delegation',
-              fee: "".concat(fee),
-              gas_limit: "".concat(gasLimit),
-              storage_limit: "".concat(storageLimit),
+              fee: fee,
+              gas_limit: gasLimit,
+              storage_limit: storageLimit,
               delegate: typeof delegate !== 'undefined' ? delegate : publicKeyHash
             };
             return _context13.abrupt("return", rpc.sendOperation({
               from: from,
-              operation: operation,
+              operation: [operation],
               keys: keys
             }, {
               useLedger: useLedger,
@@ -24900,7 +24960,7 @@ function () {
     }, _callee13);
   }));
 
-  return function (_x17) {
+  return function (_x18) {
     return _ref35.apply(this, arguments);
   };
 }();
@@ -24972,14 +25032,14 @@ function () {
           case 9:
             operation = {
               kind: 'delegation',
-              fee: "".concat(fee),
-              gas_limit: "".concat(gasLimit),
-              storage_limit: "".concat(storageLimit),
-              delegate: "".concat(publicKeyHash)
+              fee: fee,
+              gas_limit: gasLimit,
+              storage_limit: storageLimit,
+              delegate: publicKeyHash
             };
             return _context14.abrupt("return", rpc.sendOperation({
               from: publicKeyHash,
-              operation: operation,
+              operation: [operation],
               keys: keys
             }, {
               useLedger: useLedger,
@@ -24995,7 +25055,7 @@ function () {
     }, _callee14);
   }));
 
-  return function (_x18) {
+  return function (_x19) {
     return _ref39.apply(this, arguments);
   };
 }();
@@ -25081,10 +25141,20 @@ function () {
       while (1) {
         switch (_context15.prev = _context15.next) {
           case 0:
-            _context15.next = 2;
+            _context15.prev = 0;
+            _context15.next = 3;
             return _sodium.ready;
 
-          case 2:
+          case 3:
+            _context15.next = 8;
+            break;
+
+          case 5:
+            _context15.prev = 5;
+            _context15.t0 = _context15["catch"](0);
+            throw new Error(_context15.t0);
+
+          case 8:
             sodium = _sodium;
             ob = utility.b58cdecode(operationHash, prefix.o);
             tt = [];
@@ -25093,18 +25163,19 @@ function () {
               tt.push(ob[i]);
             }
 
-            tt = tt.concat([(ind & 0xff000000) >> 24, (ind & 0x00ff0000) >> 16, (ind & 0x0000ff00) >> 8, ind & 0x000000ff]);
+            tt = tt.concat([(ind & 0xff000000) >> 24, (ind & 0x00ff0000) >> 16, (ind & 0x0000ff00) >> 8, ind & 0x000000ff]); // $FlowFixMe
+
             return _context15.abrupt("return", utility.b58cencode(sodium.crypto_generichash(20, new Uint8Array(tt)), prefix.KT));
 
-          case 8:
+          case 14:
           case "end":
             return _context15.stop();
         }
       }
-    }, _callee15);
+    }, _callee15, null, [[0, 5]]);
   }));
 
-  return function (_x19, _x20) {
+  return function (_x20, _x21) {
     return _ref42.apply(this, arguments);
   };
 }();
@@ -25177,13 +25248,7 @@ contract.originate = function (_ref43) {
 
 
 contract.storage = function (contractAddress) {
-  return new Promise(function (resolve, reject) {
-    return node.query("/chains/main/blocks/head/context/contracts/".concat(contractAddress, "/storage")).then(function (r) {
-      return resolve(r);
-    }).catch(function (e) {
-      return reject(e);
-    });
-  });
+  return node.query("/chains/main/blocks/head/context/contracts/".concat(contractAddress, "/storage"));
 };
 /**
  * @description Get the contract at a given address
@@ -25218,69 +25283,6 @@ contract.watch = function (contractAddress, timeout, callback) {
 
   storageCheck();
   return setInterval(storageCheck, timeout * 1000);
-};
-/**
- * @description Send to contract
- * @param {Object} paramObject The parameters for the operation
- * @param {String} paramObject.to The address of the recipient
- * @param {Object} paramObject.from The address sending the operation
- * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
- * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
- * @param {String} paramObject.parameter The parameter for the transaction
- * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
- * @param {Number} [paramObject.gasLimit=400000] The gas limit to set for the transaction
- * @param {Number} [paramObject.storageLimit=60000] The storage limit to set for the transaction
- * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
- * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
- * @param {Object} [ledgerObject] The ledger parameters for the operation
- * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
- * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
- * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
- * @returns {Promise} Object containing the injected operation hash
- */
-
-
-contract.send = function (_ref45) {
-  var to = _ref45.to,
-      from = _ref45.from,
-      keys = _ref45.keys,
-      amount = _ref45.amount,
-      parameter = _ref45.parameter,
-      _ref45$fee = _ref45.fee,
-      fee = _ref45$fee === void 0 ? DEFAULT_FEE : _ref45$fee,
-      _ref45$gasLimit = _ref45.gasLimit,
-      gasLimit = _ref45$gasLimit === void 0 ? 400000 : _ref45$gasLimit,
-      _ref45$storageLimit = _ref45.storageLimit,
-      storageLimit = _ref45$storageLimit === void 0 ? 60000 : _ref45$storageLimit,
-      _ref45$mutez = _ref45.mutez,
-      mutez = _ref45$mutez === void 0 ? false : _ref45$mutez,
-      _ref45$rawParam = _ref45.rawParam,
-      rawParam = _ref45$rawParam === void 0 ? false : _ref45$rawParam;
-
-  var _ref46 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref46$useLedger = _ref46.useLedger,
-      useLedger = _ref46$useLedger === void 0 ? false : _ref46$useLedger,
-      _ref46$path = _ref46.path,
-      path = _ref46$path === void 0 ? "44'/1729'/0'/0'" : _ref46$path,
-      _ref46$curve = _ref46.curve,
-      curve = _ref46$curve === void 0 ? 0x00 : _ref46$curve;
-
-  return rpc.transfer({
-    from: from,
-    keys: keys,
-    to: to,
-    amount: amount,
-    fee: fee,
-    parameter: parameter,
-    gasLimit: gasLimit,
-    storageLimit: storageLimit,
-    mutez: mutez,
-    rawParam: rawParam
-  }, {
-    useLedger: useLedger,
-    path: path,
-    curve: curve
-  });
 }; // Legacy commands
 
 

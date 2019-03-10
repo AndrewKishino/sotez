@@ -48,7 +48,6 @@ toc:
       - storage
       - load
       - watch
-      - send
 
   - name: crypto
     children:

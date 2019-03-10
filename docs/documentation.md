@@ -19,6 +19,8 @@ Enable additional logging by enabling debug mode
 node.setDebugMode(true);
 ```
 
+Returns **void** 
+
 ### setProvider
 
 Set a new default provider
@@ -44,6 +46,8 @@ Reset the provider to the default provider
 node.resetProvider();
 ```
 
+Returns **void** 
+
 ### query
 
 Queries a node given a path and payload
@@ -68,14 +72,6 @@ Returns **[Promise][3]** The response of the query
 
 
 
-### setForgeLocal
-
-Sets the forging strategy to either local or remote
-
-#### Parameters
-
--   `useLocal` **[Boolean][2]** Forge strategy true - local | false - remote (optional, default `true`)
-
 ### setLocalForgeValidation
 
 Whether to validate locally forged operations against remotely forged operations
@@ -83,6 +79,8 @@ Whether to validate locally forged operations against remotely forged operations
 #### Parameters
 
 -   `localValidation` **[Boolean][2]** Validate local forge (optional, default `false`)
+
+Returns **void** 
 
 ### account
 
@@ -191,8 +189,8 @@ rpc.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
     frozen_balance,
     frozen_balance_by_cycle,
     staking_balance,
-    delegated_contracts
-    delegated_balance
+    delegated_contracts,
+    delegated_balance,
     deactivated,
     grace_period,
   }) => console.log(
@@ -200,8 +198,8 @@ rpc.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
     frozen_balance,
     frozen_balance_by_cycle,
     staking_balance,
-    delegated_contracts
-    delegated_balance
+    delegated_contracts,
+    delegated_balance,
     deactivated,
     grace_period,
   ))
@@ -519,8 +517,8 @@ Transfer operation
     -   `paramObject.keys` **[Object][4]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.to` **[String][1]** The address of the recipient
     -   `paramObject.amount` **[Number][5]** The amount in tez to transfer for the initial balance
-    -   `paramObject.fee` **[Number][5]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.parameter` **[String][1]** The parameter for the transaction (optional, default `false`)
+    -   `paramObject.fee` **[Number][5]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][5]** The gas limit to set for the transaction (optional, default `10100`)
     -   `paramObject.storageLimit` **[Number][5]** The storage limit to set for the transaction (optional, default `0`)
     -   `paramObject.mutez` **[Number][5]** Whether the input amount is set to mutez (1/1,000,000 tez) (optional, default `false`)
@@ -735,30 +733,6 @@ Watch a contract's storage based on a given interval
 
 Returns **[Object][4]** The setInterval object
 
-### send
-
-Send to contract
-
-#### Parameters
-
--   `paramObject` **[Object][4]** The parameters for the operation
-    -   `paramObject.to` **[String][1]** The address of the recipient
-    -   `paramObject.from` **[Object][4]** The address sending the operation
-    -   `paramObject.keys` **[Object][4]?** The keys for which to originate the account. If using a ledger, this is optional
-    -   `paramObject.amount` **[Number][5]** The amount in tez to transfer for the initial balance
-    -   `paramObject.parameter` **[String][1]** The parameter for the transaction
-    -   `paramObject.fee` **[Number][5]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][5]** The gas limit to set for the transaction (optional, default `400000`)
-    -   `paramObject.storageLimit` **[Number][5]** The storage limit to set for the transaction (optional, default `60000`)
-    -   `paramObject.mutez` **[Number][5]** Whether the input amount is set to mutez (1/1,000,000 tez) (optional, default `false`)
-    -   `paramObject.rawParam` **[Number][5]** Whether to accept the object parameter format (optional, default `false`)
--   `ledgerObject` **[Object][4]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][2]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][5]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
-
-Returns **[Promise][3]** Object containing the injected operation hash
-
 ## crypto
 
 
@@ -859,7 +833,7 @@ Convert from base58 to integer
 
 #### Parameters
 
--   `v` **[Number][5]** The b58 value
+-   `v` **[String][1]** The b58 value
 
 Returns **[String][1]** The converted b58 value
 
@@ -871,7 +845,7 @@ Convert from mutez to tez
 
 -   `mutez` **[Number][5]** The amount in mutez to convert to tez
 
-Returns **Integer** The mutez amount converted to tez
+Returns **[Number][5]** The mutez amount converted to tez
 
 ### mutez
 
@@ -900,7 +874,7 @@ Base58 decode
 
 #### Parameters
 
--   `enc`  
+-   `enc` **[string][1]** 
 -   `prefixArg` **[Object][4]** The Uint8Array prefix values
 -   `payload` **[String][1]** The value to decode
 
@@ -1154,7 +1128,7 @@ ledger.signOperation({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
-}).then(({ signature }) => console.log(signature))
+}).then((signature) => console.log(signature))
 ```
 
 Returns **[Promise][3]** The signed operation

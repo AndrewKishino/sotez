@@ -7,6 +7,9 @@ before_install:
   - sudo apt-get install -y libudev-dev libusb-1.0-0-dev
 jobs:
   include:
+    - stage: Lint
+      script: npm run flow:check
+
     - stage: Test
       script: npm run test
 

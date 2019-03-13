@@ -57,11 +57,6 @@
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"
   },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/node_modules/regenerator-runtime/runtime"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AndrewKishino/sotez.git"

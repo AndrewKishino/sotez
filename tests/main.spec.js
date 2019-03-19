@@ -1,6 +1,6 @@
 describe('sotez', () => {
   describe('utility', () => {
-    const sotez = require('../src/sotez');
+    const sotez = require('../index');
     const { utility } = sotez;
 
     test('mintotz', () => {
@@ -59,7 +59,7 @@ describe('sotez', () => {
   });
 
   describe('crypto', () => {
-    const sotez = require('../src/sotez');
+    const sotez = require('../index');
     const { crypto } = sotez;
 
     const TEST_KEYS = {
@@ -124,7 +124,7 @@ describe('sotez', () => {
     let node;
 
     beforeEach(() => {
-      sotez = require('../src/sotez');
+      sotez = require('../index');
       ({ node } = sotez);
     });
 

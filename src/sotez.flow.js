@@ -1,15 +1,11 @@
 // @flow
-declare type PK = string;
-declare type PKH = string;
-declare type SK = string;
-
-declare type Keys = {
-  pk: PK,
-  pkh: PKH,
-  sk: SK,
+export type Keys = {
+  pk: string,
+  pkh: string,
+  sk: string,
 };
 
-declare type Head = {
+export type Head = {
   protocol: string,
   chain_id: string,
   hash: string,
@@ -18,7 +14,7 @@ declare type Head = {
   operations: Array<Array<Operation>>,
 };
 
-declare type Header = {
+export type Header = {
   protocol: string,
   chain_id: string,
   hash: string,
@@ -35,40 +31,40 @@ declare type Header = {
   signature: string,
 };
 
-declare type Operation = {
+export type Operation = {
   kind?: string,
   level?: number,
   nonce?: string,
-  pkh?: PKH,
+  pkh?: string,
   hash?: string,
   secret?: string,
   source?: string,
   period?: number,
   proposal?: string,
   ballot?: string,
-  fee?: number,
-  counter?: number,
-  gas_limit?: number,
-  storage_limit?: number,
-  managerPubkey?: string,
+  fee?: number | string,
+  counter?: number | string,
+  gas_limit?: number | string,
+  storage_limit?: number | string,
   parameters?: string,
-  balance?: number,
+  balance?: number | string,
   spendable?: boolean,
   delegatable?: boolean,
   delegate?: string,
   script?: string,
-  amount?: number,
+  amount?: number | string,
   destination?: string,
   public_key?: string,
   script?: { code: string, storage: string },
+  managerPubkey?: string,
   manager_pubkey?: string,
 };
 
-declare type ConstructedOperation = {
+export type ConstructedOperation = {
   kind: string,
   level: number,
   nonce: string,
-  pkh: PKH,
+  pkh: string,
   hash: string,
   secret: string,
   source: string,
@@ -93,20 +89,20 @@ declare type ConstructedOperation = {
   manager_pubkey: string,
 };
 
-declare type OperationObject = {
+export type OperationObject = {
   branch: string,
   contents: Array<ConstructedOperation>,
   protocol: string,
   signature: string,
 };
 
-declare type ForgedBytes = {
+export type ForgedBytes = {
   opbytes: string,
   opOb: OperationObject,
   counter: number,
 };
 
-declare type KeysMnemonicPassphrase = {|
+export type KeysMnemonicPassphrase = {|
   mnemonic: string,
   passphrase: string,
   sk: string,
@@ -114,14 +110,14 @@ declare type KeysMnemonicPassphrase = {|
   pkh: string,
 |};
 
-declare type Signed = {
+export type Signed = {
   bytes: string,
   sig: string,
   edsig: string,
   sbytes: string,
 };
 
-declare type Baker = {
+export type Baker = {
   balance: string,
   frozen_balance: string,
   frozen_balance_by_cycle: {
@@ -137,32 +133,32 @@ declare type Baker = {
   grace_period: number,
 };
 
-declare type LedgerGetAddress = {
+export type LedgerGetAddress = {
   path?: string,
   displayConfirm?: boolean,
   curve?: number,
 };
 
-declare type LedgerSignOperation = {
+export type LedgerSignOperation = {
   path?: string,
   rawTxHex: string,
   curve?: number,
 };
 
-declare type LedgerGetVersion = {
+export type LedgerGetVersion = {
   major: string,
   minor: string,
   patch: string,
   bakingApp: boolean,
 };
 
-declare type LedgerDefault = {
+export type LedgerDefault = {
   useLedger?: boolean,
   path?: string,
   curve?: number,
 };
 
-declare type AccountParams = {
+export type AccountParams = {
   keys: Keys,
   amount: number,
   spendable: boolean,
@@ -173,7 +169,7 @@ declare type AccountParams = {
   storageLimit: number,
 };
 
-declare type RpcParams = {
+export type RpcParams = {
   from: string,
   keys: Keys,
   to: string,
@@ -191,7 +187,7 @@ declare type RpcParams = {
   code: string,
 };
 
-declare type ContractParams = {
+export type ContractParams = {
   keys: Keys,
   to?: string,
   amount: number,
@@ -207,7 +203,7 @@ declare type ContractParams = {
   code: string,
 };
 
-declare type Prefix = {
+export type Prefix = {
   tz1: Uint8Array,
   tz2: Uint8Array,
   tz3: Uint8Array,
@@ -242,33 +238,33 @@ declare type Prefix = {
   TZ?: Uint8Array,
 };
 
-declare type Watermark = {|
+export type Watermark = {|
   block: Uint8Array,
   endorsement: Uint8Array,
   generic: Uint8Array,
 |};
 
-declare type Utility = {
+export type Utility = {
   b582int: string => string,
   totez: number => number,
-  mutez: number => number,
+  mutez: number => string,
   b58cencode: (string, Uint8Array) => string,
   b58cdecode: (string, Uint8Array) => string,
   buf2hex: (Uint8Array | string) => string,
   hex2buf: string => Uint8Array,
   hexNonce: number => string,
   mergebuf: (Uint8Array, Uint8Array) => Uint8Array,
-  sexp2mic: string => any,
-  mic2arr: any => any,
-  ml2mic: string => any,
-  ml2tzjson: string => any,
-  tzjson2arr: any => any,
-  mlraw2json: string => any,
+  sexp2mic: string => *,
+  mic2arr: any => *,
+  ml2mic: string => *,
+  ml2tzjson: string => *,
+  tzjson2arr: any => *,
+  mlraw2json: string => *,
   mintotz: number => number,
-  tztomin: number => number,
+  tztomin: number => string,
 };
 
-declare type Crypto = {
+export type Crypto = {
   extractKeys: string => Promise<Keys>,
   generateMnemonic: () => string,
   checkAddress: string => boolean,
@@ -277,7 +273,7 @@ declare type Crypto = {
   verify: (string, string, string) => Promise<number>,
 };
 
-declare type _Node = {
+export type Node = {
   activeProvider: string,
   debugMode: boolean,
   async: boolean,
@@ -288,13 +284,13 @@ declare type _Node = {
   query: (string, ?any, ?string) => Promise<any>,
 };
 
-declare type Ledger = {
+export type Ledger = {
   getAddress: (LedgerGetAddress) => Promise<{ address: string, publicKey: string }>,
   signOperation: (LedgerSignOperation) => Promise<string>,
   getVersion: () => Promise<LedgerGetVersion>,
 };
 
-declare type Forge = {
+export type Forge = {
   toBytesInt32: number => ArrayBuffer,
   toBytesInt32Hex: number => string,
   bool: boolean => string,
@@ -307,20 +303,20 @@ declare type Forge = {
   op: ConstructedOperation => string,
 };
 
-declare type Tezos = {
+export type Tezos = {
   forge: (Head, OperationObject, number) => Promise<ForgedBytes>,
   decodeRawBytes: string => any,
   encodeRawBytes: any => string,
 };
 
-declare type OperationParams = {
+export type OperationParams = {
   from: string,
   operation: Array<Operation>,
   keys?: Keys,
   skipPrevalidation?: boolean,
 };
 
-declare type Rpc = {
+export type Rpc = {
   localForge: boolean,
   validateLocalForge: boolean,
   setForgeLocal: boolean => void,
@@ -359,7 +355,7 @@ declare type Rpc = {
   runCode: (string, number, string, string, boolean) => Promise<any>,
 };
 
-declare type Contract = {
+export type Contract = {
   hash: (string, number) => Promise<any>,
   originate: (ContractParams, LedgerDefault) => Promise<any>,
   storage: (string) => Promise<any>,

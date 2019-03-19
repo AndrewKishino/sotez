@@ -934,6 +934,7 @@ Forge operation bytes
 
 -   `head` **[Object][4]** The current head object of the chain
 -   `opOb` **[Object][4]** The operation object(s)
+-   `counter` **[number][5]** 
 
 #### Examples
 

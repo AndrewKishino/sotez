@@ -1,4 +1,35 @@
 // @flow
+import type {
+  Prefix,
+  Watermark,
+  Utility,
+  Node,
+  Rpc,
+  Crypto,
+  Ledger,
+  Contract,
+  Forge,
+  Tezos,
+  Keys,
+  KeysMnemonicPassphrase,
+  Signed,
+  Head,
+  Header,
+  Baker,
+  Operation,
+  OperationObject,
+  ConstructedOperation,
+  ForgedBytes,
+  LedgerGetAddress,
+  LedgerSignOperation,
+  LedgerGetVersion,
+  AccountParams,
+  ContractParams,
+  RpcParams,
+  OperationParams,
+  LedgerDefault,
+} from './sotez.flow';
+
 // $FlowFixMe
 if (typeof Buffer === 'undefined') Buffer = require('buffer/').Buffer; // eslint-disable-line
 if (typeof XMLHttpRequest === 'undefined') XMLHttpRequest = require('xhr2'); // eslint-disable-line
@@ -9,7 +40,7 @@ const bip39 = require('bip39');
 const { BigNumber } = require('bignumber.js');
 const isNode = require('detect-node');
 
-const textEncode = string => new Uint8Array(Buffer.from(string, 'utf8'));
+const textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
 const textDecode = buffer => Buffer.from(buffer).toString('utf8');
 
 if (isNode) {
@@ -25,7 +56,7 @@ const LedgerApp = require('./hw-app-xtz/lib/Tezos').default;
 
 const DEFAULT_PROVIDER = 'http://127.0.0.1:8732';
 const DEFAULT_FEE = 1278;
-const counters: { [PKH]: number } = {};
+const counters = {};
 
 const prefix: Prefix = {
   tz1: new Uint8Array([6, 161, 159]),
@@ -93,7 +124,7 @@ utility.totez = (mutez: number): number => parseInt(mutez, 10) / 1000000;
  * @param {Number} tez The amount in tez to convert to mutez
  * @returns {String} The tez amount converted to mutez
  */
-utility.mutez = (tez: number): number => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
+utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
  * @description Base58 encode
@@ -142,7 +173,7 @@ utility.buf2hex = (buffer: Uint8Array | string): string => {
  */
 utility.hex2buf = (hex: string): Uint8Array => (
   // $FlowFixMe
-  new Uint8Array(hex.match(/[\da-f]{2}/gi).map((h: string) => parseInt(h, 16)))
+  new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
 );
 
 /**
@@ -172,7 +203,7 @@ utility.mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   return r;
 };
 
-utility.sexp2mic = function me(mi: string): any {
+utility.sexp2mic = function me(mi: string): * {
   mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -224,7 +255,7 @@ utility.sexp2mic = function me(mi: string): any {
   return ret;
 };
 
-utility.mic2arr = function me2(s: any): any {
+utility.mic2arr = function me2(s: any): * {
   let ret: any = [];
   if (Object.prototype.hasOwnProperty.call(s, 'prim')) {
     if (s.prim === 'Pair') {
@@ -267,7 +298,7 @@ utility.mic2arr = function me2(s: any): any {
   return ret;
 };
 
-utility.ml2mic = function me(mi: string): any {
+utility.ml2mic = function me(mi: string): * {
   const ret = [];
   let inseq = false;
   let seq = '';
@@ -341,7 +372,6 @@ const crypto: Crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-// $FlowFixMe
 crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-line
   try {
     await _sodium.ready;
@@ -377,6 +407,11 @@ crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-li
         pkh: '',
       };
   }
+  return {
+    sk: '',
+    pk: '',
+    pkh: '',
+  };
 };
 
 /**
@@ -488,7 +523,7 @@ crypto.verify = async (bytes: string, sig: string, pk: string): Promise<number> 
   return sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk));
 };
 
-const node: _Node = {};
+const node: Node = {};
 node.activeProvider = DEFAULT_PROVIDER;
 node.debugMode = false;
 node.async = true;
@@ -1145,7 +1180,7 @@ tezos.forge = async (head: Head, opOb: OperationObject, counter: number): Promis
  * @param {String} bytes The bytes to decode
  * @returns {Object} Decoded raw bytes
  */
-tezos.decodeRawBytes = (bytes: string): any => {
+tezos.decodeRawBytes = (bytes: string): * => {
   bytes = bytes.toUpperCase();
 
   let index = 0;
@@ -1255,7 +1290,7 @@ tezos.decodeRawBytes = (bytes: string): any => {
  * @param {Object} input The value to encode
  * @returns {String} Encoded value as bytes
  */
-tezos.encodeRawBytes = (input: any): string => {
+tezos.encodeRawBytes = (input: *): string => {
   const rec = (inputArg) => {
     const result = [];
 
@@ -1375,7 +1410,7 @@ rpc.account = async ({
     path = "44'/1729'/0'/0'",
     curve = 0x00,
   }: LedgerDefault = {}): Promise<any> => {
-  let publicKeyHash: PKH = '';
+  let publicKeyHash = '';
   if (keys && keys.pkh) {
     publicKeyHash = keys.pkh;
   }
@@ -1510,7 +1545,7 @@ rpc.getHeader = (): Promise<Header> => (
  * @example
  * rpc.getHead().then(head => console.log(head))
  */
-rpc.getHead = () => node.query('/chains/main/blocks/head');
+rpc.getHead = (): Promise<Head> => node.query('/chains/main/blocks/head');
 
 /**
  * @description Get the current head block hash of the chain
@@ -1518,7 +1553,7 @@ rpc.getHead = () => node.query('/chains/main/blocks/head');
  * @example
  * rpc.getHeadHash().then(headHash => console.log(headHash))
  */
-rpc.getHeadHash = () => node.query('/chains/main/blocks/head/hash');
+rpc.getHeadHash = (): Promise<string> => node.query('/chains/main/blocks/head/hash');
 
 /**
  * @description Ballots casted so far during a voting period

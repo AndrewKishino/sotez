@@ -129,5 +129,11 @@ describe('sotez', () => {
       expect(tez.chain).toBe('main');
       expect(tez.defaultFee).toBe(1278);
     });
+
+    test('set provider', () => {
+      expect(tez.provider).toBe('http://127.0.0.1:8732');
+      tez.setProvider('http://127.0.0.1:8888');
+      expect(tez.provider).toBe('http://127.0.0.1:8888');
+    });
   });
 });

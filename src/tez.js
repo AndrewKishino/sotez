@@ -10,19 +10,19 @@ import { watermark } from './constants';
 import type {
   Tez as TezInterface,
   ModuleOptions,
-  Operation,
   Head,
   Header,
   Baker,
+  Operation,
   OperationObject,
   ConstructedOperation,
+  RpcParams,
   AccountParams,
-  LedgerDefault,
   OperationParams,
+  ContractParams,
   ForgedBytes,
   Signed,
-  RpcParams,
-  ContractParams,
+  LedgerDefault,
 } from './types';
 
 export default class Tez extends AbstractTezModule implements TezInterface {

@@ -16,7 +16,12 @@ import type {
 export default class Contract extends AbstractTezModule implements ContractInterface {
   tez: TezInterface;
 
-  constructor(provider: string, chain: string = 'main', net: string = 'main', options: ModuleOptions) {
+  constructor(
+    provider: string,
+    chain: string = 'main',
+    net: string = 'main',
+    options: ModuleOptions,
+  ) {
     super(provider, chain, net, options);
     this.tez = new Tez(provider, chain, net, options);
   }
@@ -99,7 +104,7 @@ export default class Contract extends AbstractTezModule implements ContractInter
    * @returns {Promise} The storage of the contract
    */
   storage = (contractAddress: string): Promise<any> => (
-    this.tez.query(`/chains/main/blocks/head/context/contracts/${contractAddress}/storage`)
+    this.tez.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}/storage`)
   )
 
   /**
@@ -108,7 +113,7 @@ export default class Contract extends AbstractTezModule implements ContractInter
    * @returns {Promise} The contract
    */
   load = (contractAddress: string): Promise<any> => (
-    this.tez.query(`/chains/main/blocks/head/context/contracts/${contractAddress}`)
+    this.tez.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}`)
   )
 
   /**

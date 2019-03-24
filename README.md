@@ -8,12 +8,16 @@ npm install sotez
 ```
 
 ```js
-import Sotez from 'sotez';
+// Import library or individual modules
+import Sotez, { utility, forge, crypto, ledger } from 'sotez';
 
 const sotez = new Sotez('http://127.0.0.1:8732');
 
 sotez.query('/chains/main/blocks/head')
   .then(response => console.log(response));
+
+crypto.generateMnemonic()
+  .then(mnemonic => console.log(mnemonic));
 ```
 
 Or

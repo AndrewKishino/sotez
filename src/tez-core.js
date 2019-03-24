@@ -53,8 +53,8 @@ export default class AbstractTezModule implements TezModuleInterface {
   }
 
   setProvider(provider: string, chain: string = this.chain, network: string = this.network) {
-    this.provider = provider;
-    this.chain = chain;
-    this.network = network;
+    this._provider = provider;
+    this._chain = chain;
+    this._network = network;
   }
 }

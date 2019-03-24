@@ -1,5 +1,1 @@
-import Contract from './Contract';
-
-export default {
-  Contract,
-};
+export { default as Contract } from './Contract'; // eslint-disable-line

@@ -1,21 +1,34 @@
 // @flow
 import _sodium from 'libsodium-wrappers';
-import AbstractTezModule from '../tez-core';
 import Tez from '../tez';
 import { prefix } from '../constants';
 import utility from '../utility';
 
 import type {
-  Tez as TezInterface,
   Contract as ContractInterface,
   ModuleOptions,
   ContractParams,
   LedgerDefault,
 } from '../types';
 
-export default class Contract extends AbstractTezModule implements ContractInterface {
-  tez: TezInterface;
-
+/**
+ * Contract Module
+ * @class Contract
+ * @param {String} [provider='http://127.0.0.1:8732'] Address of the node
+ * @param {String} [chain='main'] Chain Id
+ * @param {String} [network='main'] Network ['main', 'zero',]
+ * @param {Object} [options={}]
+ * @param {Number} [options.defaultFee=1278] The default fee for tranactions
+ * @param {Boolean} [options.debugMode=false] Debug mode enablement
+ * @param {Boolean} [options.localForge=true] Forge operations locally
+ * @param {Boolean} [options.validateLocalForge=false] Validate local forge bytes against remote forged bytes
+ * @example
+ * import { Contract } from 'sotez';
+ * const contract = new Contract('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+ * contract.load('KT1UxQ2HJ8gpeKy1Rj36tUJanqUeTZNvQ8cK')
+ *  .then(result => console.log(result));
+ */
+export default class Contract extends Tez implements ContractInterface {
   constructor(
     provider: string,
     chain: string = 'main',
@@ -23,7 +36,6 @@ export default class Contract extends AbstractTezModule implements ContractInter
     options: ModuleOptions,
   ) {
     super(provider, chain, net, options);
-    this.tez = new Tez(provider, chain, net, options);
   }
 
   hash = async (operationHash: string, ind: number) => {
@@ -84,7 +96,7 @@ export default class Contract extends AbstractTezModule implements ContractInter
     path = "44'/1729'/0'/0'",
     curve = 0x00,
   }: LedgerDefault = {}): Promise<any> => (
-    this.tez.originate({
+    this.originate({
       keys,
       amount,
       code,
@@ -104,7 +116,7 @@ export default class Contract extends AbstractTezModule implements ContractInter
    * @returns {Promise} The storage of the contract
    */
   storage = (contractAddress: string): Promise<any> => (
-    this.tez.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}/storage`)
+    this.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}/storage`)
   )
 
   /**
@@ -113,7 +125,7 @@ export default class Contract extends AbstractTezModule implements ContractInter
    * @returns {Promise} The contract
    */
   load = (contractAddress: string): Promise<any> => (
-    this.tez.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}`)
+    this.query(`/chains/${this.chain}/blocks/head/context/contracts/${contractAddress}`)
   )
 
   /**

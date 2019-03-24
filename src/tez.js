@@ -25,7 +25,32 @@ import type {
   LedgerDefault,
 } from './types';
 
-export default class Tez extends AbstractTezModule implements TezInterface {
+/**
+ * Main tez.js Library
+*  @class Sotez
+ * @param {String} [provider='http://127.0.0.1:8732'] Address of the node
+ * @param {String} [chain='main'] Chain Id
+ * @param {String} [network='main'] Network ['main', 'zero',]
+ * @param {Object} [options={}]
+ * @param {Number} [options.defaultFee=1278] The default fee for tranactions
+ * @param {Boolean} [options.debugMode=false] Debug mode enablement
+ * @param {Boolean} [options.localForge=true] Forge operations locally
+ * @param {Boolean} [options.validateLocalForge=false] Validate local forge bytes against remote forged bytes
+ * @example
+ * import Sotez from 'sotez';
+ * const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+ * sotez.transfer({
+ *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   amount: '1000000',
+ *   keys: {
+ *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+ *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+ *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *   },
+ * });
+ */
+export default class Sotez extends AbstractTezModule implements TezInterface {
   _localForge: boolean;
   _validateLocalForge: boolean;
   _counters: { [string]: number };
@@ -90,7 +115,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} method The request method. Either 'GET' or 'POST'
    * @returns {Promise} The response of the query
    * @example
-   * node.query(`/chains/${this.chain}/blocks/head`)
+   * sotez.query(`/chains/main/blocks/head`)
    *  .then(head => console.log(head));
    */
   query = (path: string, payload: ?any, method: ?string): Promise<any> => {
@@ -220,7 +245,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} address The contract for which to retrieve the balance
    * @returns {Promise} The balance of the contract
    * @example
-   * rpc.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+   * sotez.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(balance => console.log(balance))
    */
   getBalance = (address: string): Promise<string> => (
@@ -232,12 +257,12 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} address The contract for which to retrieve the delegate
    * @returns {Promise} The delegate of a contract, if any
    * @example
-   * rpc.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+   * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(delegate => console.log(delegate))
    */
   getDelegate = (address: string): Promise<string | boolean> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/delegate`)
-      .then((delegate) => {
+      .then((delegate: string) => {
         if (delegate) { return delegate; }
         return false;
       })
@@ -248,7 +273,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} address The contract for which to retrieve the manager
    * @returns {Promise} The manager of a contract
    * @example
-   * rpc.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+   * sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({ manager, key }) => console.log(manager, key))
    */
   getManager = (address: string): Promise<{ manager: string, key: string }> => (
@@ -260,7 +285,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} address The contract for which to retrieve the counter
    * @returns {Promise} The counter of a contract, if any
    * @example
-   * rpc.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+   * sotez.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(counter => console.log(counter))
    */
   getCounter = (address: string): Promise<string> => (
@@ -272,7 +297,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} address The contract for which to retrieve the baker information
    * @returns {Promise} The information of the delegate address
    * @example
-   * rpc.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
+   * sotez.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({
    *     balance,
    *     frozen_balance,
@@ -301,7 +326,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Get the header of the current head
    * @returns {Promise} The whole block header
    * @example
-   * rpc.getHeader().then(header => console.log(header))
+   * sotez.getHeader().then(header => console.log(header))
    */
   getHeader = (): Promise<Header> => (
     this.query(`/chains/${this.chain}/blocks/head/header`)
@@ -311,7 +336,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Get the current head block of the chain
    * @returns {Promise} The current head block
    * @example
-   * rpc.getHead().then(head => console.log(head))
+   * sotez.getHead().then(head => console.log(head))
    */
   getHead = (): Promise<Head> => this.query(`/chains/${this.chain}/blocks/head`)
 
@@ -319,7 +344,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Get the current head block hash of the chain
    * @returns {Promise} The block's hash, its unique identifier
    * @example
-   * rpc.getHeadHash().then(headHash => console.log(headHash))
+   * sotez.getHeadHash().then(headHash => console.log(headHash))
    */
   getHeadHash = (): Promise<string> => this.query(`/chains/${this.chain}/blocks/head/hash`)
 
@@ -327,7 +352,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Ballots casted so far during a voting period
    * @returns {Promise} Ballots casted so far during a voting period
    * @example
-   * rpc.getBallotList().then(ballotList => console.log(ballotList))
+   * sotez.getBallotList().then(ballotList => console.log(ballotList))
    */
   getBallotList = (): Promise<Array<any>> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballot_list`)
@@ -337,7 +362,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description List of proposals with number of supporters
    * @returns {Promise} List of proposals with number of supporters
    * @example
-   * rpc.getProposals().then(proposals => {
+   * sotez.getProposals().then(proposals => {
    *   console.log(proposals[0][0], proposals[0][1])
    *   console.log(proposals[1][0], proposals[1][1])
    * )
@@ -350,7 +375,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Sum of ballots casted so far during a voting period
    * @returns {Promise} Sum of ballots casted so far during a voting period
    * @example
-   * rpc.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
+   * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
    */
   getBallots = (): Promise<{ yay: number, nay: number, pass: number }> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballots`)
@@ -360,7 +385,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description List of delegates with their voting weight, in number of rolls
    * @returns {Promise} The ballots of the current voting period
    * @example
-   * rpc.getListings().then(listings => console.log(listings))
+   * sotez.getListings().then(listings => console.log(listings))
    */
   getListings = (): Promise<Array<any>> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/listings`)
@@ -370,7 +395,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Current proposal under evaluation
    * @returns {Promise} Current proposal under evaluation
    * @example
-   * rpc.getCurrentProposal().then(currentProposal => console.log(currentProposal))
+   * sotez.getCurrentProposal().then(currentProposal => console.log(currentProposal))
    */
   getCurrentProposal = (): Promise<string> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_proposal`)
@@ -380,7 +405,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Current period kind
    * @returns {Promise} Current period kind
    * @example
-   * rpc.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod))
+   * sotez.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod))
    */
   getCurrentPeriod = () => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_period_kind`)
@@ -390,7 +415,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @description Current expected quorum
    * @returns {Promise} Current expected quorum
    * @example
-   * rpc.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum))
+   * sotez.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum))
    */
   getCurrentQuorum = (): Promise<number> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_quorum`)
@@ -403,7 +428,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {Number} [timeout=180] The time before the operation times out
    * @returns {Promise} The hash of the block in which the operation was included
    * @example
-   * rpc.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
+   * sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
    *  .then((hash) => console.log(hash));
    */
   awaitOperation = (hash: string, interval: number = 10, timeout: number = 180): Promise<string> => {
@@ -469,7 +494,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the prepared operation
    * @example
-   * rpc.prepareOperation({
+   * sotez.prepareOperation({
    *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation: {
    *     kind: 'transaction',
@@ -629,7 +654,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} The simulated operation result
    * @example
-   * rpc.simulateOperation({
+   * sotez.simulateOperation({
    *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation: {
    *     kind: 'transaction',
@@ -696,13 +721,13 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    *   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    * };
    *
-   * rpc.sendOperation({
+   * sotez.sendOperation({
    *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation,
    *   keys,
    * }).then(result => console.log(result));
    *
-   * rpc.sendOperation({
+   * sotez.sendOperation({
    *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation: [operation, operation],
    *   keys,
@@ -820,7 +845,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    * @example
-   * rpc.transfer({
+   * sotez.transfer({
    *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   amount: '1000000',
@@ -868,7 +893,7 @@ export default class Tez extends AbstractTezModule implements TezInterface {
    * @param {String} secret The secret to activate the account
    * @returns {Promise} Object containing the injected operation hash
    * @example
-   * rpc.activate(pkh, secret)
+   * sotez.activate(pkh, secret)
    *   .then((activateOperation) => console.log(activateOperation))
    */
   activate = (pkh: string, secret: string): Promise<any> => {

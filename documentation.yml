@@ -1,15 +1,16 @@
 toc:
-  - name: node
+  - name: Sotez
     children:
-      - setDebugMode
+      # - _provider
+      # - _network
+      # - _defaultFee
+      # - _chain
+      # - _localForge
+      # - _validateLocalForge
+      # - _counters
+      # - _debugMode
       - setProvider
-      - resetProvider
       - query
-
-  - name: rpc
-    children:
-      - setForgeLocal
-      - setLocalForgeValidation
       - account
       - getBalance
       - getDelegate
@@ -41,13 +42,13 @@ toc:
       - typecheckData
       - runCode
 
-  - name: contract
-    children:
-      # - hash
-      - originate
-      - storage
-      - load
-      - watch
+  # - name: Contract
+  #   children:
+  #     - hash
+  #     - originate
+  #     - storage
+  #     - load
+  #     - watch
 
   - name: crypto
     children:
@@ -74,14 +75,11 @@ toc:
       # - ml2mic
       # - formatMoney
 
-  - name: tezos
+  - name: forge
     children:
       - forge
       - decodeRawBytes
       - encodeRawBytes
-
-  - name: forge
-    children:
       - toBytesInt32
       - toBytesInt32Hex
       - bool

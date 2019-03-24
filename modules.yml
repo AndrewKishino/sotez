@@ -1,0 +1,10 @@
+toc:
+  - name: Modules
+  - children:
+    - name: Contract
+      children:
+        # - hash
+        - originate
+        - storage
+        - load
+        - watch

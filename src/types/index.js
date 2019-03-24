@@ -345,7 +345,6 @@ export interface Tez {
 }
 
 export interface Contract {
-  tez: Tez,
   hash: (string, number) => Promise<any>,
   originate: (ContractParams, LedgerDefault) => Promise<any>,
   storage: (string) => Promise<any>,

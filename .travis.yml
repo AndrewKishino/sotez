@@ -1,21 +1,16 @@
 language: node_js
-cache: npm
 node_js:
-  - "10"
-  - "8"
-  - "6"
+  - 10
+  - 8
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y libudev-dev libusb-1.0-0-dev
 stages:
   - Lint
   - Build
-  - Test
 jobs:
   include:
     - stage: Lint
       script: npm run flow:check
     - stage: Build
       script: npm run build && npm test
-    - stage: Test
-      script: npm test

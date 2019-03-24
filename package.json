@@ -1,8 +1,9 @@
 {
   "name": "sotez",
   "version": "0.2.14",
-  "description": "A JS Library for Tezos",
-  "main": "index.js",
+  "description": "Tezos JavaScript API",
+  "main": "dist/tez.node",
+  "browser": "dist/tez.min.js",
   "scripts": {
     "test": "jest",
     "flow": "flow",
@@ -14,10 +15,9 @@
     "docs": "documentation build src/sotez.js --shallow --config documentation.yml --markdown-toc false -f md -o docs/documentation.md"
   },
   "keywords": [
-    "JavaScript",
-    "Library",
     "Tezos",
-    "Sotez"
+    "JavaScript",
+    "API"
   ],
   "author": "Andrew Kishino",
   "license": "MIT",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-flow": "^7.0.0",
@@ -56,6 +57,11 @@
     "unminified-webpack-plugin": "^2.0.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/node_modules/regenerator-runtime/runtime"
+    ]
   },
   "repository": {
     "type": "git",

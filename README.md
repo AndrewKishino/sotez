@@ -8,18 +8,22 @@ npm install sotez
 ```
 
 ```js
-import sotez from 'sotez';
+import Sotez from 'sotez';
 
-sotez.node.query('/chains/main/blocks/head')
+const sotez = new Sotez('http://127.0.0.1:8732');
+
+sotez.query('/chains/main/blocks/head')
   .then(response => console.log(response));
 ```
 
-Or import individule modules
+Or
 
 ```js
-import { node, rpc } from 'sotez';
+const Sotez = require('sotez').default;
 
-node.query('/chains/main/blocks/head')
+const sotez = new Sotez('http://127.0.0.1:8732');
+
+sotez.query('/chains/main/blocks/head')
   .then(response => console.log(response));
 ```
 

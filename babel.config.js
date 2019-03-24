@@ -3,5 +3,5 @@ module.exports = {
     '@babel/preset-env',
     '@babel/preset-flow',
   ],
-  plugins: [],
+  plugins: ['@babel/plugin-proposal-class-properties'],
 };

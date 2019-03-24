@@ -1,8 +1,7 @@
+import Tez, { utility, crypto } from '../src/index';
+
 describe('sotez', () => {
   describe('utility', () => {
-    const sotez = require('../index');
-    const { utility } = sotez;
-
     test('mintotz', () => {
       const num1 = 1000000;
       const num2 = 9000000;
@@ -59,9 +58,6 @@ describe('sotez', () => {
   });
 
   describe('crypto', () => {
-    const sotez = require('../index');
-    const { crypto } = sotez;
-
     const TEST_KEYS = {
       sk: 'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
       pk: 'edpkvJELH15q7a8ShGRsoULGxLQfUQaGahwRTFywCsnWPPdwnmASRH',
@@ -120,128 +116,18 @@ describe('sotez', () => {
   });
 
   describe('node', () => {
-    let sotez;
-    let node;
+    let tez;
 
     beforeEach(() => {
-      sotez = require('../index');
-      ({ node } = sotez);
+      tez = new Tez();
     });
 
     test('init params', () => {
-      expect(node.debugMode).toBe(false);
-      expect(node.async).toBe(true);
-      expect(node.activeProvider).toBe(sotez.DEFAULT_PROVIDER);
-    });
-
-    test('setDebugMode', () => {
-      node.setDebugMode(true);
-      expect(node.debugMode).toBe(true);
-
-      node.setDebugMode(false);
-      expect(node.debugMode).toBe(false);
-    });
-
-    test('setProvider', () => {
-      node.setProvider('https://127.0.0.1:9734');
-      expect(node.activeProvider).toBe('https://127.0.0.1:9734');
-    });
-
-    test('resetProvider', () => {
-      node.setProvider('https://127.0.0.1:9734');
-      node.resetProvider();
-      expect(node.activeProvider).toBe(sotez.DEFAULT_PROVIDER);
-    });
-
-    describe('query', () => {
-      const oldXMLHttpRequest = window.XMLHttpRequest;
-      let mockXHR;
-
-      const createMockXHR = responseJSON => ({
-        open: jest.fn(),
-        send: jest.fn(),
-        readyState: 4,
-        responseText: JSON.stringify(responseJSON || {}),
-      });
-
-      beforeEach(() => {
-        mockXHR = createMockXHR();
-        window.XMLHttpRequest = jest.fn(() => mockXHR);
-      });
-
-      afterEach(() => {
-        window.XMLHttpRequest = oldXMLHttpRequest;
-      });
-
-      test('query on error', () => {
-        const p = node.query('/test');
-        expect(mockXHR.open).toBeCalledWith('GET', 'http://127.0.0.1:8732/test', true);
-        expect(mockXHR.send).toBeCalledWith();
-
-        mockXHR.statusText = 'test';
-        mockXHR.onerror();
-
-        return expect(p).rejects.toEqual('test');
-      });
-
-      test('query on 200 error', () => {
-        const p = node.query('/test');
-
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          error: 'err',
-        });
-        mockXHR.onload();
-
-        return expect(p).rejects.toEqual('err');
-      });
-
-      test('query on 200 empty response', () => {
-        const p = node.query('/test');
-
-        mockXHR.status = 200;
-        mockXHR.responseText = null;
-        mockXHR.onload();
-
-        return expect(p).rejects.toEqual('Empty response returned');
-      });
-
-      test('query on 200 empty response without', () => {
-        const p = node.query('/test');
-
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          test: 'test',
-        });
-        mockXHR.onload();
-
-        return expect(p).resolves.toEqual({
-          test: 'test',
-        });
-      });
-
-      test('query on 200 ok', () => {
-        const p = node.query('/test');
-
-        mockXHR.status = 200;
-        mockXHR.responseText = JSON.stringify({
-          ok: 'ok',
-        });
-        mockXHR.onload();
-
-        return expect(p).resolves.toEqual('ok');
-      });
-
-      test('query non 200', () => {
-        const p = node.query('/test');
-
-        mockXHR.status = 400;
-        mockXHR.responseText = undefined;
-        mockXHR.statusText = 'err';
-        mockXHR.onload();
-
-        return expect(p).rejects.toEqual('err');
-      });
+      expect(tez.debugMode).toBe(false);
+      expect(tez.provider).toBe('http://127.0.0.1:8732');
+      expect(tez.network).toBe('main');
+      expect(tez.chain).toBe('main');
+      expect(tez.defaultFee).toBe(1278);
     });
   });
 });

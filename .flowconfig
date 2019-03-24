@@ -2,7 +2,7 @@
 .*/node_modules/.*
 
 [include]
-src/sotez.js
+src/.*
 
 [libs]
 flow-typed

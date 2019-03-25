@@ -19,16 +19,13 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['@babel/polyfill', './src/sotez.js'],
+    main: './src/index.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'sotez.browser.min.js',
+    filename: 'tez.browser.js',
     libraryTarget: 'umd',
   },
-  plugins: [
-    new UnminifiedWebpackPlugin(),
-  ],
   optimization: {
     minimizer: [
       new TerserPlugin({

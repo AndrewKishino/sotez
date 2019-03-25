@@ -21,11 +21,11 @@ module.exports = {
     ],
   },
   entry: {
-    main: ['@babel/polyfill', './src/sotez.js'],
+    main: './src/index.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'sotez.node.js',
+    filename: 'tez.node.js',
     libraryTarget: 'umd',
   },
 };

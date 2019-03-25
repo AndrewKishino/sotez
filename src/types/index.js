@@ -245,6 +245,8 @@ export type Watermark = {|
 |};
 
 export type Utility = {
+  textEncode: string => Uint8Array,
+  textDecode: Uint8Array => string,
   b582int: string => string,
   totez: number => number,
   mutez: number => string,
@@ -273,17 +275,6 @@ export type Crypto = {
   verify: (string, string, string) => Promise<number>,
 };
 
-export type Node = {
-  activeProvider: string,
-  debugMode: boolean,
-  async: boolean,
-  isZeronet: boolean,
-  setDebugMode?: boolean => void,
-  setProvider?: (string, boolean) => void,
-  resetProvider?: () => void,
-  query: (string, ?any, ?string) => Promise<any>,
-};
-
 export type Ledger = {
   getAddress: (LedgerGetAddress) => Promise<{ address: string, publicKey: string }>,
   signOperation: (LedgerSignOperation) => Promise<string>,
@@ -291,6 +282,9 @@ export type Ledger = {
 };
 
 export type Forge = {
+  forge: (Head, OperationObject, number) => Promise<ForgedBytes>,
+  decodeRawBytes: string => any,
+  encodeRawBytes: any => string,
   toBytesInt32: number => ArrayBuffer,
   toBytesInt32Hex: number => string,
   bool: boolean => string,
@@ -303,12 +297,6 @@ export type Forge = {
   op: ConstructedOperation => string,
 };
 
-export type Tezos = {
-  forge: (Head, OperationObject, number) => Promise<ForgedBytes>,
-  decodeRawBytes: string => any,
-  encodeRawBytes: any => string,
-};
-
 export type OperationParams = {
   from: string,
   operation: Array<Operation>,
@@ -316,11 +304,12 @@ export type OperationParams = {
   skipPrevalidation?: boolean,
 };
 
-export type Rpc = {
-  localForge: boolean,
-  validateLocalForge: boolean,
-  setForgeLocal: boolean => void,
-  setLocalForgeValidation: boolean => void,
+export interface Tez {
+  _localForge: boolean,
+  _validateLocalForge: boolean,
+  _counters: { [string]: number },
+  _debugMode: boolean,
+  query: (string, ?any, ?string) => Promise<any>,
   account: (AccountParams, LedgerDefault) => Promise<any>,
   getBalance: (address: string) => Promise<string>,
   getDelegate: (address: string) => Promise<string | boolean>,
@@ -353,12 +342,26 @@ export type Rpc = {
   packData: (string, string) => Promise<any>,
   typecheckData: (string, string) => Promise<any>,
   runCode: (string, number, string, string, boolean) => Promise<any>,
-};
+}
 
-export type Contract = {
+export interface Contract {
   hash: (string, number) => Promise<any>,
   originate: (ContractParams, LedgerDefault) => Promise<any>,
   storage: (string) => Promise<any>,
   load: (string) => Promise<any>,
   watch: (string, number, (any) => any) => IntervalID,
 }
+
+export interface TezModuleInterface {
+  _provider: string,
+  _network: string,
+  _chain: string,
+  _defaultFee: number,
+}
+
+export type ModuleOptions = {
+  defaultFee: number,
+  debugMode: boolean,
+  localForge: boolean,
+  validateLocalForge: boolean,
+};

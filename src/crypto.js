@@ -1,5 +1,5 @@
 // @flow
-import bip39 from 'bip39';
+import { generateMnemonic, mnemonicToSeed } from 'bip39';
 import _sodium from 'libsodium-wrappers';
 import utility from './utility';
 import { prefix } from './constants';
@@ -67,7 +67,7 @@ crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-li
  * @description Generate a mnemonic
  * @returns {String} The generated mnemonic
  */
-crypto.generateMnemonic = (): string => bip39.generateMnemonic(160);
+crypto.generateMnemonic = (): string => generateMnemonic(160);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
@@ -100,7 +100,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
   }
 
   const sodium = _sodium;
-  const s = bip39.mnemonicToSeed(mnemonic, passphrase).slice(0, 32);
+  const s = await mnemonicToSeed(mnemonic, passphrase).then(seed => seed.slice(0, 32));
   const kp = sodium.crypto_sign_seed_keypair(s);
   return {
     mnemonic,

@@ -42,3 +42,6 @@ npm run build
 
 ## License
 MIT
+
+## Credits
+Credits to Stephen Andrews and [EZTZ](https://github.com/TezTech/eztz).

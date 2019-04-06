@@ -42,14 +42,6 @@ toc:
       - typecheckData
       - runCode
 
-  # - name: Contract
-  #   children:
-  #     - hash
-  #     - originate
-  #     - storage
-  #     - load
-  #     - watch
-
   - name: crypto
     children:
       - extractKeys

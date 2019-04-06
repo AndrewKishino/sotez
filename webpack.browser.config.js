@@ -19,7 +19,7 @@ module.exports = {
     ],
   },
   entry: {
-    main: './src/index.js',
+    main: './src/index-web.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),

@@ -616,8 +616,8 @@ Serializes a piece of data to a binary representation
 
 #### Parameters
 
--   `data` **[String][1]** 
--   `type` **[String][1]** 
+-   `data` **[String][1]**
+-   `type` **[String][1]**
 
 Returns **[Promise][5]** Serialized data
 
@@ -627,8 +627,8 @@ Typechecks data against a type
 
 #### Parameters
 
--   `data` **[String][1]** 
--   `type` **[String][1]** 
+-   `data` **[String][1]**
+-   `type` **[String][1]**
 
 Returns **[Promise][5]** Typecheck result
 
@@ -787,7 +787,7 @@ Base58 decode
 
 #### Parameters
 
--   `enc` **[string][1]** 
+-   `enc` **[string][1]**
 -   `prefixArg` **[Object][2]** The Uint8Array prefix values
 -   `payload` **[String][1]** The value to decode
 
@@ -949,7 +949,7 @@ Forge operation bytes
 
 -   `head` **[Object][2]** The current head object of the chain
 -   `opOb` **[Object][2]** The operation object(s)
--   `counter` **[number][3]** 
+-   `counter` **[number][3]**
 
 #### Examples
 

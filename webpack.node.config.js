@@ -4,8 +4,8 @@ module.exports = {
   target: 'node',
   mode: 'production',
   externals: {
-    'node-hid': 'commonjs node-hid',
-    usb: 'commonjs usb',
+    'node-hid': 'node-hid',
+    usb: 'usb',
   },
   resolve: {
     extensions: ['.js'],

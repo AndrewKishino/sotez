@@ -7,7 +7,7 @@ import type {
 } from './types';
 
 // $FlowFixMe
-const LedgerTransport = require('@ledgerhq/hw-transport-node-hid').default; // eslint-disable-line
+const LedgerTransport = require('@ledgerhq/hw-transport-u2f').default;
 const LedgerApp = require('./hw-app-xtz/lib/Tezos').default;
 
 const ledger: LedgerType = {};

@@ -1,4 +1,4 @@
-import Tez, { utility, crypto } from '../src/index';
+import Tez, { utility, crypto } from '../index';
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -115,7 +115,7 @@ describe('sotez', () => {
     });
   });
 
-  describe('node', () => {
+  describe('core', () => {
     let tez;
 
     beforeEach(() => {

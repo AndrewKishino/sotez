@@ -176,7 +176,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @description Originate a new account
    * @param {Object} paramObject The parameters for the origination
    * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
-   * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+   * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
    * @param {Boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
    * @param {Boolean} [paramObject.delegatable] Whether the new account is delegatable
    * @param {String} [paramObject.delegate] The delegate for the new account
@@ -188,10 +188,22 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
    * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
+   * @example
+   * sotez.account({
+   *   keys: {
+   *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+   *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+   *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+   *   },
+   *   amount: 10,
+   *   spendable: true,
+   *   delegatable: true,
+   *   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+   * }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]))
    */
   account = async ({
     keys,
-    amount,
+    balance,
     spendable,
     delegatable,
     delegate,
@@ -221,11 +233,11 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
     if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
 
-    const managerKey = this.network === 'zero' ? 'managerPubkey' : 'manager_pubkey';
+    const managerKey = this.network === 'zero' ? 'manager_pubkey' : 'managerPubkey';
 
     const operation: Array<Operation> = [{
       kind: 'origination',
-      balance: utility.mutez(amount),
+      balance: utility.mutez(balance),
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
@@ -581,11 +593,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
             if (typeof op.source === 'undefined') constructedOp.source = from;
           }
           if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-            if (typeof op.amount === 'undefined') {
-              constructedOp.amount = '0';
-            } else {
-              constructedOp.amount = `${op.amount}`;
-            }
             if (typeof op.fee === 'undefined') {
               constructedOp.fee = '0';
             } else {
@@ -602,6 +609,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
               constructedOp.storage_limit = `${op.storage_limit}`;
             }
             if (typeof op.balance !== 'undefined') constructedOp.balance = `${constructedOp.balance}`;
+            if (typeof op.amount !== 'undefined') constructedOp.amount = `${constructedOp.amount}`;
             constructedOp.counter = `${++this._counters[from]}`;
           }
           return JSON.stringify(constructedOp);
@@ -909,7 +917,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @description Originate a new contract
    * @param {Object} paramObject The parameters for the operation
    * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
-   * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+   * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
    * @param {String} paramObject.code The code to deploy for the contract
    * @param {String} paramObject.init The initial storage of the contract
    * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
@@ -926,7 +934,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    */
   originate = async ({
     keys,
-    amount,
+    balance,
     code,
     init,
     spendable = false,
@@ -961,7 +969,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      balance: utility.mutez(amount),
+      balance: utility.mutez(balance),
       spendable,
       delegatable,
       delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),

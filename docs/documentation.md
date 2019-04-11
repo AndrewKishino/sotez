@@ -64,7 +64,7 @@ Originate a new account
 
 -   `paramObject` **[Object][2]** The parameters for the origination
     -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
-    -   `paramObject.amount` **[Number][3]** The amount in tez to transfer for the initial balance
+    -   `paramObject.balance` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.spendable` **[Boolean][4]?** Whether the keyholder can spend the balance from the new account
     -   `paramObject.delegatable` **[Boolean][4]?** Whether the new account is delegatable
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
@@ -76,7 +76,23 @@ Originate a new account
     -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
-Returns **[Promise][5]** Object containing the injected operation hash
+#### Examples
+
+```javascript
+sotez.account({
+  keys: {
+    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
+    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
+    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+  },
+  amount: 10,
+  spendable: true,
+  delegatable: true,
+  delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+}).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]))
+```
+
+Returns **[Promise][5]** Object containing the injected operation hash and the operation metadata
 
 ### getBalance
 
@@ -546,7 +562,7 @@ Originate a new contract
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
-    -   `paramObject.amount` **[Number][3]** The amount in tez to transfer for the initial balance
+    -   `paramObject.balance` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.code` **[String][1]** The code to deploy for the contract
     -   `paramObject.init` **[String][1]** The initial storage of the contract
     -   `paramObject.spendable` **[Boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)

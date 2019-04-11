@@ -160,7 +160,7 @@ export type LedgerDefault = {
 
 export type AccountParams = {
   keys: Keys,
-  amount: number,
+  balance: number,
   spendable: boolean,
   delegatable: boolean,
   delegate: string,
@@ -190,7 +190,7 @@ export type RpcParams = {
 export type ContractParams = {
   keys: Keys,
   to?: string,
-  amount: number,
+  balance: number,
   init: string,
   fee: number,
   gasLimit: number,

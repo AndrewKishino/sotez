@@ -211,6 +211,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 257,
   }: AccountParams, {
+      displayConfirm = false,
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
@@ -222,6 +223,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
     if (useLedger) {
       const { address } = await ledger.getAddress({
+        displayConfirm,
         path,
         curve,
       });
@@ -249,7 +251,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       from: publicKeyHash,
       operation,
       keys,
-    }, { useLedger, path, curve });
+    }, { displayConfirm, useLedger, path, curve });
   }
 
   /**
@@ -528,6 +530,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     operation,
     keys,
   }: OperationParams, {
+    displayConfirm = false,
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
@@ -563,6 +566,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
         if (useLedger) {
           ({ publicKey } = await ledger.getAddress({
+            displayConfirm,
             path,
             curve,
           }));
@@ -747,6 +751,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     keys,
     skipPrevalidation = false,
   }: OperationParams, {
+      displayConfirm = false,
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
@@ -756,6 +761,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       operation,
       keys,
     }, {
+      displayConfirm,
       useLedger,
       path,
       curve,
@@ -763,6 +769,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
     if (useLedger) {
       const signature = await ledger.signOperation({
+        displayConfirm,
         path,
         rawTxHex: fullOp.opbytes,
         curve,
@@ -877,6 +884,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     mutez = false,
     rawParam = false,
   }: RpcParams, {
+    displayConfirm = false,
     useLedger = false,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
@@ -892,7 +900,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     if (parameter) {
       operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
     }
-    return this.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ from, operation: [operation], keys }, { displayConfirm, useLedger, path, curve });
   }
 
   /**
@@ -944,6 +952,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 257,
   }: ContractParams, {
+      displayConfirm = false,
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
@@ -958,6 +967,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     let publicKeyHash = keys && keys.pkh;
     if (useLedger) {
       const { address } = await ledger.getAddress({
+        displayConfirm,
         path,
         curve,
       });
@@ -1008,6 +1018,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 0,
   }: RpcParams, {
+      displayConfirm = false,
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
@@ -1016,6 +1027,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
     if (useLedger) {
       const { address } = await ledger.getAddress({
+        displayConfirm,
         path,
         curve,
       });
@@ -1051,6 +1063,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 0,
   }: RpcParams, {
+      displayConfirm = false,
       useLedger = false,
       path = "44'/1729'/0'/0'",
       curve = 0x00,
@@ -1059,6 +1072,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
     if (useLedger) {
       const { address } = await ledger.getAddress({
+        displayConfirm,
         path,
         curve,
       });

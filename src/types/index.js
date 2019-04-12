@@ -153,7 +153,7 @@ export type LedgerGetVersion = {
 };
 
 export type LedgerDefault = {
-  displayConfirm?: string,
+  displayConfirm?: boolean,
   useLedger?: boolean,
   path?: string,
   curve?: number,

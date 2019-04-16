@@ -197,7 +197,7 @@ forge.op = (op: ConstructedOperation): string => {
       fop += forge.zarith(op.gas_limit);
       fop += forge.zarith(op.storage_limit);
       if (forgeMappings.forgeOpTags[op.kind] === 7) {
-        fop += forge.publicKey(op.public_key);
+        fop += forge.publicKey(op.public_key);        
       } else if (forgeMappings.forgeOpTags[op.kind] === 8) {
         fop += forge.zarith(op.amount);
         fop += forge.address(op.destination);

@@ -563,13 +563,13 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       head = header;
       if (requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined') {
         let publicKey = keys && keys.pk;
-
+        
         if (useLedger) {
-          ({ publicKey } = await ledger.getAddress({
+          ({publicKey} = await ledger.getAddress({
             displayConfirm,
             path,
             curve,
-          }));
+          }));    
         }
 
         const reveal: Operation = {
@@ -622,7 +622,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
 
       opOb.branch = head.hash;
       opOb.contents = constructOps(ops);
-
       let remoteForgedBytes = '';
       if (!this._localForge || this._validateLocalForge) {
         remoteForgedBytes = await this.query(`/chains/${this.chain}/blocks/${head.hash}/helpers/forge/operations`, opOb);
@@ -1024,7 +1023,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       curve = 0x00,
     }: LedgerDefault = {}): Promise<any> => {
     let publicKeyHash = keys && keys.pkh;
-
+      
     if (useLedger) {
       const { address } = await ledger.getAddress({
         displayConfirm,
@@ -1041,7 +1040,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       storage_limit: storageLimit,
       delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
     };
-    return this.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ from, operation: [operation], keys }, { useLedger, displayConfirm, path, curve });
   }
 
   /**

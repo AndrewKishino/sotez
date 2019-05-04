@@ -23,7 +23,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'dist', 'node'),
-    filename: 'tez.node.js',
+    filename: 'index.js',
     libraryTarget: 'umd',
   },
 };

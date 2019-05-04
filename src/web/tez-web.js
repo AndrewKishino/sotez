@@ -1,14 +1,15 @@
 // @flow
 import XMLHttpRequest from 'xhr2';
 import AbstractTezModule from '../tez-core';
+import Key from '../key';
 import forge from '../forge';
 import utility from '../utility';
 import ledger from './ledger-web';
-import crypto from './crypto-web';
-import { watermark } from '../constants';
+import { prefix, watermark } from '../constants';
 
 import type {
   Tez as TezInterface,
+  Key as KeyInterface,
   ModuleOptions,
   Head,
   Header,
@@ -22,7 +23,6 @@ import type {
   ContractParams,
   ForgedBytes,
   Signed,
-  LedgerDefault,
 } from '../types';
 
 /**
@@ -39,15 +39,10 @@ import type {
  * @example
  * import Sotez from 'sotez';
  * const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+ * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
- *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   amount: '1000000',
- *   keys: {
- *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
- *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
- *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
- *   },
  * });
  */
 export default class Sotez extends AbstractTezModule implements TezInterface {
@@ -55,6 +50,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   _validateLocalForge: boolean;
   _counters: { [string]: number };
   _debugMode: boolean;
+  key: KeyInterface;
 
   constructor(
     provider: string = 'http://127.0.0.1:8732',
@@ -106,6 +102,28 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     this.provider = provider;
     this.chain = chain;
     this.network = network;
+  }
+
+  importKey = async (key: string, passphrase: ?string, email: ?string) => {
+    this.key = new Key(key, passphrase, email);
+    await this.key.ready;
+  }
+
+  importLedger = async (path: string = "44'/1729'/0'/0'", curve: number = 0x00) => {
+    const { publicKey } = await ledger.getAddress({
+      path,
+      displayConfirm: true,
+      curve,
+    });
+
+    this.key = new Key(publicKey);
+    await this.key.ready;
+
+    if (this.key) {
+      this.key.isLedger = true;
+      this.key.ledgerPath = path;
+      this.key.ledgerCurve = curve;
+    }
   }
 
   /**
@@ -183,10 +201,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
    * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
    * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
-   * @param {Object} [ledgerObject={}] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.account({
@@ -202,7 +216,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]))
    */
   account = async ({
-    keys,
     balance,
     spendable,
     delegatable,
@@ -210,24 +223,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     fee = this.defaultFee,
     gasLimit = 10000,
     storageLimit = 257,
-  }: AccountParams, {
-      useLedger = false,
-      path = "44'/1729'/0'/0'",
-      curve = 0x00,
-    }: LedgerDefault = {}): Promise<any> => {
-    let publicKeyHash = '';
-    if (keys && keys.pkh) {
-      publicKeyHash = keys.pkh;
-    }
-
-    if (useLedger) {
-      const { address } = await ledger.getAddress({
-        path,
-        curve,
-      });
-      publicKeyHash = address;
-    }
-
+  }: AccountParams): Promise<any> => {
     const params = {};
     if (typeof spendable !== 'undefined') params.spendable = spendable;
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
@@ -241,15 +237,11 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      [managerKey]: publicKeyHash,
+      [managerKey]: this.key.publicKeyHash(),
       ...params,
     }];
 
-    return this.sendOperation({
-      from: publicKeyHash,
-      operation,
-      keys,
-    }, { useLedger, path, curve });
+    return this.sendOperation({ operation });
   }
 
   /**
@@ -497,17 +489,10 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   /**
    * @description Prepares an operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.from The address sending the operation
    * @param {Object|Array} paramObject.operation The operation to include in the transaction
-   * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the prepared operation
    * @example
    * sotez.prepareOperation({
-   *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation: {
    *     kind: 'transaction',
    *     fee: '50000',
@@ -515,23 +500,10 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *     storage_limit: '0',
    *     amount: '1000',
    *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   },
-   *   keys: {
-   *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-   *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-   *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   },
+   *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
-  prepareOperation = ({
-    from,
-    operation,
-    keys,
-  }: OperationParams, {
-    useLedger = false,
-    path = "44'/1729'/0'/0'",
-    curve = 0x00,
-  }: LedgerDefault = {}): Promise<ForgedBytes> => {
+  prepareOperation = ({ operation }: OperationParams): Promise<ForgedBytes> => {
     let counter;
     const opOb: OperationObject = {};
     const promises = [];
@@ -547,32 +519,25 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       ops = [operation];
     }
 
+    const publicKeyHash = this.key.publicKeyHash();
+
     for (let i = 0; i < ops.length; i++) {
       if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
         requiresReveal = true;
-        promises.push(this.getCounter(from));
-        promises.push(this.getManager(from));
+        promises.push(this.getCounter(publicKeyHash));
+        promises.push(this.getManager(publicKeyHash));
         break;
       }
     }
 
     return Promise.all(promises).then(async ([header, headCounter, manager]: Array<any>): Promise<ForgedBytes> => {
       head = header;
-      if (requiresReveal && (keys || useLedger) && typeof manager.key === 'undefined') {
-        let publicKey = keys && keys.pk;
-
-        if (useLedger) {
-          ({ publicKey } = await ledger.getAddress({
-            path,
-            curve,
-          }));
-        }
-
+      if (requiresReveal && typeof manager.key === 'undefined') {
         const reveal: Operation = {
           kind: 'reveal',
           fee: this.network === 'zero' ? 100000 : 1269,
-          public_key: publicKey,
-          source: from,
+          public_key: this.key.publicKey(),
+          source: publicKeyHash,
           gas_limit: 10000,
           storage_limit: 0,
         };
@@ -581,8 +546,8 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       }
 
       counter = parseInt(headCounter, 10);
-      if (!this._counters[from] || this._counters[from] < counter) {
-        this._counters[from] = counter;
+      if (!this._counters[publicKeyHash] || this._counters[publicKeyHash] < counter) {
+        this._counters[publicKeyHash] = counter;
       }
 
       const constructOps = (cOps: Array<Operation>): Array<ConstructedOperation> => cOps
@@ -590,7 +555,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
           // $FlowFixMe
           const constructedOp: ConstructedOperation = { ...op };
           if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
-            if (typeof op.source === 'undefined') constructedOp.source = from;
+            if (typeof op.source === 'undefined') constructedOp.source = publicKeyHash;
           }
           if (['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
             if (typeof op.fee === 'undefined') {
@@ -610,7 +575,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
             }
             if (typeof op.balance !== 'undefined') constructedOp.balance = `${constructedOp.balance}`;
             if (typeof op.amount !== 'undefined') constructedOp.amount = `${constructedOp.amount}`;
-            constructedOp.counter = `${++this._counters[from]}`;
+            constructedOp.counter = `${++this._counters[publicKeyHash]}`;
           }
           return JSON.stringify(constructedOp);
         })
@@ -653,17 +618,10 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   /**
    * @description Simulate an operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.from The address sending the operation
    * @param {Object|Array} paramObject.operation The operation to include in the transaction
-   * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
-   *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   operation: {
    *     kind: 'transaction',
    *     fee: '50000',
@@ -672,31 +630,10 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *     amount: '1000',
    *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   },
-   *   keys: {
-   *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-   *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-   *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   },
    * }).then(result => console.log(result));
    */
-  simulateOperation = ({
-    from,
-    operation,
-    keys,
-  }: OperationParams, {
-    useLedger = false,
-    path = "44'/1729'/0'/0'",
-    curve = 0x00,
-  }: LedgerDefault = {}): Promise<any> => (
-    this.prepareOperation({
-      from,
-      operation,
-      keys,
-    }, {
-      useLedger,
-      path,
-      curve,
-    }).then(fullOp => (
+  simulateOperation = ({ operation }: OperationParams): Promise<any> => (
+    this.prepareOperation({ operation }).then(fullOp => (
       this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`, fullOp.opOb)
     ))
   )
@@ -704,22 +641,10 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   /**
    * @description Send an operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.from The address sending the operation
    * @param {Object|Array} paramObject.operation The operation to include in the transaction
-   * @param {Object|Boolean} [paramObject.keys=false] The keys for which to originate the account
    * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    * @example
-   * const keys = {
-   *   sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-   *   pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-   *   pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   * };
-   *
    * const operation = {
    *   kind: 'transaction',
    *   fee: '50000',
@@ -729,65 +654,45 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    * };
    *
-   * sotez.sendOperation({
-   *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   operation,
-   *   keys,
-   * }).then(result => console.log(result));
+   * sotez.sendOperation({ operation }).then(result => console.log(result));
    *
-   * sotez.sendOperation({
-   *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   operation: [operation, operation],
-   *   keys,
-   * }).then(result => console.log(result));
+   * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
    */
-  sendOperation = async ({
-    from,
-    operation,
-    keys,
-    skipPrevalidation = false,
-  }: OperationParams, {
-      useLedger = false,
-      path = "44'/1729'/0'/0'",
-      curve = 0x00,
-    }: LedgerDefault = {}): Promise<any> => {
-    const fullOp: ForgedBytes = await this.prepareOperation({
-      from,
-      operation,
-      keys,
-    }, {
-      useLedger,
-      path,
-      curve,
-    });
+  sendOperation = async ({ operation, skipPrevalidation = false, skipSignature = false }: OperationParams): Promise<any> => {
+    const fullOp: ForgedBytes = await this.prepareOperation({ operation });
 
-    if (useLedger) {
+    if (this.key.isLedger) {
       const signature = await ledger.signOperation({
-        path,
+        path: this.key.ledgerPath,
         rawTxHex: fullOp.opbytes,
-        curve,
+        curve: this.key.ledgerCurve,
       });
+      const sig = utility.hex2buf(signature);
+      const edsig = utility.b58cencode(sig, prefix.edsig);
       fullOp.opbytes += signature;
-    } else if (!keys) {
+      fullOp.opOb.signature = edsig;
+    } else if (skipSignature) {
       fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
     } else {
-      const signed: Signed = await crypto.sign(fullOp.opbytes, keys.sk, watermark.generic);
+      const signed: Signed = await this.key.sign(fullOp.opbytes, watermark.generic);
       fullOp.opbytes = signed.sbytes;
       fullOp.opOb.signature = signed.edsig;
     }
 
-    if (skipPrevalidation || useLedger) {
+    const publicKeyHash = this.key.publicKeyHash();
+
+    if (skipPrevalidation) {
       return this.silentInject(fullOp.opbytes)
         .catch((e) => {
-          this._counters[from] = fullOp.counter;
+          this._counters[publicKeyHash] = fullOp.counter;
           throw e;
         });
     }
 
     return this.inject(fullOp.opOb, fullOp.opbytes)
       .catch((e) => {
-        this._counters[from] = fullOp.counter;
+        this._counters[publicKeyHash] = fullOp.counter;
         throw e;
       });
   }
@@ -837,8 +742,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   /**
    * @description Transfer operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.from The address sending the operation
-   * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
    * @param {String} paramObject.to The address of the recipient
    * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
    * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
@@ -847,27 +750,15 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
    * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
    * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.transfer({
-   *   from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   amount: '1000000',
-   *   keys: {
-   *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-   *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-   *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   },
    *   fee: '1278',
    * }).then(result => console.log(result))
    */
   transfer = ({
-    from,
-    keys,
     to,
     amount,
     parameter,
@@ -876,11 +767,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     storageLimit = 0,
     mutez = false,
     rawParam = false,
-  }: RpcParams, {
-    useLedger = false,
-    path = "44'/1729'/0'/0'",
-    curve = 0x00,
-  }: LedgerDefault = {}): Promise<any> => {
+  }: RpcParams): Promise<any> => {
     const operation: Operation = {
       kind: 'transaction',
       fee,
@@ -892,7 +779,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     if (parameter) {
       operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
     }
-    return this.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ operation: [operation] });
   }
 
   /**
@@ -910,13 +797,12 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       pkh,
       secret,
     };
-    return this.sendOperation({ from: pkh, operation: [operation] }, { useLedger: false });
+    return this.sendOperation({ operation: [operation], skipSignature: true });
   }
 
   /**
    * @description Originate a new contract
    * @param {Object} paramObject The parameters for the operation
-   * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
    * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
    * @param {String} paramObject.code The code to deploy for the contract
    * @param {String} paramObject.init The initial storage of the contract
@@ -926,14 +812,9 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
    * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
    * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    */
   originate = async ({
-    keys,
     balance,
     code,
     init,
@@ -943,27 +824,14 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     fee = this.defaultFee,
     gasLimit = 10000,
     storageLimit = 257,
-  }: ContractParams, {
-      useLedger = false,
-      path = "44'/1729'/0'/0'",
-      curve = 0x00,
-    }: LedgerDefault = {}): Promise<any> => {
+  }: ContractParams): Promise<any> => {
     const _code = utility.ml2mic(code);
-
     const script = {
       code: _code,
       storage: utility.sexp2mic(init),
     };
 
-    let publicKeyHash = keys && keys.pkh;
-    if (useLedger) {
-      const { address } = await ledger.getAddress({
-        path,
-        curve,
-      });
-      publicKeyHash = address;
-    }
-
+    const publicKeyHash = this.key.publicKeyHash();
     const operation: Operation = {
       kind: 'origination',
       fee,
@@ -981,47 +849,25 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     } else {
       operation.managerPubkey = publicKeyHash;
     }
-
-    return this.sendOperation({ from: publicKeyHash, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ operation: [operation] });
   }
 
   /**
    * @description Set a delegate for an account
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.from The address sending the operation
-   * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
    * @param {String} [paramObject.delegate] The delegate for the new account
    * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
    * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
    * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    */
   setDelegate = async ({
-    from,
-    keys,
     delegate,
     fee = this.defaultFee,
     gasLimit = 10000,
     storageLimit = 0,
-  }: RpcParams, {
-      useLedger = false,
-      path = "44'/1729'/0'/0'",
-      curve = 0x00,
-    }: LedgerDefault = {}): Promise<any> => {
-    let publicKeyHash = keys && keys.pkh;
-
-    if (useLedger) {
-      const { address } = await ledger.getAddress({
-        path,
-        curve,
-      });
-      publicKeyHash = address;
-    }
-
+  }: RpcParams): Promise<any> => {
+    const publicKeyHash = this.key.publicKeyHash();
     const operation = {
       kind: 'delegation',
       fee,
@@ -1029,42 +875,23 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       storage_limit: storageLimit,
       delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
     };
-    return this.sendOperation({ from, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ operation: [operation] });
   }
 
   /**
    * @description Register an account as a delegate
    * @param {Object} paramObject The parameters for the operation
-   * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
    * @param {Number} [paramObject.fee=1278] The fee to set for the transaction
    * @param {Number} [paramObject.gasLimit=10000] The gas limit to set for the transaction
    * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
-   * @param {Object} [ledgerObject] The ledger parameters for the operation
-   * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
-   * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
-   * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
    * @returns {Promise} Object containing the injected operation hash
    */
   registerDelegate = async ({
-    keys,
     fee = this.defaultFee,
     gasLimit = 10000,
     storageLimit = 0,
-  }: RpcParams, {
-      useLedger = false,
-      path = "44'/1729'/0'/0'",
-      curve = 0x00,
-    }: LedgerDefault = {}): Promise<any> => {
-    let publicKeyHash = keys && keys.pkh;
-
-    if (useLedger) {
-      const { address } = await ledger.getAddress({
-        path,
-        curve,
-      });
-      publicKeyHash = address;
-    }
-
+  }: RpcParams): Promise<any> => {
+    const publicKeyHash = this.key.publicKeyHash();
     const operation = {
       kind: 'delegation',
       fee,
@@ -1072,7 +899,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       storage_limit: storageLimit,
       delegate: publicKeyHash,
     };
-    return this.sendOperation({ from: publicKeyHash, operation: [operation], keys }, { useLedger, path, curve });
+    return this.sendOperation({ operation: [operation] });
   }
 
   /**

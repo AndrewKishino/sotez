@@ -1,73 +1,30 @@
 // @flow
 import { generateMnemonic, mnemonicToSeed } from 'bip39';
+import pbkdf2 from 'pbkdf2';
 import _sodium from 'libsodium-wrappers';
-import utility from '../utility';
-import { prefix } from '../constants';
+import utility from './utility';
+import { prefix } from './constants';
 
 import type {
   Crypto,
   Keys,
   KeysMnemonicPassphrase,
   Signed,
-} from '../types';
+} from './types';
 
 // TODO: Add secp256k1 cryptographay
 const crypto: Crypto = {};
 
 /**
- * @description Extract encrypted key pairs from a secret key and passphrase
- * @param {string} sk The secret key to extract key pairs from
- * @param {string} password The password for encryption
- * @returns {Promise} The extracted key pairs
- * @example
- */
-crypto.extractEncryptedKeys = async (esk, password) => {
-  if (!esk || !password) {
-    console.error('Invalid length for a key encoding');
-    return {
-      sk: '',
-      pk: '',
-      pkh: '',
-    };
-  }
-
-  try {
-    await _sodium.ready;
-  } catch (e) {
-    throw new Error(e);
-  }
-
-  const sodium = _sodium;
-
-  const esb = utility.b58cdecode(esk, prefix.edesk);
-  const salt = esb.slice(0, 8);
-  const esm = esb.slice(8);
-
-  let key = await window.crypto.subtle.importKey('raw', utility.textEncode(password), { name: 'PBKDF2' }, false, ['deriveBits']);
-  key = window.crypto.subtle.deriveBits({
-    name: 'PBKDF2',
-    salt,
-    iterations: 32768,
-    hash: { name: 'SHA-512' },
-  }, key, 256);
-
-  const kp = sodium.crypto_sign_seed_keypair(sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), new Uint8Array(key)));
-  return {
-    sk: utility.b58cencode(kp.privateKey, prefix.edsk),
-    pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-    pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
-  };
-};
-
-/**
  * @description Extract key pairs from a secret key
- * @param {Object} sk The secret key to extract key pairs from
+ * @param {String} sk The secret key to extract key pairs from
+ * @param {String} [password] The password used to encrypt the sk
  * @returns {Promise} The extracted key pairs
  * @example
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-line
+crypto.extractKeys = async (sk: string, password: ?string = ''): Promise<Keys> => { // eslint-disable-line
   try {
     await _sodium.ready;
   } catch (e) {
@@ -82,9 +39,26 @@ crypto.extractKeys = async (sk: string): Promise<Keys> => { // eslint-disable-li
     throw new Error('Invalid length for a key encoding');
   }
 
-  // const encrypted = sk.substring(2, 3) === 'e';
+  const encrypted = sk.substring(2, 3) === 'e';
 
   if (curve === 'ed') {
+    if (encrypted) {
+      const esb = utility.b58cdecode(sk, prefix.edesk);
+      const salt = esb.slice(0, 8);
+      const esm = esb.slice(8);
+
+      if (!password) {
+        throw new Error('No password was provided to decrypt the key');
+      }
+
+      const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
+      const kp = sodium.crypto_sign_seed_keypair(sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), key));
+      return {
+        sk: utility.b58cencode(kp.privateKey, prefix.edsk),
+        pk: utility.b58cencode(kp.publicKey, prefix.edpk),
+        pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
+      };
+    }
     if (sk.length === 98) {
       return {
         sk,
@@ -164,6 +138,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
  * @param {String} bytes The bytes to sign
  * @param {String} sk The secret key to sign the bytes with
  * @param {Object} wm The watermark bytes
+ * @param {String} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
  * @example
  * import { watermark } from 'sotez';
@@ -171,7 +146,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
  */
-crypto.sign = async (bytes: string, sk: string, wm: Uint8Array): Promise<Signed> => {
+crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: ?string = ''): Promise<Signed> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -179,9 +154,9 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array): Promise<Signed>
   }
 
   const sodium = _sodium;
-  if (sk.length === 54) {
+  if (sk.length === 54 || sk.length === 55) {
     try {
-      ({ sk } = await crypto.extractKeys(sk));
+      ({ sk } = await crypto.extractKeys(sk, password));
     } catch (e) {
       throw new Error(e);
     }
@@ -196,7 +171,7 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array): Promise<Signed>
   const sbytes = bytes + utility.buf2hex(sig);
   return {
     bytes,
-    sig,
+    sig: utility.b58cencode(sig, prefix.sig),
     edsig,
     sbytes,
   };

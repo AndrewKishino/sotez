@@ -1,4 +1,4 @@
-import Tez, { utility, crypto } from '../index';
+import Tez, { utility, crypto, Key } from '../index';
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -97,8 +97,8 @@ describe('sotez', () => {
       } = await crypto.sign('AA5', TEST_KEYS.sk, new Uint8Array([3]));
       expect(typeof bytes).toBe('string');
       expect(bytes).toBe('AA5');
-      expect(typeof sig).toBe('object');
-      expect(sig).toEqual(new Uint8Array([225, 191, 138, 45, 52, 103, 197, 177, 247, 205, 158, 30, 166, 185, 91, 64, 101, 144, 141, 254, 44, 67, 146, 67, 190, 56, 75, 114, 91, 206, 191, 192, 95, 78, 140, 119, 247, 93, 207, 213, 143, 190, 20, 108, 233, 12, 2, 71, 201, 189, 51, 80, 193, 143, 155, 223, 205, 74, 93, 222, 73, 75, 253, 10]));
+      expect(typeof sig).toBe('string');
+      expect(sig).toEqual('sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW');
       expect(typeof edsig).toBe('string');
       expect(edsig).toBe('edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB');
       expect(typeof sbytes).toBe('string');
@@ -112,6 +112,113 @@ describe('sotez', () => {
       } = await crypto.sign('AA5', TEST_KEYS.sk, new Uint8Array([3]));
       const verified = await crypto.verify(sbytes, sig, TEST_KEYS.pk);
       expect(verified).toBe(0);
+    });
+  });
+
+  describe('Key', () => {
+    const TEST_KEYS = {
+      sk: 'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
+      pk: 'edpkvJELH15q7a8ShGRsoULGxLQfUQaGahwRTFywCsnWPPdwnmASRH',
+      pkh: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+    };
+
+    const KEY1 = {
+      esk: 'edesk1mYD8xFHDsM5UWdf8RjrwyUr7yGo1tvDoWFun1kwAq8pDGJFBWH99SqcdQXX5tHVduFhUwBBZsPNVh2FwTR',
+      sk: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y',
+      pk: 'edpkuZWgrKbNiwAVZ42RnEiNwm2ipohxbPWXsxpofSLFDqcHjKnypg',
+      pkh: 'tz1PTBQi6gTXxCynwvgzu9ga15jnE8WBRUnn',
+    };
+
+    const KEY2 = {
+      sk: 'edskSASdEH3A9w47bo8W2SgatKg5qeEucWLxNBXfPm2mus9kwV5H9d89C77ZG1qKdn4GG7Hc2jqcE4JKbimA93dZbSC3Qdkawn',
+      pk: 'edpktuHJDoatxk5NcXfdHgFX15t2aZMxA3b5AoQZAzbeDNkiC416Xu',
+      pkh: 'tz1UJesXieRG8cZHFUad63RwUfFqh9cwGzvW',
+    };
+
+    const FUNDRAISER_ACCOUNT = {
+      mnemonic: [
+        'spatial',
+        'behave',
+        'income',
+        'advice',
+        'guard',
+        'isolate',
+        'circle',
+        'valve',
+        'tag',
+        'foot',
+        'decline',
+        'subway',
+        'furnace',
+        'ancient',
+        'output',
+      ],
+      secret: '8731b6b8cd4b7b67e1e4b76010d8e9f13500ccb5',
+      amount: '16474172439',
+      pkh: 'tz1UJesXieRG8cZHFUad63RwUfFqh9cwGzvW',
+      password: '9zojwTc88E',
+      email: 'qvchryer.svikvvex@tezos.example.org',
+    };
+
+    test('import secret key', async () => {
+      const key = new Key(KEY1.sk);
+      await key.ready;
+
+      expect(key.publicKey()).toBe(KEY1.pk);
+      expect(key.publicKeyHash()).toBe(KEY1.pkh);
+      expect(key.secretKey()).toBe(KEY1.sk);
+    });
+
+    test('import encrypted secret key', async () => {
+      const key = new Key(KEY1.esk, 'password');
+      await key.ready;
+
+      expect(key.publicKey()).toBe(KEY1.pk);
+      expect(key.publicKeyHash()).toBe(KEY1.pkh);
+      expect(key.secretKey()).toBe(KEY1.sk);
+    });
+
+    test('import fundraiser account', async () => {
+      const key = new Key(FUNDRAISER_ACCOUNT.mnemonic.join(' '), FUNDRAISER_ACCOUNT.password, FUNDRAISER_ACCOUNT.email);
+      await key.ready;
+
+      expect(key.publicKey()).toBe(KEY2.pk);
+      expect(key.publicKeyHash()).toBe(KEY2.pkh);
+      expect(key.secretKey()).toBe(KEY2.sk);
+    });
+
+    test('sign', async () => {
+      const key = new Key(TEST_KEYS.sk);
+      await key.ready;
+
+      const {
+        bytes,
+        sig,
+        edsig,
+        sbytes,
+      } = await key.sign('AA5', new Uint8Array([3]));
+
+      expect(typeof bytes).toBe('string');
+      expect(bytes).toBe('AA5');
+      expect(typeof sig).toBe('string');
+      expect(sig).toEqual('sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW');
+      expect(typeof edsig).toBe('string');
+      expect(edsig).toBe('edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB');
+      expect(typeof sbytes).toBe('string');
+      expect(sbytes).toBe('AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a');
+    });
+
+    xtest('verify', async () => {
+      const key = new Key(TEST_KEYS.sk);
+      await key.ready;
+
+      const {
+        sig,
+        sbytes,
+      } = await key.sign('AA5', new Uint8Array([3]));
+
+      const verified = await key.verify(sbytes, sig);
+      expect(verified).toBe(true);
     });
   });
 

@@ -3,6 +3,7 @@ export type Keys = {
   pk: string,
   pkh: string,
   sk: string,
+  password?: string,
 };
 
 export type Head = {
@@ -146,16 +147,10 @@ export type LedgerSignOperation = {
 };
 
 export type LedgerGetVersion = {
-  major: string,
-  minor: string,
-  patch: string,
+  major: number,
+  minor: number,
+  patch: number,
   bakingApp: boolean,
-};
-
-export type LedgerDefault = {
-  useLedger?: boolean,
-  path?: string,
-  curve?: number,
 };
 
 export type AccountParams = {
@@ -250,7 +245,7 @@ export type Utility = {
   b582int: string => string,
   totez: number => number,
   mutez: number => string,
-  b58cencode: (string, Uint8Array) => string,
+  b58cencode: (string | Uint8Array, Uint8Array) => string,
   b58cdecode: (string, Uint8Array) => string,
   buf2hex: (Uint8Array | string) => string,
   hex2buf: string => Uint8Array,
@@ -268,11 +263,11 @@ export type Utility = {
 
 export type Crypto = {
   extractEncryptedKeys: (string, string) => Promise<Keys>,
-  extractKeys: string => Promise<Keys>,
+  extractKeys: (string, ?string) => Promise<Keys>,
   generateMnemonic: () => string,
   checkAddress: string => boolean,
   generateKeys: (string, string) => Promise<KeysMnemonicPassphrase>,
-  sign: (string, string, Uint8Array) => Promise<Signed>,
+  sign: (string, string, Uint8Array, ?string) => Promise<Signed>,
   verify: (string, string, string) => Promise<number>,
 };
 
@@ -299,10 +294,9 @@ export type Forge = {
 };
 
 export type OperationParams = {
-  from: string,
   operation: Array<Operation>,
-  keys?: Keys,
   skipPrevalidation?: boolean,
+  skipSignature?: boolean,
 };
 
 export interface Tez {
@@ -310,8 +304,11 @@ export interface Tez {
   _validateLocalForge: boolean,
   _counters: { [string]: number },
   _debugMode: boolean,
+  key: Key,
+  importKey: (string, ?string, ?string) => Promise<void>,
+  importLedger: () => Promise<void>,
   query: (string, ?any, ?string) => Promise<any>,
-  account: (AccountParams, LedgerDefault) => Promise<any>,
+  account: (AccountParams) => Promise<any>,
   getBalance: (address: string) => Promise<string>,
   getDelegate: (address: string) => Promise<string | boolean>,
   getManager: (address: string) => Promise<{ manager: string, key: string }>,
@@ -328,17 +325,17 @@ export interface Tez {
   getCurrentPeriod: () => Promise<string>,
   getCurrentQuorum: () => Promise<number>,
   awaitOperation: (hash: string, interval: number, timeout: number) => Promise<string>,
-  sendOperation: (OperationParams, LedgerDefault) => Promise<any>,
-  prepareOperation: (OperationParams, LedgerDefault) => Promise<ForgedBytes>,
+  sendOperation: (OperationParams) => Promise<any>,
+  prepareOperation: (OperationParams) => Promise<ForgedBytes>,
   call: (string, ?OperationObject) => Promise<any>,
-  simulateOperation: (OperationParams, LedgerDefault) => Promise<any>,
+  simulateOperation: (OperationParams) => Promise<any>,
   silentInject: (string) => Promise<any>,
   inject: (OperationObject, string) => Promise<any>,
-  transfer: (RpcParams, LedgerDefault) => Promise<any>,
+  transfer: (RpcParams) => Promise<any>,
   activate: (string, string) => Promise<any>,
-  originate: (ContractParams, LedgerDefault) => Promise<any>,
-  setDelegate: (RpcParams, LedgerDefault) => Promise<any>,
-  registerDelegate: (RpcParams, LedgerDefault) => Promise<any>,
+  originate: (ContractParams) => Promise<any>,
+  setDelegate: (RpcParams) => Promise<any>,
+  registerDelegate: (RpcParams) => Promise<any>,
   typecheckCode: (string) => Promise<any>,
   packData: (string, string) => Promise<any>,
   typecheckData: (string, string) => Promise<any>,
@@ -347,7 +344,7 @@ export interface Tez {
 
 export interface Contract {
   hash: (string, number) => Promise<any>,
-  originate: (ContractParams, LedgerDefault) => Promise<any>,
+  originate: (ContractParams) => Promise<any>,
   storage: (string) => Promise<any>,
   load: (string) => Promise<any>,
   watch: (string, number, (any) => any) => IntervalID,
@@ -366,3 +363,24 @@ export type ModuleOptions = {
   localForge: boolean,
   validateLocalForge: boolean,
 };
+
+export interface Key {
+  _publicKey: string;
+  _secretKey: ?string;
+  _sodium: any;
+  _isLedger: boolean;
+  _ledgerPath: string;
+  _ledgerCurve: number;
+  isLedger: boolean;
+  ledgerPath: string;
+  ledgerCurve: number;
+  ready: Promise<void>;
+  curve: string;
+  isSecret: boolean;
+  initialize: (string, ?string, ?string, any) => Promise<void>,
+  publicKey: () => string,
+  secretKey: () => string,
+  publicKeyHash: () => string,
+  sign: (string, Uint8Array) => Promise<Signed>,
+  verify: (string, string) => Promise<boolean>,
+}

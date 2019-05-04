@@ -25,15 +25,10 @@ Main tez.js Library
 ```javascript
 import Sotez from 'sotez';
 const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   amount: '1000000',
-  keys: {
-    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  },
 });
 ```
 
@@ -63,7 +58,6 @@ Originate a new account
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the origination
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.balance` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.spendable` **[Boolean][4]?** Whether the keyholder can spend the balance from the new account
     -   `paramObject.delegatable` **[Boolean][4]?** Whether the new account is delegatable
@@ -71,10 +65,7 @@ Originate a new account
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `257`)
--   `ledgerObject` **[Object][2]** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
 
 #### Examples
 
@@ -92,7 +83,7 @@ sotez.account({
 }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]))
 ```
 
-Returns **[Promise][5]** Object containing the injected operation hash and the operation metadata
+Returns **[Promise][5]** Object containing the injected operation hash
 
 ### getBalance
 
@@ -357,19 +348,12 @@ Prepares an operation
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.from` **[String][1]** The address sending the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.keys` **([Object][2] \| [Boolean][4])** The keys for which to originate the account (optional, default `false`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 #### Examples
 
 ```javascript
 sotez.prepareOperation({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
   operation: {
     kind: 'transaction',
     fee: '50000',
@@ -377,12 +361,7 @@ sotez.prepareOperation({
     storage_limit: '0',
     amount: '1000',
     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  },
-  keys: {
-    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  },
+  }
 }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
 ```
 
@@ -395,19 +374,12 @@ Simulate an operation
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.from` **[String][1]** The address sending the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.keys` **([Object][2] \| [Boolean][4])** The keys for which to originate the account (optional, default `false`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 #### Examples
 
 ```javascript
 sotez.simulateOperation({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
   operation: {
     kind: 'transaction',
     fee: '50000',
@@ -415,11 +387,6 @@ sotez.simulateOperation({
     storage_limit: '0',
     amount: '1000',
     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  },
-  keys: {
-    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
   },
 }).then(result => console.log(result));
 ```
@@ -433,24 +400,13 @@ Send an operation
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.from` **[String][1]** The address sending the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.keys` **([Object][2] \| [Boolean][4])** The keys for which to originate the account (optional, default `false`)
     -   `paramObject.skipPrevalidation` **[Boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+    -   `paramObject.skipSignature`   (optional, default `false`)
 
 #### Examples
 
 ```javascript
-const keys = {
-  sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-  pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-  pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-};
-
 const operation = {
   kind: 'transaction',
   fee: '50000',
@@ -460,17 +416,9 @@ const operation = {
   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
 };
 
-sotez.sendOperation({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  operation,
-  keys,
-}).then(result => console.log(result));
+sotez.sendOperation({ operation }).then(result => console.log(result));
 
-sotez.sendOperation({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  operation: [operation, operation],
-  keys,
-}).then(result => console.log(result));
+sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
 ```
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -503,8 +451,6 @@ Transfer operation
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.from` **[String][1]** The address sending the operation
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.to` **[String][1]** The address of the recipient
     -   `paramObject.amount` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.parameter` **[String][1]** The parameter for the transaction (optional, default `false`)
@@ -513,23 +459,13 @@ Transfer operation
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
     -   `paramObject.mutez` **[Number][3]** Whether the input amount is set to mutez (1/1,000,000 tez) (optional, default `false`)
     -   `paramObject.rawParam` **[Number][3]** Whether to accept the object parameter format (optional, default `false`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 #### Examples
 
 ```javascript
 sotez.transfer({
-  from: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   amount: '1000000',
-  keys: {
-    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  },
   fee: '1278',
 }).then(result => console.log(result))
 ```
@@ -561,7 +497,6 @@ Originate a new contract
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.balance` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.code` **[String][1]** The code to deploy for the contract
     -   `paramObject.init` **[String][1]** The initial storage of the contract
@@ -571,10 +506,6 @@ Originate a new contract
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `257`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -585,16 +516,10 @@ Set a delegate for an account
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.from` **[String][1]** The address sending the operation
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -605,14 +530,9 @@ Register an account as a delegate
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
--   `ledgerObject` **[Object][2]?** The ledger parameters for the operation (optional, default `{}`)
-    -   `ledgerObject.useLedger` **[Boolean][4]** Whether to sign the transaction with a connected ledger device (optional, default `false`)
-    -   `ledgerObject.path` **[String][1]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerObject.curve` **[Number][3]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -673,7 +593,8 @@ Extract key pairs from a secret key
 
 #### Parameters
 
--   `sk` **[Object][2]** The secret key to extract key pairs from
+-   `sk` **[String][1]** The secret key to extract key pairs from
+-   `password` **[String][1]?** The password used to encrypt the sk (optional, default `''`)
 
 #### Examples
 
@@ -727,6 +648,7 @@ Sign bytes
 -   `bytes` **[String][1]** The bytes to sign
 -   `sk` **[String][1]** The secret key to sign the bytes with
 -   `wm` **[Object][2]** The watermark bytes
+-   `password` **[String][1]?** The password used to encrypt the sk (optional, default `''`)
 
 #### Examples
 
@@ -792,7 +714,7 @@ Base58 encode
 
 #### Parameters
 
--   `payload` **[String][1]** The value to encode
+-   `payload` **([String][1] \| [Uint8Array][7])** The value to encode
 -   `prefixArg` **[Object][2]** The Uint8Array prefix values
 
 Returns **[String][1]** The base58 encoded value
@@ -1071,6 +993,55 @@ ledger.getVersion()
 
 Returns **[Promise][5]** The version info
 
+## Key
+
+Creates a key object from a base58 encoded key.
+
+### Parameters
+
+-   `key` **[String][1]** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string
+-   `passphrase` **[String][1]** The passphrase used if the key provided is an encrypted private key or a fundraiser key
+-   `email` **[String][1]** Email used if a fundraiser key is passed
+
+### publicKey
+
+Returns the public key
+
+Returns **[String][1]** The public key associated with the private key
+
+### secretKey
+
+Returns the secret key
+
+Returns **[String][1]** The secret key associated with this key, if available
+
+### publicKeyHash
+
+Returns public key hash for this key
+
+Returns **[String][1]** The public key hash for this key
+
+### sign
+
+Sign a raw sequence of bytes
+
+#### Parameters
+
+-   `bytes` **[String][1]** Sequence of bytes, raw format or hexadecimal notation
+-   `watermark` **[Uint8Array][7]** The watermark bytes
+
+Returns **[String][1]** The public key hash for this key
+
+### verify
+
+Verify signature, throw error if it is not valid
+
+#### Parameters
+
+-   `bytes` **[String][1]** Sequance of bytes, raw format or hexadecimal notation
+-   `signature` **[Uint8Array][7]** A signature in base58 encoding
+
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
@@ -1082,3 +1053,5 @@ Returns **[Promise][5]** The version info
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array

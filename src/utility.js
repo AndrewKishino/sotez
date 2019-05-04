@@ -43,11 +43,11 @@ utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixe
 
 /**
  * @description Base58 encode
- * @param {String} payload The value to encode
+ * @param {String | Uint8Array} payload The value to encode
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The base58 encoded value
  */
-utility.b58cencode = (payload: string, prefixArg: Uint8Array): string => {
+utility.b58cencode = (payload: (string | Uint8Array), prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
   // $FlowFixMe

@@ -23,7 +23,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'dist', 'browser'),
-    filename: 'tez.browser.js',
+    filename: 'index.js',
     libraryTarget: 'umd',
   },
   optimization: {

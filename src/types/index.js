@@ -267,6 +267,7 @@ export type Utility = {
 };
 
 export type Crypto = {
+  extractEncryptedKeys: (string, string) => Promise<Keys>,
   extractKeys: string => Promise<Keys>,
   generateMnemonic: () => string,
   checkAddress: string => boolean,

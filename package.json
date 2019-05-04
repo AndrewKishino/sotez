@@ -32,6 +32,7 @@
     "buffer": "^5.2.1",
     "detect-node": "^2.0.4",
     "libsodium-wrappers": "^0.7.3",
+    "node-webcrypto-ossl": "^1.0.42",
     "pbkdf2": "^3.0.16",
     "xhr2": "^0.1.4"
   },
@@ -58,7 +59,8 @@
     "terser-webpack-plugin": "^1.2.2",
     "unminified-webpack-plugin": "^2.0.0",
     "webpack": "^4.16.5",
-    "webpack-cli": "^3.1.0"
+    "webpack-cli": "^3.1.0",
+    "webpack-node-externals": "^1.7.2"
   },
   "repository": {
     "type": "git",

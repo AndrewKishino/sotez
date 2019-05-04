@@ -1,11 +1,11 @@
 // @flow
 import XMLHttpRequest from 'xhr2';
-import AbstractTezModule from './tez-core';
-import forge from './forge';
-import utility from './utility';
-import ledger from './ledger';
-import crypto from './crypto';
-import { watermark } from './constants';
+import AbstractTezModule from '../tez-core';
+import forge from '../forge';
+import utility from '../utility';
+import ledger from './ledger-web';
+import crypto from './crypto-web';
+import { watermark } from '../constants';
 
 import type {
   Tez as TezInterface,
@@ -23,7 +23,7 @@ import type {
   ForgedBytes,
   Signed,
   LedgerDefault,
-} from './types';
+} from '../types';
 
 /**
  * Main tez.js Library
@@ -187,7 +187,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {Boolean} [ledgerObject.useLedger=false] Whether to sign the transaction with a connected ledger device
    * @param {String} [ledgerObject.path=44'/1729'/0'/0'] The ledger path
    * @param {Number} [ledgerObject.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
-   * @returns {Promise} Object containing the injected operation hash and the operation metadata
+   * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.account({
    *   keys: {
@@ -964,8 +964,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       publicKeyHash = address;
     }
 
-    const managerKey = this.network === 'zero' ? 'manager_pubkey' : 'managerPubkey';
-
     const operation: Operation = {
       kind: 'origination',
       fee,
@@ -976,8 +974,13 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       delegatable,
       delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),
       script,
-      [managerKey]: publicKeyHash,
     };
+
+    if (this.network === 'zero') {
+      operation.manager_pubkey = publicKeyHash;
+    } else {
+      operation.managerPubkey = publicKeyHash;
+    }
 
     return this.sendOperation({ from: publicKeyHash, operation: [operation], keys }, { useLedger, path, curve });
   }

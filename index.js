@@ -1,5 +1,5 @@
 const isNode = require('detect-node');
 
 module.exports = isNode
-  ? require('./dist/tez.node')
-  : require('./dist/tez.browser');
+  ? require('./dist/node/tez.node')
+  : require('./dist/browser/tez.browser');

@@ -1,4 +1,4 @@
-// flow-typed signature: 3900f77e1390245cfbc0845710c8b6b5
+// flow-typed signature: b9fbcc62e57145a1b1b947fffe6120a9
 // flow-typed version: <<STUB>>/webpack-cli_v^3.1.0/flow_v0.96.0
 
 /**
@@ -26,23 +26,31 @@ declare module 'webpack-cli/bin/cli' {
   declare module.exports: any;
 }
 
-declare module 'webpack-cli/bin/config-yargs' {
+declare module 'webpack-cli/bin/config/config-yargs' {
   declare module.exports: any;
 }
 
-declare module 'webpack-cli/bin/convert-argv' {
+declare module 'webpack-cli/bin/opencollective' {
   declare module.exports: any;
 }
 
-declare module 'webpack-cli/bin/errorHelpers' {
+declare module 'webpack-cli/bin/utils/constants' {
   declare module.exports: any;
 }
 
-declare module 'webpack-cli/bin/prepareOptions' {
+declare module 'webpack-cli/bin/utils/convert-argv' {
   declare module.exports: any;
 }
 
-declare module 'webpack-cli/bin/prompt-command' {
+declare module 'webpack-cli/bin/utils/errorHelpers' {
+  declare module.exports: any;
+}
+
+declare module 'webpack-cli/bin/utils/prepareOptions' {
+  declare module.exports: any;
+}
+
+declare module 'webpack-cli/bin/utils/prompt-command' {
   declare module.exports: any;
 }
 
@@ -50,18 +58,24 @@ declare module 'webpack-cli/bin/prompt-command' {
 declare module 'webpack-cli/bin/cli.js' {
   declare module.exports: $Exports<'webpack-cli/bin/cli'>;
 }
-declare module 'webpack-cli/bin/config-yargs.js' {
-  declare module.exports: $Exports<'webpack-cli/bin/config-yargs'>;
+declare module 'webpack-cli/bin/config/config-yargs.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/config/config-yargs'>;
 }
-declare module 'webpack-cli/bin/convert-argv.js' {
-  declare module.exports: $Exports<'webpack-cli/bin/convert-argv'>;
+declare module 'webpack-cli/bin/opencollective.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/opencollective'>;
 }
-declare module 'webpack-cli/bin/errorHelpers.js' {
-  declare module.exports: $Exports<'webpack-cli/bin/errorHelpers'>;
+declare module 'webpack-cli/bin/utils/constants.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/utils/constants'>;
 }
-declare module 'webpack-cli/bin/prepareOptions.js' {
-  declare module.exports: $Exports<'webpack-cli/bin/prepareOptions'>;
+declare module 'webpack-cli/bin/utils/convert-argv.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/utils/convert-argv'>;
 }
-declare module 'webpack-cli/bin/prompt-command.js' {
-  declare module.exports: $Exports<'webpack-cli/bin/prompt-command'>;
+declare module 'webpack-cli/bin/utils/errorHelpers.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/utils/errorHelpers'>;
+}
+declare module 'webpack-cli/bin/utils/prepareOptions.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/utils/prepareOptions'>;
+}
+declare module 'webpack-cli/bin/utils/prompt-command.js' {
+  declare module.exports: $Exports<'webpack-cli/bin/utils/prompt-command'>;
 }

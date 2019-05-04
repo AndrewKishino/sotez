@@ -1,4 +1,4 @@
-// flow-typed signature: 6116ca3cb569193eb8a9047fbbf5992b
+// flow-typed signature: cb7d134191ce451c2d388799c1d48ae7
 // flow-typed version: <<STUB>>/eslint-plugin-flowtype_v^3.4.2/flow_v0.96.0
 
 /**
@@ -167,6 +167,10 @@ declare module 'eslint-plugin-flowtype/dist/rules/spaceBeforeGenericBracket' {
 }
 
 declare module 'eslint-plugin-flowtype/dist/rules/spaceBeforeTypeColon' {
+  declare module.exports: any;
+}
+
+declare module 'eslint-plugin-flowtype/dist/rules/spreadExactType' {
   declare module.exports: any;
 }
 
@@ -381,6 +385,9 @@ declare module 'eslint-plugin-flowtype/dist/rules/spaceBeforeGenericBracket.js' 
 }
 declare module 'eslint-plugin-flowtype/dist/rules/spaceBeforeTypeColon.js' {
   declare module.exports: $Exports<'eslint-plugin-flowtype/dist/rules/spaceBeforeTypeColon'>;
+}
+declare module 'eslint-plugin-flowtype/dist/rules/spreadExactType.js' {
+  declare module.exports: $Exports<'eslint-plugin-flowtype/dist/rules/spreadExactType'>;
 }
 declare module 'eslint-plugin-flowtype/dist/rules/typeColonSpacing/evaluateFunctions.js' {
   declare module.exports: $Exports<'eslint-plugin-flowtype/dist/rules/typeColonSpacing/evaluateFunctions'>;

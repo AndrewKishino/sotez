@@ -1,12 +1,10 @@
 const path = require('path');
+const nodeExternals = require('webpack-node-externals'); // eslint-disable-line
 
 module.exports = {
   target: 'node',
   mode: 'production',
-  externals: {
-    'node-hid': 'node-hid',
-    usb: 'usb',
-  },
+  externals: [nodeExternals()],
   resolve: {
     extensions: ['.js'],
     modules: [__dirname, 'node_modules'],
@@ -24,8 +22,8 @@ module.exports = {
     main: './src/index.js',
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'tez.node.js',
+    path: path.join(__dirname, 'dist', 'node'),
+    filename: 'index.js',
     libraryTarget: 'umd',
   },
 };

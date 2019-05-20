@@ -4,11 +4,11 @@ import type {
   LedgerGetAddress,
   LedgerSignOperation,
   LedgerGetVersion,
-} from './types';
+} from '../types';
 
 // $FlowFixMe
 const LedgerTransport = require('@ledgerhq/hw-transport-u2f').default;
-const LedgerApp = require('./hw-app-xtz/lib/Tezos').default;
+const LedgerApp = require('../hw-app-xtz/Tezos').default;
 
 const ledger: LedgerType = {};
 /**
@@ -27,7 +27,7 @@ const ledger: LedgerType = {};
  */
 ledger.getAddress = async ({
   path = "44'/1729'/0'/0'",
-  displayConfirm = false,
+  displayConfirm = true,
   curve = 0x00,
 }: LedgerGetAddress = {}): Promise<{ address: string, publicKey: string }> => {
   const transport = await LedgerTransport.create();

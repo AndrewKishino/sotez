@@ -22,8 +22,8 @@ module.exports = {
     main: './src/index-web.js',
   },
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'tez.browser.js',
+    path: path.join(__dirname, 'dist', 'browser'),
+    filename: 'index.js',
     libraryTarget: 'umd',
   },
   optimization: {

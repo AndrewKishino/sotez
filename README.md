@@ -11,24 +11,37 @@ npm install sotez
 // Import library or individual modules
 import Sotez, { utility, forge, crypto, ledger } from 'sotez';
 
+// Or using require
+const Sotez = require('sotez').default;
+const { utility, forge, crypto, ledger } = require('sotez');
+```
+
+```js
 const sotez = new Sotez('http://127.0.0.1:8732');
+
+const example = async () => {
+  // A secret key or a ledger must be imported to sign transactions
+  // await sotez.importLedger();
+  await sotez.importKey('...');
+
+  // A simple transfer operation
+  const { hash } = await sotez.transfer({
+    to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+    amount: '1000000',
+  });
+
+  console.log(`Injected Operation Hash: ${hash}`);
+
+  // Await confirmation of included operation
+  const block = await tez.awaitOperation(hash);
+  console.log(`Operation found in block ${block}`);
+};
 
 sotez.query('/chains/main/blocks/head')
   .then(response => console.log(response));
 
 crypto.generateMnemonic()
   .then(mnemonic => console.log(mnemonic));
-```
-
-Or
-
-```js
-const Sotez = require('sotez').default;
-
-const sotez = new Sotez('http://127.0.0.1:8732');
-
-sotez.query('/chains/main/blocks/head')
-  .then(response => console.log(response));
 ```
 
 # Documentation

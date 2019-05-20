@@ -1,5 +1,9 @@
 const isNode = require('detect-node');
 
+if (isNode) {
+  global.__non_webpack_require__ = require;
+}
+
 module.exports = isNode
-  ? require('./dist/tez.node')
-  : require('./dist/tez.browser');
+  ? __non_webpack_require__('./dist/node') // eslint-disable-line
+  : require('./dist/browser');

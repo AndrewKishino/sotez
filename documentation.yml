@@ -10,6 +10,8 @@ toc:
       # - _counters
       # - _debugMode
       - setProvider
+      - importKey
+      - importLedger
       - query
       - account
       - getBalance
@@ -88,3 +90,11 @@ toc:
       - getAddress
       - signOperation
       - getVersion
+
+  - name: key
+    children:
+      - publicKey
+      - secretKey
+      - publicKeyHash
+      - sign
+      - verify

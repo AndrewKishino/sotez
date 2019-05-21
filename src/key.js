@@ -6,15 +6,18 @@ import { prefix as _prefix } from './constants';
 import type { Key as KeyInterface } from './types';
 
 /**
- * @description Creates a key object from a base58 encoded key.
+ * Creates a key object from a base58 encoded key.
+ * @class Key
  * @param {String} key A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string
  * @param {String} passphrase The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {String} email Email used if a fundraiser key is passed
+ * @example
+ * const key = new Key('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
+ * await key.ready;
  */
 export default class Key implements KeyInterface {
   _publicKey: string;
   _secretKey: ?string;
-  _sodium: any;
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;
@@ -61,13 +64,44 @@ export default class Key implements KeyInterface {
     this._ledgerCurve = value;
   }
 
-  initialize = async (key: string, passphrase: ?string, email: ?string, ready: any) => {
-    try {
-      await sodium.ready;
-      this._sodium = sodium;
-    } catch (e) {
-      throw new Error(e);
+  /**
+   * @memberof Key
+   * @description Returns the public key
+   * @returns {String} The public key associated with the private key
+   */
+  publicKey = (): string => utility.b58cencode(this._publicKey, _prefix[`${this.curve}pk`]);
+
+  /**
+   * @memberof Key
+   * @description Returns the secret key
+   * @returns {String} The secret key associated with this key, if available
+   */
+  secretKey = (): string => {
+    if (!this._secretKey) {
+      throw new Error('Secret key not known.');
     }
+
+    return utility.b58cencode(this._secretKey, _prefix[`${this.curve}sk`]);
+  }
+
+  /**
+   * @memberof Key
+   * @description Returns public key hash for this key
+   * @returns {String} The public key hash for this key
+   */
+  publicKeyHash = (): string => {
+    const prefixMap = {
+      ed: _prefix.tz1,
+      sp: _prefix.tz2,
+      p2: _prefix.tz3,
+    };
+
+    const prefix = prefixMap[this.curve];
+    return utility.b58cencode(sodium.crypto_generichash(20, this._publicKey), prefix);
+  }
+
+  initialize = async (key: string, passphrase: ?string, email: ?string, ready: any) => {
+    await sodium.ready;
 
     if (email) {
       if (!passphrase) {
@@ -76,7 +110,7 @@ export default class Key implements KeyInterface {
 
       const salt = utility.textDecode(utility.textEncode(`${email}${passphrase}`)).normalize('NFKD');
       const seed = pbkdf2.pbkdf2Sync(key, `mnemonic${salt}`, 2048, 64, 'sha512');
-      const { publicKey, privateKey } = this._sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
+      const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
 
       this._publicKey = publicKey;
       this._secretKey = privateKey;
@@ -116,8 +150,8 @@ export default class Key implements KeyInterface {
       const encryptedSk = key.slice(8);
       const encryptionKey = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
 
-      key = this._sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
-      const { publicKey, privateKey } = this._sodium.crypto_sign_seed_keypair(key);
+      key = sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
+      const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(key);
       this._publicKey = publicKey;
       this._secretKey = privateKey;
       ready();
@@ -130,7 +164,7 @@ export default class Key implements KeyInterface {
     } else if (this.curve === 'ed') {
       if (key.length === 54) { // seed
         const seed = utility.b58cdecode(key, _prefix.edsk2);
-        const { publicKey, privateKey } = this._sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
+        const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
         this._publicKey = publicKey;
         this._secretKey = privateKey;
       } else { // secret key
@@ -146,42 +180,6 @@ export default class Key implements KeyInterface {
 
   /**
    * @memberof Key
-   * @description Returns the public key
-   * @returns {String} The public key associated with the private key
-   */
-  publicKey = (): string => utility.b58cencode(this._publicKey, _prefix[`${this.curve}pk`]);
-
-  /**
-   * @memberof Key
-   * @description Returns the secret key
-   * @returns {String} The secret key associated with this key, if available
-   */
-  secretKey = (): string => {
-    if (!this._secretKey) {
-      throw new Error('Secret key not known.');
-    }
-
-    return utility.b58cencode(this._secretKey, _prefix[`${this.curve}sk`]);
-  }
-
-  /**
-   * @memberof Key
-   * @description Returns public key hash for this key
-   * @returns {String} The public key hash for this key
-   */
-  publicKeyHash = (): string => {
-    const prefixMap = {
-      ed: _prefix.tz1,
-      sp: _prefix.tz2,
-      p2: _prefix.tz3,
-    };
-
-    const prefix = prefixMap[this.curve];
-    return utility.b58cencode(this._sodium.crypto_generichash(20, this._publicKey), prefix);
-  }
-
-  /**
-   * @memberof Key
    * @description Sign a raw sequence of bytes
    * @param {String} bytes Sequence of bytes, raw format or hexadecimal notation
    * @param {Uint8Array} watermark The watermark bytes
@@ -193,7 +191,7 @@ export default class Key implements KeyInterface {
       bb = utility.mergebuf(watermark, bb);
     }
 
-    const sig = this._sodium.crypto_sign_detached(this._sodium.crypto_generichash(32, bb), this._secretKey);
+    const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), this._secretKey);
     const edsig = utility.b58cencode(sig, _prefix.edsig);
     const sbytes = bytes + utility.buf2hex(sig);
 
@@ -225,7 +223,7 @@ export default class Key implements KeyInterface {
     if (this.curve === 'ed') {
       const digest = utility.hex2buf(bytes);
       try {
-        return this._sodium.crypto_sign_verify_detached(signature, digest, this._publicKey);
+        return sodium.crypto_sign_verify_detached(signature, digest, this._publicKey);
       } catch (e) {
         throw new Error('Signature is invalid.');
       }

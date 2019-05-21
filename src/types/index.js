@@ -367,7 +367,6 @@ export type ModuleOptions = {
 export interface Key {
   _publicKey: string;
   _secretKey: ?string;
-  _sodium: any;
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;

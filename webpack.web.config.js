@@ -22,7 +22,7 @@ module.exports = {
     main: './src/index-web.js',
   },
   output: {
-    path: path.join(__dirname, 'dist', 'browser'),
+    path: path.join(__dirname, 'dist', 'web'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },

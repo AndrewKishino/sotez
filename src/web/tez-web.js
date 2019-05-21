@@ -27,7 +27,7 @@ import type {
 
 /**
  * Main tez.js Library
-*  @class Sotez
+ * @class Sotez
  * @param {String} [provider='http://127.0.0.1:8732'] Address of the node
  * @param {String} [chain='main'] Chain Id
  * @param {String} [network='main'] Network ['main', 'zero',]
@@ -104,11 +104,26 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     this.network = network;
   }
 
+  /**
+  * @description Import a secret key
+  * @param {String} key The secret key
+  * @param {String} [passphrase] The passphrase of the encrypted key
+  * @param {String} [email] The email associated with the fundraiser account
+  * @example
+  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
+  */
   importKey = async (key: string, passphrase: ?string, email: ?string) => {
     this.key = new Key(key, passphrase, email);
     await this.key.ready;
   }
 
+  /**
+   * @description Import a ledger public key
+   * @param {String} [path="44'/1729'/0'/0'"] The ledger path
+   * @param {Number} [curve=0x00] The curve parameter
+   * @example
+   * await sotez.importLedger();
+   */
   importLedger = async (path: string = "44'/1729'/0'/0'", curve: number = 0x00) => {
     const { publicKey } = await ledger.getAddress({
       path,
@@ -551,7 +566,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       }
 
       const constructOps = (cOps: Array<Operation>): Array<ConstructedOperation> => cOps
-        .map((op: Operation): string => {
+        .map((op: Operation) => {
           // $FlowFixMe
           const constructedOp: ConstructedOperation = { ...op };
           if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
@@ -575,11 +590,11 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
             }
             if (typeof op.balance !== 'undefined') constructedOp.balance = `${constructedOp.balance}`;
             if (typeof op.amount !== 'undefined') constructedOp.amount = `${constructedOp.amount}`;
-            constructedOp.counter = `${++this._counters[publicKeyHash]}`;
+            const opCounter = ++this._counters[publicKeyHash];
+            constructedOp.counter = `${opCounter}`;
           }
-          return JSON.stringify(constructedOp);
-        })
-        .map((op: string) => JSON.parse(op));
+          return constructedOp;
+        });
 
       opOb.branch = head.hash;
       opOb.contents = constructOps(ops);

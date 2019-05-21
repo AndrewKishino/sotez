@@ -2,11 +2,6 @@
 
 ## Sotez
 
-
-
-
-## Sotez
-
 Main tez.js Library
 
 ### Parameters
@@ -30,6 +25,37 @@ sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   amount: '1000000',
 });
+```
+
+### importKey
+
+Import a secret key
+
+#### Parameters
+
+-   `key` **[String][1]** The secret key
+-   `passphrase` **[String][1]?** The passphrase of the encrypted key
+-   `email` **[String][1]?** The email associated with the fundraiser account
+
+#### Examples
+
+```javascript
+await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
+```
+
+### importLedger
+
+Import a ledger public key
+
+#### Parameters
+
+-   `path` **[String][1]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
+-   `curve` **[Number][3]** The curve parameter (optional, default `0x00`)
+
+#### Examples
+
+```javascript
+await sotez.importLedger();
 ```
 
 ### query
@@ -1002,6 +1028,13 @@ Creates a key object from a base58 encoded key.
 -   `key` **[String][1]** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string
 -   `passphrase` **[String][1]** The passphrase used if the key provided is an encrypted private key or a fundraiser key
 -   `email` **[String][1]** Email used if a fundraiser key is passed
+
+### Examples
+
+```javascript
+const key = new Key('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
+await key.ready;
+```
 
 ### publicKey
 

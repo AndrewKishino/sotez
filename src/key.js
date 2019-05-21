@@ -1,5 +1,6 @@
 // @flow
 import pbkdf2 from 'pbkdf2';
+import secp256k1 from 'secp256k1/elliptic';
 import sodium from 'libsodium-wrappers';
 import utility from './utility';
 import { prefix as _prefix } from './constants';
@@ -21,15 +22,15 @@ export default class Key implements KeyInterface {
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;
-  publicKey: string;
-  secretKey: string;
-  publicKeyHash: string;
+  publicKey: () => string;
+  secretKey: () => string;
+  publicKeyHash: () => string;
   isLedger: boolean;
   ledgerPath: string;
   ledgerCurve: number;
   ready: Promise<void>;
   curve: string;
-  isSecret: boolean;
+  _isSecret: boolean;
 
   constructor(key: string, passphrase: ?string, email: ?string) {
     this._isLedger = false;
@@ -81,7 +82,12 @@ export default class Key implements KeyInterface {
       throw new Error('Secret key not known.');
     }
 
-    return utility.b58cencode(this._secretKey, _prefix[`${this.curve}sk`]);
+    let key = this._secretKey;
+    if (this.curve === 'ed') {
+      ({ privateKey: key } = sodium.crypto_sign_seed_keypair(key.slice(0, 32)));
+    }
+
+    return utility.b58cencode(key, _prefix[`${this.curve}sk`]);
   }
 
   /**
@@ -115,7 +121,7 @@ export default class Key implements KeyInterface {
       this._publicKey = publicKey;
       this._secretKey = privateKey;
       this.curve = 'ed';
-      this.isSecret = true;
+      this._isSecret = true;
       ready();
       return;
     }
@@ -137,42 +143,44 @@ export default class Key implements KeyInterface {
       throw new Error('Invalid prefix for a key encoding.');
     }
 
-    this.isSecret = publicOrSecret === 'sk';
+    this._isSecret = publicOrSecret === 'sk';
+
+    if (this._isSecret) {
+      key = utility.b58cdecode(key, _prefix[`${this.curve}${encrypted ? 'e' : ''}sk`]);
+    }
 
     if (encrypted) {
       if (!passphrase) {
         throw new Error('Encrypted key provided without a passphrase.');
       }
 
-      key = utility.b58cdecode(key, _prefix.edesk);
-
       const salt = key.slice(0, 8);
       const encryptedSk = key.slice(8);
       const encryptionKey = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
 
       key = sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
-      const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(key);
-      this._publicKey = publicKey;
-      this._secretKey = privateKey;
-      ready();
-      return;
     }
 
-    if (!this.isSecret) {
-      this._publicKey = utility.b58cdecode(key, _prefix[`${this.curve}pk`]);
+    if (!this._isSecret) {
+      this._publicKey = key;
       this._secretKey = undefined;
-    } else if (this.curve === 'ed') {
-      if (key.length === 54) { // seed
-        const seed = utility.b58cdecode(key, _prefix.edsk2);
-        const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
-        this._publicKey = publicKey;
-        this._secretKey = privateKey;
-      } else { // secret key
-        this._secretKey = utility.b58cdecode(key, _prefix.edsk);
-        this._publicKey = utility.b58cdecode(key, _prefix.edsk).slice(32);
-      }
     } else {
-      throw new Error('Secp256k1 and P256 curves are not yet supported.');
+      this._secretKey = key;
+      if (this.curve === 'ed') {
+        if (key.length === 64) {
+          this._publicKey = key.slice(32);
+        } else {
+          const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(key, 'uint8array');
+          this._publicKey = publicKey;
+          this._secretKey = privateKey;
+        }
+      } else if (this.curve === 'sp') {
+        this._publicKey = secp256k1.publicKeyCreate(key);
+      } else if (this.curve === 'p2') {
+        throw new Error('Curve P256 key is not yet supported.');
+      } else {
+        throw new Error('Provided key is not supported.');
+      }
     }
 
     ready();
@@ -191,16 +199,20 @@ export default class Key implements KeyInterface {
       bb = utility.mergebuf(watermark, bb);
     }
 
-    const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), this._secretKey);
-    const edsig = utility.b58cencode(sig, _prefix.edsig);
-    const sbytes = bytes + utility.buf2hex(sig);
+    if (this.curve === 'ed') {
+      const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), this._secretKey);
+      const edsig = utility.b58cencode(sig, _prefix.edsig);
+      const sbytes = bytes + utility.buf2hex(sig);
 
-    return {
-      bytes,
-      sig: utility.b58cencode(sig, _prefix.sig),
-      edsig,
-      sbytes,
-    };
+      return {
+        bytes,
+        sig: utility.b58cencode(sig, _prefix.sig),
+        edsig,
+        sbytes,
+      };
+    }
+
+    throw new Error('Provided curve not supported');
   }
 
   /**

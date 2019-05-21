@@ -370,12 +370,12 @@ export interface Key {
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;
+  _isSecret: boolean;
   isLedger: boolean;
   ledgerPath: string;
   ledgerCurve: number;
   ready: Promise<void>;
   curve: string;
-  isSecret: boolean;
   initialize: (string, ?string, ?string, any) => Promise<void>,
   publicKey: () => string,
   secretKey: () => string,

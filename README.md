@@ -33,7 +33,7 @@ const example = async () => {
   console.log(`Injected Operation Hash: ${hash}`);
 
   // Await confirmation of included operation
-  const block = await tez.awaitOperation(hash);
+  const block = await sotez.awaitOperation(hash);
   console.log(`Operation found in block ${block}`);
 };
 

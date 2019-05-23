@@ -3,14 +3,14 @@
   "version": "0.4.0",
   "description": "Tezos JavaScript API",
   "main": "index.js",
-  "browser": "dist/tez.browser.js",
+  "browser": "dist/web/index.js",
   "scripts": {
     "test": "jest",
     "flow": "flow",
     "flow:check": "flow check",
     "flow:deps": "flow-typed install",
-    "build": "npm run build:browser && npm run build:node",
-    "build:browser": "webpack --config webpack.browser.config.js --progress",
+    "build": "npm run build:web && npm run build:node",
+    "build:web": "webpack --config webpack.web.config.js --progress",
     "build:node": "webpack --config webpack.node.config.js --progress",
     "docs": "documentation build src/index.js --config documentation.yml --markdown-toc false -f md -o docs/documentation.md"
   },
@@ -33,6 +33,7 @@
     "detect-node": "^2.0.4",
     "libsodium-wrappers": "^0.7.3",
     "pbkdf2": "^3.0.16",
+    "secp256k1": "^3.7.0",
     "xhr2": "^0.1.4"
   },
   "devDependencies": {

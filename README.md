@@ -45,7 +45,7 @@ crypto.generateMnemonic()
 ```
 
 # Documentation
-Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki).
+Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Documentation).
 
 # Development
 ```js

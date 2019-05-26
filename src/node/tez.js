@@ -208,7 +208,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   /**
    * @description Originate a new account
    * @param {Object} paramObject The parameters for the origination
-   * @param {Object} [paramObject.keys] The keys for which to originate the account. If using a ledger, this is optional
    * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
    * @param {Boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
    * @param {Boolean} [paramObject.delegatable] Whether the new account is delegatable
@@ -219,11 +218,6 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.account({
-   *   keys: {
-   *     sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-   *     pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-   *     pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-   *   },
    *   amount: 10,
    *   spendable: true,
    *   delegatable: true,

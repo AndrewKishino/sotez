@@ -91,17 +91,11 @@ Originate a new account
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
     -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `257`)
-    -   `paramObject.keys` **[Object][2]?** The keys for which to originate the account. If using a ledger, this is optional
 
 #### Examples
 
 ```javascript
 sotez.account({
-  keys: {
-    sk: 'edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A',
-    pk: 'edpkuorcFt2Xbk7avzWChwDo95HVGjDF4FUZpCeXJCtLyN7dtX9oa8',
-    pkh: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-  },
   amount: 10,
   spendable: true,
   delegatable: true,

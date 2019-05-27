@@ -1,6 +1,6 @@
 import { generateMnemonic, mnemonicToSeed } from 'bip39';
-import * as pbkdf2 from 'pbkdf2';
-import * as _sodium from 'libsodium-wrappers';
+import pbkdf2 from 'pbkdf2';
+import _sodium from 'libsodium-wrappers';
 import utility from './utility';
 import { prefix } from './constants';
 
@@ -23,7 +23,7 @@ const crypto: Crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> => { // eslint-disable-line
+crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
   try {
     await _sodium.ready;
   } catch (e) {

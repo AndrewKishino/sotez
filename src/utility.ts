@@ -1,4 +1,3 @@
-// @ts-ignore
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 
@@ -56,6 +55,7 @@ utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixe
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The base58 encoded value
  */
+//@ts-ignore
 utility.b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);

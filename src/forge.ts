@@ -71,9 +71,8 @@ forge.parameters = (parameter: string): string => {
  * @returns {String} Forged public key hash bytes
  */
 forge.publicKeyHash = (pkh: string): string => {
-  let fpkh;
   const t = parseInt(pkh.substr(2, 1), 10);
-  fpkh = `0${(t - 1).toString()}`;
+  let fpkh = `0${t - 1}`;
   fpkh += utility.buf2hex(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
   return fpkh;
 };
@@ -205,7 +204,7 @@ forge.op = (op: ConstructedOperation): string => {
           fop += forge.bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
-        fop += forge.publicKeyHash(op.manager_pubkey || op.managerPubkey);
+        fop += forge.publicKeyHash(op.manager_pubkey);
         fop += forge.zarith(op.balance);
         fop += forge.bool(op.spendable);
         fop += forge.bool(op.delegatable);
@@ -243,7 +242,7 @@ forge.op = (op: ConstructedOperation): string => {
  * @param {Number} counter The current counter for the account
  * @returns {String} Forged operation bytes
  * @example
- * forge.forge(head, {
+ * forge.forge({
  *   branch: head.hash,
  *   contents: [{
  *     kind: 'transaction',
@@ -255,7 +254,7 @@ forge.op = (op: ConstructedOperation): string => {
  *     amount: '100000000',
  *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   }],
- * }).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
+ * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
  */
 forge.forge = async (opOb: OperationObject, counter: number): Promise<ForgedBytes> => {
   if (!opOb.contents) {
@@ -437,11 +436,10 @@ forge.encodeRawBytes = (input: any): string => {
         }
 
         const splitted = binary.padStart(pad, '0').match(/\d{6,7}/g);
-        // @ts-ignore
         const reversed = splitted.reverse();
 
         reversed[0] = positiveMark + reversed[0];
-        const numHex = reversed.map((x, i) => (
+        const numHex = reversed.map((x: string, i: number) => (
           parseInt((i === reversed.length - 1 ? '0' : '1') + x, 2)
             .toString(16)
             .padStart(2, '0')

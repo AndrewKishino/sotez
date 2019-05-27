@@ -5,8 +5,8 @@ import {
   LedgerGetVersion,
 } from '../types';
 
-const LedgerTransport = require('@ledgerhq/hw-transport-node-hid').default;
-const LedgerApp = require('../hw-app-xtz/Tezos').default;
+import LedgerTransport from '@ledgerhq/hw-transport-node-hid';
+import LedgerApp from '../hw-app-xtz/Tezos';
 
 // @ts-ignore
 const ledger: LedgerType = {};

@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    "outFile": "./dist/types/index.d.ts",
     "target": "esnext",
-    "declaration": true,
-    "emitDeclarationOnly": true,
+    "noEmit": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,

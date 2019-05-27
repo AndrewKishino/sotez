@@ -1,4 +1,3 @@
-// @ts-ignore
 import XMLHttpRequest from 'xhr2';
 import AbstractTezModule from '../tez-core';
 import Key from '../key';

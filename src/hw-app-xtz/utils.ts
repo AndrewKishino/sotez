@@ -1,6 +1,4 @@
-// @ts-ignore
 import bs58check from 'bs58check';
-// @ts-ignore
 import blake2b from 'blake2b';
 
 interface Defer<T> {
@@ -27,7 +25,7 @@ export function splitPath(path: string): number[] {
   components.forEach((element) => {
     let number = parseInt(element, 10);
     if (Number.isNaN(number)) {
-      return; // FIXME shouldn't it throws instead?
+      return;
     }
     if (element.length > 1 && element[element.length - 1] === "'") {
       number += 0x80000000;
@@ -64,7 +62,7 @@ export function doIf(
   condition: boolean,
   callback: () => any | Promise<any>,
 ): Promise<void> {
-  return Promise.resolve().then(() => { // eslint-disable-line
+  return Promise.resolve().then(() => {
     if (condition) {
       return callback();
     }

@@ -11,6 +11,6 @@ stages:
 jobs:
   include:
     - stage: Lint
-      script: npm run flow:check
+      script: npm run lint
     - stage: Build
       script: npm run build && npm test

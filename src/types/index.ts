@@ -211,8 +211,8 @@ export interface Prefix {
   p2pk: Uint8Array;
 
   edesk: Uint8Array;
-
   edsk: Uint8Array;
+
   edsig: Uint8Array;
   spsig1: Uint8Array;
   p2sig: Uint8Array;

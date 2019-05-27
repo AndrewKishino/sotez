@@ -1,6 +1,6 @@
-import * as sodium from 'libsodium-wrappers';
-import * as pbkdf2 from 'pbkdf2';
-import * as secp256k1 from 'secp256k1';
+import sodium from 'libsodium-wrappers';
+import pbkdf2 from 'pbkdf2';
+import secp256k1 from 'secp256k1';
 import utility from './utility';
 import { prefix } from './constants';
 import { Key as KeyInterface } from './types';
@@ -140,6 +140,8 @@ export default class Key implements KeyInterface {
 
     if (this._isSecret) {
       key = utility.b58cdecode(key, prefix[`${this.curve}${encrypted ? 'e' : ''}sk`]);
+    } else {
+      key = utility.b58cdecode(key, prefix[`${this.curve}pk`]);
     }
 
     if (encrypted) {
@@ -168,12 +170,11 @@ export default class Key implements KeyInterface {
           this._secretKey = privateKey;
         }
       } else if (this.curve === 'sp') {
-        // @ts-ignore
         this._publicKey = secp256k1.publicKeyCreate(key);
       } else if (this.curve === 'p2') {
         throw new Error('Curve P256 key is not yet supported.');
       } else {
-        throw new Error('Provided key is not supported.');
+        throw new Error('Invalid key');
       }
     }
 

@@ -11,13 +11,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts?$/,
-        loader: 'awesome-typescript-loader',
-      },
-      {
-        test: /\.js$/,
-        use: ['source-map-loader'],
-        enforce: 'pre',
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
       },
     ],
   },
@@ -27,6 +23,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist', 'web'),
     filename: 'index.js',
+    libraryTarget: 'umd',
   },
   optimization: {
     minimizer: [
@@ -35,6 +32,7 @@ module.exports = {
         parallel: true,
         terserOptions: {
           compress: true,
+          ecma: 6,
           mangle: true,
         },
         sourceMap: true,

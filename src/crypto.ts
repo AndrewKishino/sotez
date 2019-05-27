@@ -1,18 +1,17 @@
-// @flow
 import { generateMnemonic, mnemonicToSeed } from 'bip39';
-import pbkdf2 from 'pbkdf2';
-import _sodium from 'libsodium-wrappers';
+import * as pbkdf2 from 'pbkdf2';
+import * as _sodium from 'libsodium-wrappers';
 import utility from './utility';
 import { prefix } from './constants';
 
-import type {
+import {
   Crypto,
   Keys,
   KeysMnemonicPassphrase,
   Signed,
 } from './types';
 
-// TODO: Add secp256k1 cryptographay
+// @ts-ignore
 const crypto: Crypto = {};
 
 /**
@@ -24,7 +23,7 @@ const crypto: Crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-crypto.extractKeys = async (sk: string, password: ?string = ''): Promise<Keys> => { // eslint-disable-line
+crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> => { // eslint-disable-line
   try {
     await _sodium.ready;
   } catch (e) {
@@ -122,7 +121,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
   }
 
   const sodium = _sodium;
-  const s = await mnemonicToSeed(mnemonic, passphrase).then(seed => seed.slice(0, 32));
+  const s = await mnemonicToSeed(mnemonic, passphrase).then((seed: (string | Buffer)) => seed.slice(0, 32));
   const kp = sodium.crypto_sign_seed_keypair(s);
   return {
     mnemonic,
@@ -146,7 +145,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
  */
-crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: ?string = ''): Promise<Signed> => {
+crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
   try {
     await _sodium.ready;
   } catch (e) {

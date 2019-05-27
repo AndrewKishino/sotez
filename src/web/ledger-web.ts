@@ -1,15 +1,14 @@
-// @flow
-import type {
+import {
   Ledger as LedgerType,
   LedgerGetAddress,
   LedgerSignOperation,
   LedgerGetVersion,
 } from '../types';
 
-// $FlowFixMe
-const LedgerTransport = require('@ledgerhq/hw-transport-node-hid').default; // eslint-disable-line
+const LedgerTransport = require('@ledgerhq/hw-transport-u2f').default;
 const LedgerApp = require('../hw-app-xtz/Tezos').default;
 
+// @ts-ignore
 const ledger: LedgerType = {};
 /**
  * @description Get the public key and public key hash from the ledger
@@ -29,7 +28,7 @@ ledger.getAddress = async ({
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
   curve = 0x00,
-}: LedgerGetAddress = {}): Promise<{ address: string, publicKey: string }> => {
+}: LedgerGetAddress = {}): Promise<{ address: string; publicKey: string }> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let publicKey;

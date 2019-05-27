@@ -1,6 +1,7 @@
 const isNode = require('detect-node');
 
 if (isNode) {
+  // eslint-disable-next-line @typescript-eslint/camelcase
   global.__non_webpack_require__ = require;
 }
 

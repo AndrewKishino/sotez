@@ -1,23 +1,23 @@
-// @flow
 import { BigNumber } from 'bignumber.js';
 import utility from './utility';
 import { prefix, forgeMappings } from './constants';
 
-import type {
+import {
   Forge,
   ConstructedOperation,
-  Head,
   OperationObject,
   ForgedBytes,
 } from './types';
 
+// @ts-ignore
 const forge: Forge = {};
 /**
  * @description Convert bytes from Int32
  * @param {Number} num Number to convert to bytes
  * @returns {Object} The converted number
  */
-forge.toBytesInt32 = (num: number): ArrayBuffer => {
+forge.toBytesInt32 = (num: number): any => {
+  // @ts-ignore
   num = parseInt(num, 10);
   const arr = new Uint8Array([
     (num & 0xff000000) >> 24,
@@ -33,7 +33,6 @@ forge.toBytesInt32 = (num: number): ArrayBuffer => {
  * @param {Number} num Number to convert to hex
  * @returns {String} The converted number
  */
-// $FlowFixMe
 forge.toBytesInt32Hex = (num: number): string => utility.buf2hex(forge.toBytesInt32(num));
 
 /**
@@ -50,7 +49,7 @@ forge.bool = (bool: boolean): string => (bool ? 'ff' : '00');
  * @param {String} script.storage Script storage
  * @returns {String} Forged script bytes
  */
-forge.script = (script: { code: string, storage: string }): string => {
+forge.script = (script: { code: string; storage: string }): string => {
   const t1 = forge.encodeRawBytes(script.code).toLowerCase();
   const t2 = forge.encodeRawBytes(script.storage).toLowerCase();
   return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
@@ -153,7 +152,6 @@ forge.op = (op: ConstructedOperation): string => {
   switch (forgeMappings.forgeOpTags[op.kind]) {
     case 0:
     case 1:
-      // $FlowFixMe
       fop += utility.buf2hex(forge.toBytesInt32(op.level));
       if (forgeMappings.forgeOpTags[op.kind] === 0) break;
       fop += op.nonce;
@@ -170,7 +168,6 @@ forge.op = (op: ConstructedOperation): string => {
     case 5:
     case 6:
       fop += forge.publicKeyHash(op.source);
-      // $FlowFixMe
       fop += utility.buf2hex(forge.toBytesInt32(op.period));
       if (forgeMappings.forgeOpTags[op.kind] === 5) {
         throw new Error('Proposal forging is not complete');
@@ -242,11 +239,11 @@ forge.op = (op: ConstructedOperation): string => {
 
 /**
  * @description Forge operation bytes
- * @param {Object} head The current head object of the chain
  * @param {Object} opOb The operation object(s)
+ * @param {Number} counter The current counter for the account
  * @returns {String} Forged operation bytes
  * @example
- * tezos.forge(head, {
+ * forge.forge(head, {
  *   branch: head.hash,
  *   contents: [{
  *     kind: 'transaction',
@@ -260,8 +257,17 @@ forge.op = (op: ConstructedOperation): string => {
  *   }],
  * }).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
  */
-forge.forge = async (head: Head, opOb: OperationObject, counter: number): Promise<ForgedBytes> => {
+forge.forge = async (opOb: OperationObject, counter: number): Promise<ForgedBytes> => {
+  if (!opOb.contents) {
+    throw new Error('No operation contents provided.');
+  }
+
+  if (!opOb.branch) {
+    throw new Error('No operation branch provided.');
+  }
+
   let forgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
+
   opOb.contents.forEach((content: ConstructedOperation): void => {
     forgedBytes += forge.op(content);
   });
@@ -282,9 +288,9 @@ forge.decodeRawBytes = (bytes: string): any => {
   bytes = bytes.toUpperCase();
 
   let index = 0;
-  const read = len => bytes.slice(index, index + len);
+  const read = (len: number) => bytes.slice(index, index + len);
 
-  const rec = () => {
+  const rec = (): any => {
     const b = read(2);
     const prim = forgeMappings.primMapping[b];
 
@@ -293,7 +299,7 @@ forge.decodeRawBytes = (bytes: string): any => {
       const op = forgeMappings.opMapping[read(2)];
       index += 2;
       const args = [...Array(prim.len)];
-      const result = {
+      const result: { prim: string; args: (string | number | boolean)[]; annots?: string[]} = {
         prim: op,
         args: args.map(() => rec()),
         annots: undefined,
@@ -389,7 +395,7 @@ forge.decodeRawBytes = (bytes: string): any => {
  * @returns {String} Encoded value as bytes
  */
 forge.encodeRawBytes = (input: any): string => {
-  const rec = (inputArg) => {
+  const rec = (inputArg: any): any => {
     const result = [];
 
     if (inputArg instanceof Array) {
@@ -401,13 +407,13 @@ forge.encodeRawBytes = (input: any): string => {
     } else if (inputArg instanceof Object) {
       if (inputArg.prim) {
         const argsLen = inputArg.args ? inputArg.args.length : 0;
-        result.push(forgeMappings.primMappingReverse[argsLen][!!inputArg.annots]);
+        result.push(forgeMappings.primMappingReverse[argsLen][`${!!inputArg.annots}`]);
         result.push(forgeMappings.opMappingReverse[inputArg.prim]);
         if (inputArg.args) {
-          inputArg.args.forEach(arg => result.push(rec(arg)));
+          inputArg.args.forEach((arg: any) => result.push(rec(arg)));
         }
         if (inputArg.annots) {
-          const annotsBytes = inputArg.annots.map(x => utility.buf2hex(utility.textEncode(x))).join('20');
+          const annotsBytes = inputArg.annots.map((x: any) => utility.buf2hex(utility.textEncode(x))).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
@@ -431,6 +437,7 @@ forge.encodeRawBytes = (input: any): string => {
         }
 
         const splitted = binary.padStart(pad, '0').match(/\d{6,7}/g);
+        // @ts-ignore
         const reversed = splitted.reverse();
 
         reversed[0] = positiveMark + reversed[0];
@@ -444,7 +451,7 @@ forge.encodeRawBytes = (input: any): string => {
         result.push(numHex);
       } else if (inputArg.string) {
         const stringBytes = utility.textEncode(inputArg.string);
-        const stringHex = [].slice.call(stringBytes).map(x => x.toString(16).padStart(2, '0')).join('');
+        const stringHex = [].slice.call(stringBytes).map((x: any) => x.toString(16).padStart(2, '0')).join('');
         const len = stringBytes.length;
         result.push('01');
         result.push(len.toString(16).padStart(8, '0'));

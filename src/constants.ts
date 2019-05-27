@@ -1,5 +1,4 @@
-// @flow
-import type { Prefix, Watermark } from './types';
+import { Prefix, Watermark } from './types';
 
 export const prefix: Prefix = {
   tz1: new Uint8Array([6, 161, 159]),
@@ -44,7 +43,7 @@ export const watermark: Watermark = {
 };
 
 /* eslint-disable */
-const opMapping = {
+const opMapping: { [key: string]: string } = {
   '00': 'parameter',
   '01': 'storage',
   '02': 'code',
@@ -161,14 +160,14 @@ const opMapping = {
 /* eslint-enable */
 
 const opMappingReverse = (() => {
-  const result = {};
-  Object.keys(opMapping).forEach((key) => {
+  const result: { [key: string]: string } = {};
+  Object.keys(opMapping).forEach((key: string) => {
     result[opMapping[key]] = key;
   });
   return result;
 })();
 
-const primMapping = {
+const primMapping: { [key: string]: (string | { [key: string]: (number | boolean | string) }) } = {
   '00': 'int',
   '01': 'string',
   '02': 'seq',
@@ -183,7 +182,7 @@ const primMapping = {
 };
 
 /* eslint-disable */
-const primMappingReverse = {
+const primMappingReverse: { [key: string]: { [key: string]: (string | undefined) } } = {
   '0': {
     false: '03',
     true: '04',
@@ -202,7 +201,7 @@ const primMappingReverse = {
 };
 /* eslint-enable */
 
-const forgeOpTags = {
+const forgeOpTags: { [key: string]: number } = {
   endorsement: 0,
   seed_nonce_revelation: 1,
   double_endorsement_evidence: 2,

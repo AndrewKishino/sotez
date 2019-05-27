@@ -1,4 +1,4 @@
-// @flow
+// @ts-ignore
 import XMLHttpRequest from 'xhr2';
 import AbstractTezModule from '../tez-core';
 import Key from '../key';
@@ -7,7 +7,7 @@ import utility from '../utility';
 import ledger from './ledger';
 import { prefix, watermark } from '../constants';
 
-import type {
+import {
   Tez as TezInterface,
   Key as KeyInterface,
   ModuleOptions,
@@ -48,7 +48,7 @@ import type {
 export default class Sotez extends AbstractTezModule implements TezInterface {
   _localForge: boolean;
   _validateLocalForge: boolean;
-  _counters: { [string]: number };
+  _counters: { [key: string]: number };
   _debugMode: boolean;
   key: KeyInterface;
 
@@ -85,7 +85,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     return this._counters;
   }
 
-  set counters(counters: { [string]: number }) {
+  set counters(counters: { [key: string]: number }) {
     this._counters = counters;
   }
 
@@ -93,7 +93,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     return this._debugMode;
   }
 
-  set debugMode(t: boolean): void {
+  set debugMode(t: boolean) {
     this._debugMode = t;
   }
 
@@ -112,7 +112,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   * @example
   * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
   */
-  importKey = async (key: string, passphrase: ?string, email: ?string) => {
+  importKey = async (key: string, passphrase?: string, email?: string) => {
     this.key = new Key(key, passphrase, email);
     await this.key.ready;
   }
@@ -151,7 +151,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * sotez.query(`/chains/main/blocks/head`)
    *  .then(head => console.log(head));
    */
-  query = (path: string, payload: ?any, method: ?string): Promise<any> => {
+  query = (path: string, payload?: any, method?: string): Promise<any> => {
     if (typeof payload === 'undefined') {
       if (typeof method === 'undefined') {
         method = 'GET';
@@ -167,13 +167,13 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         http.open(method, this.provider + path, true);
         http.onload = () => {
           if (this._debugMode) {
-            console.log('Node call', path, payload);
+            console.log('Node call:', path, payload);
           }
           if (http.status === 200) {
             if (http.responseText) {
               let response = JSON.parse(http.responseText);
               if (this._debugMode) {
-                console.log('Node response', path, payload, response);
+                console.log('Node response:', path, payload, response);
               }
               if (typeof response.error !== 'undefined') {
                 reject(response.error);
@@ -233,20 +233,18 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 257,
   }: AccountParams): Promise<any> => {
-    const params = {};
+    const params: { spendable?: boolean; delegatable?: boolean; delegate?: string } = {};
     if (typeof spendable !== 'undefined') params.spendable = spendable;
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
     if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
 
-    const managerKey = this.network === 'zero' ? 'manager_pubkey' : 'managerPubkey';
-
-    const operation: Array<Operation> = [{
+    const operation: Operation[] = [{
       kind: 'origination',
       balance: utility.mutez(balance),
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      [managerKey]: this.key.publicKeyHash(),
+      manager_pubkey: this.key.publicKeyHash(),
       ...params,
     }];
 
@@ -289,7 +287,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({ manager, key }) => console.log(manager, key))
    */
-  getManager = (address: string): Promise<{ manager: string, key: string }> => (
+  getManager = (address: string): Promise<{ manager: string; key: string }> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/manager_key`)
   )
 
@@ -367,7 +365,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @example
    * sotez.getBallotList().then(ballotList => console.log(ballotList))
    */
-  getBallotList = (): Promise<Array<any>> => (
+  getBallotList = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballot_list`)
   )
 
@@ -380,7 +378,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *   console.log(proposals[1][0], proposals[1][1])
    * )
    */
-  getProposals = (): Promise<Array<any>> => (
+  getProposals = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/proposals`)
   )
 
@@ -390,7 +388,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @example
    * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass))
    */
-  getBallots = (): Promise<{ yay: number, nay: number, pass: number }> => (
+  getBallots = (): Promise<{ yay: number; nay: number; pass: number }> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballots`)
   )
 
@@ -400,7 +398,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @example
    * sotez.getListings().then(listings => console.log(listings))
    */
-  getListings = (): Promise<Array<any>> => (
+  getListings = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/listings`)
   )
 
@@ -493,7 +491,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @param {Object} payload The payload of the request
    * @returns {Promise} The response of the rpc call
    */
-  call = (path: string, payload: ?OperationObject): Promise<any> => this.query(path, payload)
+  call = (path: string, payload?: OperationObject): Promise<any> => this.query(path, payload)
 
   /**
    * @description Prepares an operation
@@ -515,9 +513,9 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
   prepareOperation = ({ operation }: OperationParams): Promise<ForgedBytes> => {
     let counter;
     const opOb: OperationObject = {};
-    const promises = [];
+    const promises: any[] = [];
     let requiresReveal = false;
-    let ops = [];
+    let ops: Operation[] = [];
     let head: Header;
 
     promises.push(this.getHeader());
@@ -539,7 +537,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       }
     }
 
-    return Promise.all(promises).then(async ([header, headCounter, manager]: Array<any>): Promise<ForgedBytes> => {
+    return Promise.all(promises).then(async ([header, headCounter, manager]: any[]): Promise<ForgedBytes> => {
       head = header;
       if (requiresReveal && typeof manager.key === 'undefined') {
         const reveal: Operation = {
@@ -559,9 +557,9 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         this._counters[publicKeyHash] = counter;
       }
 
-      const constructOps = (cOps: Array<Operation>): Array<ConstructedOperation> => cOps
+      const constructOps = (cOps: Operation[]): ConstructedOperation[] => cOps
         .map((op: Operation) => {
-          // $FlowFixMe
+          // @ts-ignore
           const constructedOp: ConstructedOperation = { ...op };
           if (['proposals', 'ballot', 'transaction', 'origination', 'delegation'].includes(op.kind)) {
             if (typeof op.source === 'undefined') constructedOp.source = publicKeyHash;
@@ -608,7 +606,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         };
       }
 
-      const fullOp = await forge.forge(head, opOb, counter);
+      const fullOp = await forge.forge(opOb, counter);
 
       if (this._validateLocalForge) {
         if (fullOp.opbytes === remoteForgedBytes) {
@@ -713,13 +711,13 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    * @returns {Promise} Object containing the injected operation hash
    */
   inject = (opOb: OperationObject, sopbytes: string): Promise<any> => {
-    const opResponse = [];
-    let errors = [];
+    const opResponse: any[] = [];
+    let errors: any[] = [];
 
     return this.query(`/chains/${this.chain}/blocks/head/helpers/preapply/operations`, [opOb])
       .then((f) => {
         if (!Array.isArray(f)) {
-          throw new Error({ error: 'RPC Fail', errors: [] });
+          throw new Error('RPC Fail');
         }
         for (let i = 0; i < f.length; i++) {
           for (let j = 0; j < f[i].contents.length; j++) {
@@ -730,6 +728,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
           }
         }
         if (errors.length) {
+          // @ts-ignore
           throw new Error({ error: 'Operation Failed', errors });
         }
         return this.query('/injection/operation', sopbytes);

@@ -1,27 +1,28 @@
-// @flow
+// @ts-ignore
 import bs58check from 'bs58check';
+// @ts-ignore
 import blake2b from 'blake2b';
 
-type Defer<T> = {
-  promise: Promise<T>,
-  resolve: T => void,
-  reject: any => void
-};
+interface Defer<T> {
+  promise: Promise<T>;
+  resolve: (arg: T) => void;
+  reject: (arg: any) => void;
+}
 
 export function defer<T>(): Defer<T> {
   let resolve;
   let reject;
-  const promise = new Promise((success, failure) => {
+  const promise: Promise<T> = new Promise((success, failure) => {
     resolve = success;
     reject = failure;
   });
-  if (!resolve || !reject) throw new Error('defer() error'); // this never happens and is just to make flow happy
+  if (!resolve || !reject) throw new Error('defer() error');
   return { promise, resolve, reject };
 }
 
 // TODO use bip32-path library
 export function splitPath(path: string): number[] {
-  const result = [];
+  const result: any[] = [];
   const components = path.split('/');
   components.forEach((element) => {
     let number = parseInt(element, 10);
@@ -38,15 +39,15 @@ export function splitPath(path: string): number[] {
 
 // TODO use async await
 
-export function eachSeries<A>(arr: A[], fun: A => Promise<*>): Promise<*> {
+export function eachSeries<A>(arr: A[], fun: (arg: A) => Promise<any>): Promise<any> {
   return arr.reduce((p, e) => p.then(() => fun(e)), Promise.resolve());
 }
 
 export function foreach<T, A>(
   arr: T[],
-  callback: (T, number) => Promise<A>,
+  callback: (arg1: T, arg2: number) => Promise<A>,
 ): Promise<A[]> {
-  function iterate(index, array, result) {
+  function iterate(index: number, array: any[], result: any): any {
     if (index >= array.length) {
       return result;
     }
@@ -73,8 +74,8 @@ export function doIf(
 export function asyncWhile<T>(
   predicate: () => boolean,
   callback: () => Promise<T>,
-): Promise<Array<T>> {
-  function iterate(result) {
+): Promise<T[]> {
+  function iterate(result: any): any {
     if (!predicate()) {
       return result;
     }
@@ -87,7 +88,7 @@ export function asyncWhile<T>(
   return Promise.resolve([]).then(iterate);
 }
 
-const pkB58Prefix = (curve) => {
+const pkB58Prefix = (curve: any) => {
   switch (curve) {
     // edpk
     case 0x00:
@@ -103,7 +104,7 @@ const pkB58Prefix = (curve) => {
   }
 };
 
-const pkhB58Prefix = (curve) => {
+const pkhB58Prefix = (curve: any) => {
   switch (curve) {
     // tz1
     case 0x00:

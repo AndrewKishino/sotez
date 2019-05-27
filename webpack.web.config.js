@@ -1,30 +1,32 @@
 const path = require('path');
-const UnminifiedWebpackPlugin = require('unminified-webpack-plugin'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 
 module.exports = {
   target: 'web',
   mode: 'production',
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.ts', '.js'],
     modules: [__dirname, 'node_modules'],
   },
   module: {
     rules: [
       {
+        test: /\.ts?$/,
+        loader: 'awesome-typescript-loader',
+      },
+      {
         test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
+        use: ['source-map-loader'],
+        enforce: 'pre',
       },
     ],
   },
   entry: {
-    main: './src/index-web.js',
+    main: './src/index-web.ts',
   },
   output: {
     path: path.join(__dirname, 'dist', 'web'),
     filename: 'index.js',
-    libraryTarget: 'umd',
   },
   optimization: {
     minimizer: [
@@ -33,7 +35,6 @@ module.exports = {
         parallel: true,
         terserOptions: {
           compress: true,
-          ecma: 6,
           mangle: true,
         },
         sourceMap: true,

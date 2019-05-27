@@ -1,10 +1,9 @@
-// @flow
-import pbkdf2 from 'pbkdf2';
-import secp256k1 from 'secp256k1/elliptic';
-import sodium from 'libsodium-wrappers';
+import * as sodium from 'libsodium-wrappers';
+import * as pbkdf2 from 'pbkdf2';
+import * as secp256k1 from 'secp256k1';
 import utility from './utility';
-import { prefix as _prefix } from './constants';
-import type { Key as KeyInterface } from './types';
+import { prefix } from './constants';
+import { Key as KeyInterface } from './types';
 
 /**
  * Creates a key object from a base58 encoded key.
@@ -18,21 +17,15 @@ import type { Key as KeyInterface } from './types';
  */
 export default class Key implements KeyInterface {
   _publicKey: string;
-  _secretKey: ?string;
+  _secretKey?: string;
+  _isSecret: boolean;
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;
-  publicKey: () => string;
-  secretKey: () => string;
-  publicKeyHash: () => string;
-  isLedger: boolean;
-  ledgerPath: string;
-  ledgerCurve: number;
   ready: Promise<void>;
   curve: string;
-  _isSecret: boolean;
 
-  constructor(key: string, passphrase: ?string, email: ?string) {
+  constructor(key: string, passphrase?: string, email?: string) {
     this._isLedger = false;
     this._ledgerPath = "44'/1729'/0'/0'";
     this._ledgerCurve = 0x00;
@@ -45,7 +38,7 @@ export default class Key implements KeyInterface {
     return this._isLedger;
   }
 
-  set isLedger(value: boolean): void {
+  set isLedger(value: boolean) {
     this._isLedger = value;
   }
 
@@ -53,7 +46,7 @@ export default class Key implements KeyInterface {
     return this._ledgerPath;
   }
 
-  set ledgerPath(value: string): void {
+  set ledgerPath(value: string) {
     this._ledgerPath = value;
   }
 
@@ -61,7 +54,7 @@ export default class Key implements KeyInterface {
     return this._ledgerCurve;
   }
 
-  set ledgerCurve(value: number): void {
+  set ledgerCurve(value: number) {
     this._ledgerCurve = value;
   }
 
@@ -70,7 +63,7 @@ export default class Key implements KeyInterface {
    * @description Returns the public key
    * @returns {String} The public key associated with the private key
    */
-  publicKey = (): string => utility.b58cencode(this._publicKey, _prefix[`${this.curve}pk`]);
+  publicKey = (): string => utility.b58cencode(this._publicKey, prefix[`${this.curve}pk`]);
 
   /**
    * @memberof Key
@@ -87,7 +80,7 @@ export default class Key implements KeyInterface {
       ({ privateKey: key } = sodium.crypto_sign_seed_keypair(key.slice(0, 32)));
     }
 
-    return utility.b58cencode(key, _prefix[`${this.curve}sk`]);
+    return utility.b58cencode(key, prefix[`${this.curve}sk`]);
   }
 
   /**
@@ -96,17 +89,17 @@ export default class Key implements KeyInterface {
    * @returns {String} The public key hash for this key
    */
   publicKeyHash = (): string => {
-    const prefixMap = {
-      ed: _prefix.tz1,
-      sp: _prefix.tz2,
-      p2: _prefix.tz3,
+    const prefixMap: { [key: string]: Uint8Array } = {
+      ed: prefix.tz1,
+      sp: prefix.tz2,
+      p2: prefix.tz3,
     };
 
-    const prefix = prefixMap[this.curve];
-    return utility.b58cencode(sodium.crypto_generichash(20, this._publicKey), prefix);
+    const _prefix = prefixMap[this.curve];
+    return utility.b58cencode(sodium.crypto_generichash(20, this._publicKey), _prefix);
   }
 
-  initialize = async (key: string, passphrase: ?string, email: ?string, ready: any) => {
+  initialize = async (key: string, passphrase?: string, email?: string, ready?: any) => {
     await sodium.ready;
 
     if (email) {
@@ -146,7 +139,7 @@ export default class Key implements KeyInterface {
     this._isSecret = publicOrSecret === 'sk';
 
     if (this._isSecret) {
-      key = utility.b58cdecode(key, _prefix[`${this.curve}${encrypted ? 'e' : ''}sk`]);
+      key = utility.b58cdecode(key, prefix[`${this.curve}${encrypted ? 'e' : ''}sk`]);
     }
 
     if (encrypted) {
@@ -175,6 +168,7 @@ export default class Key implements KeyInterface {
           this._secretKey = privateKey;
         }
       } else if (this.curve === 'sp') {
+        // @ts-ignore
         this._publicKey = secp256k1.publicKeyCreate(key);
       } else if (this.curve === 'p2') {
         throw new Error('Curve P256 key is not yet supported.');
@@ -201,12 +195,12 @@ export default class Key implements KeyInterface {
 
     if (this.curve === 'ed') {
       const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), this._secretKey);
-      const edsig = utility.b58cencode(sig, _prefix.edsig);
+      const edsig = utility.b58cencode(sig, prefix.edsig);
       const sbytes = bytes + utility.buf2hex(sig);
 
       return {
         bytes,
-        sig: utility.b58cencode(sig, _prefix.sig),
+        sig: utility.b58cencode(sig, prefix.sig),
         edsig,
         sbytes,
       };

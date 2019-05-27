@@ -1,5 +1,4 @@
-// @flow
-import type { TezModuleInterface, ModuleOptions } from './types';
+import { TezModuleInterface, ModuleOptions } from './types';
 
 // Core Tez Module
 export default class AbstractTezModule implements TezModuleInterface {

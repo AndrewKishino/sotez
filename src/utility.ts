@@ -1,13 +1,15 @@
-// @flow
+// @ts-ignore
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 
-import type { Utility } from './types';
+import { Utility } from './types';
 
 if (typeof Buffer === 'undefined') {
-  Buffer = require('buffer'); // eslint-disable-line
+  // @ts-ignore
+  Buffer = require('buffer');
 }
 
+// @ts-ignore
 const utility: Utility = {};
 
 utility.textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
@@ -32,7 +34,14 @@ utility.b582int = (v: string): string => {
  * @param {Number} mutez The amount in mutez to convert to tez
  * @returns {Number} The mutez amount converted to tez
  */
-utility.totez = (mutez: number): number => parseInt(mutez, 10) / 1000000;
+utility.totez = (mutez: number): number => {
+  if (typeof mutez === 'number') {
+    return mutez / 1000000;
+  } if (typeof mutez === 'string') {
+    return parseInt(mutez, 10) / 1000000;
+  }
+  throw new TypeError('Invalid parameter for "mutez" provided.');
+};
 
 /**
  * @description Convert from tez to mutez
@@ -47,12 +56,11 @@ utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixe
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The base58 encoded value
  */
-utility.b58cencode = (payload: (string | Uint8Array), prefixArg: Uint8Array): string => {
+utility.b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
-  // $FlowFixMe
   n.set(payload, prefixArg.length);
-  // $FlowFixMe
+  // @ts-ignore
   return bs58check.encode(Buffer.from(n, 'hex'));
 };
 
@@ -69,11 +77,10 @@ utility.b58cdecode = (enc: string, prefixArg: Uint8Array): string => bs58check.d
  * @param {Object} buffer The buffer to convert to hex
  * @returns {String} Converted hex value
  */
-utility.buf2hex = (buffer: Uint8Array | string): string => {
-  // $FlowFixMe
+utility.buf2hex = (buffer: Buffer): string => {
   const byteArray = new Uint8Array(buffer);
-  const hexParts = [];
-  byteArray.forEach((byte) => {
+  const hexParts: string[] = [];
+  byteArray.forEach((byte: any) => {
     const hex = byte.toString(16);
     const paddedHex = (`00${hex}`).slice(-2);
     hexParts.push(paddedHex);
@@ -87,7 +94,7 @@ utility.buf2hex = (buffer: Uint8Array | string): string => {
  * @returns {Object} Converted buffer value
  */
 utility.hex2buf = (hex: string): Uint8Array => (
-  // $FlowFixMe
+  // @ts-ignore
   new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
 );
 
@@ -118,7 +125,7 @@ utility.mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   return r;
 };
 
-utility.sexp2mic = function me(mi: string): * {
+utility.sexp2mic = function me(mi: string): any {
   mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -126,7 +133,7 @@ utility.sexp2mic = function me(mi: string): * {
   let pl = 0;
   let sopen = false;
   let escaped = false;
-  const ret = {
+  const ret: { prim: string; args: any[] } = {
     prim: '',
     args: [],
   };
@@ -170,7 +177,7 @@ utility.sexp2mic = function me(mi: string): * {
   return ret;
 };
 
-utility.mic2arr = function me2(s: any): * {
+utility.mic2arr = function me2(s: any): any {
   let ret: any = [];
   if (Object.prototype.hasOwnProperty.call(s, 'prim')) {
     if (s.prim === 'Pair') {
@@ -213,7 +220,7 @@ utility.mic2arr = function me2(s: any): * {
   return ret;
 };
 
-utility.ml2mic = function me(mi: string): * {
+utility.ml2mic = function me(mi: string): any {
   const ret = [];
   let inseq = false;
   let seq = '';

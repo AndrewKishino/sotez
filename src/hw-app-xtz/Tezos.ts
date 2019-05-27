@@ -1,7 +1,3 @@
-// @flow
-
-// $FlowFixMe
-import type Transport from '@ledgerhq/hw-transport';
 import { splitPath, foreach, encodePublicKey } from './utils';
 
 /**
@@ -12,9 +8,9 @@ import { splitPath, foreach, encodePublicKey } from './utils';
  * const tez = new Tezos(transport)
  */
 export default class Tezos {
-  transport: Transport<*>;
+  transport: any;
 
-  constructor(transport: Transport<*>) {
+  constructor(transport: any) {
     this.transport = transport;
     transport.decorateAppAPIMethods(
       this,
@@ -40,9 +36,9 @@ export default class Tezos {
     boolDisplay?: boolean,
     curve?: number,
   ): Promise<{
-    publicKey: string,
-    address: string,
-  }> {
+      publicKey: string;
+      address: string;
+    }> {
     const paths = splitPath(path);
     curve = curve || 0x00; // Defaults to Ed25519
     const buffer = Buffer.alloc(1 + paths.length * 4);
@@ -58,11 +54,11 @@ export default class Tezos {
         curve,
         buffer,
       )
-      .then((response) => {
+      .then((response: any) => {
         const publicKeyLength = response[0];
         const publicKey = response
           .slice(1, 1 + publicKeyLength);
-        // $FlowFixMe
+        // @ts-ignore
         return encodePublicKey(publicKey, curve);
       });
   }
@@ -72,13 +68,13 @@ export default class Tezos {
     rawTxHex: string,
     curve?: number,
   ): Promise<{
-    signature: string
-  }> {
+      signature: string;
+    }> {
     const paths = splitPath(path);
     let offset = 0;
     const rawTx = Buffer.from(rawTxHex, 'hex');
     const toSend = [];
-    let response;
+    let response: any;
     curve = curve || 0x00;
 
     // Initial key setting
@@ -114,7 +110,7 @@ export default class Tezos {
       }
       return this.transport
         .send(0x80, 0x04, code, curve, data)
-        .then((apduResponse) => {
+        .then((apduResponse: any) => {
           response = apduResponse;
         });
     }).then(() => {
@@ -124,12 +120,12 @@ export default class Tezos {
   }
 
   getVersion(): Promise<{
-    major: number,
-    minor: number,
-    patch: number,
-    bakingApp: boolean
+    major: number;
+    minor: number;
+    patch: number;
+    bakingApp: boolean;
   }> {
-    return this.transport.send(0x80, 0x00, 0x00, 0x00, Buffer.alloc(0)).then((apduResponse) => {
+    return this.transport.send(0x80, 0x00, 0x00, 0x00, Buffer.alloc(0)).then((apduResponse: any) => {
       const bakingApp = apduResponse[0] === 1;
       const major = apduResponse[1];
       const minor = apduResponse[2];

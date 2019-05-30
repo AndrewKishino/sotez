@@ -1,5 +1,6 @@
 module.exports = {
   presets: [
+    '@babel/preset-typescript',
     [
       '@babel/preset-env',
       {
@@ -10,7 +11,6 @@ module.exports = {
         },
       },
     ],
-    '@babel/preset-flow',
   ],
   plugins: [
     '@babel/plugin-proposal-class-properties',
@@ -23,6 +23,7 @@ module.exports = {
   env: {
     test: {
       presets: [
+        '@babel/preset-typescript',
         [
           '@babel/preset-env',
           {
@@ -32,7 +33,6 @@ module.exports = {
             },
           },
         ],
-        '@babel/preset-flow',
       ],
     },
   },

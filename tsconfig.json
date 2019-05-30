@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outFile": "./dist/types/index.d.ts",
+    "target": "esnext",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictPropertyInitialization": false
+  },
+  "include": [
+    "./src"
+  ]
+}

@@ -55,7 +55,6 @@ export interface Operation {
   destination?: string;
   public_key?: string;
   script?: { code: string; storage: string };
-  managerPubkey?: string;
   manager_pubkey?: string;
 }
 
@@ -83,7 +82,6 @@ export interface ConstructedOperation {
   destination: string;
   public_key: string;
   script: { code: string; storage: string };
-  managerPubkey: string;
   manager_pubkey: string;
 }
 

@@ -57,7 +57,6 @@ declare module "types/index" {
             code: string;
             storage: string;
         };
-        managerPubkey?: string;
         manager_pubkey?: string;
     }
     export interface ConstructedOperation {
@@ -87,7 +86,6 @@ declare module "types/index" {
             code: string;
             storage: string;
         };
-        managerPubkey: string;
         manager_pubkey: string;
     }
     export interface OperationObject {

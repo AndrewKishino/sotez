@@ -845,17 +845,13 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       gas_limit: gasLimit,
       storage_limit: storageLimit,
       balance: utility.mutez(balance),
+      manager_pubkey: publicKeyHash,
       spendable,
       delegatable,
       delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),
       script,
     };
 
-    if (this.network === 'zero') {
-      operation.manager_pubkey = publicKeyHash;
-    } else {
-      operation.managerPubkey = publicKeyHash;
-    }
     return this.sendOperation({ operation: [operation] });
   }
 

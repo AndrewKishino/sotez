@@ -109,7 +109,7 @@ declare module "types/index" {
     export interface Signed {
         bytes: string;
         sig: string;
-        edsig: string;
+        prefixSig: string;
         sbytes: string;
     }
     export interface Baker {
@@ -200,7 +200,7 @@ declare module "types/index" {
         edesk: Uint8Array;
         edsk: Uint8Array;
         edsig: Uint8Array;
-        spsig1: Uint8Array;
+        spsig: Uint8Array;
         p2sig: Uint8Array;
         sig: Uint8Array;
         Net: Uint8Array;
@@ -343,8 +343,8 @@ declare module "types/index" {
         validateLocalForge?: boolean;
     }
     export interface Key {
-        _publicKey: string;
-        _secretKey?: string;
+        _publicKey: (string | Uint8Array);
+        _secretKey?: (string | Uint8Array);
         _isLedger: boolean;
         _ledgerPath: string;
         _ledgerCurve: number;
@@ -457,15 +457,16 @@ declare module "key" {
      * await key.ready;
      */
     export default class Key implements KeyInterface {
-        _publicKey: string;
-        _secretKey?: string;
+        _curve: string;
+        _publicKey: (string | Uint8Array);
+        _secretKey?: (string | Uint8Array);
         _isSecret: boolean;
         _isLedger: boolean;
         _ledgerPath: string;
         _ledgerCurve: number;
         ready: Promise<void>;
-        curve: string;
         constructor(key: string, passphrase?: string, email?: string);
+        readonly curve: string;
         isLedger: boolean;
         ledgerPath: string;
         ledgerCurve: number;
@@ -498,7 +499,7 @@ declare module "key" {
         sign: (bytes: string, watermark: Uint8Array) => Promise<{
             bytes: string;
             sig: string;
-            edsig: string;
+            prefixSig: string;
             sbytes: string;
         }>;
         /**

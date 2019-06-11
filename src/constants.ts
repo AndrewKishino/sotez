@@ -18,7 +18,7 @@ export const prefix: Prefix = {
 
   edsk: new Uint8Array([43, 246, 78, 7]),
   edsig: new Uint8Array([9, 245, 205, 134, 18]),
-  spsig1: new Uint8Array([13, 115, 101, 19, 63]),
+  spsig: new Uint8Array([13, 115, 101, 19, 63]),
   p2sig: new Uint8Array([54, 240, 44, 52]),
   sig: new Uint8Array([4, 130, 43]),
 

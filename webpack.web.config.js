@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 
 module.exports = {
@@ -17,6 +18,9 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
+  ],
   entry: {
     main: './src/index-web.ts',
   },

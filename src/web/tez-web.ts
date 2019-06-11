@@ -674,16 +674,16 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         curve: this.key.ledgerCurve,
       });
       const sig = utility.hex2buf(signature);
-      const edsig = utility.b58cencode(sig, prefix.edsig);
+      const prefixSig = utility.b58cencode(sig, prefix[`${this.key.curve}sig`]);
       fullOp.opbytes += signature;
-      fullOp.opOb.signature = edsig;
+      fullOp.opOb.signature = prefixSig;
     } else if (skipSignature) {
       fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
     } else {
       const signed: Signed = await this.key.sign(fullOp.opbytes, watermark.generic);
       fullOp.opbytes = signed.sbytes;
-      fullOp.opOb.signature = signed.edsig;
+      fullOp.opOb.signature = signed.prefixSig;
     }
 
     const publicKeyHash = this.key.publicKeyHash();

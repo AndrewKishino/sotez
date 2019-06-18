@@ -58,6 +58,7 @@ declare module "types/index" {
             storage: string;
         };
         manager_pubkey?: string;
+        managerPubkey?: string;
     }
     export interface ConstructedOperation {
         kind: string;
@@ -87,6 +88,7 @@ declare module "types/index" {
             storage: string;
         };
         manager_pubkey: string;
+        managerPubkey: string;
     }
     export interface OperationObject {
         branch?: string;
@@ -109,7 +111,7 @@ declare module "types/index" {
     export interface Signed {
         bytes: string;
         sig: string;
-        edsig: string;
+        prefixSig: string;
         sbytes: string;
     }
     export interface Baker {
@@ -154,9 +156,9 @@ declare module "types/index" {
         storageLimit: number;
     }
     export interface RpcParams {
-        from: string;
-        keys: Keys;
         to: string;
+        source: string;
+        keys: Keys;
         amount: number;
         init: string;
         fee: number;
@@ -200,7 +202,7 @@ declare module "types/index" {
         edesk: Uint8Array;
         edsk: Uint8Array;
         edsig: Uint8Array;
-        spsig1: Uint8Array;
+        spsig: Uint8Array;
         p2sig: Uint8Array;
         sig: Uint8Array;
         Net: Uint8Array;
@@ -276,6 +278,7 @@ declare module "types/index" {
     }
     export interface OperationParams {
         operation: Operation[];
+        source?: string;
         skipPrevalidation?: boolean;
         skipSignature?: boolean;
     }
@@ -343,8 +346,8 @@ declare module "types/index" {
         validateLocalForge?: boolean;
     }
     export interface Key {
-        _publicKey: string;
-        _secretKey?: string;
+        _publicKey: (string | Uint8Array);
+        _secretKey?: (string | Uint8Array);
         _isLedger: boolean;
         _ledgerPath: string;
         _ledgerCurve: number;
@@ -457,15 +460,16 @@ declare module "key" {
      * await key.ready;
      */
     export default class Key implements KeyInterface {
-        _publicKey: string;
-        _secretKey?: string;
+        _curve: string;
+        _publicKey: (string | Uint8Array);
+        _secretKey?: (string | Uint8Array);
         _isSecret: boolean;
         _isLedger: boolean;
         _ledgerPath: string;
         _ledgerCurve: number;
         ready: Promise<void>;
-        curve: string;
         constructor(key: string, passphrase?: string, email?: string);
+        readonly curve: string;
         isLedger: boolean;
         ledgerPath: string;
         ledgerCurve: number;
@@ -498,7 +502,7 @@ declare module "key" {
         sign: (bytes: string, watermark: Uint8Array) => Promise<{
             bytes: string;
             sig: string;
-            edsig: string;
+            prefixSig: string;
             sbytes: string;
         }>;
         /**
@@ -831,7 +835,7 @@ declare module "web/tez-web" {
          *   }
          * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
          */
-        prepareOperation: ({ operation }: OperationParams) => Promise<ForgedBytes>;
+        prepareOperation: ({ operation, source }: OperationParams) => Promise<ForgedBytes>;
         /**
          * @description Simulate an operation
          * @param {Object} paramObject The parameters for the operation
@@ -849,7 +853,7 @@ declare module "web/tez-web" {
          *   },
          * }).then(result => console.log(result));
          */
-        simulateOperation: ({ operation }: OperationParams) => Promise<any>;
+        simulateOperation: ({ operation, source }: OperationParams) => Promise<any>;
         /**
          * @description Send an operation
          * @param {Object} paramObject The parameters for the operation
@@ -870,7 +874,7 @@ declare module "web/tez-web" {
          *
          * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
          */
-        sendOperation: ({ operation, skipPrevalidation, skipSignature }: OperationParams) => Promise<any>;
+        sendOperation: ({ operation, source, skipPrevalidation, skipSignature }: OperationParams) => Promise<any>;
         /**
          * @description Inject an operation
          * @param {Object} opOb The operation object
@@ -903,7 +907,7 @@ declare module "web/tez-web" {
          *   fee: '1278',
          * }).then(result => console.log(result))
          */
-        transfer: ({ to, amount, parameter, fee, gasLimit, storageLimit, mutez, rawParam, }: RpcParams) => Promise<any>;
+        transfer: ({ to, source, amount, parameter, fee, gasLimit, storageLimit, mutez, rawParam, }: RpcParams) => Promise<any>;
         /**
          * @description Activate an account
          * @param {Object} pkh The public key hash of the account
@@ -938,7 +942,7 @@ declare module "web/tez-web" {
          * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
          * @returns {Promise} Object containing the injected operation hash
          */
-        setDelegate: ({ delegate, fee, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
+        setDelegate: ({ delegate, source, fee, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
         /**
          * @description Register an account as a delegate
          * @param {Object} paramObject The parameters for the operation
@@ -1260,7 +1264,7 @@ declare module "node/tez" {
          *   }
          * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
          */
-        prepareOperation: ({ operation }: OperationParams) => Promise<ForgedBytes>;
+        prepareOperation: ({ operation, source }: OperationParams) => Promise<ForgedBytes>;
         /**
          * @description Simulate an operation
          * @param {Object} paramObject The parameters for the operation
@@ -1278,7 +1282,7 @@ declare module "node/tez" {
          *   },
          * }).then(result => console.log(result));
          */
-        simulateOperation: ({ operation }: OperationParams) => Promise<any>;
+        simulateOperation: ({ operation, source }: OperationParams) => Promise<any>;
         /**
          * @description Send an operation
          * @param {Object} paramObject The parameters for the operation
@@ -1299,7 +1303,7 @@ declare module "node/tez" {
          *
          * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
          */
-        sendOperation: ({ operation, skipPrevalidation, skipSignature }: OperationParams) => Promise<any>;
+        sendOperation: ({ operation, source, skipPrevalidation, skipSignature }: OperationParams) => Promise<any>;
         /**
          * @description Inject an operation
          * @param {Object} opOb The operation object
@@ -1332,7 +1336,7 @@ declare module "node/tez" {
          *   fee: '1278',
          * }).then(result => console.log(result))
          */
-        transfer: ({ to, amount, parameter, fee, gasLimit, storageLimit, mutez, rawParam, }: RpcParams) => Promise<any>;
+        transfer: ({ to, source, amount, parameter, fee, gasLimit, storageLimit, mutez, rawParam, }: RpcParams) => Promise<any>;
         /**
          * @description Activate an account
          * @param {Object} pkh The public key hash of the account
@@ -1367,7 +1371,7 @@ declare module "node/tez" {
          * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
          * @returns {Promise} Object containing the injected operation hash
          */
-        setDelegate: ({ delegate, fee, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
+        setDelegate: ({ delegate, source, fee, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
         /**
          * @description Register an account as a delegate
          * @param {Object} paramObject The parameters for the operation

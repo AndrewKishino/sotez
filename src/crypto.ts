@@ -166,12 +166,12 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string
     bb = utility.mergebuf(wm, bb);
   }
   const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), utility.b58cdecode(sk, prefix.edsk), 'uint8array');
-  const edsig = utility.b58cencode(sig, prefix.edsig);
+  const prefixSig = utility.b58cencode(sig, prefix.edsig);
   const sbytes = bytes + utility.buf2hex(sig);
   return {
     bytes,
     sig: utility.b58cencode(sig, prefix.sig),
-    edsig,
+    prefixSig,
     sbytes,
   };
 };

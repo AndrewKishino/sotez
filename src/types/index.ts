@@ -56,6 +56,7 @@ export interface Operation {
   public_key?: string;
   script?: { code: string; storage: string };
   manager_pubkey?: string;
+  managerPubkey?: string;
 }
 
 export interface ConstructedOperation {
@@ -83,6 +84,7 @@ export interface ConstructedOperation {
   public_key: string;
   script: { code: string; storage: string };
   manager_pubkey: string;
+  managerPubkey: string;
 }
 
 export interface OperationObject {
@@ -109,7 +111,7 @@ export interface KeysMnemonicPassphrase {
 export interface Signed {
   bytes: string;
   sig: string;
-  edsig: string;
+  prefixSig: string;
   sbytes: string;
 }
 
@@ -160,9 +162,9 @@ export interface AccountParams {
 }
 
 export interface RpcParams {
-  from: string;
-  keys: Keys;
   to: string;
+  source: string;
+  keys: Keys;
   amount: number;
   init: string;
   fee: number;
@@ -212,7 +214,7 @@ export interface Prefix {
   edsk: Uint8Array;
 
   edsig: Uint8Array;
-  spsig1: Uint8Array;
+  spsig: Uint8Array;
   p2sig: Uint8Array;
   sig: Uint8Array;
 
@@ -290,6 +292,7 @@ export interface Forge {
 
 export interface OperationParams {
   operation: Operation[];
+  source?: string,
   skipPrevalidation?: boolean;
   skipSignature?: boolean;
 }
@@ -360,8 +363,8 @@ export interface ModuleOptions {
 }
 
 export interface Key {
-  _publicKey: string;
-  _secretKey?: string;
+  _publicKey: (string | Uint8Array);
+  _secretKey?: (string | Uint8Array);
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;

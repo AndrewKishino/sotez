@@ -204,7 +204,8 @@ forge.op = (op: ConstructedOperation): string => {
           fop += forge.bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
-        fop += forge.publicKeyHash(op.manager_pubkey);
+        const managerPubkey = op.manager_pubkey || op.managerPubkey;
+        fop += forge.publicKeyHash(managerPubkey);
         fop += forge.zarith(op.balance);
         fop += forge.bool(op.spendable);
         fop += forge.bool(op.delegatable);

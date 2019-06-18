@@ -172,7 +172,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
             if (http.responseText) {
               let response = JSON.parse(http.responseText);
               if (this._debugMode) {
-                console.log('Node response:', path, payload, response);
+                console.log('Node response:', path, response);
               }
               if (typeof response.error !== 'undefined') {
                 reject(response.error);
@@ -237,13 +237,15 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
     if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
 
+    const managerKey = this.network === 'zero' ? 'managerPubkey' : 'manager_pubkey';
+
     const operation: Operation[] = [{
       kind: 'origination',
       balance: utility.mutez(balance),
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      manager_pubkey: this.key.publicKeyHash(),
+      [managerKey]: this.key.publicKeyHash(),
       ...params,
     }];
 
@@ -509,7 +511,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
-  prepareOperation = ({ operation }: OperationParams): Promise<ForgedBytes> => {
+  prepareOperation = ({ operation, source }: OperationParams): Promise<ForgedBytes> => {
     let counter;
     const opOb: OperationObject = {};
     const promises: any[] = [];
@@ -525,7 +527,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       ops = [operation];
     }
 
-    const publicKeyHash = this.key.publicKeyHash();
+    const publicKeyHash = source || this.key.publicKeyHash();
 
     for (let i = 0; i < ops.length; i++) {
       if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
@@ -541,7 +543,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       if (requiresReveal && typeof manager.key === 'undefined') {
         const reveal: Operation = {
           kind: 'reveal',
-          fee: this.network === 'zero' ? 100000 : 1269,
+          fee: 1269,
           public_key: this.key.publicKey(),
           source: publicKeyHash,
           gas_limit: 10000,
@@ -638,8 +640,8 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *   },
    * }).then(result => console.log(result));
    */
-  simulateOperation = ({ operation }: OperationParams): Promise<any> => (
-    this.prepareOperation({ operation }).then(fullOp => (
+  simulateOperation = ({ operation, source }: OperationParams): Promise<any> => (
+    this.prepareOperation({ operation, source }).then(fullOp => (
       this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`, fullOp.opOb)
     ))
   )
@@ -664,8 +666,8 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    *
    * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
    */
-  sendOperation = async ({ operation, skipPrevalidation = false, skipSignature = false }: OperationParams): Promise<any> => {
-    const fullOp: ForgedBytes = await this.prepareOperation({ operation });
+  sendOperation = async ({ operation, source, skipPrevalidation = false, skipSignature = false }: OperationParams): Promise<any> => {
+    const fullOp: ForgedBytes = await this.prepareOperation({ operation, source });
 
     if (this.key.isLedger) {
       const signature = await ledger.signOperation({
@@ -674,19 +676,19 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         curve: this.key.ledgerCurve,
       });
       const sig = utility.hex2buf(signature);
-      const edsig = utility.b58cencode(sig, prefix.edsig);
+      const prefixSig = utility.b58cencode(sig, prefix[`${this.key.curve}sig`]);
       fullOp.opbytes += signature;
-      fullOp.opOb.signature = edsig;
+      fullOp.opOb.signature = prefixSig;
     } else if (skipSignature) {
       fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
     } else {
       const signed: Signed = await this.key.sign(fullOp.opbytes, watermark.generic);
       fullOp.opbytes = signed.sbytes;
-      fullOp.opOb.signature = signed.edsig;
+      fullOp.opOb.signature = signed.prefixSig;
     }
 
-    const publicKeyHash = this.key.publicKeyHash();
+    const publicKeyHash = source || this.key.publicKeyHash();
 
     if (skipPrevalidation) {
       return this.silentInject(fullOp.opbytes)
@@ -728,7 +730,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
         }
         if (errors.length) {
           // @ts-ignore
-          throw new Error({ error: 'Operation Failed', errors });
+          throw new Error(JSON.stringify({ error: 'Operation Failed', errors }));
         }
         return this.query('/injection/operation', sopbytes);
       }).then(hash => ({
@@ -767,10 +769,11 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    */
   transfer = ({
     to,
+    source,
     amount,
     parameter,
     fee = this.defaultFee,
-    gasLimit = 10100,
+    gasLimit = 10500,
     storageLimit = 0,
     mutez = false,
     rawParam = false,
@@ -786,7 +789,7 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     if (parameter) {
       operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
     }
-    return this.sendOperation({ operation: [operation] });
+    return this.sendOperation({ operation: [operation], source });
   }
 
   /**
@@ -838,6 +841,8 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       storage: utility.sexp2mic(init),
     };
 
+    const managerKey = this.network === 'zero' ? 'managerPubkey' : 'manager_pubkey';
+
     const publicKeyHash = this.key.publicKeyHash();
     const operation: Operation = {
       kind: 'origination',
@@ -845,12 +850,15 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
       gas_limit: gasLimit,
       storage_limit: storageLimit,
       balance: utility.mutez(balance),
-      manager_pubkey: publicKeyHash,
+      [managerKey]: publicKeyHash,
       spendable,
       delegatable,
-      delegate: (typeof delegate !== 'undefined' && delegate ? delegate : publicKeyHash),
       script,
     };
+
+    if (delegate) {
+      operation.delegate = delegate;
+    }
 
     return this.sendOperation({ operation: [operation] });
   }
@@ -866,19 +874,20 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
    */
   setDelegate = async ({
     delegate,
-    fee = this.defaultFee,
+    source = this.key.publicKeyHash(),
+    fee = 1420,
     gasLimit = 10000,
     storageLimit = 0,
   }: RpcParams): Promise<any> => {
-    const publicKeyHash = this.key.publicKeyHash();
     const operation = {
       kind: 'delegation',
+      source,
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      delegate: (typeof delegate !== 'undefined' ? delegate : publicKeyHash),
+      delegate: delegate || this.key.publicKeyHash(),
     };
-    return this.sendOperation({ operation: [operation] });
+    return this.sendOperation({ operation: [operation], source });
   }
 
   /**
@@ -894,13 +903,12 @@ export default class Sotez extends AbstractTezModule implements TezInterface {
     gasLimit = 10000,
     storageLimit = 0,
   }: RpcParams): Promise<any> => {
-    const publicKeyHash = this.key.publicKeyHash();
     const operation = {
       kind: 'delegation',
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      delegate: publicKeyHash,
+      delegate: this.key.publicKeyHash(),
     };
     return this.sendOperation({ operation: [operation] });
   }

@@ -96,7 +96,7 @@ Originate a new account
 
 ```javascript
 sotez.account({
-  amount: 10,
+  balance: 10,
   spendable: true,
   delegatable: true,
   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
@@ -369,6 +369,7 @@ Prepares an operation
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.source` **[String][1]?** The source for the operation
 
 #### Examples
 
@@ -395,6 +396,7 @@ Simulate an operation
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.source` **[String][1]?** The source for the operation
 
 #### Examples
 
@@ -421,6 +423,7 @@ Send an operation
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.operation` **([Object][2] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.source` **[String][1]?** The source for the operation
     -   `paramObject.skipPrevalidation` **[Boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
     -   `paramObject.skipSignature`   (optional, default `false`)
 
@@ -472,6 +475,7 @@ Transfer operation
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.to` **[String][1]** The address of the recipient
+    -   `paramObject.source` **[String][1]?** The source for the operation
     -   `paramObject.amount` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.parameter` **[String][1]** The parameter for the transaction (optional, default `false`)
     -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)

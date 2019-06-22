@@ -5,7 +5,6 @@ import secp256r1 from 'secp256r1';
 import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
-import { Key as KeyInterface } from './types';
 
 /**
  * Creates a key object from a base58 encoded key.
@@ -17,10 +16,10 @@ import { Key as KeyInterface } from './types';
  * const key = new Key('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * await key.ready;
  */
-export default class Key implements KeyInterface {
+export default class Key {
   _curve: string;
-  _publicKey: (string | Uint8Array);
-  _secretKey?: (string | Uint8Array);
+  _publicKey: Buffer;
+  _secretKey?: Buffer;
   _isSecret: boolean;
   _isLedger: boolean;
   _ledgerPath: string;
@@ -83,7 +82,8 @@ export default class Key implements KeyInterface {
 
     let key = this._secretKey;
     if (this._curve === 'ed') {
-      ({ privateKey: key } = sodium.crypto_sign_seed_keypair(key.slice(0, 32)));
+      const { privateKey } = sodium.crypto_sign_seed_keypair(key.slice(0, 32));
+      key = toBuffer(privateKey);
     }
 
     return utility.b58cencode(key, prefix[`${this._curve}sk`]);
@@ -117,8 +117,8 @@ export default class Key implements KeyInterface {
       const seed = pbkdf2.pbkdf2Sync(key, `mnemonic${salt}`, 2048, 64, 'sha512');
       const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
 
-      this._publicKey = publicKey;
-      this._secretKey = privateKey;
+      this._publicKey = toBuffer(publicKey);
+      this._secretKey = toBuffer(privateKey);
       this._curve = 'ed';
       this._isSecret = true;
 
@@ -145,10 +145,11 @@ export default class Key implements KeyInterface {
 
     this._isSecret = publicOrSecret === 'sk';
 
+    let constructedKey: Uint8Array;
     if (this._isSecret) {
-      key = utility.b58cdecode(key, prefix[`${this._curve}${encrypted ? 'e' : ''}sk`]);
+      constructedKey = utility.b58cdecode(key, prefix[`${this._curve}${encrypted ? 'e' : ''}sk`]);
     } else {
-      key = utility.b58cdecode(key, prefix[`${this._curve}pk`]);
+      constructedKey = utility.b58cdecode(key, prefix[`${this._curve}pk`]);
     }
 
     if (encrypted) {
@@ -156,30 +157,30 @@ export default class Key implements KeyInterface {
         throw new Error('Encrypted key provided without a passphrase.');
       }
 
-      const salt = key.slice(0, 8);
-      const encryptedSk = key.slice(8);
+      const salt = toBuffer(constructedKey.slice(0, 8));
+      const encryptedSk = constructedKey.slice(8);
       const encryptionKey = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
 
-      key = sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
+      constructedKey = sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
     }
 
     if (!this._isSecret) {
-      this._publicKey = key;
+      this._publicKey = toBuffer(constructedKey);
       this._secretKey = undefined;
     } else {
-      this._secretKey = key;
+      this._secretKey = toBuffer(constructedKey);
       if (this._curve === 'ed') {
-        if (key.length === 64) {
-          this._publicKey = key.slice(32);
+        if (constructedKey.length === 64) {
+          this._publicKey = toBuffer(constructedKey.slice(32));
         } else {
-          const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(key, 'uint8array');
-          this._publicKey = publicKey;
-          this._secretKey = privateKey;
+          const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(constructedKey, 'uint8array');
+          this._publicKey = toBuffer(publicKey);
+          this._secretKey = toBuffer(privateKey);
         }
       } else if (this._curve === 'sp') {
-        this._publicKey = secp256k1.publicKeyCreate(key);
+        this._publicKey = secp256k1.publicKeyCreate(toBuffer(constructedKey));
       } else if (this._curve === 'p2') {
-        this._publicKey = secp256r1.publicKeyCreate(key);
+        this._publicKey = secp256r1.publicKeyCreate(toBuffer(constructedKey));
       } else {
         throw new Error('Invalid key');
       }
@@ -209,7 +210,8 @@ export default class Key implements KeyInterface {
 
     if (this._curve === 'ed') {
       const signature = sodium.crypto_sign_detached(bytesHash, this._secretKey);
-      const sbytes = bytes + utility.buf2hex(signature);
+      const signatureBuffer = toBuffer(signature)
+      const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
       return {
         bytes,
@@ -219,7 +221,8 @@ export default class Key implements KeyInterface {
       };
     } else if (this._curve === 'sp') {
       const { signature } = secp256k1.sign(bytesHash, this._secretKey);
-      const sbytes = bytes + utility.buf2hex(signature);
+      const signatureBuffer = toBuffer(signature);
+      const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
       return {
         bytes,
@@ -229,7 +232,8 @@ export default class Key implements KeyInterface {
       };
     } else if (this._curve === 'p2') {
       const { signature } = secp256r1.sign(bytesHash, this._secretKey);
-      const sbytes = bytes + utility.buf2hex(signature);
+      const signatureBuffer = toBuffer(signature);
+      const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
       return {
         bytes,
@@ -248,10 +252,12 @@ export default class Key implements KeyInterface {
    * @param {String} bytes Sequance of bytes, raw format or hexadecimal notation
    * @param {Uint8Array} signature A signature in base58 encoding
    */
-  verify = (bytes: string, signature: string) => {
-    if (!this._publicKey) {
+  verify = (bytes: string, signature: string, publicKey: string = this.publicKey()) => {
+    if (!publicKey) {
       throw new Error('Cannot verify without a public key');
     }
+
+    const _publicKey = toBuffer(utility.b58cdecode(publicKey, prefix[`${this._curve}pk`]));
 
     if (signature.slice(0, 3) !== 'sig') {
       if (this._curve !== signature.slice(0, 2)) { // 'sp', 'p2' 'ed'
@@ -259,17 +265,19 @@ export default class Key implements KeyInterface {
       }
     }
 
+    const bytesBuffer = toBuffer(utility.hex2buf(bytes));
+    const signatureBuffer = toBuffer(utility.textEncode(signature));
+
     if (this._curve === 'ed') {
-      const digest = utility.hex2buf(bytes);
       try {
-        return sodium.crypto_sign_verify_detached(signature, digest, this._publicKey);
+        return sodium.crypto_sign_verify_detached(signatureBuffer, bytesBuffer, _publicKey);
       } catch (e) {
         throw new Error('Signature is invalid.');
       }
     } else if (this._curve === 'sp') {
-      return secp256k1.verify(bytes, signature, this._publicKey);
+      return secp256k1.verify(bytesBuffer, signatureBuffer, _publicKey);
     } else if (this._curve === 'p2') {
-      return secp256r1.verify(bytes, signature, this._publicKey);
+      return secp256r1.verify(bytesBuffer, signatureBuffer, _publicKey);
     } else {
       throw new Error(`Curve '${this._curve}' not supported`);
     }

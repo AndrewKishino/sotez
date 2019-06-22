@@ -1,7 +1,7 @@
-import { TezModuleInterface, ModuleOptions } from './types';
+import { ModuleOptions } from './types/sotez';
 
 // Core Tez Module
-export default class AbstractTezModule implements TezModuleInterface {
+export default class AbstractTezModule {
   _provider: string;
   _network: string;
   _defaultFee: number;
@@ -16,7 +16,7 @@ export default class AbstractTezModule implements TezModuleInterface {
     this._provider = provider;
     this._network = network;
     this._chain = chain;
-    this._defaultFee = options.defaultFee || 1278;
+    this._defaultFee = options.defaultFee || 1420;
   }
 
   get provider() {

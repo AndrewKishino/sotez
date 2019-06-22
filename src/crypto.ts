@@ -1,18 +1,15 @@
-import { generateMnemonic, mnemonicToSeed } from 'bip39';
+import { generateMnemonic as bip39GenerateMnemonic, mnemonicToSeed } from 'bip39';
 import pbkdf2 from 'pbkdf2';
 import _sodium from 'libsodium-wrappers';
+import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
 
 import {
-  Crypto,
   Keys,
   KeysMnemonicPassphrase,
   Signed,
-} from './types';
-
-// @ts-ignore
-const crypto: Crypto = {};
+} from './types/sotez';
 
 /**
  * @description Extract key pairs from a secret key
@@ -23,7 +20,7 @@ const crypto: Crypto = {};
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
  */
-crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
+const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -42,7 +39,7 @@ crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> =>
 
   if (curve === 'ed') {
     if (encrypted) {
-      const esb = utility.b58cdecode(sk, prefix.edesk);
+      const esb = toBuffer(utility.b58cdecode(sk, prefix.edesk));
       const salt = esb.slice(0, 8);
       const esm = esb.slice(8);
 
@@ -88,14 +85,14 @@ crypto.extractKeys = async (sk: string, password: string = ''): Promise<Keys> =>
  * @description Generate a mnemonic
  * @returns {String} The generated mnemonic
  */
-crypto.generateMnemonic = (): string => generateMnemonic(160);
+const generateMnemonic = (): string => bip39GenerateMnemonic(160);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
  * @param {String} address The address to check
  * @returns {Boolean} Whether address is valid or not
  */
-crypto.checkAddress = (address: string): boolean => {
+const checkAddress = (address: string): boolean => {
   try {
     utility.b58cdecode(address, prefix.tz1);
     return true;
@@ -113,7 +110,7 @@ crypto.checkAddress = (address: string): boolean => {
  * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh))
  */
-crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
+const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -122,7 +119,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
 
   const sodium = _sodium;
   const s = await mnemonicToSeed(mnemonic, passphrase).then((seed: (string | Buffer)) => seed.slice(0, 32));
-  const kp = sodium.crypto_sign_seed_keypair(s);
+  const kp = sodium.crypto_sign_seed_keypair(toBuffer(s));
   return {
     mnemonic,
     passphrase,
@@ -145,7 +142,7 @@ crypto.generateKeys = async (mnemonic: string, passphrase: string): Promise<Keys
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
  */
-crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
+const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -155,7 +152,7 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string
   const sodium = _sodium;
   if (sk.length === 54 || sk.length === 55) {
     try {
-      ({ sk } = await crypto.extractKeys(sk, password));
+      ({ sk } = await extractKeys(sk, password));
     } catch (e) {
       throw new Error(e);
     }
@@ -167,7 +164,8 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string
   }
   const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), utility.b58cdecode(sk, prefix.edsk), 'uint8array');
   const prefixSig = utility.b58cencode(sig, prefix.edsig);
-  const sbytes = bytes + utility.buf2hex(sig);
+  const signatureBuffer = toBuffer(sig);
+  const sbytes = bytes + utility.buf2hex(signatureBuffer);
   return {
     bytes,
     sig: utility.b58cencode(sig, prefix.sig),
@@ -183,7 +181,7 @@ crypto.sign = async (bytes: string, sk: string, wm: Uint8Array, password: string
  * @param {String} pk The public key
  * @returns {Boolean} Whether the signed bytes are valid
  */
-crypto.verify = async (bytes: string, sig: string, pk: string): Promise<number> => {
+const verify = async (bytes: string, sig: string, pk: string): Promise<boolean> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -191,7 +189,16 @@ crypto.verify = async (bytes: string, sig: string, pk: string): Promise<number> 
   }
 
   const sodium = _sodium;
-  return sodium.crypto_sign_verify_detached(sig, utility.hex2buf(bytes), utility.b58cdecode(pk, prefix.edpk));
+  const bytesBuffer = toBuffer(utility.hex2buf(bytes));
+  const signatureBuffer = toBuffer(utility.textEncode(sig));
+  return sodium.crypto_sign_verify_detached(signatureBuffer, bytesBuffer, utility.b58cdecode(pk, prefix.edpk));
 };
 
-export default crypto;
+export default {
+  extractKeys,
+  generateKeys,
+  checkAddress,
+  generateMnemonic,
+  sign,
+  verify,
+};

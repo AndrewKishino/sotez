@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
-    "outFile": "./dist/types/index.d.ts",
-    "target": "esnext",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "moduleResolution": "node",
+    "baseUrl": ".",
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noEmit": true,
+    "paths": {
+      "ledger": [
+        "src/ledger.ts",
+      ],
+    },
     "strict": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "target": "esnext",
   },
   "include": [
-    "./src"
-  ]
+    "src/**/*"
+  ],
 }

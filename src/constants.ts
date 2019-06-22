@@ -1,4 +1,4 @@
-import { Prefix, Watermark } from './types';
+import { Prefix, Watermark } from './types/sotez';
 
 export const prefix: Prefix = {
   tz1: new Uint8Array([6, 161, 159]),

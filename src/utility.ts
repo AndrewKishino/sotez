@@ -1,25 +1,17 @@
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
+import { Buffer } from 'buffer/';
 
-import { Utility } from './types';
+const textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
 
-if (typeof Buffer === 'undefined') {
-  // @ts-ignore
-  Buffer = require('buffer');
-}
-
-// @ts-ignore
-const utility: Utility = {};
-
-utility.textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
-utility.textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
+const textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
 
 /**
  * @description Convert from base58 to integer
  * @param {String} v The b58 value
  * @returns {String} The converted b58 value
  */
-utility.b582int = (v: string): string => {
+const b582int = (v: string): string => {
   let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   for (let i = 0; i < v.length; i++) {
@@ -33,7 +25,7 @@ utility.b582int = (v: string): string => {
  * @param {Number} mutez The amount in mutez to convert to tez
  * @returns {Number} The mutez amount converted to tez
  */
-utility.totez = (mutez: number): number => {
+const totez = (mutez: number): number => {
   if (typeof mutez === 'number') {
     return mutez / 1000000;
   } if (typeof mutez === 'string') {
@@ -47,7 +39,7 @@ utility.totez = (mutez: number): number => {
  * @param {Number} tez The amount in tez to convert to mutez
  * @returns {String} The tez amount converted to mutez
  */
-utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
+const mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
  * @description Base58 encode
@@ -55,8 +47,7 @@ utility.mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixe
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {String} The base58 encoded value
  */
-//@ts-ignore
-utility.b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
+const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
   n.set(payload, prefixArg.length);
@@ -68,16 +59,16 @@ utility.b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
  * @description Base58 decode
  * @param {String} payload The value to decode
  * @param {Object} prefixArg The Uint8Array prefix values
- * @returns {String} The decoded base58 value
+ * @returns {Object} The decoded base58 value
  */
-utility.b58cdecode = (enc: string, prefixArg: Uint8Array): string => bs58check.decode(enc).slice(prefixArg.length);
+const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array => bs58check.decode(enc).slice(prefixArg.length);
 
 /**
  * @description Buffer to hex
  * @param {Object} buffer The buffer to convert to hex
  * @returns {String} Converted hex value
  */
-utility.buf2hex = (buffer: Buffer): string => {
+const buf2hex = (buffer: Buffer): string => {
   const byteArray = new Uint8Array(buffer);
   const hexParts: string[] = [];
   byteArray.forEach((byte: any) => {
@@ -93,7 +84,7 @@ utility.buf2hex = (buffer: Buffer): string => {
  * @param {String} hex The hex to convert to buffer
  * @returns {Object} Converted buffer value
  */
-utility.hex2buf = (hex: string): Uint8Array => (
+const hex2buf = (hex: string): Uint8Array => (
   // @ts-ignore
   new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
 );
@@ -103,7 +94,7 @@ utility.hex2buf = (hex: string): Uint8Array => (
  * @param {Number} length The length of the nonce
  * @returns {String} The nonce of the given length
  */
-utility.hexNonce = (length: number): string => {
+const hexNonce = (length: number): string => {
   const chars = '0123456789abcedf';
   let hex = '';
   while (length--) {
@@ -118,14 +109,14 @@ utility.hexNonce = (length: number): string => {
  * @param {Object} b2 The second buffer
  * @returns {Object} The merged buffer
  */
-utility.mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
+const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   const r = new Uint8Array(b1.length + b2.length);
   r.set(b1);
   r.set(b2, b1.length);
   return r;
 };
 
-utility.sexp2mic = function me(mi: string): any {
+const sexp2mic = function me(mi: string): any {
   mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -177,7 +168,7 @@ utility.sexp2mic = function me(mi: string): any {
   return ret;
 };
 
-utility.mic2arr = function me2(s: any): any {
+const mic2arr = function me2(s: any): any {
   let ret: any = [];
   if (Object.prototype.hasOwnProperty.call(s, 'prim')) {
     if (s.prim === 'Pair') {
@@ -220,7 +211,7 @@ utility.mic2arr = function me2(s: any): any {
   return ret;
 };
 
-utility.ml2mic = function me(mi: string): any {
+const ml2mic = function me(mi: string): any {
   const ret = [];
   let inseq = false;
   let seq = '';
@@ -265,7 +256,7 @@ utility.ml2mic = function me(mi: string): any {
         val = '';
         continue;
       }
-      ret.push(utility.sexp2mic(val));
+      ret.push(sexp2mic(val));
       val = '';
       continue;
     } else if (mi[i] === '"' && sopen) {
@@ -285,10 +276,30 @@ utility.ml2mic = function me(mi: string): any {
 };
 
 // Legacy commands
-utility.ml2tzjson = utility.sexp2mic;
-utility.tzjson2arr = utility.mic2arr;
-utility.mlraw2json = utility.ml2mic;
-utility.mintotz = utility.totez;
-utility.tztomin = utility.mutez;
+const ml2tzjson = sexp2mic;
+const tzjson2arr = mic2arr;
+const mlraw2json = ml2mic;
+const mintotz = totez;
+const tztomin = mutez;
 
-export default utility;
+export default {
+  textEncode,
+  textDecode,
+  b582int,
+  totez,
+  mutez,
+  b58cencode,
+  b58cdecode,
+  buf2hex,
+  hex2buf,
+  hexNonce,
+  mergebuf,
+  sexp2mic,
+  mic2arr,
+  ml2mic,
+  ml2tzjson,
+  tzjson2arr,
+  mlraw2json,
+  mintotz,
+  tztomin,
+};

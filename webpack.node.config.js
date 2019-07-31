@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path'); // eslint-disable-line
 const nodeExternals = require('webpack-node-externals'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 
@@ -9,6 +9,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [__dirname, 'node_modules'],
+    alias: {
+      ledger$: path.resolve(__dirname, './src/ledger.ts'),
+    },
   },
   module: {
     rules: [
@@ -23,7 +26,7 @@ module.exports = {
     main: './src/index.ts',
   },
   output: {
-    path: path.join(__dirname, 'dist', 'node'),
+    path: path.join(__dirname, 'build', 'node'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },

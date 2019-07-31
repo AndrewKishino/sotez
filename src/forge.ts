@@ -1,22 +1,20 @@
 import { BigNumber } from 'bignumber.js';
+import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix, forgeMappings } from './constants';
 
 import {
-  Forge,
   ConstructedOperation,
   OperationObject,
   ForgedBytes,
-} from './types';
+} from './types/sotez';
 
-// @ts-ignore
-const forge: Forge = {};
 /**
  * @description Convert bytes from Int32
  * @param {Number} num Number to convert to bytes
  * @returns {Object} The converted number
  */
-forge.toBytesInt32 = (num: number): any => {
+const toBytesInt32 = (num: number): any => {
   // @ts-ignore
   num = parseInt(num, 10);
   const arr = new Uint8Array([
@@ -33,14 +31,17 @@ forge.toBytesInt32 = (num: number): any => {
  * @param {Number} num Number to convert to hex
  * @returns {String} The converted number
  */
-forge.toBytesInt32Hex = (num: number): string => utility.buf2hex(forge.toBytesInt32(num));
+const toBytesInt32Hex = (num: number): string => {
+  const forgedBuffer = toBuffer(toBytesInt32(num));
+  return utility.buf2hex(forgedBuffer);
+}
 
 /**
  * @description Forge boolean
  * @param {Boolean} bool Boolean value to convert
  * @returns {String} The converted boolean
  */
-forge.bool = (bool: boolean): string => (bool ? 'ff' : '00');
+const bool = (bool: boolean): string => (bool ? 'ff' : '00');
 
 /**
  * @description Forge script bytes
@@ -49,10 +50,10 @@ forge.bool = (bool: boolean): string => (bool ? 'ff' : '00');
  * @param {String} script.storage Script storage
  * @returns {String} Forged script bytes
  */
-forge.script = (script: { code: string; storage: string }): string => {
-  const t1 = forge.encodeRawBytes(script.code).toLowerCase();
-  const t2 = forge.encodeRawBytes(script.storage).toLowerCase();
-  return forge.toBytesInt32Hex(t1.length / 2) + t1 + forge.toBytesInt32Hex(t2.length / 2) + t2;
+const script = (script: { code: string; storage: string }): string => {
+  const t1 = encodeRawBytes(script.code).toLowerCase();
+  const t2 = encodeRawBytes(script.storage).toLowerCase();
+  return toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2;
 };
 
 /**
@@ -60,9 +61,9 @@ forge.script = (script: { code: string; storage: string }): string => {
  * @param {String} parameter Script to forge
  * @returns {String} Forged parameter bytes
  */
-forge.parameters = (parameter: string): string => {
-  const t = forge.encodeRawBytes(parameter).toLowerCase();
-  return forge.toBytesInt32Hex(t.length / 2) + t;
+const parameters = (parameter: string): string => {
+  const t = encodeRawBytes(parameter).toLowerCase();
+  return toBytesInt32Hex(t.length / 2) + t;
 };
 
 /**
@@ -70,10 +71,11 @@ forge.parameters = (parameter: string): string => {
  * @param {String} pkh Public key hash to forge
  * @returns {String} Forged public key hash bytes
  */
-forge.publicKeyHash = (pkh: string): string => {
+const publicKeyHash = (pkh: string): string => {
   const t = parseInt(pkh.substr(2, 1), 10);
   let fpkh = `0${t - 1}`;
-  fpkh += utility.buf2hex(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
+  const forgedBuffer = toBuffer(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
+  fpkh += utility.buf2hex(forgedBuffer);
   return fpkh;
 };
 
@@ -82,15 +84,16 @@ forge.publicKeyHash = (pkh: string): string => {
  * @param {String} address Address to forge
  * @returns {String} Forged address bytes
  */
-forge.address = (address: string): string => {
-  let fa;
+const address = (address: string, network?: string): string => {
+  let fa = '';
   if (address.substr(0, 1) === 'K') {
-    fa = '01';
-    fa += utility.buf2hex(utility.b58cdecode(address, prefix.KT));
+    fa += network === 'zero' ? '' : '01';
+    const forgedBuffer = toBuffer(utility.b58cdecode(address, prefix.KT));
+    fa += utility.buf2hex(forgedBuffer);
     fa += '00';
   } else {
-    fa = '00';
-    fa += forge.publicKeyHash(address);
+    fa += network === 'zero' ? '' : '00';
+    fa += publicKeyHash(address);
   }
   return fa;
 };
@@ -100,7 +103,7 @@ forge.address = (address: string): string => {
  * @param {Number} n Zarith to forge
  * @returns {String} Forged zarith bytes
  */
-forge.zarith = (n: string): string => {
+const zarith = (n: string): string => {
   let fn = '';
   let nn = parseInt(n, 10);
   if (Number.isNaN(nn)) {
@@ -127,7 +130,7 @@ forge.zarith = (n: string): string => {
  * @param {Number} pk Public key to forge
  * @returns {String} Forged public key bytes
  */
-forge.publicKey = (pk: string): string => {
+const publicKey = (pk: string): string => {
   let fpk = '';
   switch (pk.substr(0, 2)) {
     case 'ed': fpk = '00'; break;
@@ -135,7 +138,8 @@ forge.publicKey = (pk: string): string => {
     case 'p2': fpk = '02'; break;
     default: break;
   }
-  fpk += utility.buf2hex(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
+  const forgedBuffer = toBuffer(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
+  fpk += utility.buf2hex(forgedBuffer);
   return fpk;
 };
 
@@ -144,14 +148,16 @@ forge.publicKey = (pk: string): string => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-forge.op = (op: ConstructedOperation): string => {
+const op = (op: ConstructedOperation, network: string): string => {
   /* eslint-disable */
   let fop = '';
-  fop = utility.buf2hex(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
+  const forgedBuffer = toBuffer(new Uint8Array([forgeMappings.forgeOpTags[op.kind]]));
+  fop = utility.buf2hex(forgedBuffer);
   switch (forgeMappings.forgeOpTags[op.kind]) {
     case 0:
     case 1:
-      fop += utility.buf2hex(forge.toBytesInt32(op.level));
+      const levelBuffer = toBuffer(toBytesInt32(op.level));
+      fop += utility.buf2hex(levelBuffer);
       if (forgeMappings.forgeOpTags[op.kind] === 0) break;
       fop += op.nonce;
       if (forgeMappings.forgeOpTags[op.kind] === 1) break;
@@ -161,17 +167,20 @@ forge.op = (op: ConstructedOperation): string => {
     // if (forgeMappings.forgeOpTags[op.kind] === 2) break;
     // if (forgeMappings.forgeOpTags[op.kind] === 3) break;
     case 4:
-      fop += utility.buf2hex(utility.b58cdecode(op.pkh, prefix.tz1));
+      const addressBuffer = toBuffer(utility.b58cdecode(op.pkh, prefix.tz1));
+      fop += utility.buf2hex(addressBuffer);
       fop += op.secret;
       if (forgeMappings.forgeOpTags[op.kind] === 4) break;
     case 5:
     case 6:
-      fop += forge.publicKeyHash(op.source);
-      fop += utility.buf2hex(forge.toBytesInt32(op.period));
+      fop += publicKeyHash(op.source);
+      const periodBuffer = toBuffer(toBytesInt32(op.period));
+      fop += utility.buf2hex(periodBuffer);
       if (forgeMappings.forgeOpTags[op.kind] === 5) {
         throw new Error('Proposal forging is not complete');
       } else if (forgeMappings.forgeOpTags[op.kind] === 6) {
-        fop += utility.buf2hex(utility.b58cdecode(op.proposal, prefix.P));
+        const forgedBuffer = toBuffer(utility.b58cdecode(op.proposal, prefix.P));
+        fop += utility.buf2hex(forgedBuffer);
         let ballot;
         if (op.ballot === 'yay') {
           ballot = '00';
@@ -187,46 +196,46 @@ forge.op = (op: ConstructedOperation): string => {
     case 8:
     case 9:
     case 10:
-      fop += forge.address(op.source);
-      fop += forge.zarith(op.fee);
-      fop += forge.zarith(op.counter);
-      fop += forge.zarith(op.gas_limit);
-      fop += forge.zarith(op.storage_limit);
+      fop += address(op.source, network);
+      fop += zarith(op.fee);
+      fop += zarith(op.counter);
+      fop += zarith(op.gas_limit);
+      fop += zarith(op.storage_limit);
       if (forgeMappings.forgeOpTags[op.kind] === 7) {
-        fop += forge.publicKey(op.public_key);
+        fop += publicKey(op.public_key);
       } else if (forgeMappings.forgeOpTags[op.kind] === 8) {
-        fop += forge.zarith(op.amount);
-        fop += forge.address(op.destination);
+        fop += zarith(op.amount);
+        fop += address(op.destination);
         if (typeof op.parameters !== 'undefined' && op.parameters) {
-          fop += forge.bool(true);
-          fop += forge.parameters(op.parameters);
+          fop += bool(true);
+          fop += parameters(op.parameters);
         } else {
-          fop += forge.bool(false);
+          fop += bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 9) {
         const managerPubkey = op.manager_pubkey || op.managerPubkey;
-        fop += forge.publicKeyHash(managerPubkey);
-        fop += forge.zarith(op.balance);
-        fop += forge.bool(op.spendable);
-        fop += forge.bool(op.delegatable);
+        fop += publicKeyHash(managerPubkey);
+        fop += zarith(op.balance);
+        fop += bool(op.spendable);
+        fop += bool(op.delegatable);
         if (typeof op.delegate !== 'undefined' && op.delegate) {
-          fop += forge.bool(true);
-          fop += forge.publicKeyHash(op.delegate);
+          fop += bool(true);
+          fop += publicKeyHash(op.delegate);
         } else {
-          fop += forge.bool(false);
+          fop += bool(false);
         }
         if (typeof op.script !== 'undefined' && op.script) {
-          fop += forge.bool(true);
-          fop += forge.script(op.script);
+          fop += bool(true);
+          fop += script(op.script);
         } else {
-          fop += forge.bool(false);
+          fop += bool(false);
         }
       } else if (forgeMappings.forgeOpTags[op.kind] === 10) {
         if (typeof op.delegate !== 'undefined' && op.delegate) {
-          fop += forge.bool(true);
-          fop += forge.publicKeyHash(op.delegate);
+          fop += bool(true);
+          fop += publicKeyHash(op.delegate);
         } else {
-          fop += forge.bool(false);
+          fop += bool(false);
         }
       }
       break;
@@ -257,7 +266,7 @@ forge.op = (op: ConstructedOperation): string => {
  *   }],
  * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
  */
-forge.forge = async (opOb: OperationObject, counter: number): Promise<ForgedBytes> => {
+const forge = async (opOb: OperationObject, counter: number, network: string): Promise<ForgedBytes> => {
   if (!opOb.contents) {
     throw new Error('No operation contents provided.');
   }
@@ -266,10 +275,11 @@ forge.forge = async (opOb: OperationObject, counter: number): Promise<ForgedByte
     throw new Error('No operation branch provided.');
   }
 
-  let forgedBytes = utility.buf2hex(utility.b58cdecode(opOb.branch, prefix.b));
+  const forgedBuffer = toBuffer(utility.b58cdecode(opOb.branch, prefix.b));
+  let forgedBytes = utility.buf2hex(forgedBuffer);
 
   opOb.contents.forEach((content: ConstructedOperation): void => {
-    forgedBytes += forge.op(content);
+    forgedBytes += op(content, network);
   });
 
   return {
@@ -284,7 +294,7 @@ forge.forge = async (opOb: OperationObject, counter: number): Promise<ForgedByte
  * @param {String} bytes The bytes to decode
  * @returns {Object} Decoded raw bytes
  */
-forge.decodeRawBytes = (bytes: string): any => {
+const decodeRawBytes = (bytes: string): any => {
   bytes = bytes.toUpperCase();
 
   let index = 0;
@@ -394,7 +404,7 @@ forge.decodeRawBytes = (bytes: string): any => {
  * @param {Object} input The value to encode
  * @returns {String} Encoded value as bytes
  */
-forge.encodeRawBytes = (input: any): string => {
+const encodeRawBytes = (input: any): string => {
   const rec = (inputArg: any): any => {
     const result = [];
 
@@ -413,7 +423,10 @@ forge.encodeRawBytes = (input: any): string => {
           inputArg.args.forEach((arg: any) => result.push(rec(arg)));
         }
         if (inputArg.annots) {
-          const annotsBytes = inputArg.annots.map((x: any) => utility.buf2hex(utility.textEncode(x))).join('20');
+          const annotsBytes = inputArg.annots.map((x: any) => {
+            const forgedBuffer = toBuffer(utility.textEncode(x));
+            return utility.buf2hex(forgedBuffer);
+          }).join('20');
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
@@ -463,4 +476,18 @@ forge.encodeRawBytes = (input: any): string => {
   return rec(input).toUpperCase();
 };
 
-export default forge;
+export default {
+  address,
+  decodeRawBytes,
+  encodeRawBytes,
+  forge,
+  op,
+  parameters,
+  publicKey,
+  publicKeyHash,
+  zarith,
+  bool,
+  script,
+  toBytesInt32,
+  toBytesInt32Hex,
+};

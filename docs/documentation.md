@@ -10,7 +10,7 @@ Main tez.js Library
 -   `chain` **[String][1]** Chain Id (optional, default `'main'`)
 -   `network` **[String][1]** Network ['main', 'zero',] (optional, default `'main'`)
 -   `options` **[Object][2]**  (optional, default `{}`)
-    -   `options.defaultFee` **[Number][3]** The default fee for tranactions (optional, default `1278`)
+    -   `options.defaultFee` **[Number][3]** The default fee for tranactions (optional, default `1420`)
     -   `options.debugMode` **[Boolean][4]** Debug mode enablement (optional, default `false`)
     -   `options.localForge` **[Boolean][4]** Forge operations locally (optional, default `true`)
     -   `options.validateLocalForge` **[Boolean][4]** Validate local forge bytes against remote forged bytes (optional, default `false`)
@@ -19,7 +19,7 @@ Main tez.js Library
 
 ```javascript
 import Sotez from 'sotez';
-const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1420 })
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
@@ -88,8 +88,8 @@ Originate a new account
     -   `paramObject.spendable` **[Boolean][4]?** Whether the keyholder can spend the balance from the new account
     -   `paramObject.delegatable` **[Boolean][4]?** Whether the new account is delegatable
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
-    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
+    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 #### Examples
@@ -377,9 +377,9 @@ Prepares an operation
 sotez.prepareOperation({
   operation: {
     kind: 'transaction',
-    fee: '50000',
-    gas_limit: '10200',
-    storage_limit: '0',
+    fee: '1420',
+    gas_limit: '10600',
+    storage_limit: '300',
     amount: '1000',
     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   }
@@ -404,9 +404,9 @@ Simulate an operation
 sotez.simulateOperation({
   operation: {
     kind: 'transaction',
-    fee: '50000',
-    gas_limit: '10200',
-    storage_limit: '0',
+    fee: '1420',
+    gas_limit: '10600',
+    storage_limit: '300',
     amount: '1000',
     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   },
@@ -432,9 +432,9 @@ Send an operation
 ```javascript
 const operation = {
   kind: 'transaction',
-  fee: '50000',
-  gas_limit: '10200',
-  storage_limit: '0',
+  fee: '1420',
+  gas_limit: '10600',
+  storage_limit: '300',
   amount: '1000',
   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
 };
@@ -478,9 +478,9 @@ Transfer operation
     -   `paramObject.source` **[String][1]?** The source for the operation
     -   `paramObject.amount` **[Number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.parameter` **[String][1]** The parameter for the transaction (optional, default `false`)
-    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10100`)
-    -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
+    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `300`)
     -   `paramObject.mutez` **[Number][3]** Whether the input amount is set to mutez (1/1,000,000 tez) (optional, default `false`)
     -   `paramObject.rawParam` **[Number][3]** Whether to accept the object parameter format (optional, default `false`)
 
@@ -490,7 +490,7 @@ Transfer operation
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   amount: '1000000',
-  fee: '1278',
+  fee: '1420',
 }).then(result => console.log(result))
 ```
 
@@ -527,8 +527,8 @@ Originate a new contract
     -   `paramObject.spendable` **[Boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)
     -   `paramObject.delegatable` **[Boolean][4]** Whether the new account is delegatable (optional, default `false`)
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
-    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
+    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -541,8 +541,9 @@ Set a delegate for an account
 
 -   `paramObject` **[Object][2]** The parameters for the operation
     -   `paramObject.delegate` **[String][1]?** The delegate for the new account
-    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
+    -   `paramObject.source` **[String][1]?** The source for the operation
+    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -554,8 +555,8 @@ Register an account as a delegate
 #### Parameters
 
 -   `paramObject` **[Object][2]** The parameters for the operation
-    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1278`)
-    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10000`)
+    -   `paramObject.fee` **[Number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[Number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[Number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -921,10 +922,10 @@ tezos.forge(head, {
   contents: [{
     kind: 'transaction',
     source: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
-    fee: '50000',
+    fee: '1420',
     counter: '31204',
-    gas_limit: '10200',
-    storage_limit: '0',
+    gas_limit: '10600',
+    storage_limit: '300',
     amount: '100000000',
     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
   }],

@@ -1,3 +1,9 @@
+// Type definitions for sotez 0.4.5
+// Project: https://github.com/AndrewKishino/sotez
+// Definitions by: Andrew Kishino <https://github.com/AndrewKishino>
+
+/// <reference types="node" />
+
 export interface Keys {
   pk: string;
   pkh: string;
@@ -244,8 +250,8 @@ export interface Utility {
   totez: (mutez: number) => number;
   mutez: (tez: number) => string;
   b58cencode: (payload: (string | Uint8Array), prefixArg: Uint8Array) => string;
-  b58cdecode: (enc: string, prefixArg: Uint8Array) => string;
-  buf2hex: (buffer: any) => string;
+  b58cdecode: (enc: string, prefixArg: Uint8Array) => Uint8Array;
+  buf2hex: (buffer: Buffer) => string;
   hex2buf: (hex: string) => Uint8Array;
   hexNonce: (length: number) => string;
   mergebuf: (b1: Uint8Array, b2: Uint8Array) => Uint8Array;
@@ -265,7 +271,7 @@ export interface Crypto {
   checkAddress: (address: string) => boolean;
   generateKeys: (mnemonic: string, passphrase: string) => Promise<KeysMnemonicPassphrase>;
   sign: (bytes: string, sk: string, watermark: Uint8Array, password?: string) => Promise<Signed>;
-  verify: (bytes: string, sig: string, pk: string) => Promise<number>;
+  verify: (bytes: string, sig: string, pk: string) => Promise<boolean>;
 }
 
 export interface Ledger {
@@ -275,7 +281,7 @@ export interface Ledger {
 }
 
 export interface Forge {
-  forge: (opOb: OperationObject, counter: number) => Promise<ForgedBytes>;
+  forge: (opOb: OperationObject, counter: number, network: string) => Promise<ForgedBytes>;
   decodeRawBytes: (bytes: string) => any;
   encodeRawBytes: (input: any) => string;
   toBytesInt32: (num: number) => ArrayBuffer;
@@ -284,10 +290,10 @@ export interface Forge {
   script: (arg: { code: string; storage: string }) => string;
   parameters: (params: string) => string;
   publicKeyHash: (publicKeyHash: string) => string;
-  address: (address: string) => string;
+  address: (address: string, network?: string) => string;
   zarith: (zarith: string) => string;
   publicKey: (publicKey: string) => string;
-  op: (cOp: ConstructedOperation) => string;
+  op: (cOp: ConstructedOperation, network: string) => string;
 }
 
 export interface OperationParams {
@@ -297,7 +303,7 @@ export interface OperationParams {
   skipSignature?: boolean;
 }
 
-export interface Tez {
+export interface Sotez {
   _localForge: boolean;
   _validateLocalForge: boolean;
   _counters: { [key: string]: number };
@@ -340,14 +346,6 @@ export interface Tez {
   runCode: (code: string, amount: number, input: string, storage: string, trace: boolean) => Promise<any>;
 }
 
-// export interface Contract {
-//   hash: (string, number) => Promise<any>,
-//   originate: (ContractParams) => Promise<any>,
-//   storage: (string) => Promise<any>,
-//   load: (string) => Promise<any>,
-//   watch: (string, number, (any) => any) => IntervalID,
-// }
-
 export interface TezModuleInterface {
   _provider: string;
   _network: string;
@@ -363,8 +361,8 @@ export interface ModuleOptions {
 }
 
 export interface Key {
-  _publicKey: (string | Uint8Array);
-  _secretKey?: (string | Uint8Array);
+  _publicKey: Buffer;
+  _secretKey?: Buffer;
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;

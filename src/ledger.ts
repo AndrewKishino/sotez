@@ -1,15 +1,12 @@
+import LedgerApp from './hw-app-xtz/Tezos';
+import LedgerTransport from '@ledgerhq/hw-transport-node-hid';
+
 import {
-  Ledger as LedgerType,
   LedgerGetAddress,
   LedgerSignOperation,
   LedgerGetVersion,
-} from '../types';
+} from './types/sotez';
 
-import LedgerTransport from '@ledgerhq/hw-transport-u2f';
-import LedgerApp from '../hw-app-xtz/Tezos';
-
-// @ts-ignore
-const ledger: LedgerType = {};
 /**
  * @description Get the public key and public key hash from the ledger
  * @param {Object} ledgerParams The parameters of the getAddress function
@@ -24,7 +21,7 @@ const ledger: LedgerType = {};
  *   curve = 0x00,
  * }).then(({ address, publicKey }) => console.log(address, publicKey))
  */
-ledger.getAddress = async ({
+const getAddress = async ({
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
   curve = 0x00,
@@ -56,7 +53,7 @@ ledger.getAddress = async ({
  *   curve = 0x00,
  * }).then((signature) => console.log(signature))
  */
-ledger.signOperation = async ({
+const signOperation = async ({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
@@ -81,7 +78,7 @@ ledger.signOperation = async ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp))
  */
-ledger.getVersion = async (): Promise<LedgerGetVersion> => {
+const getVersion = async (): Promise<LedgerGetVersion> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let versionInfo;
@@ -95,4 +92,8 @@ ledger.getVersion = async (): Promise<LedgerGetVersion> => {
   return versionInfo;
 };
 
-export default ledger;
+export default {
+  getAddress,
+  signOperation,
+  getVersion,
+};

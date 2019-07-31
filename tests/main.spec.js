@@ -1,4 +1,4 @@
-import Tez, { utility, crypto, Key } from '../index';
+import Sotez, { utility, crypto, Key } from '../index';
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -298,7 +298,7 @@ describe('sotez', () => {
     let tez;
 
     beforeEach(() => {
-      tez = new Tez();
+      tez = new Sotez();
     });
 
     test('init params', () => {
@@ -306,7 +306,7 @@ describe('sotez', () => {
       expect(tez.provider).toBe('http://127.0.0.1:8732');
       expect(tez.network).toBe('main');
       expect(tez.chain).toBe('main');
-      expect(tez.defaultFee).toBe(1278);
+      expect(tez.defaultFee).toBe(1420);
     });
 
     test('set provider', () => {

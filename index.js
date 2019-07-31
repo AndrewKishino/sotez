@@ -6,5 +6,5 @@ if (isNode) {
 }
 
 module.exports = isNode
-  ? __non_webpack_require__('./dist/node') // eslint-disable-line
-  : require('./dist/web');
+  ? __non_webpack_require__('./build/node')  // eslint-disable-line
+  : require('./build/web');

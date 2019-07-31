@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path'); // eslint-disable-line
 const webpack = require('webpack'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 
@@ -8,6 +8,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [__dirname, 'node_modules'],
+    alias: {
+      ledger$: path.resolve(__dirname, './src/ledger-web.ts'),
+    },
   },
   module: {
     rules: [
@@ -22,10 +25,10 @@ module.exports = {
     new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
   ],
   entry: {
-    main: './src/index-web.ts',
+    main: './src/index.ts',
   },
   output: {
-    path: path.join(__dirname, 'dist', 'web'),
+    path: path.join(__dirname, 'build', 'web'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },

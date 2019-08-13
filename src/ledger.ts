@@ -33,7 +33,7 @@ const getAddress = async ({
     publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
   } catch (e) {
     transport.close();
-    return e;
+    throw e;
   }
   transport.close();
   return publicKey;

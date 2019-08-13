@@ -131,7 +131,11 @@ export default class Sotez extends AbstractTezModule {
       displayConfirm: true,
       curve,
     });
-
+    
+    if (!publicKey) {
+      throw new Error('Ledger not connected or no Tezos key available');
+    }
+    
     this.key = new Key(publicKey);
     await this.key.ready;
 

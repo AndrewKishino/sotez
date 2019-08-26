@@ -155,7 +155,15 @@ const opMapping: { [key: string]: string } = {
   '6C': 'unit',
   '6D': 'operation',
   '6E': 'address',
+  // PROTO_002
   '6F': 'SLICE',
+  // PROTO_005
+  '70': 'DIG',
+  '71': 'DUG',
+  '72': 'EMPTY_BIG_MAP',
+  '73': 'APPLY',
+  '74': 'chain_id',
+  '75': 'CHAIN_ID',
 };
 /* eslint-enable */
 
@@ -201,19 +209,52 @@ const primMappingReverse: { [key: string]: { [key: string]: (string | undefined)
 };
 /* eslint-enable */
 
-const forgeOpTags: { [key: string]: number } = {
-  endorsement: 0,
-  seed_nonce_revelation: 1,
-  double_endorsement_evidence: 2,
-  double_baking_evidence: 3,
-  activate_account: 4,
-  proposals: 5,
-  ballot: 6,
-  reveal: 7,
-  transaction: 8,
-  origination: 9,
-  delegation: 10,
+const forgeOpTags: { [key: string]: { [key: string]: number } } = {
+  '004': {
+    endorsement: 0,
+    seed_nonce_revelation: 1,
+    double_endorsement_evidence: 2,
+    double_baking_evidence: 3,
+    activate_account: 4,
+    proposals: 5,
+    ballot: 6,
+    reveal: 7,
+    transaction: 8,
+    origination: 9,
+    delegation: 10,
+  },
+  '005': {
+    endorsement: 0,
+    seed_nonce_revelation: 1,
+    double_endorsement_evidence: 2,
+    double_baking_evidence: 3,
+    activate_account: 4,
+    proposals: 5,
+    ballot: 6,
+    reveal: 107,
+    transaction: 108,
+    origination: 109,
+    delegation: 110,
+  }
 };
+
+/* eslint-disable */
+const entrypointMapping: { [key: string]: string } = {
+  '00': 'default',
+  '01': 'root',
+  '02': 'do',
+  '03': 'set_delegate',
+  '04': 'remove_delegate',
+};
+/* eslint-enable */
+
+const entrypointMappingReverse = (() => {
+  const result: { [key: string]: string } = {};
+  Object.keys(entrypointMapping).forEach((key: string) => {
+    result[entrypointMapping[key]] = key;
+  });
+  return result;
+})();
 
 export const forgeMappings = {
   opMapping,
@@ -221,10 +262,18 @@ export const forgeMappings = {
   primMapping,
   primMappingReverse,
   forgeOpTags,
+  entrypointMapping,
+  entrypointMappingReverse,
+};
+
+export const protocols = {
+  '004': 'Pt24m4xiPbLDhVgVfABUjirbmda3yohdN82Sp9FeuAXJ4eV9otd',
+  '005': 'PsBABY5HQTSkA4297zNHfsZNKtxULfL18y95qb3m53QJiXGmrbU',
 };
 
 export default {
   prefix,
   watermark,
   forgeMappings,
+  protocols,
 };

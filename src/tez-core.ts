@@ -3,20 +3,14 @@ import { ModuleOptions } from './types/sotez';
 // Core Tez Module
 export default class AbstractTezModule {
   _provider: string;
-  _network: string;
-  _defaultFee: number;
   _chain: string;
 
   constructor(
     provider: string,
     chain: string,
-    network: string = 'main',
-    options: ModuleOptions = {},
   ) {
     this._provider = provider;
-    this._network = network;
     this._chain = chain;
-    this._defaultFee = options.defaultFee || 1420;
   }
 
   get provider() {
@@ -27,14 +21,6 @@ export default class AbstractTezModule {
     this._provider = provider;
   }
 
-  get network() {
-    return this._network;
-  }
-
-  set network(network: string) {
-    this._network = network;
-  }
-
   get chain() {
     return this._chain;
   }
@@ -43,17 +29,8 @@ export default class AbstractTezModule {
     this._chain = value;
   }
 
-  get defaultFee() {
-    return this._defaultFee;
-  }
-
-  set defaultFee(fee: number) {
-    this._defaultFee = fee;
-  }
-
-  setProvider(provider: string, chain: string = this.chain, network: string = this.network) {
+  setProvider(provider: string, chain: string = this.chain) {
     this._provider = provider;
     this._chain = chain;
-    this._network = network;
   }
 }

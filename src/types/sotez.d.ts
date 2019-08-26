@@ -281,7 +281,7 @@ export interface Ledger {
 }
 
 export interface Forge {
-  forge: (opOb: OperationObject, counter: number, network: string) => Promise<ForgedBytes>;
+  forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
   decodeRawBytes: (bytes: string) => any;
   encodeRawBytes: (input: any) => string;
   toBytesInt32: (num: number) => ArrayBuffer;
@@ -290,10 +290,21 @@ export interface Forge {
   script: (arg: { code: string; storage: string }) => string;
   parameters: (params: string) => string;
   publicKeyHash: (publicKeyHash: string) => string;
-  address: (address: string, network?: string) => string;
+  address: (address: string, protocol?: string) => string;
   zarith: (zarith: string) => string;
   publicKey: (publicKey: string) => string;
-  op: (cOp: ConstructedOperation, network: string) => string;
+  op: (cOp: ConstructedOperation, protocol: string) => string;
+  endorsement: (cOp: ConstructedOperation) => string;
+  seedNonceRevelation: (cOp: ConstructedOperation) => string;
+  doubleEndorsementEvidence: (cOp: ConstructedOperation) => string;
+  doubleBakingEvidence: (cOp: ConstructedOperation) => string;
+  activateAccount: (cOp: ConstructedOperation) => string;
+  proposals: (cOp: ConstructedOperation) => string;
+  ballot: (cOp: ConstructedOperation) => string;
+  reveal: (cOp: ConstructedOperation, protocol: string) => string;
+  transaction: (cOp: ConstructedOperation, protocol: string) => string;
+  origination: (cOp: ConstructedOperation, protocol: string) => string;
+  delegation: (cOp: ConstructedOperation, protocol: string) => string;
 }
 
 export interface OperationParams {
@@ -304,10 +315,11 @@ export interface OperationParams {
 }
 
 export interface Sotez {
+  _defaultFee: number;
   _localForge: boolean;
   _validateLocalForge: boolean;
-  _counters: { [key: string]: number };
   _debugMode: boolean;
+  _counters: { [key: string]: number };
   key: Key;
   importKey: (key: string, passphrase?: string, email?: string) => Promise<void>;
   importLedger: () => Promise<void>;
@@ -348,16 +360,14 @@ export interface Sotez {
 
 export interface TezModuleInterface {
   _provider: string;
-  _network: string;
   _chain: string;
-  _defaultFee: number;
 }
 
 export interface ModuleOptions {
   defaultFee?: number;
-  debugMode?: boolean;
   localForge?: boolean;
   validateLocalForge?: boolean;
+  debugMode?: boolean;
 }
 
 export interface Key {

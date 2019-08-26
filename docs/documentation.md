@@ -8,7 +8,6 @@ Main tez.js Library
 
 -   `provider` **[String][1]** Address of the node (optional, default `'http://127.0.0.1:8732'`)
 -   `chain` **[String][1]** Chain Id (optional, default `'main'`)
--   `network` **[String][1]** Network ['main', 'zero',] (optional, default `'main'`)
 -   `options` **[Object][2]**  (optional, default `{}`)
     -   `options.defaultFee` **[Number][3]** The default fee for tranactions (optional, default `1420`)
     -   `options.debugMode` **[Boolean][4]** Debug mode enablement (optional, default `false`)
@@ -19,7 +18,7 @@ Main tez.js Library
 
 ```javascript
 import Sotez from 'sotez';
-const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1420 })
+const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1420 })
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',

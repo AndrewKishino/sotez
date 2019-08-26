@@ -304,7 +304,6 @@ describe('sotez', () => {
     test('init params', () => {
       expect(tez.debugMode).toBe(false);
       expect(tez.provider).toBe('http://127.0.0.1:8732');
-      expect(tez.network).toBe('main');
       expect(tez.chain).toBe('main');
       expect(tez.defaultFee).toBe(1420);
     });

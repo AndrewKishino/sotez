@@ -4,7 +4,7 @@ import Key from './key';
 import forge from './forge';
 import utility from './utility';
 import ledger from 'ledger';
-import { prefix, watermark } from './constants';
+import { prefix, watermark, protocols } from './constants';
 
 import {
   Key as KeyInterface,
@@ -28,7 +28,6 @@ import {
  * @class Sotez
  * @param {String} [provider='http://127.0.0.1:8732'] Address of the node
  * @param {String} [chain='main'] Chain Id ['main', 'test']
- * @param {String} [network='main'] Network ['main', 'zero', 'alpha']
  * @param {Object} [options={}]
  * @param {Number} [options.defaultFee=1420] The default fee for tranactions
  * @param {Boolean} [options.debugMode=false] Debug mode enablement
@@ -36,7 +35,7 @@ import {
  * @param {Boolean} [options.validateLocalForge=false] Validate local forge bytes against remote forged bytes
  * @example
  * import Sotez from 'sotez';
- * const sotez = new Sotez('https://127.0.0.1:8732', 'main', 'main', { defaultFee: 1275 })
+ * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275 })
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
@@ -46,21 +45,30 @@ import {
 export default class Sotez extends AbstractTezModule {
   _localForge: boolean;
   _validateLocalForge: boolean;
-  _counters: { [key: string]: number };
+  _defaultFee: number;
   _debugMode: boolean;
+  _counters: { [key: string]: number };
   key: KeyInterface;
 
   constructor(
     provider: string = 'http://127.0.0.1:8732',
     chain: string = 'main',
-    net: string = 'main',
     options: ModuleOptions = {},
   ) {
-    super(provider, chain, net, options);
-    this._localForge = options.localForge || true;
+    super(provider, chain);
+    this._defaultFee = options.defaultFee || 1420;
+    this._localForge = options.localForge === false ? false : true;
     this._validateLocalForge = options.validateLocalForge || false;
-    this._counters = {};
     this._debugMode = options.debugMode || false;
+    this._counters = {};
+  }
+
+  get defaultFee() {
+    return this._defaultFee;
+  }
+
+  set defaultFee(fee: number) {
+    this._defaultFee = fee;
   }
 
   get localForge() {
@@ -95,11 +103,10 @@ export default class Sotez extends AbstractTezModule {
     this._debugMode = t;
   }
 
-  setProvider(provider: string, chain: string = this.chain, network: string = this.network) {
-    super.setProvider(provider, chain, network);
+  setProvider(provider: string, chain: string = this.chain) {
+    super.setProvider(provider, chain);
     this.provider = provider;
     this.chain = chain;
-    this.network = network;
   }
 
   /**
@@ -239,15 +246,13 @@ export default class Sotez extends AbstractTezModule {
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
     if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
 
-    const managerKey = this.network === 'zero' ? 'managerPubkey' : 'manager_pubkey';
-
     const operation: Operation[] = [{
       kind: 'origination',
       balance: utility.mutez(balance),
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      [managerKey]: this.key.publicKeyHash(),
+      manager_pubkey: this.key.publicKeyHash(),
       ...params,
     }];
 
@@ -344,6 +349,16 @@ export default class Sotez extends AbstractTezModule {
    */
   getHeader = (): Promise<Header> => (
     this.query(`/chains/${this.chain}/blocks/head/header`)
+  )
+
+  /**
+   * @description Get the metadata of the current head
+   * @returns {Promise} The head block metadata
+   * @example
+   * sotez.getHeadMetadata().then(metadata => console.log(metadata))
+   */
+  getHeadMetadata = (): Promise<Header> => (
+    this.query(`/chains/${this.chain}/blocks/head/metadata`)
   )
 
   /**
@@ -540,10 +555,12 @@ export default class Sotez extends AbstractTezModule {
       }
     }
 
-    return Promise.all(promises).then(async ([header, headCounter, manager]: any[]): Promise<ForgedBytes> => {
+    promises.push(this.getHeadMetadata());
+
+    return Promise.all(promises).then(async ([header, headCounter, manager, metadata]: any[]): Promise<ForgedBytes> => {
       head = header;
 
-      const managerKey = this.network === 'zero' ? manager : manager.key;
+      const managerKey = metadata.next_protocol === protocols['005'] ? manager : manager.key;
       if (requiresReveal && !managerKey) {
         const reveal: Operation = {
           kind: 'reveal',
@@ -590,6 +607,13 @@ export default class Sotez extends AbstractTezModule {
             const opCounter = ++this._counters[publicKeyHash];
             constructedOp.counter = `${opCounter}`;
           }
+
+          if (metadata.next_protocol === protocols['005']) {
+            delete constructedOp.manager_pubkey;
+            delete constructedOp.spendable;
+            delete constructedOp.delegatable;
+          }
+
           return constructedOp;
         });
 
@@ -601,7 +625,7 @@ export default class Sotez extends AbstractTezModule {
         remoteForgedBytes = await this.query(`/chains/${this.chain}/blocks/${head.hash}/helpers/forge/operations`, opOb);
       }
 
-      opOb.protocol = head.protocol;
+      opOb.protocol = metadata.next_protocol;
 
       if (!this._localForge) {
         return {
@@ -611,7 +635,7 @@ export default class Sotez extends AbstractTezModule {
         };
       }
 
-      const fullOp = await forge.forge(opOb, counter, this.network);
+      const fullOp = await forge.forge(opOb, counter, metadata.next_protocol);
 
       if (this._validateLocalForge) {
         if (fullOp.opbytes === remoteForgedBytes) {
@@ -839,13 +863,10 @@ export default class Sotez extends AbstractTezModule {
     gasLimit = 10600,
     storageLimit = 257,
   }: ContractParams): Promise<any> => {
-    const _code = utility.ml2mic(code);
     const script = {
-      code: _code,
+      code: utility.ml2mic(code),
       storage: utility.sexp2mic(init),
     };
-
-    const managerKey = this.network === 'zero' ? 'managerPubkey' : 'manager_pubkey';
 
     const publicKeyHash = this.key.publicKeyHash();
     const operation: Operation = {
@@ -854,7 +875,7 @@ export default class Sotez extends AbstractTezModule {
       gas_limit: gasLimit,
       storage_limit: storageLimit,
       balance: utility.mutez(balance),
-      [managerKey]: publicKeyHash,
+      manager_pubkey: publicKeyHash,
       spendable,
       delegatable,
       script,

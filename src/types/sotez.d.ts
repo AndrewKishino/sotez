@@ -271,7 +271,6 @@ export interface Crypto {
   checkAddress: (address: string) => boolean;
   generateKeys: (mnemonic: string, passphrase: string) => Promise<KeysMnemonicPassphrase>;
   sign: (bytes: string, sk: string, watermark: Uint8Array, password?: string) => Promise<Signed>;
-  verify: (bytes: string, sig: string, pk: string) => Promise<boolean>;
 }
 
 export interface Ledger {
@@ -387,5 +386,4 @@ export interface Key {
   secretKey: () => string;
   publicKeyHash: () => string;
   sign: (bytes: string, wm: Uint8Array) => Promise<Signed>;
-  verify: (bytes: string, signature: string) => Promise<boolean>;
 }

@@ -1,7 +1,6 @@
 import sodium from 'libsodium-wrappers';
 import pbkdf2 from 'pbkdf2';
-import secp256k1 from 'secp256k1';
-import secp256r1 from 'secp256r1';
+import elliptic from 'elliptic';
 import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
@@ -178,9 +177,13 @@ export default class Key {
           this._secretKey = toBuffer(privateKey);
         }
       } else if (this._curve === 'sp') {
-        this._publicKey = secp256k1.publicKeyCreate(toBuffer(constructedKey));
+        const keyPair = (new elliptic.ec('secp256k1')).keyFromPrivate(constructedKey);
+        const prefix = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
+        this._publicKey = toBuffer(new Uint8Array([prefix].concat(keyPair.getPublic().getX().toArray())));
       } else if (this._curve === 'p2') {
-        this._publicKey = secp256r1.publicKeyCreate(toBuffer(constructedKey));
+        const keyPair = (new elliptic.ec('p256')).keyFromPrivate(constructedKey);
+        const prefix = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
+        this._publicKey = toBuffer(new Uint8Array([prefix].concat(keyPair.getPublic().getX().toArray())));
       } else {
         throw new Error('Invalid key');
       }
@@ -220,7 +223,9 @@ export default class Key {
         sbytes,
       };
     } else if (this._curve === 'sp') {
-      const { signature } = secp256k1.sign(bytesHash, this._secretKey);
+      const key = (new elliptic.ec('secp256k1')).keyFromPrivate(this._secretKey);
+      const sig = key.sign(bytesHash, { canonical: true });
+      const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
       const signatureBuffer = toBuffer(signature);
       const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
@@ -231,7 +236,9 @@ export default class Key {
         sbytes,
       };
     } else if (this._curve === 'p2') {
-      const { signature } = secp256r1.sign(bytesHash, this._secretKey);
+      const key = (new elliptic.ec('p256')).keyFromPrivate(this._secretKey);
+      const sig = key.sign(bytesHash, { canonical: true });
+      const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
       const signatureBuffer = toBuffer(signature);
       const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
@@ -244,42 +251,5 @@ export default class Key {
     }
 
     throw new Error('Provided curve not supported');
-  }
-
-  /**
-   * @memberof Key
-   * @description Verify signature, throw error if it is not valid
-   * @param {String} bytes Sequance of bytes, raw format or hexadecimal notation
-   * @param {Uint8Array} signature A signature in base58 encoding
-   */
-  verify = (bytes: string, signature: string, publicKey: string = this.publicKey()) => {
-    if (!publicKey) {
-      throw new Error('Cannot verify without a public key');
-    }
-
-    const _publicKey = toBuffer(utility.b58cdecode(publicKey, prefix[`${this._curve}pk`]));
-
-    if (signature.slice(0, 3) !== 'sig') {
-      if (this._curve !== signature.slice(0, 2)) { // 'sp', 'p2' 'ed'
-        throw new Error('Signature and public key curves mismatch.');
-      }
-    }
-
-    const bytesBuffer = toBuffer(utility.hex2buf(bytes));
-    const signatureBuffer = toBuffer(utility.textEncode(signature));
-
-    if (this._curve === 'ed') {
-      try {
-        return sodium.crypto_sign_verify_detached(signatureBuffer, bytesBuffer, _publicKey);
-      } catch (e) {
-        throw new Error('Signature is invalid.');
-      }
-    } else if (this._curve === 'sp') {
-      return secp256k1.verify(bytesBuffer, signatureBuffer, _publicKey);
-    } else if (this._curve === 'p2') {
-      return secp256r1.verify(bytesBuffer, signatureBuffer, _publicKey);
-    } else {
-      throw new Error(`Curve '${this._curve}' not supported`);
-    }
   }
 }

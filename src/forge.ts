@@ -226,7 +226,7 @@ const endorsement = (op: ConstructedOperation) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-const seedNonceRevelation = (op: ConstructedOperation) => {
+const seedNonceRevelation = (op: ConstructedOperation): string => {
   let fop = '';
 
   const levelBuffer = toBuffer(toBytesInt32(op.level));
@@ -241,7 +241,7 @@ const seedNonceRevelation = (op: ConstructedOperation) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-const doubleEndorsementEvidence = (op: ConstructedOperation) => {
+const doubleEndorsementEvidence = (op: ConstructedOperation): string => {
   throw new Error('Double endorse forging is not complete');
 }
 
@@ -251,7 +251,7 @@ const doubleEndorsementEvidence = (op: ConstructedOperation) => {
  * @param {String} protocol Current protocol
  * @returns {String} Forged operation bytes
  */
-const doubleBakingEvidence = (op: ConstructedOperation) => {
+const doubleBakingEvidence = (op: ConstructedOperation): string => {
   throw new Error('Double bake forging is not complete');
 }
 
@@ -260,7 +260,7 @@ const doubleBakingEvidence = (op: ConstructedOperation) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-const activateAccount = (op: ConstructedOperation) => {
+const activateAccount = (op: ConstructedOperation): string => {
   let fop = '';
 
   const addressBuffer = toBuffer(utility.b58cdecode(op.pkh, prefix.tz1));
@@ -275,7 +275,7 @@ const activateAccount = (op: ConstructedOperation) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-const proposals = (op: ConstructedOperation) => {
+const proposals = (op: ConstructedOperation): string => {
   throw new Error('Proposal forging is not complete');
 };
 
@@ -284,7 +284,7 @@ const proposals = (op: ConstructedOperation) => {
  * @param {Object} op Operation to forge
  * @returns {String} Forged operation bytes
  */
-const ballot = (op: ConstructedOperation) => {
+const ballot = (op: ConstructedOperation): string => {
   let fop = '';
 
   fop += publicKeyHash(op.source);
@@ -311,7 +311,7 @@ const ballot = (op: ConstructedOperation) => {
  * @param {String} protocol Current protocol
  * @returns {String} Forged operation bytes
  */
-const reveal = (op: ConstructedOperation, protocol: string) => {
+const reveal = (op: ConstructedOperation, protocol: string): string => {
   let fop = '';
 
   fop += address(op.source, protocol);
@@ -330,7 +330,7 @@ const reveal = (op: ConstructedOperation, protocol: string) => {
  * @param {String} protocol Current protocol
  * @returns {String} Forged operation bytes
  */
-const transaction = (op: ConstructedOperation, protocol: string) => {
+const transaction = (op: ConstructedOperation, protocol: string): string => {
   let fop = '';
 
   fop += address(op.source, protocol);
@@ -357,7 +357,7 @@ const transaction = (op: ConstructedOperation, protocol: string) => {
  * @param {String} protocol Current protocol
  * @returns {String} Forged operation bytes
  */
-const origination = (op: ConstructedOperation, protocol: string) => {
+const origination = (op: ConstructedOperation, protocol: string): string => {
   let fop = ''
 
   fop += address(op.source, protocol);
@@ -403,7 +403,7 @@ const origination = (op: ConstructedOperation, protocol: string) => {
  * @param {String} protocol Current protocol
  * @returns {String} Forged operation bytes
  */
-const delegation = (op: ConstructedOperation, protocol: string) => {
+const delegation = (op: ConstructedOperation, protocol: string): string => {
   let fop = '';
 
   fop += address(op.source, protocol);
@@ -642,6 +642,17 @@ export default {
   encodeRawBytes,
   forge,
   op,
+  endorsement,
+  seedNonceRevelation,
+  doubleEndorsementEvidence,
+  doubleBakingEvidence,
+  activateAccount,
+  proposals,
+  ballot,
+  reveal,
+  transaction,
+  origination,
+  delegation,
   parameters,
   publicKey,
   publicKeyHash,

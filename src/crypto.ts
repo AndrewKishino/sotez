@@ -174,31 +174,10 @@ const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string 
   };
 };
 
-/**
- * @description Verify signed bytes
- * @param {String} bytes The signed bytes
- * @param {String} sig The signature of the signed bytes
- * @param {String} pk The public key
- * @returns {Boolean} Whether the signed bytes are valid
- */
-const verify = async (bytes: string, sig: string, pk: string): Promise<boolean> => {
-  try {
-    await _sodium.ready;
-  } catch (e) {
-    throw new Error(e);
-  }
-
-  const sodium = _sodium;
-  const bytesBuffer = toBuffer(utility.hex2buf(bytes));
-  const signatureBuffer = toBuffer(utility.textEncode(sig));
-  return sodium.crypto_sign_verify_detached(signatureBuffer, bytesBuffer, utility.b58cdecode(pk, prefix.edpk));
-};
-
 export default {
   extractKeys,
   generateKeys,
   checkAddress,
   generateMnemonic,
   sign,
-  verify,
 };

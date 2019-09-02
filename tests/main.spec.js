@@ -104,15 +104,6 @@ describe('sotez', () => {
       expect(typeof sbytes).toBe('string');
       expect(sbytes).toBe('AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a');
     });
-
-    xtest('verify', async () => {
-      const {
-        sig,
-        sbytes,
-      } = await crypto.sign('AA5', TEST_KEYS.sk, new Uint8Array([3]));
-      const verified = await crypto.verify(sbytes, sig, TEST_KEYS.pk);
-      expect(verified).toBe(0);
-    });
   });
 
   describe('Key', () => {
@@ -278,19 +269,6 @@ describe('sotez', () => {
       expect(prefixSig).toBe('p2sigoQNesUABudMi1kbikJmjzUSfxB8mrbBKLQA1GopnySevKaJwMjiE1TwUq1tCDPj255jPwv2KZA7X38euUycWDt7iFk6Pf');
       expect(typeof sbytes).toBe('string');
       expect(sbytes).toBe('AA5c7816692b041b21ec0c4b3f927b51faf8604a567a83a052f0f2192f727aec2956fe64ba4bdcbe63af07d73cb2065f10832ffd80967463307fbcfe289f576346b');
-    });
-
-    xtest('verify', async () => {
-      const key = new Key(TEST_KEYS.sk);
-      await key.ready;
-
-      const {
-        sig,
-        sbytes,
-      } = await key.sign('AA5', new Uint8Array([3]));
-
-      const verified = await key.verify(sbytes, sig);
-      expect(verified).toBe(true);
     });
   });
 

@@ -1,6 +1,3 @@
-import { ModuleOptions } from './types/sotez';
-
-// Core Tez Module
 export default class AbstractTezModule {
   _provider: string;
   _chain: string;

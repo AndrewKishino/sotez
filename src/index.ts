@@ -1,6 +1,5 @@
-import Sotez from './tez';
+import Sotez from './sotez';
 
-// tez.js Base Modules
 export { default as Key } from './key';
 export { default as crypto } from './crypto';
 export { default as forge } from './forge';

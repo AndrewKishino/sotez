@@ -1,6 +1,6 @@
-import sodium from 'libsodium-wrappers';
-import pbkdf2 from 'pbkdf2';
-import elliptic from 'elliptic';
+import * as sodium from 'libsodium-wrappers';
+import * as pbkdf2 from 'pbkdf2';
+import * as elliptic from 'elliptic';
 import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
@@ -11,9 +11,10 @@ import { prefix } from './constants';
  * @param {String} key A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string
  * @param {String} passphrase The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {String} email Email used if a fundraiser key is passed
- * @example
+ * ```javascript
  * const key = new Key('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * await key.ready;
+ * ```
  */
 export default class Key {
   _curve: string;

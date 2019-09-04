@@ -1,6 +1,6 @@
 import { generateMnemonic as bip39GenerateMnemonic, mnemonicToSeed } from 'bip39';
-import pbkdf2 from 'pbkdf2';
-import _sodium from 'libsodium-wrappers';
+import * as pbkdf2 from 'pbkdf2';
+import * as _sodium from 'libsodium-wrappers';
 import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
@@ -16,9 +16,10 @@ import {
  * @param {String} sk The secret key to extract key pairs from
  * @param {String} [password] The password used to encrypt the sk
  * @returns {Promise} The extracted key pairs
- * @example
+ * ```javascript
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
- *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh))
+ *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
+ * ```
  */
 const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
   try {
@@ -106,9 +107,10 @@ const checkAddress = (address: string): boolean => {
  * @param {String} mnemonic The mnemonic seed
  * @param {String} passphrase The passphrase used to encrypt the seed
  * @returns {Promise} The generated key pair
- * @example
+ * ```javascript
  * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
- *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh))
+ *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
+ * ```
  */
 const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
   try {
@@ -136,11 +138,12 @@ const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysM
  * @param {Object} wm The watermark bytes
  * @param {String} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
- * @example
+ * ```javascript
  * import { watermark } from 'sotez';
  *
  * crypto.sign(opbytes, keys.sk, watermark.generic)
- *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes))
+ *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
+ * ```
  */
 const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
   try {

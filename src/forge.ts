@@ -427,7 +427,7 @@ const delegation = (op: ConstructedOperation, protocol: string): string => {
  * @param {Object} opOb The operation object(s)
  * @param {Number} counter The current counter for the account
  * @returns {String} Forged operation bytes
- * @example
+ * ```javascript
  * forge.forge({
  *   branch: head.hash,
  *   contents: [{
@@ -440,7 +440,8 @@ const delegation = (op: ConstructedOperation, protocol: string): string => {
  *     amount: '100000000',
  *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   }],
- * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
+ * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb));
+ * ```
  */
 const forge = async (opOb: OperationObject, counter: number, protocol: string): Promise<ForgedBytes> => {
   if (!opOb.contents) {

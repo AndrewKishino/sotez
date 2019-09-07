@@ -5,11 +5,27 @@ import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix } from './constants';
 
-import {
-  Keys,
-  KeysMnemonicPassphrase,
-  Signed,
-} from './types/sotez';
+interface Keys {
+  pk: string;
+  pkh: string;
+  sk: string;
+  password?: string;
+};
+
+interface KeysMnemonicPassphrase {
+  mnemonic: string;
+  passphrase: string;
+  sk: string;
+  pk: string;
+  pkh: string;
+};
+
+interface Signed {
+  bytes: string;
+  sig: string;
+  prefixSig: string;
+  sbytes: string;
+};
 
 /**
  * @description Extract key pairs from a secret key

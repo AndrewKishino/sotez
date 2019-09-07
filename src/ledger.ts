@@ -1,11 +1,24 @@
 import LedgerApp from './hw-app-xtz/Tezos';
 import LedgerTransport from '@ledgerhq/hw-transport-node-hid';
 
-import {
-  LedgerGetAddress,
-  LedgerSignOperation,
-  LedgerGetVersion,
-} from './types/sotez';
+interface LedgerGetAddress {
+  path?: string;
+  displayConfirm?: boolean;
+  curve?: number;
+};
+
+interface LedgerSignOperation {
+  path?: string;
+  rawTxHex: string;
+  curve?: number;
+};
+
+interface LedgerGetVersion {
+  major: number;
+  minor: number;
+  patch: number;
+  bakingApp: boolean;
+};
 
 /**
  * @description Get the public key and public key hash from the ledger

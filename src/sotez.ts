@@ -6,22 +6,221 @@ import utility from './utility';
 import ledger from 'ledger';
 import { prefix, watermark, protocols } from './constants';
 
-import {
-  Key as KeyInterface,
-  ModuleOptions,
-  Head,
-  Header,
-  Baker,
-  Operation,
-  OperationObject,
-  ConstructedOperation,
-  RpcParams,
-  AccountParams,
-  OperationParams,
-  ContractParams,
-  ForgedBytes,
-  Signed,
-} from './types/sotez';
+interface KeyInterface {
+  _publicKey: Buffer;
+  _secretKey?: Buffer;
+  _isLedger: boolean;
+  _ledgerPath: string;
+  _ledgerCurve: number;
+  _isSecret: boolean;
+  isLedger: boolean;
+  ledgerPath: string;
+  ledgerCurve: number;
+  ready: Promise<void>;
+  curve: string;
+  initialize: (key: string, passphrase?: string, email?: string, resolve?: any) => Promise<void>;
+  publicKey: () => string;
+  secretKey: () => string;
+  publicKeyHash: () => string;
+  sign: (bytes: string, wm: Uint8Array) => Promise<Signed>;
+};
+
+interface ModuleOptions {
+  defaultFee?: number;
+  localForge?: boolean;
+  validateLocalForge?: boolean;
+  debugMode?: boolean;
+};
+
+interface Operation {
+  kind: string;
+  level?: number;
+  nonce?: string;
+  pkh?: string;
+  hash?: string;
+  secret?: string;
+  source?: string;
+  period?: number;
+  proposal?: string;
+  ballot?: string;
+  fee?: number | string;
+  counter?: number | string;
+  gas_limit?: number | string;
+  storage_limit?: number | string;
+  parameters?: Micheline;
+  balance?: number | string;
+  spendable?: boolean;
+  delegatable?: boolean;
+  delegate?: string;
+  amount?: number | string;
+  destination?: string;
+  public_key?: string;
+  script?: { code: Micheline; storage: Micheline };
+  manager_pubkey?: string;
+  managerPubkey?: string;
+}
+
+interface Head {
+  protocol: string;
+  chain_id: string;
+  hash: string;
+  header: any;
+  metadata: any;
+  operations: Operation[][];
+};
+
+interface Header {
+  protocol: string;
+  chain_id: string;
+  hash: string;
+  level: number;
+  proto: number;
+  predecessor: string;
+  timestamp: string;
+  validation_pass: number;
+  operations_hash: string;
+  fitness: string[];
+  context: string;
+  priority: number;
+  proof_of_work_nonce: string;
+  signature: string;
+};
+
+interface Baker {
+  balance: string;
+  frozen_balance: string;
+  frozen_balance_by_cycle: {
+    cycle: number;
+    deposit: string;
+    fees: string;
+    rewards: string;
+  };
+  staking_balance: string;
+  delegated_contracts: string[];
+  delegated_balance: string;
+  deactivated: boolean;
+  grace_period: number;
+};
+
+interface OperationObject {
+  branch?: string;
+  contents?: ConstructedOperation[];
+  protocol?: string;
+  signature?: string;
+};
+
+interface ConstructedOperation {
+  kind: string;
+  level: number;
+  nonce: string;
+  pkh: string;
+  hash: string;
+  secret: string;
+  source: string;
+  period: number;
+  proposal: string;
+  ballot: string;
+  fee: string;
+  counter: string;
+  gas_limit: string;
+  storage_limit: string;
+  parameters: string;
+  balance: string;
+  spendable: boolean;
+  delegatable: boolean;
+  delegate: string;
+  amount: string;
+  destination: string;
+  public_key: string;
+  script: { code: Micheline; storage: Micheline };
+  manager_pubkey: string;
+  managerPubkey: string;
+};
+
+type Micheline = {
+  prim: string,
+  args?: MichelineArray,
+  annots?: string[]
+}
+  | { bytes: string }
+  | { int: string }
+  | { string: string }
+  | { address: string }
+  | { contract: string }
+  | { key: string }
+  | { key_hash: string }
+  | { signature: string }
+  | MichelineArray;
+
+interface MichelineArray extends Array<Micheline> { }
+
+interface Keys {
+  pk: string;
+  pkh: string;
+  sk: string;
+  password?: string;
+};
+
+interface RpcParams {
+  to: string;
+  source?: string;
+  keys?: Keys;
+  amount: number;
+  init?: string;
+  fee?: number;
+  parameter?: string;
+  gasLimit?: number;
+  storageLimit?: number;
+  mutez?: boolean;
+  spendable?: boolean;
+  delegatable?: boolean;
+  delegate?: string;
+  code?: string;
+};
+
+interface AccountParams {
+  balance: number;
+  spendable?: boolean;
+  delegatable?: boolean;
+  delegate?: string;
+  fee?: number;
+  gasLimit?: number;
+  storageLimit?: number;
+};
+
+interface OperationParams {
+  operation: Operation | Operation[];
+  source?: string,
+  skipPrevalidation?: boolean;
+  skipSignature?: boolean;
+};
+
+interface ContractParams {
+  balance: number;
+  code: string | Micheline;
+  delegatable?: boolean;
+  delegate?: string;
+  fee?: number;
+  gasLimit?: number;
+  init: string | Micheline;
+  mutez?: boolean;
+  micheline?: boolean;
+  spendable?: boolean;
+  storageLimit?: number;
+};
+
+interface ForgedBytes {
+  opbytes: string;
+  opOb: OperationObject;
+  counter: number;
+};
+
+interface Signed {
+  bytes: string;
+  sig: string;
+  prefixSig: string;
+  sbytes: string;
+};
 
 /**
  * Main Sotez Library
@@ -222,7 +421,7 @@ export default class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the injected operation hash
    * ```javascript
    * sotez.account({
-   *   amount: 10,
+   *   balance: 10,
    *   spendable: true,
    *   delegatable: true,
    *   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
@@ -241,7 +440,7 @@ export default class Sotez extends AbstractTezModule {
     const params: { spendable?: boolean; delegatable?: boolean; delegate?: string } = {};
     if (typeof spendable !== 'undefined') params.spendable = spendable;
     if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
-    if (typeof delegate !== 'undefined' && delegate) params.delegate = delegate;
+    if (delegate) params.delegate = delegate;
 
     const operation: Operation[] = [{
       kind: 'origination',
@@ -798,12 +997,12 @@ export default class Sotez extends AbstractTezModule {
    * @param {Object} paramObject The parameters for the operation
    * @param {String} paramObject.to The address of the recipient
    * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
+   * @param {String} [paramObject.source] The source address of the transfer
    * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {String} [paramObject.parameter=false] The parameter for the transaction
+   * @param {String} [paramObject.parameter] The parameter for the transaction
    * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
    * @param {Number} [paramObject.storageLimit=300] The storage limit to set for the transaction
    * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
-   * @param {Number} [paramObject.rawParam=false] Whether to accept the object parameter format
    * @returns {Promise} Object containing the injected operation hash
    * ```javascript
    * sotez.transfer({
@@ -815,14 +1014,13 @@ export default class Sotez extends AbstractTezModule {
    */
   transfer = ({
     to,
-    source,
     amount,
-    parameter,
+    source,
     fee = this.defaultFee,
+    parameter,
     gasLimit = 10600,
     storageLimit = 300,
     mutez = false,
-    rawParam = false,
   }: RpcParams): Promise<any> => {
     const operation: Operation = {
       kind: 'transaction',
@@ -833,7 +1031,11 @@ export default class Sotez extends AbstractTezModule {
       destination: to,
     };
     if (parameter) {
-      operation.parameters = rawParam ? parameter : utility.sexp2mic(parameter);
+      if (typeof parameter === 'string') {
+        operation.parameters = utility.sexp2mic(parameter);
+      } else{
+        operation.parameters = parameter;
+      }
     }
     return this.sendOperation({ operation: [operation], source });
   }
@@ -861,8 +1063,8 @@ export default class Sotez extends AbstractTezModule {
    * @description Originate a new contract
    * @param {Object} paramObject The parameters for the operation
    * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
-   * @param {String} paramObject.code The code to deploy for the contract
-   * @param {String} paramObject.init The initial storage of the contract
+   * @param {String | Micheline} paramObject.code The code to deploy for the contract
+   * @param {String | Micheline} paramObject.init The initial storage of the contract
    * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
    * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
    * @param {String} [paramObject.delegate] The delegate for the new account
@@ -882,9 +1084,24 @@ export default class Sotez extends AbstractTezModule {
     gasLimit = 10600,
     storageLimit = 257,
   }: ContractParams): Promise<any> => {
+    let _code;
+    let _init;
+
+    if (typeof code === 'string') {
+      _code = utility.ml2mic(code);
+    } else {
+      _code = code;
+    }
+
+    if (typeof init === 'string') {
+      _init = utility.sexp2mic(init);
+    } else {
+      _init = init;
+    }
+
     const script = {
-      code: utility.ml2mic(code),
-      storage: utility.sexp2mic(init),
+      code: _code,
+      storage: _init,
     };
 
     const publicKeyHash = this.key.publicKeyHash();
@@ -922,7 +1139,7 @@ export default class Sotez extends AbstractTezModule {
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
-  }: RpcParams): Promise<any> => {
+  }: { delegate: string, source?: string, fee?: number, gasLimit?: number, storageLimit?: number }): Promise<any> => {
     const operation = {
       kind: 'delegation',
       source,
@@ -946,7 +1163,7 @@ export default class Sotez extends AbstractTezModule {
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
-  }: RpcParams): Promise<any> => {
+  }: { fee?: number, gasLimit?: number, storageLimit?: number} = {}): Promise<any> => {
     const operation = {
       kind: 'delegation',
       fee,
@@ -959,63 +1176,126 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Typechecks the provided code
-   * @param {String} code The code to typecheck
+   * @param {String | Micheline} code The code to typecheck
    * @param {Number} gas The the gas limit
    * @returns {Promise} Typecheck result
    */
-  typecheckCode = (code: string, gas: number = 10000): Promise<any> => (
-    this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/typecheck_code`, {
-      program: utility.ml2mic(code),
+  typecheckCode = (code: string | Micheline, gas: number = 10000): Promise<any> => {
+    let _code;
+
+    if (typeof code === 'string') {
+      _code = utility.ml2mic(code)
+    } else {
+      _code = code;
+    }
+
+    return this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/typecheck_code`, {
+      program: _code,
       gas,
     })
-  )
+  }
 
   /**
    * @description Serializes a piece of data to a binary representation
-   * @param {String} data
-   * @param {String} type
+   * @param {String | Micheline} data
+   * @param {String | Micheline} type
    * @returns {Promise} Serialized data
    */
-  packData = (data: string, type: string): Promise<any> => {
+  packData = (data: string | Micheline, type: string | Micheline): Promise<any> => {
+    let _data;
+    let _type;
+
+    if (typeof data === 'string') {
+      _data = utility.sexp2mic(data);
+    } else {
+      _data = data;
+    }
+
+    if (typeof type === 'string') {
+      _type = utility.sexp2mic(type);
+    } else {
+      _type = type;
+    }
+
     const check = {
-      data: utility.sexp2mic(data),
-      type: utility.sexp2mic(type),
+      data: _data,
+      type: _type,
       gas: '4000000',
     };
+
     return this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/pack_data`, check);
   }
 
   /**
    * @description Typechecks data against a type
-   * @param {String} data
-   * @param {String} type
+   * @param {String | Micheline} data
+   * @param {String | Micheline} type
    * @returns {Promise} Typecheck result
    */
-  typecheckData = (data: string, type: string): Promise<any> => {
+  typecheckData = (data: string | Micheline, type: string | Micheline): Promise<any> => {
+    let _data;
+    let _type;
+
+    if (typeof data === 'string') {
+      _data = utility.sexp2mic(data);
+    } else {
+      _data = data;
+    }
+
+    if (typeof type === 'string') {
+      _type = utility.sexp2mic(type);
+    } else {
+      _type = type;
+    }
+
     const check = {
-      data: utility.sexp2mic(data),
-      type: utility.sexp2mic(type),
+      data: data,
+      type: type,
       gas: '4000000',
     };
+
     return this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/typecheck_data`, check);
   }
 
   /**
    * @description Runs or traces code against an input and storage
-   * @param {String} code Code to run
-   * @param {Number} amount Amount to send
-   * @param {String} input Input to run though code
-   * @param {String} storage State of storage
+   * @param {String | Micheline} code Code to run
+   * @param {Number} amount Amount in tez to send
+   * @param {String | Micheline} input Input to run though code
+   * @param {String | Micheline} storage State of storage
    * @param {Boolean} [trace=false] Whether to trace
    * @returns {Promise} Run results
    */
-  runCode = (code: string, amount: number, input: string, storage: string, trace: boolean = false): Promise<any> => {
+  runCode = (code: string | Micheline, amount: number, input: string, storage: string, trace: boolean = false): Promise<any> => {
     const ep = trace ? 'trace_code' : 'run_code';
+
+    let _code;
+    let _input;
+    let _storage;
+
+    if (typeof code === 'string') {
+      _code = utility.sexp2mic(code);
+    } else {
+      _code = code;
+    }
+
+    if (typeof input === 'string') {
+      _input = utility.sexp2mic(input);
+    } else {
+      _input = input;
+    }
+
+    if (typeof storage === 'string') {
+      _storage = utility.sexp2mic(storage);
+    } else {
+      _storage = storage;
+    }
+
     return this.query(`/chains/${this.chain}/blocks/head/helpers/scripts/${ep}`, {
-      script: utility.ml2mic(code),
+      script: _code,
       amount: `${utility.mutez(amount)}`,
-      input: utility.sexp2mic(input),
-      storage: utility.sexp2mic(storage),
+      input: _input,
+      storage: _storage,
     });
   }
 }

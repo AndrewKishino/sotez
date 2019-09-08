@@ -1,6 +1,7 @@
 const path = require('path'); // eslint-disable-line
 const nodeExternals = require('webpack-node-externals'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
+const TypedocWebpackPlugin = require('typedoc-webpack-plugin'); // eslint-disable-line
 
 module.exports = {
   target: 'node',
@@ -44,4 +45,20 @@ module.exports = {
       }),
     ],
   },
+  plugins: [
+    new TypedocWebpackPlugin({
+      name: 'Sotez Documentation',
+      out: '../../docs',
+      tsconfig: '../../tsconfig.json',
+      mode: 'modules',
+      theme: 'markdown',
+      readme: 'none',
+      exclude: [
+        'src/index.ts',
+        'src/ledger-web.ts',
+        'src/hw-app-xtz/*',
+        '**/node_modules/**/*.*',
+      ],
+    }),
+  ],
 };

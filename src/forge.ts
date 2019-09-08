@@ -3,11 +3,63 @@ import toBuffer from 'typedarray-to-buffer';
 import utility from './utility';
 import { prefix, forgeMappings, protocols } from './constants';
 
-import {
-  ConstructedOperation,
-  OperationObject,
-  ForgedBytes,
-} from './types/sotez';
+interface ConstructedOperation {
+  kind: string;
+  level: number;
+  nonce: string;
+  pkh: string;
+  hash: string;
+  secret: string;
+  source: string;
+  period: number;
+  proposal: string;
+  ballot: string;
+  fee: string;
+  counter: string;
+  gas_limit: string;
+  storage_limit: string;
+  parameters: string;
+  balance: string;
+  spendable: boolean;
+  delegatable: boolean;
+  delegate: string;
+  amount: string;
+  destination: string;
+  public_key: string;
+  script: { code: Micheline; storage: Micheline };
+  manager_pubkey: string;
+  managerPubkey: string;
+};
+
+interface OperationObject {
+  branch?: string;
+  contents?: ConstructedOperation[];
+  protocol?: string;
+  signature?: string;
+};
+
+interface ForgedBytes {
+  opbytes: string;
+  opOb: OperationObject;
+  counter: number;
+};
+
+type Micheline = {
+  prim: string,
+  args?: MichelineArray,
+  annots?: Array<string>
+}
+| { bytes: string }
+| { int: string }
+| { string: string }
+| { address: string }
+| { contract: string }
+| { key: string }
+| { key_hash: string }
+| { signature: string }
+| MichelineArray;
+
+interface MichelineArray extends Array<Micheline> { }
 
 /**
  * @description Convert bytes from Int32
@@ -50,7 +102,7 @@ const bool = (bool: boolean): string => (bool ? 'ff' : '00');
  * @param {String} script.storage Script storage
  * @returns {String} Forged script bytes
  */
-const script = (script: { code: string; storage: string }): string => {
+const script = (script: { code: Micheline; storage: Micheline }): string => {
   const t1 = encodeRawBytes(script.code).toLowerCase();
   const t2 = encodeRawBytes(script.storage).toLowerCase();
   return toBytesInt32Hex(t1.length / 2) + t1 + toBytesInt32Hex(t2.length / 2) + t2;
@@ -427,7 +479,7 @@ const delegation = (op: ConstructedOperation, protocol: string): string => {
  * @param {Object} opOb The operation object(s)
  * @param {Number} counter The current counter for the account
  * @returns {String} Forged operation bytes
- * @example
+ * ```javascript
  * forge.forge({
  *   branch: head.hash,
  *   contents: [{
@@ -440,7 +492,8 @@ const delegation = (op: ConstructedOperation, protocol: string): string => {
  *     amount: '100000000',
  *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   }],
- * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb))
+ * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb));
+ * ```
  */
 const forge = async (opOb: OperationObject, counter: number, protocol: string): Promise<ForgedBytes> => {
   if (!opOb.contents) {
@@ -470,7 +523,7 @@ const forge = async (opOb: OperationObject, counter: number, protocol: string): 
  * @param {String} bytes The bytes to decode
  * @returns {Object} Decoded raw bytes
  */
-const decodeRawBytes = (bytes: string): any => {
+const decodeRawBytes = (bytes: string): Micheline => {
   bytes = bytes.toUpperCase();
 
   let index = 0;
@@ -569,9 +622,9 @@ const decodeRawBytes = (bytes: string): any => {
  * @param {Object} input The value to encode
  * @returns {String} Encoded value as bytes
  */
-const encodeRawBytes = (input: any): string => {
-  const rec = (inputArg: any): any => {
-    const result = [];
+const encodeRawBytes = (input: Micheline): string => {
+  const rec = (inputArg: Micheline): string => {
+    const result: string[] = [];
 
     if (inputArg instanceof Array) {
       result.push('02');
@@ -580,7 +633,7 @@ const encodeRawBytes = (input: any): string => {
       result.push(len.toString(16).padStart(8, '0'));
       result.push(bytes);
     } else if (inputArg instanceof Object) {
-      if (inputArg.prim) {
+      if ('prim' in inputArg) {
         const argsLen = inputArg.args ? inputArg.args.length : 0;
         result.push(forgeMappings.primMappingReverse[argsLen][`${!!inputArg.annots}`]);
         result.push(forgeMappings.opMappingReverse[inputArg.prim]);
@@ -595,12 +648,12 @@ const encodeRawBytes = (input: any): string => {
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
           result.push(annotsBytes);
         }
-      } else if (inputArg.bytes) {
+      } else if ('bytes' in inputArg) {
         const len = inputArg.bytes.length / 2;
         result.push('0A');
         result.push(len.toString(16).padStart(8, '0'));
         result.push(inputArg.bytes);
-      } else if (inputArg.int) {
+      } else if ('int' in inputArg) {
         const num = new BigNumber(inputArg.int, 10);
         const positiveMark = num.toString(2)[0] === '-' ? '1' : '0';
         const binary = num.toString(2).replace('-', '');
@@ -621,7 +674,7 @@ const encodeRawBytes = (input: any): string => {
 
         result.push('00');
         result.push(numHex);
-      } else if (inputArg.string) {
+      } else if ('string' in inputArg) {
         const stringBytes = utility.textEncode(inputArg.string);
         const stringHex = [].slice.call(stringBytes).map((x: any) => x.toString(16).padStart(2, '0')).join('');
         const len = stringBytes.length;

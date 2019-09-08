@@ -2,6 +2,23 @@ import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 import { Buffer } from 'buffer/';
 
+type Micheline = {
+  prim: string,
+  args?: MichelineArray,
+  annots?: Array<string>
+}
+  | { bytes: string }
+  | { int: string }
+  | { string: string }
+  | { address: string }
+  | { contract: string }
+  | { key: string }
+  | { key_hash: string }
+  | { signature: string }
+  | MichelineArray;
+
+interface MichelineArray extends Array<Micheline> { }
+
 const textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
 
 const textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
@@ -116,7 +133,7 @@ const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   return r;
 };
 
-const sexp2mic = function me(mi: string): any {
+const sexp2mic = function me(mi: string): Micheline {
   mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -212,7 +229,7 @@ const mic2arr = function me2(s: any): any {
   return ret;
 };
 
-const ml2mic = function me(mi: string): any {
+const ml2mic = function me(mi: string): Micheline {
   const ret = [];
   let inseq = false;
   let seq = '';

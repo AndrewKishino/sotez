@@ -1,11 +1,24 @@
 import LedgerApp from './hw-app-xtz/Tezos';
 import LedgerTransport from '@ledgerhq/hw-transport-node-hid';
 
-import {
-  LedgerGetAddress,
-  LedgerSignOperation,
-  LedgerGetVersion,
-} from './types/sotez';
+interface LedgerGetAddress {
+  path?: string;
+  displayConfirm?: boolean;
+  curve?: number;
+};
+
+interface LedgerSignOperation {
+  path?: string;
+  rawTxHex: string;
+  curve?: number;
+};
+
+interface LedgerGetVersion {
+  major: number;
+  minor: number;
+  patch: number;
+  bakingApp: boolean;
+};
 
 /**
  * @description Get the public key and public key hash from the ledger
@@ -14,12 +27,13 @@ import {
  * @param {Boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
  * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The public key and public key hash
- * @example
+ * ```javascript
  * ledger.getAddress({
  *   path = "44'/1729'/0'/0'",
  *   displayConfirm = true,
  *   curve = 0x00,
- * }).then(({ address, publicKey }) => console.log(address, publicKey))
+ * }).then(({ address, publicKey }) => console.log(address, publicKey));
+ * ```
  */
 const getAddress = async ({
   path = "44'/1729'/0'/0'",
@@ -46,12 +60,13 @@ const getAddress = async ({
  * @param {Boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
  * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The signed operation
- * @example
+ * ```javascript
  * ledger.signOperation({
  *   path = "44'/1729'/0'/0'",
  *   rawTxHex,
  *   curve = 0x00,
- * }).then((signature) => console.log(signature))
+ * }).then((signature) => console.log(signature));
+ * ```
  */
 const signOperation = async ({
   path = "44'/1729'/0'/0'",
@@ -74,9 +89,10 @@ const signOperation = async ({
 /**
  * @description Show the version of the ledger
  * @returns {Promise} The version info
- * @example
+ * ```javascript
  * ledger.getVersion()
- *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp))
+ *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
+ * ```
  */
 const getVersion = async (): Promise<LedgerGetVersion> => {
   const transport = await LedgerTransport.create();

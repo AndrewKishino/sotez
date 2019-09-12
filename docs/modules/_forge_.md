@@ -1,10 +1,21 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["forge"](_forge_.md)
+[Globals](../README.md) › [&quot;forge&quot;](_forge_.md)
 
 # External module: "forge"
 
 ## Index
+
+### Interfaces
+
+* [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)
+* [ForgedBytes](../interfaces/_forge_.forgedbytes.md)
+* [MichelineArray](../interfaces/_forge_.michelinearray.md)
+* [OperationObject](../interfaces/_forge_.operationobject.md)
+
+### Type aliases
+
+* [Micheline](_forge_.md#micheline)
 
 ### Functions
 
@@ -33,19 +44,27 @@
 * [transaction](_forge_.md#const-transaction)
 * [zarith](_forge_.md#const-zarith)
 
+## Type aliases
+
+###  Micheline
+
+Ƭ **Micheline**: *object | object | object | object | object | object | object | object | object | [MichelineArray](../interfaces/_forge_.michelinearray.md)*
+
+*Defined in [forge.ts:47](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L47)*
+
 ## Functions
 
 ### `Const` activateAccount
 
-▸ **activateAccount**(`op`: ConstructedOperation): *string*
+▸ **activateAccount**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:263](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L263)*
+*Defined in [forge.ts:315](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L315)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -57,7 +76,7 @@ ___
 
 ▸ **address**(`address`: string, `protocol?`: undefined | string): *string*
 
-*Defined in [forge.ts:110](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L110)*
+*Defined in [forge.ts:162](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L162)*
 
 Address to forge
 
@@ -66,7 +85,7 @@ Address to forge
 Name | Type |
 ------ | ------ |
 `address` | string |
-`protocol?` | undefined \| string |
+`protocol?` | undefined &#124; string |
 
 **Returns:** *string*
 
@@ -76,15 +95,15 @@ ___
 
 ### `Const` ballot
 
-▸ **ballot**(`op`: ConstructedOperation): *string*
+▸ **ballot**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:287](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L287)*
+*Defined in [forge.ts:339](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L339)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -96,7 +115,7 @@ ___
 
 ▸ **bool**(`bool`: boolean): *string*
 
-*Defined in [forge.ts:44](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L44)*
+*Defined in [forge.ts:96](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L96)*
 
 Boolean value to convert
 
@@ -114,9 +133,9 @@ ___
 
 ### `Const` decodeRawBytes
 
-▸ **decodeRawBytes**(`bytes`: string): *any*
+▸ **decodeRawBytes**(`bytes`: string): *[Micheline](_forge_.md#micheline)*
 
-*Defined in [forge.ts:474](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L474)*
+*Defined in [forge.ts:526](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L526)*
 
 **Parameters:**
 
@@ -124,7 +143,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `bytes` | string | The bytes to decode |
 
-**Returns:** *any*
+**Returns:** *[Micheline](_forge_.md#micheline)*
 
 Decoded raw bytes
 
@@ -132,15 +151,15 @@ ___
 
 ### `Const` delegation
 
-▸ **delegation**(`op`: ConstructedOperation, `protocol`: string): *string*
+▸ **delegation**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:406](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L406)*
+*Defined in [forge.ts:458](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L458)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 `protocol` | string | Current protocol |
 
 **Returns:** *string*
@@ -151,15 +170,15 @@ ___
 
 ### `Const` doubleBakingEvidence
 
-▸ **doubleBakingEvidence**(`op`: ConstructedOperation): *string*
+▸ **doubleBakingEvidence**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:254](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L254)*
+*Defined in [forge.ts:306](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L306)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -169,15 +188,15 @@ ___
 
 ### `Const` doubleEndorsementEvidence
 
-▸ **doubleEndorsementEvidence**(`op`: ConstructedOperation): *string*
+▸ **doubleEndorsementEvidence**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:244](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L244)*
+*Defined in [forge.ts:296](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L296)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -187,15 +206,15 @@ ___
 
 ### `Const` encodeRawBytes
 
-▸ **encodeRawBytes**(`input`: any): *string*
+▸ **encodeRawBytes**(`input`: [Micheline](_forge_.md#micheline)): *string*
 
-*Defined in [forge.ts:573](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L573)*
+*Defined in [forge.ts:625](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L625)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`input` | any | The value to encode |
+`input` | [Micheline](_forge_.md#micheline) | The value to encode |
 
 **Returns:** *string*
 
@@ -205,15 +224,15 @@ ___
 
 ### `Const` endorsement
 
-▸ **endorsement**(`op`: ConstructedOperation): *string*
+▸ **endorsement**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:219](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L219)*
+*Defined in [forge.ts:271](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L271)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -221,19 +240,19 @@ ___
 
 ### `Const` forge
 
-▸ **forge**(`opOb`: OperationObject, `counter`: number, `protocol`: string): *Promise‹ForgedBytes›*
+▸ **forge**(`opOb`: [OperationObject](../interfaces/_forge_.operationobject.md), `counter`: number, `protocol`: string): *Promise‹[ForgedBytes](../interfaces/_forge_.forgedbytes.md)›*
 
-*Defined in [forge.ts:446](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L446)*
+*Defined in [forge.ts:498](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L498)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`opOb` | OperationObject | The operation object(s) |
+`opOb` | [OperationObject](../interfaces/_forge_.operationobject.md) | The operation object(s) |
 `counter` | number | The current counter for the account |
 `protocol` | string | - |
 
-**Returns:** *Promise‹ForgedBytes›*
+**Returns:** *Promise‹[ForgedBytes](../interfaces/_forge_.forgedbytes.md)›*
 
 Forged operation bytes
 ```javascript
@@ -256,9 +275,9 @@ ___
 
 ### `Const` op
 
-▸ **op**(`op`: ConstructedOperation, `protocol`: string): *string*
+▸ **op**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:175](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L175)*
+*Defined in [forge.ts:227](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L227)*
 
 Operation to forge
 
@@ -266,7 +285,7 @@ Operation to forge
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | - |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | - |
 `protocol` | string | Current protocol |
 
 **Returns:** *string*
@@ -277,15 +296,15 @@ ___
 
 ### `Const` origination
 
-▸ **origination**(`op`: ConstructedOperation, `protocol`: string): *string*
+▸ **origination**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:360](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L360)*
+*Defined in [forge.ts:412](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L412)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 `protocol` | string | Current protocol |
 
 **Returns:** *string*
@@ -298,7 +317,7 @@ ___
 
 ▸ **parameters**(`parameter`: any, `protocol`: string): *string*
 
-*Defined in [forge.ts:64](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L64)*
+*Defined in [forge.ts:116](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L116)*
 
 **Parameters:**
 
@@ -315,15 +334,15 @@ ___
 
 ### `Const` proposals
 
-▸ **proposals**(`op`: ConstructedOperation): *string*
+▸ **proposals**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:278](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L278)*
+*Defined in [forge.ts:330](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L330)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -335,7 +354,7 @@ ___
 
 ▸ **publicKey**(`pk`: string): *string*
 
-*Defined in [forge.ts:156](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L156)*
+*Defined in [forge.ts:208](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L208)*
 
 **Parameters:**
 
@@ -353,7 +372,7 @@ ___
 
 ▸ **publicKeyHash**(`pkh`: string): *string*
 
-*Defined in [forge.ts:97](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L97)*
+*Defined in [forge.ts:149](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L149)*
 
 **Parameters:**
 
@@ -369,15 +388,15 @@ ___
 
 ### `Const` reveal
 
-▸ **reveal**(`op`: ConstructedOperation, `protocol`: string): *string*
+▸ **reveal**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:314](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L314)*
+*Defined in [forge.ts:366](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L366)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 `protocol` | string | Current protocol |
 
 **Returns:** *string*
@@ -390,7 +409,7 @@ ___
 
 ▸ **script**(`script`: object): *string*
 
-*Defined in [forge.ts:53](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L53)*
+*Defined in [forge.ts:105](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L105)*
 
 Script to forge
 
@@ -400,8 +419,8 @@ Script to forge
 
 Name | Type |
 ------ | ------ |
-`code` | string |
-`storage` | string |
+`code` | [Micheline](_forge_.md#micheline) |
+`storage` | [Micheline](_forge_.md#micheline) |
 
 **Returns:** *string*
 
@@ -411,15 +430,15 @@ ___
 
 ### `Const` seedNonceRevelation
 
-▸ **seedNonceRevelation**(`op`: ConstructedOperation): *string*
+▸ **seedNonceRevelation**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:229](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L229)*
+*Defined in [forge.ts:281](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L281)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 
 **Returns:** *string*
 
@@ -431,7 +450,7 @@ ___
 
 ▸ **toBytesInt32**(`num`: number): *any*
 
-*Defined in [forge.ts:17](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L17)*
+*Defined in [forge.ts:69](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L69)*
 
 **Parameters:**
 
@@ -449,7 +468,7 @@ ___
 
 ▸ **toBytesInt32Hex**(`num`: number): *string*
 
-*Defined in [forge.ts:34](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L34)*
+*Defined in [forge.ts:86](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L86)*
 
 **Parameters:**
 
@@ -465,15 +484,15 @@ ___
 
 ### `Const` transaction
 
-▸ **transaction**(`op`: ConstructedOperation, `protocol`: string): *string*
+▸ **transaction**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:333](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L333)*
+*Defined in [forge.ts:385](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L385)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`op` | ConstructedOperation | Operation to forge |
+`op` | [ConstructedOperation](../interfaces/_forge_.constructedoperation.md) | Operation to forge |
 `protocol` | string | Current protocol |
 
 **Returns:** *string*
@@ -486,7 +505,7 @@ ___
 
 ▸ **zarith**(`n`: string): *string*
 
-*Defined in [forge.ts:129](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/forge.ts#L129)*
+*Defined in [forge.ts:181](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L181)*
 
 **Parameters:**
 

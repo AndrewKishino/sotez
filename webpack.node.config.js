@@ -50,6 +50,7 @@ module.exports = {
       name: 'Sotez Documentation',
       out: '../../docs',
       tsconfig: '../../tsconfig.json',
+      ignoreCompilerErrors: true,
       mode: 'modules',
       theme: 'markdown',
       readme: 'none',

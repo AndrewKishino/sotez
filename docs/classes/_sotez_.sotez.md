@@ -1,6 +1,6 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["sotez"](../modules/_sotez_.md) › [Sotez](_sotez_.sotez.md)
+[Globals](../README.md) › [&quot;sotez&quot;](../modules/_sotez_.md) › [Sotez](_sotez_.sotez.md)
 
 # Class: Sotez
 
@@ -92,11 +92,11 @@ sotez.transfer({
 
 ###  constructor
 
-\+ **new Sotez**(`provider`: string, `chain`: string, `options`: ModuleOptions): *[Sotez](_sotez_.sotez.md)*
+\+ **new Sotez**(`provider`: string, `chain`: string, `options`: [ModuleOptions](../interfaces/_sotez_.moduleoptions.md)): *[Sotez](_sotez_.sotez.md)*
 
 *Overrides [AbstractTezModule](_tez_core_.abstracttezmodule.md).[constructor](_tez_core_.abstracttezmodule.md#constructor)*
 
-Defined in sotez.ts:44
+*Defined in [sotez.ts:243](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L243)*
 
 **Parameters:**
 
@@ -104,7 +104,7 @@ Name | Type | Default |
 ------ | ------ | ------ |
 `provider` | string | "http://127.0.0.1:8732" |
 `chain` | string | "main" |
-`options` | ModuleOptions |  {} |
+`options` | [ModuleOptions](../interfaces/_sotez_.moduleoptions.md) |  {} |
 
 **Returns:** *[Sotez](_sotez_.sotez.md)*
 
@@ -116,7 +116,7 @@ Name | Type | Default |
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[_chain](_tez_core_.abstracttezmodule.md#_chain)*
 
-*Defined in [tez-core.ts:3](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L3)*
+*Defined in [tez-core.ts:3](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L3)*
 
 ___
 
@@ -124,7 +124,7 @@ ___
 
 • **_counters**: *object*
 
-Defined in sotez.ts:43
+*Defined in [sotez.ts:242](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L242)*
 
 #### Type declaration:
 
@@ -136,7 +136,7 @@ ___
 
 • **_debugMode**: *boolean*
 
-Defined in sotez.ts:42
+*Defined in [sotez.ts:241](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L241)*
 
 ___
 
@@ -144,7 +144,7 @@ ___
 
 • **_defaultFee**: *number*
 
-Defined in sotez.ts:41
+*Defined in [sotez.ts:240](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L240)*
 
 ___
 
@@ -152,7 +152,7 @@ ___
 
 • **_localForge**: *boolean*
 
-Defined in sotez.ts:39
+*Defined in [sotez.ts:238](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L238)*
 
 ___
 
@@ -162,7 +162,7 @@ ___
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[_provider](_tez_core_.abstracttezmodule.md#_provider)*
 
-*Defined in [tez-core.ts:2](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L2)*
+*Defined in [tez-core.ts:2](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L2)*
 
 ___
 
@@ -170,15 +170,15 @@ ___
 
 • **_validateLocalForge**: *boolean*
 
-Defined in sotez.ts:40
+*Defined in [sotez.ts:239](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L239)*
 
 ___
 
 ###  key
 
-• **key**: *KeyInterface*
+• **key**: *[KeyInterface](../interfaces/_sotez_.keyinterface.md)*
 
-Defined in sotez.ts:44
+*Defined in [sotez.ts:243](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L243)*
 
 ## Accessors
 
@@ -188,7 +188,7 @@ Defined in sotez.ts:44
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[chain](_tez_core_.abstracttezmodule.md#chain)*
 
-*Defined in [tez-core.ts:21](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L21)*
+*Defined in [tez-core.ts:21](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L21)*
 
 **Returns:** *string*
 
@@ -196,7 +196,7 @@ Defined in sotez.ts:44
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[chain](_tez_core_.abstracttezmodule.md#chain)*
 
-*Defined in [tez-core.ts:25](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L25)*
+*Defined in [tez-core.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L25)*
 
 **Parameters:**
 
@@ -212,7 +212,7 @@ ___
 
 • **get counters**(): *object*
 
-Defined in sotez.ts:83
+*Defined in [sotez.ts:282](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L282)*
 
 **Returns:** *object*
 
@@ -220,7 +220,7 @@ Defined in sotez.ts:83
 
 • **set counters**(`counters`: object): *void*
 
-Defined in sotez.ts:87
+*Defined in [sotez.ts:286](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L286)*
 
 **Parameters:**
 
@@ -236,13 +236,13 @@ ___
 
 • **get debugMode**(): *boolean*
 
-Defined in sotez.ts:91
+*Defined in [sotez.ts:290](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L290)*
 
 **Returns:** *boolean*
 
 • **set debugMode**(`t`: boolean): *void*
 
-Defined in sotez.ts:95
+*Defined in [sotez.ts:294](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L294)*
 
 **Parameters:**
 
@@ -258,13 +258,13 @@ ___
 
 • **get defaultFee**(): *number*
 
-Defined in sotez.ts:59
+*Defined in [sotez.ts:258](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L258)*
 
 **Returns:** *number*
 
 • **set defaultFee**(`fee`: number): *void*
 
-Defined in sotez.ts:63
+*Defined in [sotez.ts:262](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L262)*
 
 **Parameters:**
 
@@ -280,13 +280,13 @@ ___
 
 • **get localForge**(): *boolean*
 
-Defined in sotez.ts:67
+*Defined in [sotez.ts:266](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L266)*
 
 **Returns:** *boolean*
 
 • **set localForge**(`value`: boolean): *void*
 
-Defined in sotez.ts:71
+*Defined in [sotez.ts:270](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L270)*
 
 **Parameters:**
 
@@ -304,7 +304,7 @@ ___
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[provider](_tez_core_.abstracttezmodule.md#provider)*
 
-*Defined in [tez-core.ts:13](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L13)*
+*Defined in [tez-core.ts:13](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L13)*
 
 **Returns:** *string*
 
@@ -312,7 +312,7 @@ ___
 
 *Inherited from [AbstractTezModule](_tez_core_.abstracttezmodule.md).[provider](_tez_core_.abstracttezmodule.md#provider)*
 
-*Defined in [tez-core.ts:17](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/tez-core.ts#L17)*
+*Defined in [tez-core.ts:17](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L17)*
 
 **Parameters:**
 
@@ -328,13 +328,13 @@ ___
 
 • **get validateLocalForge**(): *boolean*
 
-Defined in sotez.ts:75
+*Defined in [sotez.ts:274](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L274)*
 
 **Returns:** *boolean*
 
 • **set validateLocalForge**(`value`: boolean): *void*
 
-Defined in sotez.ts:79
+*Defined in [sotez.ts:278](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L278)*
 
 **Parameters:**
 
@@ -350,7 +350,7 @@ Name | Type |
 
 ▸ **account**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:232
+*Defined in [sotez.ts:431](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L431)*
 
 **Parameters:**
 
@@ -359,11 +359,11 @@ Defined in sotez.ts:232
 Name | Type | Default |
 ------ | ------ | ------ |
 `balance` | number | - |
-`delegatable` | boolean | - |
-`delegate` | string | - |
+`delegatable` | undefined &#124; false &#124; true | - |
+`delegate` | undefined &#124; string | - |
 `fee` | number |  this.defaultFee |
 `gasLimit` | number | 10600 |
-`spendable` | boolean | - |
+`spendable` | undefined &#124; false &#124; true | - |
 `storageLimit` | number | 257 |
 
 **Returns:** *Promise‹any›*
@@ -371,7 +371,7 @@ Name | Type | Default |
 Object containing the injected operation hash
 ```javascript
 sotez.account({
-  amount: 10,
+  balance: 10,
   spendable: true,
   delegatable: true,
   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
@@ -384,7 +384,7 @@ ___
 
 ▸ **activate**(`pkh`: string, `secret`: string): *Promise‹any›*
 
-Defined in sotez.ts:851
+*Defined in [sotez.ts:1054](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1054)*
 
 **Parameters:**
 
@@ -407,7 +407,7 @@ ___
 
 ▸ **awaitOperation**(`hash`: string, `interval`: number, `timeout`: number): *Promise‹string›*
 
-Defined in sotez.ts:477
+*Defined in [sotez.ts:676](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L676)*
 
 **Parameters:**
 
@@ -429,16 +429,16 @@ ___
 
 ###  call
 
-▸ **call**(`path`: string, `payload?`: OperationObject): *Promise‹any›*
+▸ **call**(`path`: string, `payload?`: [OperationObject](../interfaces/_sotez_.operationobject.md)): *Promise‹any›*
 
-Defined in sotez.ts:526
+*Defined in [sotez.ts:725](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L725)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
 `path` | string | The path to query |
-`payload?` | OperationObject | The payload of the request |
+`payload?` | [OperationObject](../interfaces/_sotez_.operationobject.md) | The payload of the request |
 
 **Returns:** *Promise‹any›*
 
@@ -448,9 +448,9 @@ ___
 
 ###  getBaker
 
-▸ **getBaker**(`address`: string): *Promise‹Baker›*
+▸ **getBaker**(`address`: string): *Promise‹[Baker](../interfaces/_sotez_.baker.md)›*
 
-Defined in sotez.ts:342
+*Defined in [sotez.ts:541](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L541)*
 
 **Parameters:**
 
@@ -458,7 +458,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `address` | string | The contract for which to retrieve the baker information |
 
-**Returns:** *Promise‹Baker›*
+**Returns:** *Promise‹[Baker](../interfaces/_sotez_.baker.md)›*
 
 The information of the delegate address
 ```javascript
@@ -490,7 +490,7 @@ ___
 
 ▸ **getBalance**(`address`: string): *Promise‹string›*
 
-Defined in sotez.ts:268
+*Defined in [sotez.ts:467](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L467)*
 
 **Parameters:**
 
@@ -512,7 +512,7 @@ ___
 
 ▸ **getBallotList**(): *Promise‹any[]›*
 
-Defined in sotez.ts:393
+*Defined in [sotez.ts:592](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L592)*
 
 **Returns:** *Promise‹any[]›*
 
@@ -527,7 +527,7 @@ ___
 
 ▸ **getBallots**(): *Promise‹object›*
 
-Defined in sotez.ts:418
+*Defined in [sotez.ts:617](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L617)*
 
 **Returns:** *Promise‹object›*
 
@@ -542,7 +542,7 @@ ___
 
 ▸ **getCounter**(`address`: string): *Promise‹string›*
 
-Defined in sotez.ts:311
+*Defined in [sotez.ts:510](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L510)*
 
 **Parameters:**
 
@@ -564,7 +564,7 @@ ___
 
 ▸ **getCurrentPeriod**(): *Promise‹any›*
 
-Defined in sotez.ts:451
+*Defined in [sotez.ts:650](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L650)*
 
 **Returns:** *Promise‹any›*
 
@@ -579,7 +579,7 @@ ___
 
 ▸ **getCurrentProposal**(): *Promise‹string›*
 
-Defined in sotez.ts:440
+*Defined in [sotez.ts:639](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L639)*
 
 **Returns:** *Promise‹string›*
 
@@ -594,7 +594,7 @@ ___
 
 ▸ **getCurrentQuorum**(): *Promise‹number›*
 
-Defined in sotez.ts:462
+*Defined in [sotez.ts:661](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L661)*
 
 **Returns:** *Promise‹number›*
 
@@ -609,7 +609,7 @@ ___
 
 ▸ **getDelegate**(`address`: string): *Promise‹string | boolean›*
 
-Defined in sotez.ts:281
+*Defined in [sotez.ts:480](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L480)*
 
 **Parameters:**
 
@@ -629,11 +629,11 @@ ___
 
 ###  getHead
 
-▸ **getHead**(): *Promise‹Head›*
+▸ **getHead**(): *Promise‹[Head](../interfaces/_sotez_.head.md)›*
 
-Defined in sotez.ts:375
+*Defined in [sotez.ts:574](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L574)*
 
-**Returns:** *Promise‹Head›*
+**Returns:** *Promise‹[Head](../interfaces/_sotez_.head.md)›*
 
 The current head block
 ```javascript
@@ -646,7 +646,7 @@ ___
 
 ▸ **getHeadHash**(): *Promise‹string›*
 
-Defined in sotez.ts:384
+*Defined in [sotez.ts:583](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L583)*
 
 **Returns:** *Promise‹string›*
 
@@ -659,11 +659,11 @@ ___
 
 ###  getHeadMetadata
 
-▸ **getHeadMetadata**(): *Promise‹Header›*
+▸ **getHeadMetadata**(): *Promise‹[Header](../interfaces/_sotez_.header.md)›*
 
-Defined in sotez.ts:364
+*Defined in [sotez.ts:563](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L563)*
 
-**Returns:** *Promise‹Header›*
+**Returns:** *Promise‹[Header](../interfaces/_sotez_.header.md)›*
 
 The head block metadata
 ```javascript
@@ -674,11 +674,11 @@ ___
 
 ###  getHeader
 
-▸ **getHeader**(): *Promise‹Header›*
+▸ **getHeader**(): *Promise‹[Header](../interfaces/_sotez_.header.md)›*
 
-Defined in sotez.ts:353
+*Defined in [sotez.ts:552](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L552)*
 
-**Returns:** *Promise‹Header›*
+**Returns:** *Promise‹[Header](../interfaces/_sotez_.header.md)›*
 
 The whole block header
 ```javascript
@@ -691,7 +691,7 @@ ___
 
 ▸ **getListings**(): *Promise‹any[]›*
 
-Defined in sotez.ts:429
+*Defined in [sotez.ts:628](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L628)*
 
 **Returns:** *Promise‹any[]›*
 
@@ -706,7 +706,7 @@ ___
 
 ▸ **getManager**(`address`: string): *Promise‹object›*
 
-Defined in sotez.ts:298
+*Defined in [sotez.ts:497](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L497)*
 
 **Parameters:**
 
@@ -728,7 +728,7 @@ ___
 
 ▸ **getProposals**(): *Promise‹any[]›*
 
-Defined in sotez.ts:407
+*Defined in [sotez.ts:606](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L606)*
 
 **Returns:** *Promise‹any[]›*
 
@@ -746,15 +746,15 @@ ___
 
 ▸ **importKey**(`key`: string, `passphrase?`: undefined | string, `email?`: undefined | string): *Promise‹void›*
 
-Defined in sotez.ts:114
+*Defined in [sotez.ts:313](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L313)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
 `key` | string | The secret key |
-`passphrase?` | undefined \| string | - |
-`email?` | undefined \| string | - |
+`passphrase?` | undefined &#124; string | - |
+`email?` | undefined &#124; string | - |
 
 **Returns:** *Promise‹void›*
 
@@ -764,7 +764,7 @@ ___
 
 ▸ **importLedger**(`path`: string, `curve`: number): *Promise‹void›*
 
-Defined in sotez.ts:127
+*Defined in [sotez.ts:326](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L326)*
 
 **Parameters:**
 
@@ -779,15 +779,15 @@ ___
 
 ###  inject
 
-▸ **inject**(`opOb`: OperationObject, `sopbytes`: string): *Promise‹any›*
+▸ **inject**(`opOb`: [OperationObject](../interfaces/_sotez_.operationobject.md), `sopbytes`: string): *Promise‹any›*
 
-Defined in sotez.ts:759
+*Defined in [sotez.ts:959](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L959)*
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`opOb` | OperationObject | The operation object |
+`opOb` | [OperationObject](../interfaces/_sotez_.operationobject.md) | The operation object |
 `sopbytes` | string | The signed operation bytes |
 
 **Returns:** *Promise‹any›*
@@ -800,7 +800,7 @@ ___
 
 ▸ **originate**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:874
+*Defined in [sotez.ts:1077](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1077)*
 
 **Parameters:**
 
@@ -809,12 +809,12 @@ Defined in sotez.ts:874
 Name | Type | Default |
 ------ | ------ | ------ |
 `balance` | number | - |
-`code` | string | - |
+`code` | string &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; [MichelineArray](../interfaces/_sotez_.michelinearray.md) | - |
 `delegatable` | boolean | false |
-`delegate` | string | - |
+`delegate` | undefined &#124; string | - |
 `fee` | number |  this.defaultFee |
 `gasLimit` | number | 10600 |
-`init` | string | - |
+`init` | string &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; object &#124; [MichelineArray](../interfaces/_sotez_.michelinearray.md) | - |
 `spendable` | boolean | false |
 `storageLimit` | number | 257 |
 
@@ -826,16 +826,16 @@ ___
 
 ###  packData
 
-▸ **packData**(`data`: string, `type`: string): *Promise‹any›*
+▸ **packData**(`data`: string | [Micheline](../modules/_sotez_.md#micheline), `type`: string | [Micheline](../modules/_sotez_.md#micheline)): *Promise‹any›*
 
-Defined in sotez.ts:979
+*Defined in [sotez.ts:1205](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1205)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`data` | string |
-`type` | string |
+`data` | string &#124; [Micheline](../modules/_sotez_.md#micheline) |
+`type` | string &#124; [Micheline](../modules/_sotez_.md#micheline) |
 
 **Returns:** *Promise‹any›*
 
@@ -845,9 +845,9 @@ ___
 
 ###  prepareOperation
 
-▸ **prepareOperation**(`__namedParameters`: object): *Promise‹ForgedBytes›*
+▸ **prepareOperation**(`__namedParameters`: object): *Promise‹[ForgedBytes](../interfaces/_sotez_.forgedbytes.md)›*
 
-Defined in sotez.ts:546
+*Defined in [sotez.ts:745](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L745)*
 
 **Parameters:**
 
@@ -855,10 +855,10 @@ Defined in sotez.ts:546
 
 Name | Type |
 ------ | ------ |
-`operation` | Operation[] |
-`source` | undefined \| string |
+`operation` | [Operation](../interfaces/_sotez_.operation.md) &#124; [Operation](../interfaces/_sotez_.operation.md)[] |
+`source` | undefined &#124; string |
 
-**Returns:** *Promise‹ForgedBytes›*
+**Returns:** *Promise‹[ForgedBytes](../interfaces/_sotez_.forgedbytes.md)›*
 
 Object containing the prepared operation
 ```javascript
@@ -880,7 +880,7 @@ ___
 
 ▸ **query**(`path`: string, `payload?`: any, `method?`: undefined | string): *Promise‹any›*
 
-Defined in sotez.ts:158
+*Defined in [sotez.ts:357](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L357)*
 
 **Parameters:**
 
@@ -888,7 +888,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `path` | string | The RPC path to query |
 `payload?` | any | The payload of the query |
-`method?` | undefined \| string | The request method. Either 'GET' or 'POST' |
+`method?` | undefined &#124; string | The request method. Either 'GET' or 'POST' |
 
 **Returns:** *Promise‹any›*
 
@@ -904,11 +904,11 @@ ___
 
 ▸ **registerDelegate**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:945
+*Defined in [sotez.ts:1163](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1163)*
 
 **Parameters:**
 
-▪ **__namedParameters**: *object*
+▪`Default value`  **__namedParameters**: *object*=  {}
 
 Name | Type | Default |
 ------ | ------ | ------ |
@@ -924,16 +924,16 @@ ___
 
 ###  runCode
 
-▸ **runCode**(`code`: string, `amount`: number, `input`: string, `storage`: string, `trace`: boolean): *Promise‹any›*
+▸ **runCode**(`code`: string | [Micheline](../modules/_sotez_.md#micheline), `amount`: number, `input`: string, `storage`: string, `trace`: boolean): *Promise‹any›*
 
-Defined in sotez.ts:1012
+*Defined in [sotez.ts:1270](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1270)*
 
 **Parameters:**
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`code` | string | - | Code to run |
-`amount` | number | - | Amount to send |
+`code` | string &#124; [Micheline](../modules/_sotez_.md#micheline) | - | Code to run |
+`amount` | number | - | Amount in tez to send |
 `input` | string | - | Input to run though code |
 `storage` | string | - | State of storage |
 `trace` | boolean | false | - |
@@ -948,7 +948,7 @@ ___
 
 ▸ **sendOperation**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:714
+*Defined in [sotez.ts:914](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L914)*
 
 **Parameters:**
 
@@ -956,10 +956,10 @@ Defined in sotez.ts:714
 
 Name | Type | Default |
 ------ | ------ | ------ |
-`operation` | Operation[] | - |
+`operation` | [Operation](../interfaces/_sotez_.operation.md) &#124; [Operation](../interfaces/_sotez_.operation.md)[] | - |
 `skipPrevalidation` | boolean | false |
 `skipSignature` | boolean | false |
-`source` | undefined \| string | - |
+`source` | undefined &#124; string | - |
 
 **Returns:** *Promise‹any›*
 
@@ -985,7 +985,7 @@ ___
 
 ▸ **setDelegate**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:919
+*Defined in [sotez.ts:1137](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1137)*
 
 **Parameters:**
 
@@ -1011,7 +1011,7 @@ ___
 
 *Overrides [AbstractTezModule](_tez_core_.abstracttezmodule.md).[setProvider](_tez_core_.abstracttezmodule.md#setprovider)*
 
-Defined in sotez.ts:99
+*Defined in [sotez.ts:298](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L298)*
 
 **Parameters:**
 
@@ -1028,7 +1028,7 @@ ___
 
 ▸ **silentInject**(`sopbytes`: string): *Promise‹any›*
 
-Defined in sotez.ts:792
+*Defined in [sotez.ts:992](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L992)*
 
 **Parameters:**
 
@@ -1046,7 +1046,7 @@ ___
 
 ▸ **simulateOperation**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:687
+*Defined in [sotez.ts:887](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L887)*
 
 **Parameters:**
 
@@ -1054,8 +1054,8 @@ Defined in sotez.ts:687
 
 Name | Type |
 ------ | ------ |
-`operation` | Operation[] |
-`source` | undefined \| string |
+`operation` | [Operation](../interfaces/_sotez_.operation.md) &#124; [Operation](../interfaces/_sotez_.operation.md)[] |
+`source` | undefined &#124; string |
 
 **Returns:** *Promise‹any›*
 
@@ -1079,7 +1079,7 @@ ___
 
 ▸ **transfer**(`__namedParameters`: object): *Promise‹any›*
 
-Defined in sotez.ts:816
+*Defined in [sotez.ts:1016](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1016)*
 
 **Parameters:**
 
@@ -1091,9 +1091,8 @@ Name | Type | Default |
 `fee` | number |  this.defaultFee |
 `gasLimit` | number | 10600 |
 `mutez` | boolean | false |
-`parameter` | string | - |
-`rawParam` | boolean | false |
-`source` | string | - |
+`parameter` | undefined &#124; string | - |
+`source` | undefined &#124; string | - |
 `storageLimit` | number | 300 |
 `to` | string | - |
 
@@ -1112,15 +1111,15 @@ ___
 
 ###  typecheckCode
 
-▸ **typecheckCode**(`code`: string, `gas`: number): *Promise‹any›*
+▸ **typecheckCode**(`code`: string | [Micheline](../modules/_sotez_.md#micheline), `gas`: number): *Promise‹any›*
 
-Defined in sotez.ts:966
+*Defined in [sotez.ts:1184](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1184)*
 
 **Parameters:**
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`code` | string | - | The code to typecheck |
+`code` | string &#124; [Micheline](../modules/_sotez_.md#micheline) | - | The code to typecheck |
 `gas` | number | 10000 | The the gas limit |
 
 **Returns:** *Promise‹any›*
@@ -1131,16 +1130,16 @@ ___
 
 ###  typecheckData
 
-▸ **typecheckData**(`data`: string, `type`: string): *Promise‹any›*
+▸ **typecheckData**(`data`: string | [Micheline](../modules/_sotez_.md#micheline), `type`: string | [Micheline](../modules/_sotez_.md#micheline)): *Promise‹any›*
 
-Defined in sotez.ts:994
+*Defined in [sotez.ts:1236](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/sotez.ts#L1236)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`data` | string |
-`type` | string |
+`data` | string &#124; [Micheline](../modules/_sotez_.md#micheline) |
+`type` | string &#124; [Micheline](../modules/_sotez_.md#micheline) |
 
 **Returns:** *Promise‹any›*
 

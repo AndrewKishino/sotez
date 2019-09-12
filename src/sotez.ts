@@ -743,7 +743,7 @@ export default class Sotez extends AbstractTezModule {
    * ```
    */
   prepareOperation = ({ operation, source }: OperationParams): Promise<ForgedBytes> => {
-    let counter;
+    let counter: number;
     const opOb: OperationObject = {};
     const promises: any[] = [];
     let requiresReveal = false;
@@ -751,6 +751,7 @@ export default class Sotez extends AbstractTezModule {
     let head: Header;
 
     promises.push(this.getHeader());
+    promises.push(this.getHeadMetadata());
 
     if (Array.isArray(operation)) {
       ops = [...operation];
@@ -763,34 +764,34 @@ export default class Sotez extends AbstractTezModule {
     for (let i = 0; i < ops.length; i++) {
       if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
         requiresReveal = true;
-        promises.push(this.getCounter(publicKeyHash));
         promises.push(this.getManager(publicKeyHash));
+        promises.push(this.getCounter(publicKeyHash));
         break;
       }
     }
 
-    promises.push(this.getHeadMetadata());
-
-    return Promise.all(promises).then(async ([header, headCounter, manager, metadata]: any[]): Promise<ForgedBytes> => {
+    return Promise.all(promises).then(async ([header, metadata, manager, headCounter]: any[]): Promise<ForgedBytes> => {
       head = header;
 
-      const managerKey = metadata.next_protocol === protocols['005'] ? manager : manager.key;
-      if (requiresReveal && !managerKey) {
-        const reveal: Operation = {
-          kind: 'reveal',
-          fee: 1420,
-          public_key: this.key.publicKey(),
-          source: publicKeyHash,
-          gas_limit: 10600,
-          storage_limit: 300,
-        };
+      if (requiresReveal) {
+        const managerKey = metadata.next_protocol === protocols['005'] ? manager : manager.key;
+        if (!managerKey) {
+          const reveal: Operation = {
+            kind: 'reveal',
+            fee: 1420,
+            public_key: this.key.publicKey(),
+            source: publicKeyHash,
+            gas_limit: 10600,
+            storage_limit: 300,
+          };
 
-        ops.unshift(reveal);
-      }
+          ops.unshift(reveal);
+        }
 
-      counter = parseInt(headCounter, 10);
-      if (!this._counters[publicKeyHash] || this._counters[publicKeyHash] < counter) {
-        this._counters[publicKeyHash] = counter;
+        counter = parseInt(headCounter, 10);
+        if (!this._counters[publicKeyHash] || this._counters[publicKeyHash] < counter) {
+          this._counters[publicKeyHash] = counter;
+        }
       }
 
       const constructOps = (cOps: Operation[]): ConstructedOperation[] => cOps
@@ -913,7 +914,7 @@ export default class Sotez extends AbstractTezModule {
   sendOperation = async ({ operation, source, skipPrevalidation = false, skipSignature = false }: OperationParams): Promise<any> => {
     const fullOp: ForgedBytes = await this.prepareOperation({ operation, source });
 
-    if (this.key.isLedger) {
+    if (this.key && this.key.isLedger) {
       const signature = await ledger.signOperation({
         path: this.key.ledgerPath,
         rawTxHex: fullOp.opbytes,
@@ -1056,7 +1057,7 @@ export default class Sotez extends AbstractTezModule {
       pkh,
       secret,
     };
-    return this.sendOperation({ operation: [operation], skipSignature: true });
+    return this.sendOperation({ operation: [operation], source: pkh, skipSignature: true });
   }
 
   /**

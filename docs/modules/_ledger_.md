@@ -1,10 +1,16 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["ledger"](_ledger_.md)
+[Globals](../README.md) › [&quot;ledger&quot;](_ledger_.md)
 
 # External module: "ledger"
 
 ## Index
+
+### Interfaces
+
+* [LedgerGetAddress](../interfaces/_ledger_.ledgergetaddress.md)
+* [LedgerGetVersion](../interfaces/_ledger_.ledgergetversion.md)
+* [LedgerSignOperation](../interfaces/_ledger_.ledgersignoperation.md)
 
 ### Functions
 
@@ -18,7 +24,7 @@
 
 ▸ **getAddress**(`__namedParameters`: object): *Promise‹object›*
 
-*Defined in [ledger.ts:25](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/ledger.ts#L25)*
+*Defined in [ledger.ts:38](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L38)*
 
 **Parameters:**
 
@@ -45,11 +51,11 @@ ___
 
 ### `Const` getVersion
 
-▸ **getVersion**(): *Promise‹LedgerGetVersion›*
+▸ **getVersion**(): *Promise‹[LedgerGetVersion](../interfaces/_ledger_.ledgergetversion.md)›*
 
-*Defined in [ledger.ts:84](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/ledger.ts#L84)*
+*Defined in [ledger.ts:97](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L97)*
 
-**Returns:** *Promise‹LedgerGetVersion›*
+**Returns:** *Promise‹[LedgerGetVersion](../interfaces/_ledger_.ledgergetversion.md)›*
 
 The version info
 ```javascript
@@ -63,7 +69,7 @@ ___
 
 ▸ **signOperation**(`__namedParameters`: object): *Promise‹string›*
 
-*Defined in [ledger.ts:58](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/ledger.ts#L58)*
+*Defined in [ledger.ts:71](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L71)*
 
 **Parameters:**
 

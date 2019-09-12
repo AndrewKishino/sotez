@@ -2,6 +2,8 @@
 
 [Globals](README.md)
 
+# Sotez Documentation
+
 ## Index
 
 ### External modules

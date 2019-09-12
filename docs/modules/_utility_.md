@@ -1,10 +1,18 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["utility"](_utility_.md)
+[Globals](../README.md) › [&quot;utility&quot;](_utility_.md)
 
 # External module: "utility"
 
 ## Index
+
+### Interfaces
+
+* [MichelineArray](../interfaces/_utility_.michelinearray.md)
+
+### Type aliases
+
+* [Micheline](_utility_.md#micheline)
 
 ### Variables
 
@@ -31,45 +39,53 @@
 * [textEncode](_utility_.md#const-textencode)
 * [totez](_utility_.md#const-totez)
 
+## Type aliases
+
+###  Micheline
+
+Ƭ **Micheline**: *object | object | object | object | object | object | object | object | object | [MichelineArray](../interfaces/_utility_.michelinearray.md)*
+
+*Defined in [utility.ts:5](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L5)*
+
 ## Variables
 
 ### `Const` mintotz
 
-• **mintotz**: *[totez]()* =  totez
+• **mintotz**: *[totez](undefined)* =  totez
 
-*Defined in [utility.ts:283](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L283)*
+*Defined in [utility.ts:300](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L300)*
 
 ___
 
 ### `Const` ml2tzjson
 
-• **ml2tzjson**: *[sexp2mic]()* =  sexp2mic
+• **ml2tzjson**: *[sexp2mic](undefined)* =  sexp2mic
 
-*Defined in [utility.ts:280](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L280)*
+*Defined in [utility.ts:297](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L297)*
 
 ___
 
 ### `Const` mlraw2json
 
-• **mlraw2json**: *[ml2mic]()* =  ml2mic
+• **mlraw2json**: *[ml2mic](undefined)* =  ml2mic
 
-*Defined in [utility.ts:282](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L282)*
+*Defined in [utility.ts:299](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L299)*
 
 ___
 
 ### `Const` tzjson2arr
 
-• **tzjson2arr**: *[mic2arr]()* =  mic2arr
+• **tzjson2arr**: *[mic2arr](undefined)* =  mic2arr
 
-*Defined in [utility.ts:281](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L281)*
+*Defined in [utility.ts:298](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L298)*
 
 ___
 
 ### `Const` tztomin
 
-• **tztomin**: *[mutez]()* =  mutez
+• **tztomin**: *[mutez](undefined)* =  mutez
 
-*Defined in [utility.ts:284](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L284)*
+*Defined in [utility.ts:301](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L301)*
 
 ## Functions
 
@@ -77,7 +93,7 @@ ___
 
 ▸ **b582int**(`v`: string): *string*
 
-*Defined in [utility.ts:14](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L14)*
+*Defined in [utility.ts:31](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L31)*
 
 **Parameters:**
 
@@ -95,7 +111,7 @@ ___
 
 ▸ **b58cdecode**(`enc`: string, `prefixArg`: Uint8Array): *Uint8Array*
 
-*Defined in [utility.ts:64](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L64)*
+*Defined in [utility.ts:81](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L81)*
 
 **Parameters:**
 
@@ -114,7 +130,7 @@ ___
 
 ▸ **b58cencode**(`payload`: Uint8Array, `prefixArg`: Uint8Array): *string*
 
-*Defined in [utility.ts:50](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L50)*
+*Defined in [utility.ts:67](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L67)*
 
 **Parameters:**
 
@@ -133,7 +149,7 @@ ___
 
 ▸ **buf2hex**(`buffer`: Buffer): *string*
 
-*Defined in [utility.ts:71](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L71)*
+*Defined in [utility.ts:88](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L88)*
 
 **Parameters:**
 
@@ -151,7 +167,7 @@ ___
 
 ▸ **hex2buf**(`hex`: string): *Uint8Array*
 
-*Defined in [utility.ts:87](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L87)*
+*Defined in [utility.ts:104](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L104)*
 
 **Parameters:**
 
@@ -169,7 +185,7 @@ ___
 
 ▸ **hexNonce**(`length`: number): *string*
 
-*Defined in [utility.ts:97](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L97)*
+*Defined in [utility.ts:114](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L114)*
 
 **Parameters:**
 
@@ -187,7 +203,7 @@ ___
 
 ▸ **mergebuf**(`b1`: Uint8Array, `b2`: Uint8Array): *Uint8Array*
 
-*Defined in [utility.ts:112](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L112)*
+*Defined in [utility.ts:129](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L129)*
 
 **Parameters:**
 
@@ -206,7 +222,7 @@ ___
 
 ▸ **mic2arr**(`s`: any): *any*
 
-*Defined in [utility.ts:172](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L172)*
+*Defined in [utility.ts:189](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L189)*
 
 **Parameters:**
 
@@ -220,9 +236,9 @@ ___
 
 ### `Const` ml2mic
 
-▸ **ml2mic**(`mi`: string): *any*
+▸ **ml2mic**(`mi`: string): *[Micheline](_utility_.md#micheline)*
 
-*Defined in [utility.ts:215](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L215)*
+*Defined in [utility.ts:232](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L232)*
 
 **Parameters:**
 
@@ -230,7 +246,7 @@ Name | Type |
 ------ | ------ |
 `mi` | string |
 
-**Returns:** *any*
+**Returns:** *[Micheline](_utility_.md#micheline)*
 
 ___
 
@@ -238,7 +254,7 @@ ___
 
 ▸ **mutez**(`tez`: number): *string*
 
-*Defined in [utility.ts:42](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L42)*
+*Defined in [utility.ts:59](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L59)*
 
 **Parameters:**
 
@@ -254,9 +270,9 @@ ___
 
 ### `Const` sexp2mic
 
-▸ **sexp2mic**(`mi`: string): *any*
+▸ **sexp2mic**(`mi`: string): *[Micheline](_utility_.md#micheline)*
 
-*Defined in [utility.ts:119](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L119)*
+*Defined in [utility.ts:136](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L136)*
 
 **Parameters:**
 
@@ -264,7 +280,7 @@ Name | Type |
 ------ | ------ |
 `mi` | string |
 
-**Returns:** *any*
+**Returns:** *[Micheline](_utility_.md#micheline)*
 
 ___
 
@@ -272,7 +288,7 @@ ___
 
 ▸ **textDecode**(`buffer`: Uint8Array): *string*
 
-*Defined in [utility.ts:7](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L7)*
+*Defined in [utility.ts:24](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L24)*
 
 **Parameters:**
 
@@ -288,7 +304,7 @@ ___
 
 ▸ **textEncode**(`value`: string): *Uint8Array*
 
-*Defined in [utility.ts:5](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L5)*
+*Defined in [utility.ts:22](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L22)*
 
 **Parameters:**
 
@@ -304,7 +320,7 @@ ___
 
 ▸ **totez**(`mutez`: number): *number*
 
-*Defined in [utility.ts:28](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/utility.ts#L28)*
+*Defined in [utility.ts:45](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/utility.ts#L45)*
 
 **Parameters:**
 

@@ -8,8 +8,8 @@
     "moduleResolution": "node",
     "paths": {
       "ledger": [
-        "src/ledger.ts",
-      ],
+        "src/ledger.ts"
+      ]
     },
     "strict": true,
     "strictPropertyInitialization": false,
@@ -17,5 +17,5 @@
   },
   "include": [
     "src/**/*"
-  ],
+  ]
 }

@@ -1,6 +1,6 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["key"](../modules/_key_.md) › [Key](_key_.key.md)
+[Globals](../README.md) › [&quot;key&quot;](../modules/_key_.md) › [Key](_key_.key.md)
 
 # Class: Key
 
@@ -60,15 +60,15 @@ await key.ready;
 
 \+ **new Key**(`key`: string, `passphrase?`: undefined | string, `email?`: undefined | string): *[Key](_key_.key.md)*
 
-*Defined in [key.ts:27](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L27)*
+*Defined in [key.ts:27](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L27)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `key` | string |
-`passphrase?` | undefined \| string |
-`email?` | undefined \| string |
+`passphrase?` | undefined &#124; string |
+`email?` | undefined &#124; string |
 
 **Returns:** *[Key](_key_.key.md)*
 
@@ -78,7 +78,7 @@ Name | Type |
 
 • **_curve**: *string*
 
-*Defined in [key.ts:20](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L20)*
+*Defined in [key.ts:20](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L20)*
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 • **_isLedger**: *boolean*
 
-*Defined in [key.ts:24](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L24)*
+*Defined in [key.ts:24](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L24)*
 
 ___
 
@@ -94,7 +94,7 @@ ___
 
 • **_isSecret**: *boolean*
 
-*Defined in [key.ts:23](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L23)*
+*Defined in [key.ts:23](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L23)*
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 • **_ledgerCurve**: *number*
 
-*Defined in [key.ts:26](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L26)*
+*Defined in [key.ts:26](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L26)*
 
 ___
 
@@ -110,7 +110,7 @@ ___
 
 • **_ledgerPath**: *string*
 
-*Defined in [key.ts:25](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L25)*
+*Defined in [key.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L25)*
 
 ___
 
@@ -118,7 +118,7 @@ ___
 
 • **_publicKey**: *Buffer*
 
-*Defined in [key.ts:21](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L21)*
+*Defined in [key.ts:21](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L21)*
 
 ___
 
@@ -126,7 +126,7 @@ ___
 
 • **_secretKey**? : *Buffer*
 
-*Defined in [key.ts:22](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L22)*
+*Defined in [key.ts:22](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L22)*
 
 ___
 
@@ -134,7 +134,7 @@ ___
 
 • **ready**: *Promise‹void›*
 
-*Defined in [key.ts:27](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L27)*
+*Defined in [key.ts:27](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L27)*
 
 ## Accessors
 
@@ -142,7 +142,7 @@ ___
 
 • **get curve**(): *string*
 
-*Defined in [key.ts:38](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L38)*
+*Defined in [key.ts:38](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L38)*
 
 **Returns:** *string*
 
@@ -152,13 +152,13 @@ ___
 
 • **get isLedger**(): *boolean*
 
-*Defined in [key.ts:42](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L42)*
+*Defined in [key.ts:42](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L42)*
 
 **Returns:** *boolean*
 
 • **set isLedger**(`value`: boolean): *void*
 
-*Defined in [key.ts:46](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L46)*
+*Defined in [key.ts:46](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L46)*
 
 **Parameters:**
 
@@ -174,13 +174,13 @@ ___
 
 • **get ledgerCurve**(): *number*
 
-*Defined in [key.ts:58](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L58)*
+*Defined in [key.ts:58](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L58)*
 
 **Returns:** *number*
 
 • **set ledgerCurve**(`value`: number): *void*
 
-*Defined in [key.ts:62](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L62)*
+*Defined in [key.ts:62](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L62)*
 
 **Parameters:**
 
@@ -196,13 +196,13 @@ ___
 
 • **get ledgerPath**(): *string*
 
-*Defined in [key.ts:50](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L50)*
+*Defined in [key.ts:50](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L50)*
 
 **Returns:** *string*
 
 • **set ledgerPath**(`value`: string): *void*
 
-*Defined in [key.ts:54](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L54)*
+*Defined in [key.ts:54](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L54)*
 
 **Parameters:**
 
@@ -218,15 +218,15 @@ Name | Type |
 
 ▸ **initialize**(`key`: string, `passphrase?`: undefined | string, `email?`: undefined | string, `ready?`: any): *Promise‹void›*
 
-*Defined in [key.ts:108](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L108)*
+*Defined in [key.ts:108](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L108)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `key` | string |
-`passphrase?` | undefined \| string |
-`email?` | undefined \| string |
+`passphrase?` | undefined &#124; string |
+`email?` | undefined &#124; string |
 `ready?` | any |
 
 **Returns:** *Promise‹void›*
@@ -237,7 +237,7 @@ ___
 
 ▸ **publicKey**(): *string*
 
-*Defined in [key.ts:71](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L71)*
+*Defined in [key.ts:71](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L71)*
 
 **Returns:** *string*
 
@@ -249,7 +249,7 @@ ___
 
 ▸ **publicKeyHash**(): *string*
 
-*Defined in [key.ts:97](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L97)*
+*Defined in [key.ts:97](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L97)*
 
 **Returns:** *string*
 
@@ -261,7 +261,7 @@ ___
 
 ▸ **secretKey**(): *string*
 
-*Defined in [key.ts:78](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L78)*
+*Defined in [key.ts:78](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L78)*
 
 **Returns:** *string*
 
@@ -273,7 +273,7 @@ ___
 
 ▸ **sign**(`bytes`: string, `watermark`: Uint8Array): *Promise‹object›*
 
-*Defined in [key.ts:203](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/key.ts#L203)*
+*Defined in [key.ts:203](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/key.ts#L203)*
 
 **Parameters:**
 

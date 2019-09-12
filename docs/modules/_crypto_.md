@@ -1,10 +1,16 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["crypto"](_crypto_.md)
+[Globals](../README.md) › [&quot;crypto&quot;](_crypto_.md)
 
 # External module: "crypto"
 
 ## Index
+
+### Interfaces
+
+* [Keys](../interfaces/_crypto_.keys.md)
+* [KeysMnemonicPassphrase](../interfaces/_crypto_.keysmnemonicpassphrase.md)
+* [Signed](../interfaces/_crypto_.signed.md)
 
 ### Functions
 
@@ -20,7 +26,7 @@
 
 ▸ **checkAddress**(`address`: string): *boolean*
 
-*Defined in [crypto.ts:96](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/crypto.ts#L96)*
+*Defined in [crypto.ts:112](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L112)*
 
 **Parameters:**
 
@@ -36,9 +42,9 @@ ___
 
 ### `Const` extractKeys
 
-▸ **extractKeys**(`sk`: string, `password`: string): *Promise‹Keys›*
+▸ **extractKeys**(`sk`: string, `password`: string): *Promise‹[Keys](../interfaces/_crypto_.keys.md)›*
 
-*Defined in [crypto.ts:24](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/crypto.ts#L24)*
+*Defined in [crypto.ts:40](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L40)*
 
 **Parameters:**
 
@@ -47,7 +53,7 @@ Name | Type | Default | Description |
 `sk` | string | - | The secret key to extract key pairs from |
 `password` | string | "" | - |
 
-**Returns:** *Promise‹Keys›*
+**Returns:** *Promise‹[Keys](../interfaces/_crypto_.keys.md)›*
 
 The extracted key pairs
 ```javascript
@@ -59,9 +65,9 @@ ___
 
 ### `Const` generateKeys
 
-▸ **generateKeys**(`mnemonic`: string, `passphrase`: string): *Promise‹KeysMnemonicPassphrase›*
+▸ **generateKeys**(`mnemonic`: string, `passphrase`: string): *Promise‹[KeysMnemonicPassphrase](../interfaces/_crypto_.keysmnemonicpassphrase.md)›*
 
-*Defined in [crypto.ts:115](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/crypto.ts#L115)*
+*Defined in [crypto.ts:131](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L131)*
 
 **Parameters:**
 
@@ -70,7 +76,7 @@ Name | Type | Description |
 `mnemonic` | string | The mnemonic seed |
 `passphrase` | string | The passphrase used to encrypt the seed |
 
-**Returns:** *Promise‹KeysMnemonicPassphrase›*
+**Returns:** *Promise‹[KeysMnemonicPassphrase](../interfaces/_crypto_.keysmnemonicpassphrase.md)›*
 
 The generated key pair
 ```javascript
@@ -84,7 +90,7 @@ ___
 
 ▸ **generateMnemonic**(): *string*
 
-*Defined in [crypto.ts:89](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/crypto.ts#L89)*
+*Defined in [crypto.ts:105](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L105)*
 
 **Returns:** *string*
 
@@ -94,9 +100,9 @@ ___
 
 ### `Const` sign
 
-▸ **sign**(`bytes`: string, `sk`: string, `wm`: Uint8Array, `password`: string): *Promise‹Signed›*
+▸ **sign**(`bytes`: string, `sk`: string, `wm`: Uint8Array, `password`: string): *Promise‹[Signed](../interfaces/_crypto_.signed.md)›*
 
-*Defined in [crypto.ts:148](https://github.com/AndrewKishino/sotez/blob/8228d6e/src/crypto.ts#L148)*
+*Defined in [crypto.ts:164](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L164)*
 
 **Parameters:**
 
@@ -107,7 +113,7 @@ Name | Type | Default | Description |
 `wm` | Uint8Array | - | The watermark bytes |
 `password` | string | "" | - |
 
-**Returns:** *Promise‹Signed›*
+**Returns:** *Promise‹[Signed](../interfaces/_crypto_.signed.md)›*
 
 The signed bytes
 ```javascript

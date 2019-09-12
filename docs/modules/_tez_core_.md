@@ -1,6 +1,6 @@
 **[Sotez Documentation](../README.md)**
 
-[Globals](../README.md) › ["tez-core"](_tez_core_.md)
+[Globals](../README.md) › [&quot;tez-core&quot;](_tez_core_.md)
 
 # External module: "tez-core"
 

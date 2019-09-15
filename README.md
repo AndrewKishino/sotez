@@ -16,24 +16,24 @@ new Ed25519Party1().launchServer();
 ```
 Client:
 ```js
-import Sotez, { Ed25519Party2, Ed25519Party2Share } from '@kzen-networks/tezos-thresh-wallet';
-const sotez = new Sotez('http://127.0.0.1:8732');
+import TezClient, { Ed25519Party2, Ed25519Party2Share } from '@kzen-networks/tezos-thresh-wallet';
+const client = new TezClient('http://127.0.0.1:8732');
 
 const P1_SERVER_ENDPOINT = 'http://localhost:8000';
 const party2 = new Ed25519Party2(P1_SERVER_ENDPOINT);
 
 (async () => {
-  await sotez.importEd25519Party2(party2);  // activates two-party key generation protocol
-  const address = sotez.party2.publicKeyHash();
+  await client.importEd25519Party2(party2);  // activates two-party key generation protocol
+  const address = client.party2.publicKeyHash();
   console.log(address);
   // tz1csGALMvB6sh3KJyHAMYVYVMUaucBgBDw7
 
   /* Now you should deposit XTZ into this address */
 
-  console.log(await sotez.getBalance(address));  // in mutez (1 XTZ = 1,000,000 mutez)
+  console.log(await client.getBalance(address));  // in mutez (1 XTZ = 1,000,000 mutez)
   // 982974
 
-  const { hash } = await sotez.transfer({
+  const { hash } = await client.transfer({
     source: address,
     to: 'tz1YaqLFe8nywjCiAF1vK1U1yns69nPQoyg1',
     amount: 10000

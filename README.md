@@ -46,7 +46,7 @@ const party2 = new Ed25519Party2(P1_SERVER_ENDPOINT);
 ```
 
 ## Documentation
-Documentation to this original work can be found [HERE](https://github.com/KZen-networks/tezos-thresh-wallet/wiki/Documentation).
+Documentation can be found [HERE](https://github.com/KZen-networks/tezos-thresh-wallet/wiki/Documentation).
 
 ## Development
 ```js

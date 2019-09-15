@@ -47,8 +47,8 @@ program
   });
 
 program
-  .command('transfer <from> <to> <xtzAmount>')
-  .action(async (from, to, xtzAmount) => {
+  .command('transfer <from> <to> <xtz_amount>')
+  .action(async (from, to, xtz_amount) => {
     const p2Share = db.get('addresses').find({ address: from }).value().share;
     if (!p2Share) {
       console.error('Didn\'t find secret share for the provided from address');
@@ -58,7 +58,7 @@ program
       new Ed25519Party2(P1_ENDPOINT),
       new Ed25519Party2Share(p2Share.key_pair, p2Share.agg_pub_key, p2Share.id),
     );
-    const amount = parseFloat(xtzAmount) * MUTEZ_IN_XTZ;
+    const amount = parseFloat(xtz_amount) * MUTEZ_IN_XTZ;
     const { hash } = await client.transfer({
       source: from,
       to,

@@ -44,6 +44,29 @@ const party2 = new Ed25519Party2(P1_SERVER_ENDPOINT);
 })();
 ```
 
+## Demo
+You can also use a demo using the command line.
+Server:
+```sh
+$ demo/server
+```
+Client:
+```sh
+$ demo/client --help
+Usage: client [options] [command]
+
+Options:
+  -h, --help                        output usage information
+
+Commands:
+  address
+  balance <address>
+  transfer <from> <to> <xtz_amount>
+```
+
+|![Transfer demo](https://raw.githubusercontent.com/KZen-networks/tezos-thresh-wallet/master/demo/tezos-tss-demo.gif "Tezos Threshold Wallet Demo")|
+|:--:|
+
 ## Documentation
 Documentation can be found [HERE](https://github.com/KZen-networks/tezos-thresh-wallet/wiki/Documentation).
 

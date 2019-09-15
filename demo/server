@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const { Party1 } = require('@kzen-networks/thresh-sig');
+new Party1().launchServer();

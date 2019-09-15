@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+
+const Sotez = require('../build/node/index.js').default;
+const sotez = new Sotez('http://alphanet-node.tzscan.io');
+
+const P1_ENDPOINT = 'http://localhost:8000';
+const { Ed25519Party2, Ed25519Party2Share } = require('@kzen-networks/thresh-sig');
+const party2 = new Ed25519Party2(P1_ENDPOINT);
+
+const MUTEZ_IN_XTZ = 1000000;
+
+const program = require('commander');
+
+const fs = require('fs');
+const path = require('path');
+const CLIENT_DB_PATH = path.join(__dirname, 'client-db');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+ensureDirSync(CLIENT_DB_PATH);
+const adapter = new FileSync(path.join(CLIENT_DB_PATH, 'db.json'));
+const db = low(adapter);
+db.defaults({ addresses: [] }).write();
+
+function ensureDirSync(dirpath) {
+    try {
+        fs.mkdirSync(dirpath, { recursive: true })
+    } catch (err) {
+        if (err.code !== 'EEXIST') throw err
+    }
+}
+
+program
+    .command('address')
+    .action(async () => {
+        await sotez.importEd25519Party2(party2);
+        const address = sotez.party2.publicKeyHash();
+        db.get('addresses').push({ address, share: sotez.party2.secretShare() }).write();
+        console.log(sotez.party2.publicKeyHash());
+    });
+
+program
+    .command('balance <address>')
+    .action(async (address) => {
+        const balance = await sotez.getBalance(address);
+        console.log(`${balance / MUTEZ_IN_XTZ} XTZ`);
+    });
+
+program
+    .command('transfer <from> <to> <xtzAmount>')
+    .action(async (from, to, xtzAmount) => {
+        const p2Share = db.get('addresses').find({ address: from }).value().share;
+        if (!p2Share) {
+            return console.error('Didn\'t find secret share for the provided from address');
+        }
+        await sotez.importEd25519Party2(
+            new Ed25519Party2(P1_ENDPOINT),
+            new Ed25519Party2Share(p2Share.key_pair, p2Share.agg_pub_key, p2Share.id)
+        );
+        const amount = xtzAmount * MUTEZ_IN_XTZ;
+        const { hash } = await sotez.transfer({
+            source: from,
+            to,
+            amount
+        });
+        console.log(`Injected transfer operation hash: ${hash}`);
+
+        // // Await confirmation of included operation
+        const transferBlock = await sotez.awaitOperation(hash);
+        console.log(`Operation found in block ${transferBlock}`);
+    });
+
+program.parse(process.argv);

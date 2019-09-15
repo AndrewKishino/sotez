@@ -5,6 +5,8 @@ import forge from './forge';
 import utility from './utility';
 import ledger from 'ledger';
 import { prefix, watermark, protocols } from './constants';
+import {Ed25519Party2, Ed25519Party2Share} from "@kzen-networks/thresh-sig";
+import Party2 from "./party2";
 
 interface KeyInterface {
   _publicKey: Buffer;
@@ -241,6 +243,7 @@ export default class Sotez extends AbstractTezModule {
   _debugMode: boolean;
   _counters: { [key: string]: number };
   key: KeyInterface;
+  party2: Party2;
 
   constructor(
     provider: string = 'http://127.0.0.1:8732',
@@ -313,6 +316,11 @@ export default class Sotez extends AbstractTezModule {
   importKey = async (key: string, passphrase?: string, email?: string) => {
     this.key = new Key(key, passphrase, email);
     await this.key.ready;
+  }
+
+  importEd25519Party2 = async (party2: Ed25519Party2, party2Share?: Ed25519Party2Share) => {
+    this.party2 = new Party2(party2, party2Share);
+    await this.party2.ready;
   }
 
   /**
@@ -448,7 +456,7 @@ export default class Sotez extends AbstractTezModule {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      manager_pubkey: this.key.publicKeyHash(),
+      manager_pubkey: (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash(),
       ...params,
     }];
 
@@ -759,7 +767,8 @@ export default class Sotez extends AbstractTezModule {
       ops = [operation];
     }
 
-    const publicKeyHash = source || this.key.publicKeyHash();
+    const publicKey = (this.key && this.key.publicKey()) || this.party2.publicKey();
+    const publicKeyHash = source || (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash();
 
     for (let i = 0; i < ops.length; i++) {
       if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
@@ -779,7 +788,7 @@ export default class Sotez extends AbstractTezModule {
           const reveal: Operation = {
             kind: 'reveal',
             fee: 1420,
-            public_key: this.key.publicKey(),
+            public_key: publicKey,
             source: publicKeyHash,
             gas_limit: 10600,
             storage_limit: 300,
@@ -921,19 +930,22 @@ export default class Sotez extends AbstractTezModule {
         curve: this.key.ledgerCurve,
       });
       const sig = utility.hex2buf(signature);
-      const prefixSig = utility.b58cencode(sig, prefix[`${this.key.curve}sig`]);
+      const prefixSig = utility.b58cencode(sig, prefix[`${(this.key && this.key.curve) || 'ed'}sig`]);
       fullOp.opbytes += signature;
       fullOp.opOb.signature = prefixSig;
     } else if (skipSignature) {
       fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
     } else {
-      const signed: Signed = await this.key.sign(fullOp.opbytes, watermark.generic);
+      // TODO: use a single key or TSS according to how this instance was initialized
+      const signed: Signed = this.key ?
+          await this.key.sign(fullOp.opbytes, watermark.generic) :
+          await this.party2.sign(fullOp.opbytes, watermark.generic);
       fullOp.opbytes = signed.sbytes;
       fullOp.opOb.signature = signed.prefixSig;
     }
 
-    const publicKeyHash = source || this.key.publicKeyHash();
+    const publicKeyHash = source || (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash();
 
     if (skipPrevalidation) {
       return this.silentInject(fullOp.opbytes)
@@ -1105,7 +1117,7 @@ export default class Sotez extends AbstractTezModule {
       storage: _init,
     };
 
-    const publicKeyHash = this.key.publicKeyHash();
+    const publicKeyHash = (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash();
     const operation: Operation = {
       kind: 'origination',
       fee,
@@ -1136,7 +1148,7 @@ export default class Sotez extends AbstractTezModule {
    */
   setDelegate = async ({
     delegate,
-    source = this.key.publicKeyHash(),
+    source = (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash(),
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
@@ -1170,7 +1182,7 @@ export default class Sotez extends AbstractTezModule {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      delegate: this.key.publicKeyHash(),
+      delegate: (this.key && this.key.publicKeyHash()) || this.party2.publicKeyHash(),
     };
     return this.sendOperation({ operation: [operation] });
   }

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
 
-const { Party1 } = require('@kzen-networks/thresh-sig');
-new Party1().launchServer();
+const { Ed25519Party1 } = require('../build/node');
+
+new Ed25519Party1().launchServer();

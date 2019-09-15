@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;key&quot;](_key_.md)
+[Sotez Documentation](../README.md) › ["key"](_key_.md)
 
 # External module: "key"
+
 
 ## Index
 

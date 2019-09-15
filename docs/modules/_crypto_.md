@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;crypto&quot;](_crypto_.md)
+[Sotez Documentation](../README.md) › ["crypto"](_crypto_.md)
 
 # External module: "crypto"
+
 
 ## Index
 
@@ -26,7 +25,7 @@
 
 ▸ **checkAddress**(`address`: string): *boolean*
 
-*Defined in [crypto.ts:112](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L112)*
+*Defined in [crypto.ts:112](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L112)*
 
 **Parameters:**
 
@@ -44,7 +43,7 @@ ___
 
 ▸ **extractKeys**(`sk`: string, `password`: string): *Promise‹[Keys](../interfaces/_crypto_.keys.md)›*
 
-*Defined in [crypto.ts:40](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L40)*
+*Defined in [crypto.ts:40](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L40)*
 
 **Parameters:**
 
@@ -67,7 +66,7 @@ ___
 
 ▸ **generateKeys**(`mnemonic`: string, `passphrase`: string): *Promise‹[KeysMnemonicPassphrase](../interfaces/_crypto_.keysmnemonicpassphrase.md)›*
 
-*Defined in [crypto.ts:131](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L131)*
+*Defined in [crypto.ts:131](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L131)*
 
 **Parameters:**
 
@@ -90,7 +89,7 @@ ___
 
 ▸ **generateMnemonic**(): *string*
 
-*Defined in [crypto.ts:105](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L105)*
+*Defined in [crypto.ts:105](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L105)*
 
 **Returns:** *string*
 
@@ -102,7 +101,7 @@ ___
 
 ▸ **sign**(`bytes`: string, `sk`: string, `wm`: Uint8Array, `password`: string): *Promise‹[Signed](../interfaces/_crypto_.signed.md)›*
 
-*Defined in [crypto.ts:164](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L164)*
+*Defined in [crypto.ts:164](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L164)*
 
 **Parameters:**
 

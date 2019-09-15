@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;forge&quot;](../modules/_forge_.md) › [ForgedBytes](_forge_.forgedbytes.md)
+[Sotez Documentation](../README.md) › ["forge"](../modules/_forge_.md) › [ForgedBytes](_forge_.forgedbytes.md)
 
 # Interface: ForgedBytes
+
 
 ## Hierarchy
 
@@ -22,7 +21,7 @@
 
 • **counter**: *number*
 
-*Defined in [forge.ts:44](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L44)*
+*Defined in [forge.ts:44](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L44)*
 
 ___
 
@@ -30,7 +29,7 @@ ___
 
 • **opOb**: *[OperationObject](_forge_.operationobject.md)*
 
-*Defined in [forge.ts:43](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L43)*
+*Defined in [forge.ts:43](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L43)*
 
 ___
 
@@ -38,4 +37,4 @@ ___
 
 • **opbytes**: *string*
 
-*Defined in [forge.ts:42](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L42)*
+*Defined in [forge.ts:42](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L42)*

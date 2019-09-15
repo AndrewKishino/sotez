@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;forge&quot;](_forge_.md)
+[Sotez Documentation](../README.md) › ["forge"](_forge_.md)
 
 # External module: "forge"
+
 
 ## Index
 
@@ -50,7 +49,7 @@
 
 Ƭ **Micheline**: *object | object | object | object | object | object | object | object | object | [MichelineArray](../interfaces/_forge_.michelinearray.md)*
 
-*Defined in [forge.ts:47](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L47)*
+*Defined in [forge.ts:47](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L47)*
 
 ## Functions
 
@@ -58,7 +57,7 @@
 
 ▸ **activateAccount**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:315](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L315)*
+*Defined in [forge.ts:315](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L315)*
 
 **Parameters:**
 
@@ -76,7 +75,7 @@ ___
 
 ▸ **address**(`address`: string, `protocol?`: undefined | string): *string*
 
-*Defined in [forge.ts:162](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L162)*
+*Defined in [forge.ts:162](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L162)*
 
 Address to forge
 
@@ -97,7 +96,7 @@ ___
 
 ▸ **ballot**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:339](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L339)*
+*Defined in [forge.ts:339](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L339)*
 
 **Parameters:**
 
@@ -115,7 +114,7 @@ ___
 
 ▸ **bool**(`bool`: boolean): *string*
 
-*Defined in [forge.ts:96](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L96)*
+*Defined in [forge.ts:96](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L96)*
 
 Boolean value to convert
 
@@ -135,7 +134,7 @@ ___
 
 ▸ **decodeRawBytes**(`bytes`: string): *[Micheline](_forge_.md#micheline)*
 
-*Defined in [forge.ts:526](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L526)*
+*Defined in [forge.ts:526](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L526)*
 
 **Parameters:**
 
@@ -153,7 +152,7 @@ ___
 
 ▸ **delegation**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:458](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L458)*
+*Defined in [forge.ts:458](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L458)*
 
 **Parameters:**
 
@@ -172,7 +171,7 @@ ___
 
 ▸ **doubleBakingEvidence**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:306](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L306)*
+*Defined in [forge.ts:306](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L306)*
 
 **Parameters:**
 
@@ -190,7 +189,7 @@ ___
 
 ▸ **doubleEndorsementEvidence**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:296](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L296)*
+*Defined in [forge.ts:296](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L296)*
 
 **Parameters:**
 
@@ -208,7 +207,7 @@ ___
 
 ▸ **encodeRawBytes**(`input`: [Micheline](_forge_.md#micheline)): *string*
 
-*Defined in [forge.ts:625](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L625)*
+*Defined in [forge.ts:625](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L625)*
 
 **Parameters:**
 
@@ -226,7 +225,7 @@ ___
 
 ▸ **endorsement**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:271](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L271)*
+*Defined in [forge.ts:271](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L271)*
 
 **Parameters:**
 
@@ -242,7 +241,7 @@ ___
 
 ▸ **forge**(`opOb`: [OperationObject](../interfaces/_forge_.operationobject.md), `counter`: number, `protocol`: string): *Promise‹[ForgedBytes](../interfaces/_forge_.forgedbytes.md)›*
 
-*Defined in [forge.ts:498](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L498)*
+*Defined in [forge.ts:498](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L498)*
 
 **Parameters:**
 
@@ -277,7 +276,7 @@ ___
 
 ▸ **op**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:227](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L227)*
+*Defined in [forge.ts:227](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L227)*
 
 Operation to forge
 
@@ -298,7 +297,7 @@ ___
 
 ▸ **origination**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:412](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L412)*
+*Defined in [forge.ts:412](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L412)*
 
 **Parameters:**
 
@@ -317,7 +316,7 @@ ___
 
 ▸ **parameters**(`parameter`: any, `protocol`: string): *string*
 
-*Defined in [forge.ts:116](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L116)*
+*Defined in [forge.ts:116](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L116)*
 
 **Parameters:**
 
@@ -336,7 +335,7 @@ ___
 
 ▸ **proposals**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:330](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L330)*
+*Defined in [forge.ts:330](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L330)*
 
 **Parameters:**
 
@@ -354,7 +353,7 @@ ___
 
 ▸ **publicKey**(`pk`: string): *string*
 
-*Defined in [forge.ts:208](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L208)*
+*Defined in [forge.ts:208](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L208)*
 
 **Parameters:**
 
@@ -372,7 +371,7 @@ ___
 
 ▸ **publicKeyHash**(`pkh`: string): *string*
 
-*Defined in [forge.ts:149](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L149)*
+*Defined in [forge.ts:149](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L149)*
 
 **Parameters:**
 
@@ -390,7 +389,7 @@ ___
 
 ▸ **reveal**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:366](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L366)*
+*Defined in [forge.ts:366](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L366)*
 
 **Parameters:**
 
@@ -409,7 +408,7 @@ ___
 
 ▸ **script**(`script`: object): *string*
 
-*Defined in [forge.ts:105](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L105)*
+*Defined in [forge.ts:105](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L105)*
 
 Script to forge
 
@@ -432,7 +431,7 @@ ___
 
 ▸ **seedNonceRevelation**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md)): *string*
 
-*Defined in [forge.ts:281](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L281)*
+*Defined in [forge.ts:281](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L281)*
 
 **Parameters:**
 
@@ -450,7 +449,7 @@ ___
 
 ▸ **toBytesInt32**(`num`: number): *any*
 
-*Defined in [forge.ts:69](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L69)*
+*Defined in [forge.ts:69](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L69)*
 
 **Parameters:**
 
@@ -468,7 +467,7 @@ ___
 
 ▸ **toBytesInt32Hex**(`num`: number): *string*
 
-*Defined in [forge.ts:86](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L86)*
+*Defined in [forge.ts:86](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L86)*
 
 **Parameters:**
 
@@ -486,7 +485,7 @@ ___
 
 ▸ **transaction**(`op`: [ConstructedOperation](../interfaces/_forge_.constructedoperation.md), `protocol`: string): *string*
 
-*Defined in [forge.ts:385](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L385)*
+*Defined in [forge.ts:385](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L385)*
 
 **Parameters:**
 
@@ -505,7 +504,7 @@ ___
 
 ▸ **zarith**(`n`: string): *string*
 
-*Defined in [forge.ts:181](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L181)*
+*Defined in [forge.ts:181](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L181)*
 
 **Parameters:**
 

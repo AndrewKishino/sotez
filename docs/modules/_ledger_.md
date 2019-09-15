@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;ledger&quot;](_ledger_.md)
+[Sotez Documentation](../README.md) › ["ledger"](_ledger_.md)
 
 # External module: "ledger"
+
 
 ## Index
 
@@ -24,7 +23,7 @@
 
 ▸ **getAddress**(`__namedParameters`: object): *Promise‹object›*
 
-*Defined in [ledger.ts:38](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L38)*
+*Defined in [ledger.ts:38](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L38)*
 
 **Parameters:**
 
@@ -53,7 +52,7 @@ ___
 
 ▸ **getVersion**(): *Promise‹[LedgerGetVersion](../interfaces/_ledger_.ledgergetversion.md)›*
 
-*Defined in [ledger.ts:97](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L97)*
+*Defined in [ledger.ts:97](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L97)*
 
 **Returns:** *Promise‹[LedgerGetVersion](../interfaces/_ledger_.ledgergetversion.md)›*
 
@@ -69,7 +68,7 @@ ___
 
 ▸ **signOperation**(`__namedParameters`: object): *Promise‹string›*
 
-*Defined in [ledger.ts:71](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L71)*
+*Defined in [ledger.ts:71](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L71)*
 
 **Parameters:**
 

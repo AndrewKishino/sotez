@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;ledger&quot;](../modules/_ledger_.md) › [LedgerSignOperation](_ledger_.ledgersignoperation.md)
+[Sotez Documentation](../README.md) › ["ledger"](../modules/_ledger_.md) › [LedgerSignOperation](_ledger_.ledgersignoperation.md)
 
 # Interface: LedgerSignOperation
+
 
 ## Hierarchy
 
@@ -22,7 +21,7 @@
 
 • **curve**? : *undefined | number*
 
-*Defined in [ledger.ts:13](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L13)*
+*Defined in [ledger.ts:13](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L13)*
 
 ___
 
@@ -30,7 +29,7 @@ ___
 
 • **path**? : *undefined | string*
 
-*Defined in [ledger.ts:11](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L11)*
+*Defined in [ledger.ts:11](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L11)*
 
 ___
 
@@ -38,4 +37,4 @@ ___
 
 • **rawTxHex**: *string*
 
-*Defined in [ledger.ts:12](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L12)*
+*Defined in [ledger.ts:12](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L12)*

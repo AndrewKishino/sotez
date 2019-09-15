@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;crypto&quot;](../modules/_crypto_.md) › [Signed](_crypto_.signed.md)
+[Sotez Documentation](../README.md) › ["crypto"](../modules/_crypto_.md) › [Signed](_crypto_.signed.md)
 
 # Interface: Signed
+
 
 ## Hierarchy
 
@@ -23,7 +22,7 @@
 
 • **bytes**: *string*
 
-*Defined in [crypto.ts:24](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L24)*
+*Defined in [crypto.ts:24](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L24)*
 
 ___
 
@@ -31,7 +30,7 @@ ___
 
 • **prefixSig**: *string*
 
-*Defined in [crypto.ts:26](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L26)*
+*Defined in [crypto.ts:26](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L26)*
 
 ___
 
@@ -39,7 +38,7 @@ ___
 
 • **sbytes**: *string*
 
-*Defined in [crypto.ts:27](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L27)*
+*Defined in [crypto.ts:27](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L27)*
 
 ___
 
@@ -47,4 +46,4 @@ ___
 
 • **sig**: *string*
 
-*Defined in [crypto.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L25)*
+*Defined in [crypto.ts:25](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L25)*

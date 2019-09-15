@@ -1,5 +1,4 @@
 # Tezos Threshold Wallet
-![npm](https://img.shields.io/npm/v/tezos-thresh-wallet.svg?logo=npm&color=blue)
 
 Tezos wallet and JS SDK powered by two-party EdDSA (Ed25519).
 

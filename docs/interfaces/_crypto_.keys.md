@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;crypto&quot;](../modules/_crypto_.md) › [Keys](_crypto_.keys.md)
+[Sotez Documentation](../README.md) › ["crypto"](../modules/_crypto_.md) › [Keys](_crypto_.keys.md)
 
 # Interface: Keys
+
 
 ## Hierarchy
 
@@ -23,7 +22,7 @@
 
 • **password**? : *undefined | string*
 
-*Defined in [crypto.ts:12](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L12)*
+*Defined in [crypto.ts:12](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L12)*
 
 ___
 
@@ -31,7 +30,7 @@ ___
 
 • **pk**: *string*
 
-*Defined in [crypto.ts:9](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L9)*
+*Defined in [crypto.ts:9](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L9)*
 
 ___
 
@@ -39,7 +38,7 @@ ___
 
 • **pkh**: *string*
 
-*Defined in [crypto.ts:10](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L10)*
+*Defined in [crypto.ts:10](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L10)*
 
 ___
 
@@ -47,4 +46,4 @@ ___
 
 • **sk**: *string*
 
-*Defined in [crypto.ts:11](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/crypto.ts#L11)*
+*Defined in [crypto.ts:11](https://github.com/KZen-networks/sotez/blob/80ad203/src/crypto.ts#L11)*

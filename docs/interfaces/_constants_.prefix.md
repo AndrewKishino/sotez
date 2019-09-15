@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;constants&quot;](../modules/_constants_.md) › [Prefix](_constants_.prefix.md)
+[Sotez Documentation](../README.md) › ["constants"](../modules/_constants_.md) › [Prefix](_constants_.prefix.md)
 
 # Interface: Prefix
+
 
 ## Hierarchy
 
@@ -49,7 +48,7 @@
 
 • **Co**: *Uint8Array*
 
-*Defined in [constants.ts:31](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L31)*
+*Defined in [constants.ts:31](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L31)*
 
 ___
 
@@ -57,7 +56,7 @@ ___
 
 • **KT**: *Uint8Array*
 
-*Defined in [constants.ts:6](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L6)*
+*Defined in [constants.ts:6](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L6)*
 
 ___
 
@@ -65,7 +64,7 @@ ___
 
 • **LLo**: *Uint8Array*
 
-*Defined in [constants.ts:29](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L29)*
+*Defined in [constants.ts:29](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L29)*
 
 ___
 
@@ -73,7 +72,7 @@ ___
 
 • **Lo**: *Uint8Array*
 
-*Defined in [constants.ts:28](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L28)*
+*Defined in [constants.ts:28](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L28)*
 
 ___
 
@@ -81,7 +80,7 @@ ___
 
 • **Net**: *Uint8Array*
 
-*Defined in [constants.ts:24](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L24)*
+*Defined in [constants.ts:24](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L24)*
 
 ___
 
@@ -89,7 +88,7 @@ ___
 
 • **P**: *Uint8Array*
 
-*Defined in [constants.ts:30](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L30)*
+*Defined in [constants.ts:30](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L30)*
 
 ___
 
@@ -97,7 +96,7 @@ ___
 
 • **TZ**: *Uint8Array*
 
-*Defined in [constants.ts:34](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L34)*
+*Defined in [constants.ts:34](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L34)*
 
 ___
 
@@ -105,7 +104,7 @@ ___
 
 • **b**: *Uint8Array*
 
-*Defined in [constants.ts:26](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L26)*
+*Defined in [constants.ts:26](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L26)*
 
 ___
 
@@ -113,7 +112,7 @@ ___
 
 • **edesk**: *Uint8Array*
 
-*Defined in [constants.ts:16](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L16)*
+*Defined in [constants.ts:16](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L16)*
 
 ___
 
@@ -121,7 +120,7 @@ ___
 
 • **edpk**: *Uint8Array*
 
-*Defined in [constants.ts:8](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L8)*
+*Defined in [constants.ts:8](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L8)*
 
 ___
 
@@ -129,7 +128,7 @@ ___
 
 • **edsig**: *Uint8Array*
 
-*Defined in [constants.ts:19](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L19)*
+*Defined in [constants.ts:19](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L19)*
 
 ___
 
@@ -137,7 +136,7 @@ ___
 
 • **edsk**: *Uint8Array*
 
-*Defined in [constants.ts:17](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L17)*
+*Defined in [constants.ts:17](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L17)*
 
 ___
 
@@ -145,7 +144,7 @@ ___
 
 • **edsk2**: *Uint8Array*
 
-*Defined in [constants.ts:9](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L9)*
+*Defined in [constants.ts:9](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L9)*
 
 ___
 
@@ -153,7 +152,7 @@ ___
 
 • **id**: *Uint8Array*
 
-*Defined in [constants.ts:32](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L32)*
+*Defined in [constants.ts:32](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L32)*
 
 ___
 
@@ -161,7 +160,7 @@ ___
 
 • **nce**: *Uint8Array*
 
-*Defined in [constants.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L25)*
+*Defined in [constants.ts:25](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L25)*
 
 ___
 
@@ -169,7 +168,7 @@ ___
 
 • **o**: *Uint8Array*
 
-*Defined in [constants.ts:27](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L27)*
+*Defined in [constants.ts:27](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L27)*
 
 ___
 
@@ -177,7 +176,7 @@ ___
 
 • **p2pk**: *Uint8Array*
 
-*Defined in [constants.ts:14](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L14)*
+*Defined in [constants.ts:14](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L14)*
 
 ___
 
@@ -185,7 +184,7 @@ ___
 
 • **p2sig**: *Uint8Array*
 
-*Defined in [constants.ts:21](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L21)*
+*Defined in [constants.ts:21](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L21)*
 
 ___
 
@@ -193,7 +192,7 @@ ___
 
 • **p2sk**: *Uint8Array*
 
-*Defined in [constants.ts:11](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L11)*
+*Defined in [constants.ts:11](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L11)*
 
 ___
 
@@ -201,7 +200,7 @@ ___
 
 • **sig**: *Uint8Array*
 
-*Defined in [constants.ts:22](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L22)*
+*Defined in [constants.ts:22](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L22)*
 
 ___
 
@@ -209,7 +208,7 @@ ___
 
 • **sppk**: *Uint8Array*
 
-*Defined in [constants.ts:13](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L13)*
+*Defined in [constants.ts:13](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L13)*
 
 ___
 
@@ -217,7 +216,7 @@ ___
 
 • **spsig**: *Uint8Array*
 
-*Defined in [constants.ts:20](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L20)*
+*Defined in [constants.ts:20](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L20)*
 
 ___
 
@@ -225,7 +224,7 @@ ___
 
 • **spsk**: *Uint8Array*
 
-*Defined in [constants.ts:10](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L10)*
+*Defined in [constants.ts:10](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L10)*
 
 ___
 
@@ -233,7 +232,7 @@ ___
 
 • **tz1**: *Uint8Array*
 
-*Defined in [constants.ts:3](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L3)*
+*Defined in [constants.ts:3](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L3)*
 
 ___
 
@@ -241,7 +240,7 @@ ___
 
 • **tz2**: *Uint8Array*
 
-*Defined in [constants.ts:4](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L4)*
+*Defined in [constants.ts:4](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L4)*
 
 ___
 
@@ -249,4 +248,4 @@ ___
 
 • **tz3**: *Uint8Array*
 
-*Defined in [constants.ts:5](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/constants.ts#L5)*
+*Defined in [constants.ts:5](https://github.com/KZen-networks/sotez/blob/80ad203/src/constants.ts#L5)*

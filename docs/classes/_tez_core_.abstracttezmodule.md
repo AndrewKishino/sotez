@@ -1,14 +1,13 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;tez-core&quot;](../modules/_tez_core_.md) › [AbstractTezModule](_tez_core_.abstracttezmodule.md)
+[Sotez Documentation](../README.md) › ["tez-core"](../modules/_tez_core_.md) › [AbstractTezModule](_tez_core_.abstracttezmodule.md)
 
 # Class: AbstractTezModule
+
 
 ## Hierarchy
 
 * **AbstractTezModule**
 
-  * [Sotez](_sotez_.sotez.md)
+  ↳ [TezClient](_tez_client_.tezclient.md)
 
 ## Index
 
@@ -36,7 +35,7 @@
 
 \+ **new AbstractTezModule**(`provider`: string, `chain`: string): *[AbstractTezModule](_tez_core_.abstracttezmodule.md)*
 
-*Defined in [tez-core.ts:3](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L3)*
+*Defined in [tez-core.ts:3](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L3)*
 
 **Parameters:**
 
@@ -53,7 +52,7 @@ Name | Type |
 
 • **_chain**: *string*
 
-*Defined in [tez-core.ts:3](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L3)*
+*Defined in [tez-core.ts:3](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L3)*
 
 ___
 
@@ -61,7 +60,7 @@ ___
 
 • **_provider**: *string*
 
-*Defined in [tez-core.ts:2](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L2)*
+*Defined in [tez-core.ts:2](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L2)*
 
 ## Accessors
 
@@ -69,13 +68,13 @@ ___
 
 • **get chain**(): *string*
 
-*Defined in [tez-core.ts:21](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L21)*
+*Defined in [tez-core.ts:21](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L21)*
 
 **Returns:** *string*
 
 • **set chain**(`value`: string): *void*
 
-*Defined in [tez-core.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L25)*
+*Defined in [tez-core.ts:25](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L25)*
 
 **Parameters:**
 
@@ -91,13 +90,13 @@ ___
 
 • **get provider**(): *string*
 
-*Defined in [tez-core.ts:13](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L13)*
+*Defined in [tez-core.ts:13](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L13)*
 
 **Returns:** *string*
 
 • **set provider**(`provider`: string): *void*
 
-*Defined in [tez-core.ts:17](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L17)*
+*Defined in [tez-core.ts:17](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L17)*
 
 **Parameters:**
 
@@ -113,7 +112,7 @@ Name | Type |
 
 ▸ **setProvider**(`provider`: string, `chain`: string): *void*
 
-*Defined in [tez-core.ts:29](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/tez-core.ts#L29)*
+*Defined in [tez-core.ts:29](https://github.com/KZen-networks/sotez/blob/80ad203/src/tez-core.ts#L29)*
 
 **Parameters:**
 

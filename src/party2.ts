@@ -41,14 +41,19 @@ export default class Party2 {
 
   /**
      * @memberof Party2
-     * @description Returns public key hash for this secret share
-     * @returns {String} The public key hash for this secret share
+     * @description Returns public key hash (address) for this secret share
+     * @returns {String} The public key hash (address) for this secret share
      */
   publicKeyHash = (): string => {
     const publicKey = new Uint8Array(Buffer.from(this._p2Share.getAggregatedPublicKey().apk.bytes_str, 'hex'));
     return utility.b58cencode(sodium.crypto_generichash(20, publicKey), prefix.tz1);
   };
 
+  /**
+   * @memberof Party2
+   * @description Returns the JSON object of an Ed25519 signature on given bytes and watermark
+   * @returns {JSON} JSON object containing the Ed25519 signature on given bytes and watermark
+   */
   sign = async (bytes: string, watermark: Uint8Array) => {
     let bb = utility.hex2buf(bytes);
     if (typeof watermark !== 'undefined') {

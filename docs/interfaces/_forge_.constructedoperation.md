@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;forge&quot;](../modules/_forge_.md) › [ConstructedOperation](_forge_.constructedoperation.md)
+[Sotez Documentation](../README.md) › ["forge"](../modules/_forge_.md) › [ConstructedOperation](_forge_.constructedoperation.md)
 
 # Interface: ConstructedOperation
+
 
 ## Hierarchy
 
@@ -44,7 +43,7 @@
 
 • **amount**: *string*
 
-*Defined in [forge.ts:26](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L26)*
+*Defined in [forge.ts:26](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L26)*
 
 ___
 
@@ -52,7 +51,7 @@ ___
 
 • **balance**: *string*
 
-*Defined in [forge.ts:22](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L22)*
+*Defined in [forge.ts:22](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L22)*
 
 ___
 
@@ -60,7 +59,7 @@ ___
 
 • **ballot**: *string*
 
-*Defined in [forge.ts:16](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L16)*
+*Defined in [forge.ts:16](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L16)*
 
 ___
 
@@ -68,7 +67,7 @@ ___
 
 • **counter**: *string*
 
-*Defined in [forge.ts:18](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L18)*
+*Defined in [forge.ts:18](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L18)*
 
 ___
 
@@ -76,7 +75,7 @@ ___
 
 • **delegatable**: *boolean*
 
-*Defined in [forge.ts:24](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L24)*
+*Defined in [forge.ts:24](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L24)*
 
 ___
 
@@ -84,7 +83,7 @@ ___
 
 • **delegate**: *string*
 
-*Defined in [forge.ts:25](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L25)*
+*Defined in [forge.ts:25](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L25)*
 
 ___
 
@@ -92,7 +91,7 @@ ___
 
 • **destination**: *string*
 
-*Defined in [forge.ts:27](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L27)*
+*Defined in [forge.ts:27](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L27)*
 
 ___
 
@@ -100,7 +99,7 @@ ___
 
 • **fee**: *string*
 
-*Defined in [forge.ts:17](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L17)*
+*Defined in [forge.ts:17](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L17)*
 
 ___
 
@@ -108,7 +107,7 @@ ___
 
 • **gas_limit**: *string*
 
-*Defined in [forge.ts:19](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L19)*
+*Defined in [forge.ts:19](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L19)*
 
 ___
 
@@ -116,7 +115,7 @@ ___
 
 • **hash**: *string*
 
-*Defined in [forge.ts:11](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L11)*
+*Defined in [forge.ts:11](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L11)*
 
 ___
 
@@ -124,7 +123,7 @@ ___
 
 • **kind**: *string*
 
-*Defined in [forge.ts:7](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L7)*
+*Defined in [forge.ts:7](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L7)*
 
 ___
 
@@ -132,7 +131,7 @@ ___
 
 • **level**: *number*
 
-*Defined in [forge.ts:8](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L8)*
+*Defined in [forge.ts:8](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L8)*
 
 ___
 
@@ -140,7 +139,7 @@ ___
 
 • **managerPubkey**: *string*
 
-*Defined in [forge.ts:31](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L31)*
+*Defined in [forge.ts:31](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L31)*
 
 ___
 
@@ -148,7 +147,7 @@ ___
 
 • **manager_pubkey**: *string*
 
-*Defined in [forge.ts:30](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L30)*
+*Defined in [forge.ts:30](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L30)*
 
 ___
 
@@ -156,7 +155,7 @@ ___
 
 • **nonce**: *string*
 
-*Defined in [forge.ts:9](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L9)*
+*Defined in [forge.ts:9](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L9)*
 
 ___
 
@@ -164,7 +163,7 @@ ___
 
 • **parameters**: *string*
 
-*Defined in [forge.ts:21](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L21)*
+*Defined in [forge.ts:21](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L21)*
 
 ___
 
@@ -172,7 +171,7 @@ ___
 
 • **period**: *number*
 
-*Defined in [forge.ts:14](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L14)*
+*Defined in [forge.ts:14](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L14)*
 
 ___
 
@@ -180,7 +179,7 @@ ___
 
 • **pkh**: *string*
 
-*Defined in [forge.ts:10](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L10)*
+*Defined in [forge.ts:10](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L10)*
 
 ___
 
@@ -188,7 +187,7 @@ ___
 
 • **proposal**: *string*
 
-*Defined in [forge.ts:15](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L15)*
+*Defined in [forge.ts:15](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L15)*
 
 ___
 
@@ -196,7 +195,7 @@ ___
 
 • **public_key**: *string*
 
-*Defined in [forge.ts:28](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L28)*
+*Defined in [forge.ts:28](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L28)*
 
 ___
 
@@ -204,7 +203,7 @@ ___
 
 • **script**: *object*
 
-*Defined in [forge.ts:29](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L29)*
+*Defined in [forge.ts:29](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L29)*
 
 #### Type declaration:
 
@@ -218,7 +217,7 @@ ___
 
 • **secret**: *string*
 
-*Defined in [forge.ts:12](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L12)*
+*Defined in [forge.ts:12](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L12)*
 
 ___
 
@@ -226,7 +225,7 @@ ___
 
 • **source**: *string*
 
-*Defined in [forge.ts:13](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L13)*
+*Defined in [forge.ts:13](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L13)*
 
 ___
 
@@ -234,7 +233,7 @@ ___
 
 • **spendable**: *boolean*
 
-*Defined in [forge.ts:23](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L23)*
+*Defined in [forge.ts:23](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L23)*
 
 ___
 
@@ -242,4 +241,4 @@ ___
 
 • **storage_limit**: *string*
 
-*Defined in [forge.ts:20](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/forge.ts#L20)*
+*Defined in [forge.ts:20](https://github.com/KZen-networks/sotez/blob/80ad203/src/forge.ts#L20)*

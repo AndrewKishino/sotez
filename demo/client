@@ -7,9 +7,9 @@ const path = require('path');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const { Ed25519Party2, Ed25519Party2Share } = require('../build/node');
-const Sotez = require('../build/node').default;
+const TezClient = require('../build/node').default;
 
-const sotez = new Sotez('http://alphanet-node.tzscan.io');
+const client = new TezClient('http://alphanet-node.tzscan.io');
 
 const P1_ENDPOINT = 'http://localhost:8000';
 const party2 = new Ed25519Party2(P1_ENDPOINT);
@@ -33,16 +33,16 @@ db.defaults({ addresses: [] }).write();
 program
   .command('address')
   .action(async () => {
-    await sotez.importEd25519Party2(party2);
-    const address = sotez.party2.publicKeyHash();
-    db.get('addresses').push({ address, share: sotez.party2.secretShare() }).write();
-    console.log(sotez.party2.publicKeyHash());
+    await client.importEd25519Party2(party2);
+    const address = client.party2.publicKeyHash();
+    db.get('addresses').push({ address, share: client.party2.secretShare() }).write();
+    console.log(client.party2.publicKeyHash());
   });
 
 program
   .command('balance <address>')
   .action(async (address) => {
-    const balance = await sotez.getBalance(address);
+    const balance = await client.getBalance(address);
     console.log(`${balance / MUTEZ_IN_XTZ} XTZ`);
   });
 
@@ -54,12 +54,12 @@ program
       console.error('Didn\'t find secret share for the provided from address');
       return;
     }
-    await sotez.importEd25519Party2(
+    await client.importEd25519Party2(
       new Ed25519Party2(P1_ENDPOINT),
       new Ed25519Party2Share(p2Share.key_pair, p2Share.agg_pub_key, p2Share.id),
     );
     const amount = parseFloat(xtzAmount) * MUTEZ_IN_XTZ;
-    const { hash } = await sotez.transfer({
+    const { hash } = await client.transfer({
       source: from,
       to,
       amount,
@@ -67,7 +67,7 @@ program
     console.log(`Injected transfer operation hash: ${hash}`);
 
     // Await confirmation of included operation
-    const transferBlock = await sotez.awaitOperation(hash);
+    const transferBlock = await client.awaitOperation(hash);
     console.log(`Operation found in block ${transferBlock}`);
   });
 

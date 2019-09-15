@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;ledger&quot;](../modules/_ledger_.md) › [LedgerGetAddress](_ledger_.ledgergetaddress.md)
+[Sotez Documentation](../README.md) › ["ledger"](../modules/_ledger_.md) › [LedgerGetAddress](_ledger_.ledgergetaddress.md)
 
 # Interface: LedgerGetAddress
+
 
 ## Hierarchy
 
@@ -22,7 +21,7 @@
 
 • **curve**? : *undefined | number*
 
-*Defined in [ledger.ts:7](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L7)*
+*Defined in [ledger.ts:7](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L7)*
 
 ___
 
@@ -30,7 +29,7 @@ ___
 
 • **displayConfirm**? : *undefined | false | true*
 
-*Defined in [ledger.ts:6](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L6)*
+*Defined in [ledger.ts:6](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L6)*
 
 ___
 
@@ -38,4 +37,4 @@ ___
 
 • **path**? : *undefined | string*
 
-*Defined in [ledger.ts:5](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L5)*
+*Defined in [ledger.ts:5](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L5)*

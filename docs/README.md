@@ -1,8 +1,7 @@
-**[Sotez Documentation](README.md)**
-
-[Globals](README.md)
+[Sotez Documentation](README.md)
 
 # Sotez Documentation
+
 
 ## Index
 
@@ -13,6 +12,7 @@
 * ["forge"](modules/_forge_.md)
 * ["key"](modules/_key_.md)
 * ["ledger"](modules/_ledger_.md)
-* ["sotez"](modules/_sotez_.md)
+* ["party2"](modules/_party2_.md)
+* ["tez-client"](modules/_tez_client_.md)
 * ["tez-core"](modules/_tez_core_.md)
 * ["utility"](modules/_utility_.md)

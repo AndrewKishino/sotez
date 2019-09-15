@@ -1,8 +1,7 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;ledger&quot;](../modules/_ledger_.md) › [LedgerGetVersion](_ledger_.ledgergetversion.md)
+[Sotez Documentation](../README.md) › ["ledger"](../modules/_ledger_.md) › [LedgerGetVersion](_ledger_.ledgergetversion.md)
 
 # Interface: LedgerGetVersion
+
 
 ## Hierarchy
 
@@ -23,7 +22,7 @@
 
 • **bakingApp**: *boolean*
 
-*Defined in [ledger.ts:20](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L20)*
+*Defined in [ledger.ts:20](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L20)*
 
 ___
 
@@ -31,7 +30,7 @@ ___
 
 • **major**: *number*
 
-*Defined in [ledger.ts:17](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L17)*
+*Defined in [ledger.ts:17](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L17)*
 
 ___
 
@@ -39,7 +38,7 @@ ___
 
 • **minor**: *number*
 
-*Defined in [ledger.ts:18](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L18)*
+*Defined in [ledger.ts:18](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L18)*
 
 ___
 
@@ -47,4 +46,4 @@ ___
 
 • **patch**: *number*
 
-*Defined in [ledger.ts:19](https://github.com/AndrewKishino/sotez/blob/0fceff4/src/ledger.ts#L19)*
+*Defined in [ledger.ts:19](https://github.com/KZen-networks/sotez/blob/80ad203/src/ledger.ts#L19)*

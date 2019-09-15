@@ -1,61 +1,60 @@
-**[Sotez Documentation](../README.md)**
-
-[Globals](../README.md) › [&quot;sotez&quot;](../modules/_sotez_.md) › [MichelineArray](_sotez_.michelinearray.md)
+[Sotez Documentation](../README.md) › ["tez-client"](../modules/_tez_client_.md) › [MichelineArray](_tez_client_.michelinearray.md)
 
 # Interface: MichelineArray
 
+
 ## Hierarchy
 
-* Array‹[Micheline](../modules/_sotez_.md#micheline)›
+* Array‹[Micheline](../modules/_tez_client_.md#micheline)›
 
-  * **MichelineArray**
+  ↳ **MichelineArray**
 
 ## Indexable
 
-* \[ **n**: *number*\]: [Micheline](../modules/_sotez_.md#micheline)
+* \[ **n**: *number*\]: [Micheline](../modules/_tez_client_.md#micheline)
 
 ## Index
 
 ### Properties
 
-* [Array](_sotez_.michelinearray.md#array)
-* [length](_sotez_.michelinearray.md#length)
+* [Array](_tez_client_.michelinearray.md#array)
+* [length](_tez_client_.michelinearray.md#length)
 
 ### Methods
 
-* [__@iterator](_sotez_.michelinearray.md#__@iterator)
-* [__@unscopables](_sotez_.michelinearray.md#__@unscopables)
-* [concat](_sotez_.michelinearray.md#concat)
-* [copyWithin](_sotez_.michelinearray.md#copywithin)
-* [entries](_sotez_.michelinearray.md#entries)
-* [every](_sotez_.michelinearray.md#every)
-* [fill](_sotez_.michelinearray.md#fill)
-* [filter](_sotez_.michelinearray.md#filter)
-* [find](_sotez_.michelinearray.md#find)
-* [findIndex](_sotez_.michelinearray.md#findindex)
-* [flat](_sotez_.michelinearray.md#flat)
-* [flatMap](_sotez_.michelinearray.md#flatmap)
-* [forEach](_sotez_.michelinearray.md#foreach)
-* [includes](_sotez_.michelinearray.md#includes)
-* [indexOf](_sotez_.michelinearray.md#indexof)
-* [join](_sotez_.michelinearray.md#join)
-* [keys](_sotez_.michelinearray.md#keys)
-* [lastIndexOf](_sotez_.michelinearray.md#lastindexof)
-* [map](_sotez_.michelinearray.md#map)
-* [pop](_sotez_.michelinearray.md#pop)
-* [push](_sotez_.michelinearray.md#push)
-* [reduce](_sotez_.michelinearray.md#reduce)
-* [reduceRight](_sotez_.michelinearray.md#reduceright)
-* [reverse](_sotez_.michelinearray.md#reverse)
-* [shift](_sotez_.michelinearray.md#shift)
-* [slice](_sotez_.michelinearray.md#slice)
-* [some](_sotez_.michelinearray.md#some)
-* [sort](_sotez_.michelinearray.md#sort)
-* [splice](_sotez_.michelinearray.md#splice)
-* [toLocaleString](_sotez_.michelinearray.md#tolocalestring)
-* [toString](_sotez_.michelinearray.md#tostring)
-* [unshift](_sotez_.michelinearray.md#unshift)
-* [values](_sotez_.michelinearray.md#values)
+* [__@iterator](_tez_client_.michelinearray.md#__@iterator)
+* [__@unscopables](_tez_client_.michelinearray.md#__@unscopables)
+* [concat](_tez_client_.michelinearray.md#concat)
+* [copyWithin](_tez_client_.michelinearray.md#copywithin)
+* [entries](_tez_client_.michelinearray.md#entries)
+* [every](_tez_client_.michelinearray.md#every)
+* [fill](_tez_client_.michelinearray.md#fill)
+* [filter](_tez_client_.michelinearray.md#filter)
+* [find](_tez_client_.michelinearray.md#find)
+* [findIndex](_tez_client_.michelinearray.md#findindex)
+* [flat](_tez_client_.michelinearray.md#flat)
+* [flatMap](_tez_client_.michelinearray.md#flatmap)
+* [forEach](_tez_client_.michelinearray.md#foreach)
+* [includes](_tez_client_.michelinearray.md#includes)
+* [indexOf](_tez_client_.michelinearray.md#indexof)
+* [join](_tez_client_.michelinearray.md#join)
+* [keys](_tez_client_.michelinearray.md#keys)
+* [lastIndexOf](_tez_client_.michelinearray.md#lastindexof)
+* [map](_tez_client_.michelinearray.md#map)
+* [pop](_tez_client_.michelinearray.md#pop)
+* [push](_tez_client_.michelinearray.md#push)
+* [reduce](_tez_client_.michelinearray.md#reduce)
+* [reduceRight](_tez_client_.michelinearray.md#reduceright)
+* [reverse](_tez_client_.michelinearray.md#reverse)
+* [shift](_tez_client_.michelinearray.md#shift)
+* [slice](_tez_client_.michelinearray.md#slice)
+* [some](_tez_client_.michelinearray.md#some)
+* [sort](_tez_client_.michelinearray.md#sort)
+* [splice](_tez_client_.michelinearray.md#splice)
+* [toLocaleString](_tez_client_.michelinearray.md#tolocalestring)
+* [toString](_tez_client_.michelinearray.md#tostring)
+* [unshift](_tez_client_.michelinearray.md#unshift)
+* [values](_tez_client_.michelinearray.md#values)
 
 ## Properties
 
@@ -63,7 +62,7 @@
 
 • **Array**: *ArrayConstructor*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1368
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1368
 
 ___
 
@@ -73,7 +72,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1209
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1209
 
 Gets or sets the length of the array. This is a number one higher than the highest element defined in an array.
 
@@ -81,15 +80,15 @@ Gets or sets the length of the array. This is a number one higher than the highe
 
 ###  __@iterator
 
-▸ **__@iterator**(): *IterableIterator‹[Micheline](../modules/_sotez_.md#micheline)›*
+▸ **__@iterator**(): *IterableIterator‹[Micheline](../modules/_tez_client_.md#micheline)›*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:52
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:52
 
 Iterator
 
-**Returns:** *IterableIterator‹[Micheline](../modules/_sotez_.md#micheline)›*
+**Returns:** *IterableIterator‹[Micheline](../modules/_tez_client_.md#micheline)›*
 
 ___
 
@@ -99,7 +98,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts:94
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts:94
 
 Returns an object whose properties have the value 'true'
 when they will be absent when used in a 'with' statement.
@@ -124,11 +123,11 @@ ___
 
 ###  concat
 
-▸ **concat**(...`items`: ConcatArray‹[Micheline](../modules/_sotez_.md#micheline)›[]): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **concat**(...`items`: ConcatArray‹[Micheline](../modules/_tez_client_.md#micheline)›[]): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1231
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1231
 
 Combines two or more arrays.
 
@@ -136,15 +135,15 @@ Combines two or more arrays.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`...items` | ConcatArray‹[Micheline](../modules/_sotez_.md#micheline)›[] | Additional items to add to the end of array1.  |
+`...items` | ConcatArray‹[Micheline](../modules/_tez_client_.md#micheline)›[] | Additional items to add to the end of array1.  |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
-▸ **concat**(...`items`: T | ConcatArray‹T›[]): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **concat**(...`items`: T | ConcatArray‹T›[]): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1236
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1236
 
 Combines two or more arrays.
 
@@ -154,7 +153,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `...items` | T &#124; ConcatArray‹T›[] | Additional items to add to the end of array1.  |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 ___
 
@@ -164,7 +163,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:64
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:64
 
 Returns the this object after copying a section of the array identified by start and end
 to the same array starting at position target
@@ -183,15 +182,15 @@ ___
 
 ###  entries
 
-▸ **entries**(): *IterableIterator‹[number, [Micheline](../modules/_sotez_.md#micheline)]›*
+▸ **entries**(): *IterableIterator‹[number, [Micheline](../modules/_tez_client_.md#micheline)]›*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:57
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:57
 
 Returns an iterable of key, value pairs for every entry in the array
 
-**Returns:** *IterableIterator‹[number, [Micheline](../modules/_sotez_.md#micheline)]›*
+**Returns:** *IterableIterator‹[number, [Micheline](../modules/_tez_client_.md#micheline)]›*
 
 ___
 
@@ -201,7 +200,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1296
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1296
 
 Determines whether all the members of an array satisfy the specified test.
 
@@ -211,15 +210,15 @@ Determines whether all the members of an array satisfy the specified test.
 
 A function that accepts up to three arguments. The every method calls the callbackfn function for each element in array1 until the callbackfn returns false, or until the end of the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *unknown*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *unknown*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -231,11 +230,11 @@ ___
 
 ###  fill
 
-▸ **fill**(`value`: [Micheline](../modules/_sotez_.md#micheline), `start?`: undefined | number, `end?`: undefined | number): *this*
+▸ **fill**(`value`: [Micheline](../modules/_tez_client_.md#micheline), `start?`: undefined | number, `end?`: undefined | number): *this*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:53
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:53
 
 Returns the this object after filling the section identified by start and end with value
 
@@ -243,7 +242,7 @@ Returns the this object after filling the section identified by start and end wi
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) | value to fill array section with |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) | value to fill array section with |
 `start?` | undefined &#124; number | index to start filling the array at. If start is negative, it is treated as length+start where length is the length of the array. |
 `end?` | undefined &#124; number | index to stop filling the array at. If end is negative, it is treated as length+end.  |
 
@@ -257,13 +256,13 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1320
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1320
 
 Returns the elements of an array that meet the condition specified in a callback function.
 
 **Type parameters:**
 
-▪ **S**: *[Micheline](../modules/_sotez_.md#micheline)*
+▪ **S**: *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
@@ -271,15 +270,15 @@ Returns the elements of an array that meet the condition specified in a callback
 
 A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *boolean*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *boolean*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -287,11 +286,11 @@ An object to which the this keyword can refer in the callbackfn function. If thi
 
 **Returns:** *S[]*
 
-▸ **filter**(`callbackfn`: function, `thisArg?`: any): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **filter**(`callbackfn`: function, `thisArg?`: any): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1326
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1326
 
 Returns the elements of an array that meet the condition specified in a callback function.
 
@@ -301,21 +300,21 @@ Returns the elements of an array that meet the condition specified in a callback
 
 A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *unknown*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *unknown*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
 An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 ___
 
@@ -325,14 +324,14 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:31
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:31
 
 Returns the value of the first element in the array where predicate is true, and undefined
 otherwise.
 
 **Type parameters:**
 
-▪ **S**: *[Micheline](../modules/_sotez_.md#micheline)*
+▪ **S**: *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
@@ -342,16 +341,16 @@ find calls predicate once for each element of the array, in ascending
 order, until it finds one where predicate returns true. If such an element is found, find
 immediately returns that element value. Otherwise, find returns undefined.
 
-▸ (`this`: void, `value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_sotez_.md#micheline)[]): *boolean*
+▸ (`this`: void, `value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_tez_client_.md#micheline)[]): *boolean*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `this` | void |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`obj` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`obj` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -360,29 +359,29 @@ predicate. If it is not provided, undefined is used instead.
 
 **Returns:** *S | undefined*
 
-▸ **find**(`predicate`: function, `thisArg?`: any): *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+▸ **find**(`predicate`: function, `thisArg?`: any): *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:32
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:32
 
 **Parameters:**
 
 ▪ **predicate**: *function*
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_sotez_.md#micheline)[]): *unknown*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_tez_client_.md#micheline)[]): *unknown*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`obj` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`obj` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 ___
 
@@ -392,7 +391,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:43
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.core.d.ts:43
 
 Returns the index of the first element in the array where predicate is true, and -1
 otherwise.
@@ -405,15 +404,15 @@ find calls predicate once for each element of the array, in ascending
 order, until it finds one where predicate returns true. If such an element is found,
 findIndex immediately returns that element index. Otherwise, findIndex returns -1.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_sotez_.md#micheline)[]): *unknown*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `obj`: [Micheline](../modules/_tez_client_.md#micheline)[]): *unknown*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`obj` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`obj` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -430,7 +429,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:158
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:158
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -452,7 +451,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:166
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:166
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -474,7 +473,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:174
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:174
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -496,7 +495,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:182
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:182
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -518,7 +517,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:190
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:190
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -540,7 +539,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:198
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:198
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -562,7 +561,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:206
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:206
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -584,7 +583,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:214
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:214
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth.
@@ -606,7 +605,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:222
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:222
 
 Returns a new array with all sub-array elements concatenated into it recursively up to the
 specified depth. If no depth is provided, flat method defaults to the depth of 1.
@@ -631,7 +630,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:147
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2019.array.d.ts:147
 
 Calls a defined callback function on each element of an array. Then, flattens the result into
 a new array.
@@ -650,16 +649,16 @@ This is identical to a map followed by flat with depth 1.
 A function that accepts up to three arguments. The flatMap method calls the
 callback function one time for each element in the array.
 
-▸ (`this`: This, `value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *U | ReadonlyArray‹U›*
+▸ (`this`: This, `value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *U | ReadonlyArray‹U›*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `this` | This |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *[This](undefined)*
 
@@ -676,7 +675,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1308
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1308
 
 Performs the specified action for each element in an array.
 
@@ -686,15 +685,15 @@ Performs the specified action for each element in an array.
 
 A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *void*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *void*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -706,11 +705,11 @@ ___
 
 ###  includes
 
-▸ **includes**(`searchElement`: [Micheline](../modules/_sotez_.md#micheline), `fromIndex?`: undefined | number): *boolean*
+▸ **includes**(`searchElement`: [Micheline](../modules/_tez_client_.md#micheline), `fromIndex?`: undefined | number): *boolean*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2016.array.include.d.ts:27
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2016.array.include.d.ts:27
 
 Determines whether an array includes a certain element, returning true or false as appropriate.
 
@@ -718,7 +717,7 @@ Determines whether an array includes a certain element, returning true or false 
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`searchElement` | [Micheline](../modules/_sotez_.md#micheline) | The element to search for. |
+`searchElement` | [Micheline](../modules/_tez_client_.md#micheline) | The element to search for. |
 `fromIndex?` | undefined &#124; number | The position in this array at which to begin searching for searchElement.  |
 
 **Returns:** *boolean*
@@ -727,11 +726,11 @@ ___
 
 ###  indexOf
 
-▸ **indexOf**(`searchElement`: [Micheline](../modules/_sotez_.md#micheline), `fromIndex?`: undefined | number): *number*
+▸ **indexOf**(`searchElement`: [Micheline](../modules/_tez_client_.md#micheline), `fromIndex?`: undefined | number): *number*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1284
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1284
 
 Returns the index of the first occurrence of a value in an array.
 
@@ -739,7 +738,7 @@ Returns the index of the first occurrence of a value in an array.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`searchElement` | [Micheline](../modules/_sotez_.md#micheline) | The value to locate in the array. |
+`searchElement` | [Micheline](../modules/_tez_client_.md#micheline) | The value to locate in the array. |
 `fromIndex?` | undefined &#124; number | The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.  |
 
 **Returns:** *number*
@@ -752,7 +751,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1241
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1241
 
 Adds all the elements of an array separated by the specified separator string.
 
@@ -772,7 +771,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:62
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:62
 
 Returns an iterable of keys in the array
 
@@ -782,11 +781,11 @@ ___
 
 ###  lastIndexOf
 
-▸ **lastIndexOf**(`searchElement`: [Micheline](../modules/_sotez_.md#micheline), `fromIndex?`: undefined | number): *number*
+▸ **lastIndexOf**(`searchElement`: [Micheline](../modules/_tez_client_.md#micheline), `fromIndex?`: undefined | number): *number*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1290
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1290
 
 Returns the index of the last occurrence of a specified value in an array.
 
@@ -794,7 +793,7 @@ Returns the index of the last occurrence of a specified value in an array.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`searchElement` | [Micheline](../modules/_sotez_.md#micheline) | The value to locate in the array. |
+`searchElement` | [Micheline](../modules/_tez_client_.md#micheline) | The value to locate in the array. |
 `fromIndex?` | undefined &#124; number | The array index at which to begin the search. If fromIndex is omitted, the search starts at the last index in the array.  |
 
 **Returns:** *number*
@@ -807,7 +806,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1314
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1314
 
 Calls a defined callback function on each element of an array, and returns an array that contains the results.
 
@@ -821,15 +820,15 @@ Calls a defined callback function on each element of an array, and returns an ar
 
 A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *U*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *U*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -841,25 +840,25 @@ ___
 
 ###  pop
 
-▸ **pop**(): *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+▸ **pop**(): *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1221
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1221
 
 Removes the last element from an array and returns it.
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 ___
 
 ###  push
 
-▸ **push**(...`items`: [Micheline](../modules/_sotez_.md#micheline)[]): *number*
+▸ **push**(...`items`: [Micheline](../modules/_tez_client_.md#micheline)[]): *number*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1226
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1226
 
 Appends new elements to an array, and returns the new length of the array.
 
@@ -867,7 +866,7 @@ Appends new elements to an array, and returns the new length of the array.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`...items` | [Micheline](../modules/_sotez_.md#micheline)[] | New elements of the Array.  |
+`...items` | [Micheline](../modules/_tez_client_.md#micheline)[] | New elements of the Array.  |
 
 **Returns:** *number*
 
@@ -875,11 +874,11 @@ ___
 
 ###  reduce
 
-▸ **reduce**(`callbackfn`: function): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ **reduce**(`callbackfn`: function): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1332
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1332
 
 Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
 
@@ -889,49 +888,49 @@ Calls the specified callback function for all the elements in an array. The retu
 
 A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
 
-▸ (`previousValue`: [Micheline](../modules/_sotez_.md#micheline), `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ (`previousValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`previousValue` | [Micheline](../modules/_sotez_.md#micheline) |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`previousValue` | [Micheline](../modules/_tez_client_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)*
 
-▸ **reduce**(`callbackfn`: function, `initialValue`: [Micheline](../modules/_sotez_.md#micheline)): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ **reduce**(`callbackfn`: function, `initialValue`: [Micheline](../modules/_tez_client_.md#micheline)): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1333
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1333
 
 **Parameters:**
 
 ▪ **callbackfn**: *function*
 
-▸ (`previousValue`: [Micheline](../modules/_sotez_.md#micheline), `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ (`previousValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`previousValue` | [Micheline](../modules/_sotez_.md#micheline) |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`previousValue` | [Micheline](../modules/_tez_client_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
-▪ **initialValue**: *[Micheline](../modules/_sotez_.md#micheline)*
+▪ **initialValue**: *[Micheline](../modules/_tez_client_.md#micheline)*
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)*
 
 ▸ **reduce**<**U**>(`callbackfn`: function, `initialValue`: U): *U*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1339
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1339
 
 Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
 
@@ -945,16 +944,16 @@ Calls the specified callback function for all the elements in an array. The retu
 
 A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
 
-▸ (`previousValue`: U, `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *U*
+▸ (`previousValue`: U, `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *U*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `previousValue` | U |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪ **initialValue**: *U*
 
@@ -966,11 +965,11 @@ ___
 
 ###  reduceRight
 
-▸ **reduceRight**(`callbackfn`: function): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ **reduceRight**(`callbackfn`: function): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1345
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1345
 
 Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
 
@@ -980,49 +979,49 @@ Calls the specified callback function for all the elements in an array, in desce
 
 A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
 
-▸ (`previousValue`: [Micheline](../modules/_sotez_.md#micheline), `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ (`previousValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`previousValue` | [Micheline](../modules/_sotez_.md#micheline) |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`previousValue` | [Micheline](../modules/_tez_client_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)*
 
-▸ **reduceRight**(`callbackfn`: function, `initialValue`: [Micheline](../modules/_sotez_.md#micheline)): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ **reduceRight**(`callbackfn`: function, `initialValue`: [Micheline](../modules/_tez_client_.md#micheline)): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1346
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1346
 
 **Parameters:**
 
 ▪ **callbackfn**: *function*
 
-▸ (`previousValue`: [Micheline](../modules/_sotez_.md#micheline), `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *[Micheline](../modules/_sotez_.md#micheline)*
+▸ (`previousValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *[Micheline](../modules/_tez_client_.md#micheline)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`previousValue` | [Micheline](../modules/_sotez_.md#micheline) |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`previousValue` | [Micheline](../modules/_tez_client_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
-▪ **initialValue**: *[Micheline](../modules/_sotez_.md#micheline)*
+▪ **initialValue**: *[Micheline](../modules/_tez_client_.md#micheline)*
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)*
 
 ▸ **reduceRight**<**U**>(`callbackfn`: function, `initialValue`: U): *U*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1352
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1352
 
 Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
 
@@ -1036,16 +1035,16 @@ Calls the specified callback function for all the elements in an array, in desce
 
 A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
 
-▸ (`previousValue`: U, `currentValue`: [Micheline](../modules/_sotez_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *U*
+▸ (`previousValue`: U, `currentValue`: [Micheline](../modules/_tez_client_.md#micheline), `currentIndex`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *U*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `previousValue` | U |
-`currentValue` | [Micheline](../modules/_sotez_.md#micheline) |
+`currentValue` | [Micheline](../modules/_tez_client_.md#micheline) |
 `currentIndex` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪ **initialValue**: *U*
 
@@ -1057,39 +1056,39 @@ ___
 
 ###  reverse
 
-▸ **reverse**(): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **reverse**(): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1245
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1245
 
 Reverses the elements in an Array.
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 ___
 
 ###  shift
 
-▸ **shift**(): *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+▸ **shift**(): *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1249
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1249
 
 Removes the first element from an array and returns it.
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline) | undefined*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline) | undefined*
 
 ___
 
 ###  slice
 
-▸ **slice**(`start?`: undefined | number, `end?`: undefined | number): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **slice**(`start?`: undefined | number, `end?`: undefined | number): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1255
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1255
 
 Returns a section of an array.
 
@@ -1100,7 +1099,7 @@ Name | Type | Description |
 `start?` | undefined &#124; number | The beginning of the specified portion of the array. |
 `end?` | undefined &#124; number | The end of the specified portion of the array.  |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 ___
 
@@ -1110,7 +1109,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1302
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1302
 
 Determines whether the specified callback function returns true for any element of an array.
 
@@ -1120,15 +1119,15 @@ Determines whether the specified callback function returns true for any element 
 
 A function that accepts up to three arguments. The some method calls the callbackfn function for each element in array1 until the callbackfn returns true, or until the end of the array.
 
-▸ (`value`: [Micheline](../modules/_sotez_.md#micheline), `index`: number, `array`: [Micheline](../modules/_sotez_.md#micheline)[]): *unknown*
+▸ (`value`: [Micheline](../modules/_tez_client_.md#micheline), `index`: number, `array`: [Micheline](../modules/_tez_client_.md#micheline)[]): *unknown*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`value` | [Micheline](../modules/_sotez_.md#micheline) |
+`value` | [Micheline](../modules/_tez_client_.md#micheline) |
 `index` | number |
-`array` | [Micheline](../modules/_sotez_.md#micheline)[] |
+`array` | [Micheline](../modules/_tez_client_.md#micheline)[] |
 
 ▪`Optional`  **thisArg**: *any*
 
@@ -1144,7 +1143,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1260
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1260
 
 Sorts an array.
 
@@ -1160,11 +1159,11 @@ ___
 
 ###  splice
 
-▸ **splice**(`start`: number, `deleteCount?`: undefined | number): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **splice**(`start`: number, `deleteCount?`: undefined | number): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1266
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1266
 
 Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
 
@@ -1175,13 +1174,13 @@ Name | Type | Description |
 `start` | number | The zero-based location in the array from which to start removing elements. |
 `deleteCount?` | undefined &#124; number | The number of elements to remove.  |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
-▸ **splice**(`start`: number, `deleteCount`: number, ...`items`: [Micheline](../modules/_sotez_.md#micheline)[]): *[Micheline](../modules/_sotez_.md#micheline)[]*
+▸ **splice**(`start`: number, `deleteCount`: number, ...`items`: [Micheline](../modules/_tez_client_.md#micheline)[]): *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1273
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1273
 
 Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
 
@@ -1191,9 +1190,9 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `start` | number | The zero-based location in the array from which to start removing elements. |
 `deleteCount` | number | The number of elements to remove. |
-`...items` | [Micheline](../modules/_sotez_.md#micheline)[] | Elements to insert into the array in place of the deleted elements.  |
+`...items` | [Micheline](../modules/_tez_client_.md#micheline)[] | Elements to insert into the array in place of the deleted elements.  |
 
-**Returns:** *[Micheline](../modules/_sotez_.md#micheline)[]*
+**Returns:** *[Micheline](../modules/_tez_client_.md#micheline)[]*
 
 ___
 
@@ -1203,7 +1202,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1217
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1217
 
 Returns a string representation of an array. The elements are converted to string using their toLocalString methods.
 
@@ -1217,7 +1216,7 @@ ___
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1213
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1213
 
 Returns a string representation of an array.
 
@@ -1227,11 +1226,11 @@ ___
 
 ###  unshift
 
-▸ **unshift**(...`items`: [Micheline](../modules/_sotez_.md#micheline)[]): *number*
+▸ **unshift**(...`items`: [Micheline](../modules/_tez_client_.md#micheline)[]): *number*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1278
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts:1278
 
 Inserts new elements at the start of an array.
 
@@ -1239,7 +1238,7 @@ Inserts new elements at the start of an array.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`...items` | [Micheline](../modules/_sotez_.md#micheline)[] | Elements to insert at the start of the Array.  |
+`...items` | [Micheline](../modules/_tez_client_.md#micheline)[] | Elements to insert at the start of the Array.  |
 
 **Returns:** *number*
 
@@ -1247,12 +1246,12 @@ ___
 
 ###  values
 
-▸ **values**(): *IterableIterator‹[Micheline](../modules/_sotez_.md#micheline)›*
+▸ **values**(): *IterableIterator‹[Micheline](../modules/_tez_client_.md#micheline)›*
 
 *Inherited from void*
 
-Defined in /Users/andrewkishino/Workspace/sotez/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:67
+Defined in /Users/odedleiba/MyWorkspace/tezos-thresh-wallet/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.iterable.d.ts:67
 
 Returns an iterable of values in the array
 
-**Returns:** *IterableIterator‹[Micheline](../modules/_sotez_.md#micheline)›*
+**Returns:** *IterableIterator‹[Micheline](../modules/_tez_client_.md#micheline)›*

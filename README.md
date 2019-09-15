@@ -3,14 +3,14 @@
 Tezos wallet and JS SDK powered by two-party EdDSA (Ed25519).
 
 ## Installation
-```js
+```sh
 npm install @kzen-networks/tezos-thresh-wallet
 ```
 
 ## Usage
 Server (acts as the co-signer in the two-party signing protocol):
 ```js
-const { Ed25519Party1 } = require('../build/node');
+import { Ed25519Party1 } from '@kzen-networks/tezos-thresh-wallet';
 
 new Ed25519Party1().launchServer();
 ```

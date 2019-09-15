@@ -58,7 +58,7 @@ program
       new Ed25519Party2(P1_ENDPOINT),
       new Ed25519Party2Share(p2Share.key_pair, p2Share.agg_pub_key, p2Share.id),
     );
-    const amount = xtzAmount * MUTEZ_IN_XTZ;
+    const amount = parseFloat(xtzAmount) * MUTEZ_IN_XTZ;
     const { hash } = await sotez.transfer({
       source: from,
       to,
@@ -66,7 +66,7 @@ program
     });
     console.log(`Injected transfer operation hash: ${hash}`);
 
-    // // Await confirmation of included operation
+    // Await confirmation of included operation
     const transferBlock = await sotez.awaitOperation(hash);
     console.log(`Operation found in block ${transferBlock}`);
   });

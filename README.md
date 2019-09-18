@@ -52,7 +52,8 @@ Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Do
 npm install
 npm run build
 ```
-Built files will be located in the `build/node` and `build/web` folders.
+Compiled files will be located in the `build` folder.
+Distribution files will be located in the `dist/node` and `dist/web` folders.
 
 ## License
 MIT

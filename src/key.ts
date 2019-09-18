@@ -2,19 +2,26 @@ import * as sodium from 'libsodium-wrappers';
 import * as pbkdf2 from 'pbkdf2';
 import * as elliptic from 'elliptic';
 import toBuffer from 'typedarray-to-buffer';
+import ledger from 'ledger';
 import utility from './utility';
 import { prefix } from './constants';
 
 /**
  * Creates a key object from a base58 encoded key.
  * @class Key
- * @param {String} key A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string
- * @param {String} passphrase The passphrase used if the key provided is an encrypted private key or a fundraiser key
- * @param {String} email Email used if a fundraiser key is passed
- * ```javascript
- * const key = new Key('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
+ * @param {Object} KeyConstructor
+ * @param {string} [KeyConstructor.key] A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
+ *   providing a key will import a ledger public key.
+ * @param {string} [KeyConstructor.passphrase] The passphrase used if the key provided is an encrypted private key or a fundraiser key
+ * @param {string} [KeyConstructor.email] Email used if a fundraiser key is passed
+ * @param {string} [KeyConstructor.ledgerPath="44'/1729'/0'/0'"] Ledger derivation path
+ * @param {number} [KeyConstructor.ledgerCurve=0x00] Ledger curve
+ * @example
+ * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
  * await key.ready;
- * ```
+ *
+ * const key = new Key({ ledgerPath: "44'/1729'/0'/1'" });
+ * await key.ready;
  */
 export default class Key {
   _curve: string;
@@ -26,12 +33,22 @@ export default class Key {
   _ledgerCurve: number;
   ready: Promise<void>;
 
-  constructor(key: string, passphrase?: string, email?: string) {
-    this._isLedger = false;
-    this._ledgerPath = "44'/1729'/0'/0'";
-    this._ledgerCurve = 0x00;
+  constructor({
+    key,
+    passphrase,
+    email,
+    ledgerPath = "44'/1729'/0'/0'",
+    ledgerCurve = 0x00,
+  }: { key?: string, passphrase?: string, email?: string, ledgerPath?: string, ledgerCurve?: number } = {}) {
+    if (ledgerCurve !== 0x00) {
+      throw new Error('Only ed25519 curve (0x00) is supported for ledger at the moment.');
+    }
+    this._isLedger = !key;
+    this._ledgerPath = ledgerPath;
+    this._ledgerCurve = ledgerCurve;
+
     this.ready = new Promise((resolve) => {
-      this.initialize(key, passphrase, email, resolve);
+      this.initialize({ key, passphrase, email }, resolve);
     });
   }
 
@@ -66,14 +83,14 @@ export default class Key {
   /**
    * @memberof Key
    * @description Returns the public key
-   * @returns {String} The public key associated with the private key
+   * @returns {string} The public key associated with the private key
    */
   publicKey = (): string => utility.b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
 
   /**
    * @memberof Key
    * @description Returns the secret key
-   * @returns {String} The secret key associated with this key, if available
+   * @returns {string} The secret key associated with this key, if available
    */
   secretKey = (): string => {
     if (!this._secretKey) {
@@ -92,7 +109,7 @@ export default class Key {
   /**
    * @memberof Key
    * @description Returns public key hash for this key
-   * @returns {String} The public key hash for this key
+   * @returns {string} The public key hash for this key
    */
   publicKeyHash = (): string => {
     const prefixMap: { [key: string]: Uint8Array } = {
@@ -105,8 +122,16 @@ export default class Key {
     return utility.b58cencode(sodium.crypto_generichash(20, this._publicKey), _prefix);
   }
 
-  initialize = async (key: string, passphrase?: string, email?: string, ready?: any) => {
+  initialize = async ({ key, passphrase, email }: { key?: string, passphrase?: string, email?: string }, ready: any): Promise<void> => {
     await sodium.ready;
+
+    if (this._isLedger || !key) {
+      ({ publicKey: key } = await ledger.getAddress({
+        path: this._ledgerPath,
+        displayConfirm: true,
+        curve: this._ledgerCurve,
+      }));
+    }
 
     if (email) {
       if (!passphrase) {
@@ -196,11 +221,29 @@ export default class Key {
   /**
    * @memberof Key
    * @description Sign a raw sequence of bytes
-   * @param {String} bytes Sequence of bytes, raw format or hexadecimal notation
+   * @param {string} bytes Sequence of bytes, raw format or hexadecimal notation
    * @param {Uint8Array} watermark The watermark bytes
-   * @returns {String} The public key hash for this key
+   * @returns {Promise} The signature object
    */
-  sign = async (bytes: string, watermark: Uint8Array) => {
+  sign = async (bytes: string, watermark: Uint8Array): Promise<{ bytes: string, sig: string, prefixSig: string, sbytes: string }> => {
+    if (this._isLedger) {
+      const signature = await ledger.signOperation({
+        path: this._ledgerPath,
+        rawTxHex: bytes,
+        curve: this._ledgerCurve,
+        watermark,
+      });
+      const signatureBuffer = utility.hex2buf(signature);
+      const sbytes = bytes + signature;
+
+      return {
+        bytes,
+        sig: utility.b58cencode(signatureBuffer, prefix.sig),
+        prefixSig: utility.b58cencode(signatureBuffer, prefix[`${this._curve}sig`]),
+        sbytes,
+      };
+    }
+
     let bb = utility.hex2buf(bytes);
     if (typeof watermark !== 'undefined') {
       bb = utility.mergebuf(watermark, bb);

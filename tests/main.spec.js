@@ -1,4 +1,9 @@
-import Sotez, { utility, crypto, Key } from '../index';
+const {
+  default: Sotez,
+  utility,
+  crypto,
+  Key,
+} = require('../index');
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -164,7 +169,7 @@ describe('sotez', () => {
     };
 
     test('import ed25519 secret key', async () => {
-      const key = new Key(KEY1.sk);
+      const key = new Key({ key: KEY1.sk });
       await key.ready;
 
       expect(key.publicKey()).toBe(KEY1.pk);
@@ -173,7 +178,7 @@ describe('sotez', () => {
     });
 
     test('import encrypted ed25519 secret key', async () => {
-      const key = new Key(KEY1.esk, 'password');
+      const key = new Key({ key: KEY1.esk, passphrase: 'password' });
       await key.ready;
 
       expect(key.publicKey()).toBe(KEY1.pk);
@@ -182,7 +187,7 @@ describe('sotez', () => {
     });
 
     test('import secp256k1 secret key', async () => {
-      const key = new Key(KEY3.sk);
+      const key = new Key({ key: KEY3.sk });
       await key.ready;
 
       expect(key.publicKey()).toBe(KEY3.pk);
@@ -191,7 +196,7 @@ describe('sotez', () => {
     });
 
     test('import p256 secret key', async () => {
-      const key = new Key(KEY4.sk);
+      const key = new Key({ key: KEY4.sk });
       await key.ready;
 
       expect(key.publicKey()).toBe(KEY4.pk);
@@ -200,7 +205,11 @@ describe('sotez', () => {
     });
 
     test('import fundraiser account', async () => {
-      const key = new Key(FUNDRAISER_ACCOUNT.mnemonic.join(' '), FUNDRAISER_ACCOUNT.password, FUNDRAISER_ACCOUNT.email);
+      const key = new Key({
+        key: FUNDRAISER_ACCOUNT.mnemonic.join(' '),
+        passphrase: FUNDRAISER_ACCOUNT.password,
+        email: FUNDRAISER_ACCOUNT.email,
+      });
       await key.ready;
 
       expect(key.publicKey()).toBe(KEY2.pk);
@@ -209,7 +218,7 @@ describe('sotez', () => {
     });
 
     test('sign ed25519', async () => {
-      const key = new Key(TEST_KEYS.sk);
+      const key = new Key({ key: TEST_KEYS.sk });
       await key.ready;
 
       const {
@@ -230,7 +239,7 @@ describe('sotez', () => {
     });
 
     test('sign secp256k1', async () => {
-      const key = new Key(KEY3.sk);
+      const key = new Key({ key: KEY3.sk });
       await key.ready;
 
       const {
@@ -251,7 +260,7 @@ describe('sotez', () => {
     });
 
     test('sign p256', async () => {
-      const key = new Key(KEY4.sk);
+      const key = new Key({ key: KEY4.sk });
       await key.ready;
 
       const {

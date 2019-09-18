@@ -34,14 +34,13 @@ export default class Tezos {
   getAddress(
     path: string,
     boolDisplay?: boolean,
-    curve?: number,
+    curve: number = 0x00,
   ): Promise<{
       publicKey: string;
       address: string;
     }> {
     const paths = splitPath(path);
-    curve = curve || 0x00; // Defaults to Ed25519
-    const buffer = Buffer.alloc(1 + paths.length * 4);
+    const buffer = Buffer.alloc(paths.length * 4 + 1);
     buffer[0] = paths.length;
     paths.forEach((element, index) => {
       buffer.writeUInt32BE(element, 1 + 4 * index);
@@ -58,7 +57,6 @@ export default class Tezos {
         const publicKeyLength = response[0];
         const publicKey = response
           .slice(1, 1 + publicKeyLength);
-        // @ts-ignore
         return encodePublicKey(publicKey, curve);
       });
   }
@@ -66,29 +64,23 @@ export default class Tezos {
   signOperation(
     path: string,
     rawTxHex: string,
-    curve?: number,
-  ): Promise<{
-      signature: string;
-    }> {
+    curve: number = 0x00,
+  ): Promise<{ signature: string }> {
     const paths = splitPath(path);
     let offset = 0;
     const rawTx = Buffer.from(rawTxHex, 'hex');
     const toSend = [];
     let response: any;
-    curve = curve || 0x00;
 
-    // Initial key setting
-    {
-      const buffer = Buffer.alloc(paths.length * 4 + 1);
-      buffer[0] = paths.length;
-      paths.forEach((element, index) => {
-        buffer.writeUInt32BE(element, 1 + 4 * index);
-      });
-      toSend.push(buffer);
-    }
+    const buffer = Buffer.alloc(paths.length * 4 + 1);
+    buffer[0] = paths.length;
+    paths.forEach((element, index) => {
+      buffer.writeUInt32BE(element, 1 + 4 * index);
+    });
+    toSend.push(buffer);
 
     while (offset !== rawTx.length) {
-      const maxChunkSize = 255;
+      const maxChunkSize = 230;
       let chunkSize;
       if (offset + maxChunkSize >= rawTx.length) {
         chunkSize = rawTx.length - offset;
@@ -114,7 +106,7 @@ export default class Tezos {
           response = apduResponse;
         });
     }).then(() => {
-      const signature = response.slice(0, response.length - 2).toString('hex');
+      const signature = response.slice(0, -2).toString('hex');
       return { signature };
     });
   }

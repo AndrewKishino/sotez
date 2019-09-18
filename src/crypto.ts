@@ -29,13 +29,12 @@ interface Signed {
 
 /**
  * @description Extract key pairs from a secret key
- * @param {String} sk The secret key to extract key pairs from
- * @param {String} [password] The password used to encrypt the sk
+ * @param {string} sk The secret key to extract key pairs from
+ * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The extracted key pairs
- * ```javascript
+ * @example
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
- * ```
  */
 const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
   try {
@@ -100,14 +99,14 @@ const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => 
 
 /**
  * @description Generate a mnemonic
- * @returns {String} The generated mnemonic
+ * @returns {string} The generated mnemonic
  */
 const generateMnemonic = (): string => bip39GenerateMnemonic(160);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
- * @param {String} address The address to check
- * @returns {Boolean} Whether address is valid or not
+ * @param {string} address The address to check
+ * @returns {boolean} Whether address is valid or not
  */
 const checkAddress = (address: string): boolean => {
   try {
@@ -120,13 +119,12 @@ const checkAddress = (address: string): boolean => {
 
 /**
  * @description Generate a new key pair given a mnemonic and passphrase
- * @param {String} mnemonic The mnemonic seed
- * @param {String} passphrase The passphrase used to encrypt the seed
+ * @param {string} mnemonic The mnemonic seed
+ * @param {string} passphrase The passphrase used to encrypt the seed
  * @returns {Promise} The generated key pair
- * ```javascript
+ * @example
  * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
- * ```
  */
 const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
   try {
@@ -149,17 +147,16 @@ const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysM
 
 /**
  * @description Sign bytes
- * @param {String} bytes The bytes to sign
- * @param {String} sk The secret key to sign the bytes with
+ * @param {string} bytes The bytes to sign
+ * @param {string} sk The secret key to sign the bytes with
  * @param {Object} wm The watermark bytes
- * @param {String} [password] The password used to encrypt the sk
+ * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
- * ```javascript
+ * @example
  * import { watermark } from 'sotez';
  *
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
- * ```
  */
 const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
   try {

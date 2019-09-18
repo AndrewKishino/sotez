@@ -3,8 +3,7 @@ import AbstractTezModule from './tez-core';
 import Key from './key';
 import forge from './forge';
 import utility from './utility';
-import ledger from 'ledger';
-import { prefix, watermark, protocols } from './constants';
+import { watermark, protocols } from './constants';
 
 interface KeyInterface {
   _publicKey: Buffer;
@@ -18,7 +17,7 @@ interface KeyInterface {
   ledgerCurve: number;
   ready: Promise<void>;
   curve: string;
-  initialize: (key: string, passphrase?: string, email?: string, resolve?: any) => Promise<void>;
+  initialize: (keyParams: { key?: string, passphrase?: string, email?: string }, resolve: any) => Promise<void>;
   publicKey: () => string;
   secretKey: () => string;
   publicKeyHash: () => string;
@@ -168,7 +167,7 @@ interface RpcParams {
   amount: number;
   init?: string;
   fee?: number;
-  parameter?: string;
+  parameters?: string;
   gasLimit?: number;
   storageLimit?: number;
   mutez?: boolean;
@@ -224,7 +223,7 @@ interface Signed {
 
 /**
  * Main Sotez Library
- * ```javascript
+ * @example
  * import Sotez from 'sotez';
  * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275 })
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
@@ -232,7 +231,6 @@ interface Signed {
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   amount: '1000000',
  * });
- * ```
  */
 export default class Sotez extends AbstractTezModule {
   _localForge: boolean;
@@ -303,56 +301,38 @@ export default class Sotez extends AbstractTezModule {
 
   /**
   * @description Import a secret key
-  * @param {String} key The secret key
-  * @param {String} [passphrase] The passphrase of the encrypted key
-  * @param {String} [email] The email associated with the fundraiser account
-  * ```javascript
-  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
-  * ```
+  * @param {string} key The secret key
+  * @param {string} [passphrase] The passphrase of the encrypted key
+  * @param {string} [email] The email associated with the fundraiser account
+  * @example
+  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y')
   */
   importKey = async (key: string, passphrase?: string, email?: string) => {
-    this.key = new Key(key, passphrase, email);
+    this.key = new Key({ key, passphrase, email });
     await this.key.ready;
   }
 
   /**
    * @description Import a ledger public key
-   * @param {String} [path="44'/1729'/0'/0'"] The ledger path
-   * @param {Number} [curve=0x00] The curve parameter
-   * ```javascript
+   * @param {string} [path="44'/1729'/0'/0'"] The ledger path
+   * @param {number} [curve=0x00] The curve parameter
+   * @example
    * await sotez.importLedger();
-   * ```
    */
   importLedger = async (path: string = "44'/1729'/0'/0'", curve: number = 0x00) => {
-    if (curve !== 0x00) {
-      throw new Error('Only ed25519 curve (0x00) is supported for ledger at the moment.');
-    }
-    const { publicKey } = await ledger.getAddress({
-      path,
-      displayConfirm: true,
-      curve,
-    });
-
-    this.key = new Key(publicKey);
+    this.key = new Key({ ledgerPath: path, ledgerCurve: curve });
     await this.key.ready;
-
-    if (this.key) {
-      this.key.isLedger = true;
-      this.key.ledgerPath = path;
-      this.key.ledgerCurve = curve;
-    }
   }
 
   /**
    * @description Queries a node given a path and payload
-   * @param {String} path The RPC path to query
-   * @param {String} payload The payload of the query
-   * @param {String} method The request method. Either 'GET' or 'POST'
+   * @param {string} path The RPC path to query
+   * @param {string} payload The payload of the query
+   * @param {string} method The request method. Either 'GET' or 'POST'
    * @returns {Promise} The response of the query
-   * ```javascript
+   * @example
    * sotez.query(`/chains/main/blocks/head`)
    *  .then(head => console.log(head));
-   * ```
    */
   query = (path: string, payload?: any, method?: string): Promise<any> => {
     if (typeof payload === 'undefined') {
@@ -411,22 +391,21 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Originate a new account
    * @param {Object} paramObject The parameters for the origination
-   * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
-   * @param {Boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
-   * @param {Boolean} [paramObject.delegatable] Whether the new account is delegatable
-   * @param {String} [paramObject.delegate] The delegate for the new account
-   * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+   * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
+   * @param {boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
+   * @param {boolean} [paramObject.delegatable] Whether the new account is delegatable
+   * @param {string} [paramObject.delegate] The delegate for the new account
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.storageLimit=257] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
-   * ```javascript
+   * @example
    * sotez.account({
    *   balance: 10,
    *   spendable: true,
    *   delegatable: true,
    *   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    * }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]));
-   * ```
    */
   account = async ({
     balance,
@@ -457,12 +436,11 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the balance for a contract
-   * @param {String} address The contract for which to retrieve the balance
+   * @param {string} address The contract for which to retrieve the balance
    * @returns {Promise} The balance of the contract
-   * ```javascript
+   * @example
    * sotez.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(balance => console.log(balance));
-   * ```
    */
   getBalance = (address: string): Promise<string> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/balance`)
@@ -470,12 +448,11 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the delegate for a contract
-   * @param {String} address The contract for which to retrieve the delegate
+   * @param {string} address The contract for which to retrieve the delegate
    * @returns {Promise} The delegate of a contract, if any
-   * ```javascript
+   * @example
    * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(delegate => console.log(delegate));
-   * ```
    */
   getDelegate = (address: string): Promise<string | boolean> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/delegate`)
@@ -487,12 +464,11 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the manager for a contract
-   * @param {String} address The contract for which to retrieve the manager
+   * @param {string} address The contract for which to retrieve the manager
    * @returns {Promise} The manager of a contract
-   * ```javascript
+   * @example
    * sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({ manager, key }) => console.log(manager, key));
-   * ```
    */
   getManager = (address: string): Promise<{ manager: string; key: string }> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/manager_key`)
@@ -500,12 +476,11 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the counter for an contract
-   * @param {String} address The contract for which to retrieve the counter
+   * @param {string} address The contract for which to retrieve the counter
    * @returns {Promise} The counter of a contract, if any
-   * ```javascript
+   * @example
    * sotez.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(counter => console.log(counter));
-   * ```
    */
   getCounter = (address: string): Promise<string> => (
     this.query(`/chains/${this.chain}/blocks/head/context/contracts/${address}/counter`)
@@ -513,9 +488,9 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the baker information for an address
-   * @param {String} address The contract for which to retrieve the baker information
+   * @param {string} address The contract for which to retrieve the baker information
    * @returns {Promise} The information of the delegate address
-   * ```javascript
+   * @example
    * sotez.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({
    *     balance,
@@ -536,7 +511,6 @@ export default class Sotez extends AbstractTezModule {
    *     deactivated,
    *     grace_period,
    *   ));
-   * ```
    */
   getBaker = (address: string): Promise<Baker> => (
     this.query(`/chains/${this.chain}/blocks/head/context/delegates/${address}`)
@@ -545,9 +519,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Get the header of the current head
    * @returns {Promise} The whole block header
-   * ```javascript
+   * @example
    * sotez.getHeader().then(header => console.log(header));
-   * ```
    */
   getHeader = (): Promise<Header> => (
     this.query(`/chains/${this.chain}/blocks/head/header`)
@@ -556,9 +529,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Get the metadata of the current head
    * @returns {Promise} The head block metadata
-   * ```javascript
+   * @example
    * sotez.getHeadMetadata().then(metadata => console.log(metadata));
-   * ```
    */
   getHeadMetadata = (): Promise<Header> => (
     this.query(`/chains/${this.chain}/blocks/head/metadata`)
@@ -567,27 +539,24 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Get the current head block of the chain
    * @returns {Promise} The current head block
-   * ```javascript
+   * @example
    * sotez.getHead().then(head => console.log(head));
-   * ```
    */
   getHead = (): Promise<Head> => this.query(`/chains/${this.chain}/blocks/head`)
 
   /**
    * @description Get the current head block hash of the chain
    * @returns {Promise} The block's hash, its unique identifier
-   * ```javascript
+   * @example
    * sotez.getHeadHash().then(headHash => console.log(headHash))
-   * ```
    */
   getHeadHash = (): Promise<string> => this.query(`/chains/${this.chain}/blocks/head/hash`);
 
   /**
    * @description Ballots casted so far during a voting period
    * @returns {Promise} Ballots casted so far during a voting period
-   * ```javascript
+   * @example
    * sotez.getBallotList().then(ballotList => console.log(ballotList));
-   * ```
    */
   getBallotList = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballot_list`)
@@ -596,12 +565,11 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description List of proposals with number of supporters
    * @returns {Promise} List of proposals with number of supporters
-   * ```javascript
+   * @example
    * sotez.getProposals().then(proposals => {
    *   console.log(proposals[0][0], proposals[0][1])
    *   console.log(proposals[1][0], proposals[1][1])
    * );
-   * ```
    */
   getProposals = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/proposals`)
@@ -610,9 +578,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Sum of ballots casted so far during a voting period
    * @returns {Promise} Sum of ballots casted so far during a voting period
-   * ```javascript
+   * @example
    * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass));
-   * ```
    */
   getBallots = (): Promise<{ yay: number; nay: number; pass: number }> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/ballots`)
@@ -621,9 +588,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description List of delegates with their voting weight, in number of rolls
    * @returns {Promise} The ballots of the current voting period
-   * ```javascript
+   * @example
    * sotez.getListings().then(listings => console.log(listings));
-   * ```
    */
   getListings = (): Promise<any[]> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/listings`)
@@ -632,9 +598,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Current proposal under evaluation
    * @returns {Promise} Current proposal under evaluation
-   * ```javascript
+   * @example
    * sotez.getCurrentProposal().then(currentProposal => console.log(currentProposal));
-   * ```
    */
   getCurrentProposal = (): Promise<string> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_proposal`)
@@ -643,9 +608,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Current period kind
    * @returns {Promise} Current period kind
-   * ```javascript
+   * @example
    * sotez.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod));
-   * ```
    */
   getCurrentPeriod = () => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_period_kind`)
@@ -654,9 +618,8 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Current expected quorum
    * @returns {Promise} Current expected quorum
-   * ```javascript
+   * @example
    * sotez.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum));
-   * ```
    */
   getCurrentQuorum = (): Promise<number> => (
     this.query(`/chains/${this.chain}/blocks/head/votes/current_quorum`)
@@ -664,14 +627,13 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Check for the inclusion of an operation in new blocks
-   * @param {String} hash The operation hash to check
-   * @param {Number} [interval=10] The interval to check new blocks
-   * @param {Number} [timeout=180] The time before the operation times out
+   * @param {string} hash The operation hash to check
+   * @param {number} [interval=10] The interval to check new blocks
+   * @param {number} [timeout=180] The time before the operation times out
    * @returns {Promise} The hash of the block in which the operation was included
-   * ```javascript
+   * @example
    * sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
    *  .then((hash) => console.log(hash));
-   * ```
    */
   awaitOperation = (hash: string, interval: number = 10, timeout: number = 180): Promise<string> => {
     if (timeout <= 0) {
@@ -718,7 +680,7 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Get the current head block hash of the chain
-   * @param {String} path The path to query
+   * @param {string} path The path to query
    * @param {Object} payload The payload of the request
    * @returns {Promise} The response of the rpc call
    */
@@ -727,9 +689,9 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Prepares an operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {Object|Array} paramObject.operation The operation to include in the transaction
+   * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} Object containing the prepared operation
-   * ```javascript
+   * @example
    * sotez.prepareOperation({
    *   operation: {
    *     kind: 'transaction',
@@ -740,7 +702,6 @@ export default class Sotez extends AbstractTezModule {
    *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
-   * ```
    */
   prepareOperation = ({ operation, source }: OperationParams): Promise<ForgedBytes> => {
     let counter: number;
@@ -869,9 +830,9 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Simulate an operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {Object|Array} paramObject.operation The operation to include in the transaction
+   * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} The simulated operation result
-   * ```javascript
+   * @example
    * sotez.simulateOperation({
    *   operation: {
    *     kind: 'transaction',
@@ -882,7 +843,6 @@ export default class Sotez extends AbstractTezModule {
    *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   },
    * }).then(result => console.log(result));
-   * ```
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> => (
     this.prepareOperation({ operation, source }).then(fullOp => (
@@ -894,9 +854,11 @@ export default class Sotez extends AbstractTezModule {
    * @description Send an operation
    * @param {Object} paramObject The parameters for the operation
    * @param {Object|Array} paramObject.operation The operation to include in the transaction
-   * @param {Boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
+   * @param {string} [paramObject.source] The source address of the operation
+   * @param {boolean} [paramObject.skipSignature=false] Use default signature for specific transactions
+   * @param {boolean} [paramObject.skipPrevalidation=false] Skip prevalidation before injecting operation
    * @returns {Promise} Object containing the injected operation hash
-   * ```javascript
+   * @example
    * const operation = {
    *   kind: 'transaction',
    *   fee: '1420',
@@ -909,22 +871,11 @@ export default class Sotez extends AbstractTezModule {
    * sotez.sendOperation({ operation }).then(result => console.log(result));
    *
    * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
-   * ```
    */
   sendOperation = async ({ operation, source, skipPrevalidation = false, skipSignature = false }: OperationParams): Promise<any> => {
     const fullOp: ForgedBytes = await this.prepareOperation({ operation, source });
 
-    if (this.key && this.key.isLedger) {
-      const signature = await ledger.signOperation({
-        path: this.key.ledgerPath,
-        rawTxHex: fullOp.opbytes,
-        curve: this.key.ledgerCurve,
-      });
-      const sig = utility.hex2buf(signature);
-      const prefixSig = utility.b58cencode(sig, prefix[`${this.key.curve}sig`]);
-      fullOp.opbytes += signature;
-      fullOp.opOb.signature = prefixSig;
-    } else if (skipSignature) {
+    if (skipSignature) {
       fullOp.opbytes += '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       fullOp.opOb.signature = 'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
     } else {
@@ -953,7 +904,7 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Inject an operation
    * @param {Object} opOb The operation object
-   * @param {String} sopbytes The signed operation bytes
+   * @param {string} sopbytes The signed operation bytes
    * @returns {Promise} Object containing the injected operation hash
    */
   inject = (opOb: OperationObject, sopbytes: string): Promise<any> => {
@@ -974,8 +925,7 @@ export default class Sotez extends AbstractTezModule {
           }
         }
         if (errors.length) {
-          // @ts-ignore
-          throw new Error(JSON.stringify({ error: 'Operation Failed', errors }));
+          throw new Error(JSON.stringify({ error: 'Operation Failed', errors }, null, 2));
         }
         return this.query('/injection/operation', sopbytes);
       }).then(hash => ({
@@ -986,7 +936,7 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Inject an operation without prevalidation
-   * @param {String} sopbytes The signed operation bytes
+   * @param {string} sopbytes The signed operation bytes
    * @returns {Promise} Object containing the injected operation hash
    */
   silentInject = (sopbytes: string): Promise<any> => (
@@ -996,29 +946,28 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Transfer operation
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} paramObject.to The address of the recipient
-   * @param {Number} paramObject.amount The amount in tez to transfer for the initial balance
-   * @param {String} [paramObject.source] The source address of the transfer
-   * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {String} [paramObject.parameter] The parameter for the transaction
-   * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {Number} [paramObject.storageLimit=300] The storage limit to set for the transaction
-   * @param {Number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
+   * @param {string} paramObject.to The address of the recipient
+   * @param {number} paramObject.amount The amount in tez to transfer for the initial balance
+   * @param {string} [paramObject.source] The source address of the transfer
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {string} [paramObject.parameters] The parameter for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.storageLimit=300] The storage limit to set for the transaction
+   * @param {number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
    * @returns {Promise} Object containing the injected operation hash
-   * ```javascript
+   * @example
    * sotez.transfer({
    *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    *   amount: '1000000',
    *   fee: '1420',
    * }).then(result => console.log(result));
-   * ```
    */
   transfer = ({
     to,
     amount,
     source,
     fee = this.defaultFee,
-    parameter,
+    parameters,
     gasLimit = 10600,
     storageLimit = 300,
     mutez = false,
@@ -1031,11 +980,11 @@ export default class Sotez extends AbstractTezModule {
       amount: mutez ? utility.mutez(amount) : amount,
       destination: to,
     };
-    if (parameter) {
-      if (typeof parameter === 'string') {
-        operation.parameters = utility.sexp2mic(parameter);
-      } else{
-        operation.parameters = parameter;
+    if (parameters) {
+      if (typeof parameters === 'string') {
+        operation.parameters = utility.sexp2mic(parameters);
+      } else {
+        operation.parameters = parameters;
       }
     }
     return this.sendOperation({ operation: [operation], source });
@@ -1044,12 +993,11 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Activate an account
    * @param {Object} pkh The public key hash of the account
-   * @param {String} secret The secret to activate the account
+   * @param {string} secret The secret to activate the account
    * @returns {Promise} Object containing the injected operation hash
-   * ```javascript
+   * @example
    * sotez.activate(pkh, secret)
    *   .then((activateOperation) => console.log(activateOperation));
-   * ```
    */
   activate = (pkh: string, secret: string): Promise<any> => {
     const operation = {
@@ -1063,15 +1011,15 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Originate a new contract
    * @param {Object} paramObject The parameters for the operation
-   * @param {Number} paramObject.balance The amount in tez to transfer for the initial balance
-   * @param {String | Micheline} paramObject.code The code to deploy for the contract
-   * @param {String | Micheline} paramObject.init The initial storage of the contract
-   * @param {Boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
-   * @param {Boolean} [paramObject.delegatable=false] Whether the new account is delegatable
-   * @param {String} [paramObject.delegate] The delegate for the new account
-   * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {Number} [paramObject.storageLimit=257] The storage limit to set for the transaction
+   * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
+   * @param {string | Micheline} paramObject.code The code to deploy for the contract
+   * @param {string | Micheline} paramObject.init The initial storage of the contract
+   * @param {boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
+   * @param {boolean} [paramObject.delegatable=false] Whether the new account is delegatable
+   * @param {string} [paramObject.delegate] The delegate for the new account
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.storageLimit=257] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    */
   originate = async ({
@@ -1128,10 +1076,10 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Set a delegate for an account
    * @param {Object} paramObject The parameters for the operation
-   * @param {String} [paramObject.delegate] The delegate for the new account
-   * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+   * @param {string} [paramObject.delegate] The delegate for the new account
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    */
   setDelegate = async ({
@@ -1155,9 +1103,9 @@ export default class Sotez extends AbstractTezModule {
   /**
    * @description Register an account as a delegate
    * @param {Object} paramObject The parameters for the operation
-   * @param {Number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {Number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {Number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    */
   registerDelegate = async ({
@@ -1177,8 +1125,8 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Typechecks the provided code
-   * @param {String | Micheline} code The code to typecheck
-   * @param {Number} gas The the gas limit
+   * @param {string | Micheline} code The code to typecheck
+   * @param {number} gas The the gas limit
    * @returns {Promise} Typecheck result
    */
   typecheckCode = (code: string | Micheline, gas: number = 10000): Promise<any> => {
@@ -1198,8 +1146,8 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Serializes a piece of data to a binary representation
-   * @param {String | Micheline} data
-   * @param {String | Micheline} type
+   * @param {string | Micheline} data
+   * @param {string | Micheline} type
    * @returns {Promise} Serialized data
    */
   packData = (data: string | Micheline, type: string | Micheline): Promise<any> => {
@@ -1229,8 +1177,8 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Typechecks data against a type
-   * @param {String | Micheline} data
-   * @param {String | Micheline} type
+   * @param {string | Micheline} data
+   * @param {string | Micheline} type
    * @returns {Promise} Typecheck result
    */
   typecheckData = (data: string | Micheline, type: string | Micheline): Promise<any> => {
@@ -1260,11 +1208,11 @@ export default class Sotez extends AbstractTezModule {
 
   /**
    * @description Runs or traces code against an input and storage
-   * @param {String | Micheline} code Code to run
-   * @param {Number} amount Amount in tez to send
-   * @param {String | Micheline} input Input to run though code
-   * @param {String | Micheline} storage State of storage
-   * @param {Boolean} [trace=false] Whether to trace
+   * @param {string | Micheline} code Code to run
+   * @param {number} amount Amount in tez to send
+   * @param {string | Micheline} input Input to run though code
+   * @param {string | Micheline} storage State of storage
+   * @param {boolean} [trace=false] Whether to trace
    * @returns {Promise} Run results
    */
   runCode = (code: string | Micheline, amount: number, input: string, storage: string, trace: boolean = false): Promise<any> => {

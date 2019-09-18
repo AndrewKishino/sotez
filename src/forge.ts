@@ -63,7 +63,7 @@ interface MichelineArray extends Array<Micheline> { }
 
 /**
  * @description Convert bytes from Int32
- * @param {Number} num Number to convert to bytes
+ * @param {number} num Number to convert to bytes
  * @returns {Object} The converted number
  */
 const toBytesInt32 = (num: number): any => {
@@ -80,8 +80,8 @@ const toBytesInt32 = (num: number): any => {
 
 /**
  * @description Convert hex from Int32
- * @param {Number} num Number to convert to hex
- * @returns {String} The converted number
+ * @param {number} num Number to convert to hex
+ * @returns {string} The converted number
  */
 const toBytesInt32Hex = (num: number): string => {
   const forgedBuffer = toBuffer(toBytesInt32(num));
@@ -90,17 +90,17 @@ const toBytesInt32Hex = (num: number): string => {
 
 /**
  * @description Forge boolean
- * @param {Boolean} bool Boolean value to convert
- * @returns {String} The converted boolean
+ * @param {boolean} bool Boolean value to convert
+ * @returns {string} The converted boolean
  */
 const bool = (bool: boolean): string => (bool ? 'ff' : '00');
 
 /**
  * @description Forge script bytes
  * @param {Object} script Script to forge
- * @param {String} script.code Script code
- * @param {String} script.storage Script storage
- * @returns {String} Forged script bytes
+ * @param {string} script.code Script code
+ * @param {string} script.storage Script storage
+ * @returns {string} Forged script bytes
  */
 const script = (script: { code: Micheline; storage: Micheline }): string => {
   const t1 = encodeRawBytes(script.code).toLowerCase();
@@ -110,122 +110,123 @@ const script = (script: { code: Micheline; storage: Micheline }): string => {
 
 /**
  * @description Forge parameter bytes
- * @param {String} parameter Script to forge
- * @returns {String} Forged parameter bytes
+ * @param {string} parameter Script to forge
+ * @returns {string} Forged parameter bytes
  */
 const parameters = (parameter: any, protocol: string): string => {
+  let fp: Array<string> = [];
   if (protocol === protocols['005']) {
-    let fp = '';
     const isDefaultParameter = parameter.entrypoint === 'default';
-    fp += isDefaultParameter ? '00' : 'FF';
+    fp.push(isDefaultParameter ? '00' : 'FF');
 
     if (!isDefaultParameter) {
       const parameterBytes = encodeRawBytes(parameter.value).toLowerCase();
 
       if (forgeMappings.entrypointMappingReverse[parameter.entrypoint]) {
-        fp += forgeMappings.entrypointMappingReverse[parameter.entrypoint];
+        fp.push(forgeMappings.entrypointMappingReverse[parameter.entrypoint]);
       } else {
         const stringBytes = encodeRawBytes({ string: parameter.entrypoint }).toLowerCase();
-        fp += 'FF';
-        fp += stringBytes.slice(8);
+        fp.push('FF');
+        fp.push(stringBytes.slice(8));
       }
 
-      fp += (parameterBytes.length / 2).toString(16).padStart(8, '0');
-      fp += parameterBytes;
+      fp.push((parameterBytes.length / 2).toString(16).padStart(8, '0'));
+      fp.push(parameterBytes);
     }
-
-    return fp;
   } else {
+    fp.push(bool(true));
     const t = encodeRawBytes(parameter).toLowerCase();
-    return toBytesInt32Hex(t.length / 2) + t;
+    fp.push(toBytesInt32Hex(t.length / 2) + t);
   }
+
+  return fp.join('');
 };
 
 /**
  * @description Forge public key hash bytes
- * @param {String} pkh Public key hash to forge
- * @returns {String} Forged public key hash bytes
+ * @param {string} pkh Public key hash to forge
+ * @returns {string} Forged public key hash bytes
  */
 const publicKeyHash = (pkh: string): string => {
   const t = parseInt(pkh.substr(2, 1), 10);
-  let fpkh = `0${t - 1}`;
+  let fpkh = [`0${t - 1}`];
   const forgedBuffer = toBuffer(utility.b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
-  fpkh += utility.buf2hex(forgedBuffer);
-  return fpkh;
+  fpkh.push(utility.buf2hex(forgedBuffer));
+  return fpkh.join('');
 };
 
 /**
  * @description Forge address bytes
- * @param {String} address Address to forge
- * @returns {String} Forged address bytes
+ * @param {string} address Address to forge
+ * @returns {string} Forged address bytes
  */
 const address = (address: string, protocol?: string): string => {
-  let fa = '';
+  let fa: Array<string> = [];
   if (address.substr(0, 1) === 'K') {
-    fa += protocol === protocols['005'] ? '' : '01';
+    fa.push(protocol === protocols['005'] ? '' : '01');
     const forgedBuffer = toBuffer(utility.b58cdecode(address, prefix.KT));
-    fa += utility.buf2hex(forgedBuffer);
-    fa += '00';
+    fa.push(utility.buf2hex(forgedBuffer));
+    fa.push('00');
   } else {
-    fa += protocol === protocols['005'] ? '' : '00';
-    fa += publicKeyHash(address);
+    fa.push(protocol === protocols['005'] ? '' : '00');
+    fa.push(publicKeyHash(address));
   }
-  return fa;
+  return fa.join('');
 };
 
 /**
  * @description Forge zarith bytes
- * @param {Number} n Zarith to forge
- * @returns {String} Forged zarith bytes
+ * @param {number} n Zarith to forge
+ * @returns {string} Forged zarith bytes
  */
 const zarith = (n: string): string => {
-  let fn = '';
+  let fn: Array<string> = [];
   let nn = parseInt(n, 10);
   if (Number.isNaN(nn)) {
     throw new TypeError(`Error forging zarith ${n}`);
   }
   while (true) { // eslint-disable-line
     if (nn < 128) {
-      if (nn < 16) fn += '0';
-      fn += nn.toString(16);
+      if (nn < 16) fn.push('0');
+      fn.push(nn.toString(16));
       break;
     } else {
       let b = (nn % 128);
       nn -= b;
       nn /= 128;
       b += 128;
-      fn += b.toString(16);
+      fn.push(b.toString(16));
     }
   }
-  return fn;
+  return fn.join('');
 };
 
 /**
  * @description Forge public key bytes
- * @param {Number} pk Public key to forge
- * @returns {String} Forged public key bytes
+ * @param {number} pk Public key to forge
+ * @returns {string} Forged public key bytes
  */
 const publicKey = (pk: string): string => {
-  let fpk = '';
+  let fpk: Array<string> = [];
   switch (pk.substr(0, 2)) {
-    case 'ed': fpk = '00'; break;
-    case 'sp': fpk = '01'; break;
-    case 'p2': fpk = '02'; break;
+    case 'ed': fpk.push('00'); break;
+    case 'sp': fpk.push('01'); break;
+    case 'p2': fpk.push('02'); break;
     default: break;
   }
   const forgedBuffer = toBuffer(utility.b58cdecode(pk, prefix[pk.substr(0, 4)]));
-  fpk += utility.buf2hex(forgedBuffer);
-  return fpk;
+  fpk.push(utility.buf2hex(forgedBuffer));
+  return fpk.join('');
 };
 
 /**
  * @description Forge operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const op = (op: ConstructedOperation, protocol: string): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
   let forgedBuffer;
   if (protocol === protocols['005']) {
@@ -234,39 +235,39 @@ const op = (op: ConstructedOperation, protocol: string): string => {
     forgedBuffer = toBuffer(new Uint8Array([forgeMappings.forgeOpTags['004'][op.kind]]));
   }
 
-  fop = utility.buf2hex(forgedBuffer);
+  fop.push(utility.buf2hex(forgedBuffer));
 
   if (op.kind === 'endorsement') {
-    fop += endorsement(op);
+    fop.push(endorsement(op));
   } else if (op.kind === 'seed_nonce_revelation') {
-    fop += seedNonceRevelation(op);
+    fop.push(seedNonceRevelation(op));
   } else if (op.kind === 'double_endorsement_evidence') {
-    fop += doubleEndorsementEvidence(op);
+    fop.push(doubleEndorsementEvidence(op));
   } else if (op.kind === 'double_baking_evidence') {
-    fop += doubleBakingEvidence(op);
+    fop.push(doubleBakingEvidence(op));
   } else if (op.kind === 'activate_account') {
-    fop += activateAccount(op);
+    fop.push(activateAccount(op));
   } else if (op.kind === 'proposals') {
-    fop += proposals(op);
+    fop.push(proposals(op));
   } else if (op.kind === 'ballot') {
-    fop += ballot(op);
+    fop.push(ballot(op));
   } else if (op.kind === 'reveal') {
-    fop += reveal(op, protocol);
+    fop.push(reveal(op, protocol));
   } else if (op.kind === 'transaction') {
-    fop += transaction(op, protocol);
+    fop.push(transaction(op, protocol));
   } else if (op.kind === 'origination') {
-    fop += origination(op, protocol);
+    fop.push(origination(op, protocol));
   } else if (op.kind === 'delegation') {
-    fop += delegation(op, protocol);
+    fop.push(delegation(op, protocol));
   }
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge endorsement operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
+ * @param {string} protocol Current protocol
  */
 const endorsement = (op: ConstructedOperation) => {
   const levelBuffer = toBuffer(toBytesInt32(op.level));
@@ -276,22 +277,22 @@ const endorsement = (op: ConstructedOperation) => {
 /**
  * @description Forge seed_nonce_revelation operation bytes
  * @param {Object} op Operation to forge
- * @returns {String} Forged operation bytes
+ * @returns {string} Forged operation bytes
  */
 const seedNonceRevelation = (op: ConstructedOperation): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
   const levelBuffer = toBuffer(toBytesInt32(op.level));
-  fop += utility.buf2hex(levelBuffer);
-  fop += op.nonce;
+  fop.push(utility.buf2hex(levelBuffer));
+  fop.push(op.nonce);
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge double_endorsement_evidence operation bytes
  * @param {Object} op Operation to forge
- * @returns {String} Forged operation bytes
+ * @returns {string} Forged operation bytes
  */
 const doubleEndorsementEvidence = (op: ConstructedOperation): string => {
   throw new Error('Double endorse forging is not complete');
@@ -300,8 +301,8 @@ const doubleEndorsementEvidence = (op: ConstructedOperation): string => {
 /**
  * @description Forge double_baking_evidence operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const doubleBakingEvidence = (op: ConstructedOperation): string => {
   throw new Error('Double bake forging is not complete');
@@ -310,22 +311,22 @@ const doubleBakingEvidence = (op: ConstructedOperation): string => {
 /**
  * @description Forge activate_account operation bytes
  * @param {Object} op Operation to forge
- * @returns {String} Forged operation bytes
+ * @returns {string} Forged operation bytes
  */
 const activateAccount = (op: ConstructedOperation): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
   const addressBuffer = toBuffer(utility.b58cdecode(op.pkh, prefix.tz1));
-  fop += utility.buf2hex(addressBuffer);
-  fop += op.secret;
+  fop.push(utility.buf2hex(addressBuffer));
+  fop.push(op.secret);
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge proposals operation bytes
  * @param {Object} op Operation to forge
- * @returns {String} Forged operation bytes
+ * @returns {string} Forged operation bytes
  */
 const proposals = (op: ConstructedOperation): string => {
   throw new Error('Proposal forging is not complete');
@@ -334,16 +335,16 @@ const proposals = (op: ConstructedOperation): string => {
 /**
  * @description Forge ballot operation bytes
  * @param {Object} op Operation to forge
- * @returns {String} Forged operation bytes
+ * @returns {string} Forged operation bytes
  */
 const ballot = (op: ConstructedOperation): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
-  fop += publicKeyHash(op.source);
+  fop.push(publicKeyHash(op.source));
   const periodBuffer = toBuffer(toBytesInt32(op.period));
-  fop += utility.buf2hex(periodBuffer);
+  fop.push(utility.buf2hex(periodBuffer));
   const forgedBuffer = toBuffer(utility.b58cdecode(op.proposal, prefix.P));
-  fop += utility.buf2hex(forgedBuffer);
+  fop.push(utility.buf2hex(forgedBuffer));
   let ballot;
   if (op.ballot === 'yay' || op.ballot === 'yea') {
     ballot = '00';
@@ -352,134 +353,133 @@ const ballot = (op: ConstructedOperation): string => {
   } else {
     ballot = '02';
   }
-  fop += ballot;
+  fop.push(ballot);
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge reveal operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const reveal = (op: ConstructedOperation, protocol: string): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
-  fop += address(op.source, protocol);
-  fop += zarith(op.fee);
-  fop += zarith(op.counter);
-  fop += zarith(op.gas_limit);
-  fop += zarith(op.storage_limit);
-  fop += publicKey(op.public_key);
+  fop.push(address(op.source, protocol));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
+  fop.push(publicKey(op.public_key));
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge transaction operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const transaction = (op: ConstructedOperation, protocol: string): string => {
-  let fop = '';
+  let fop = [];
 
-  fop += address(op.source, protocol);
-  fop += zarith(op.fee);
-  fop += zarith(op.counter);
-  fop += zarith(op.gas_limit);
-  fop += zarith(op.storage_limit);
-  fop += zarith(op.amount);
-  fop += address(op.destination);
+  fop.push(address(op.source, protocol));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
+  fop.push(zarith(op.amount));
+  fop.push(address(op.destination));
 
   if (op.parameters) {
-    fop += bool(true);
-    fop += parameters(op.parameters, protocol);
+    fop.push(parameters(op.parameters, protocol));
   } else {
-    fop += bool(false);
+    fop.push(bool(false));
   }
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge origination operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const origination = (op: ConstructedOperation, protocol: string): string => {
-  let fop = ''
+  let fop: Array<string> = [];
 
-  fop += address(op.source, protocol);
-  fop += zarith(op.fee);
-  fop += zarith(op.counter);
-  fop += zarith(op.gas_limit);
-  fop += zarith(op.storage_limit);
+  fop.push(address(op.source, protocol));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
 
   if (protocol === protocols['005']) {
-    fop += zarith(op.balance);
+    fop.push(zarith(op.balance));
     if (op.delegate) {
-      fop += bool(true);
-      fop += publicKeyHash(op.delegate);
+      fop.push(bool(true));
+      fop.push(publicKeyHash(op.delegate));
     } else {
-      fop += bool(false);
+      fop.push(bool(false));
     }
-    fop += script(op.script);
+    fop.push(script(op.script));
   } else {
-    fop += publicKeyHash(op.manager_pubkey);
-    fop += zarith(op.balance);
-    fop += bool(op.spendable);
-    fop += bool(op.delegatable);
+    fop.push(publicKeyHash(op.manager_pubkey));
+    fop.push(zarith(op.balance));
+    fop.push(bool(op.spendable));
+    fop.push(bool(op.delegatable));
     if (op.delegate) {
-      fop += bool(true);
-      fop += publicKeyHash(op.delegate);
+      fop.push(bool(true));
+      fop.push(publicKeyHash(op.delegate));
     } else {
-      fop += bool(false);
+      fop.push(bool(false));
     }
     if (op.script) {
-      fop += bool(true);
-      fop += script(op.script);
+      fop.push(bool(true));
+      fop.push(script(op.script));
     } else {
-      fop += bool(false);
+      fop.push(bool(false));
     }
   }
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge delegation operation bytes
  * @param {Object} op Operation to forge
- * @param {String} protocol Current protocol
- * @returns {String} Forged operation bytes
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 const delegation = (op: ConstructedOperation, protocol: string): string => {
-  let fop = '';
+  let fop: Array<string> = [];
 
-  fop += address(op.source, protocol);
-  fop += zarith(op.fee);
-  fop += zarith(op.counter);
-  fop += zarith(op.gas_limit);
-  fop += zarith(op.storage_limit);
+  fop.push(address(op.source, protocol));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
 
   if (op.delegate) {
-    fop += bool(true);
-    fop += publicKeyHash(op.delegate);
+    fop.push(bool(true));
+    fop.push(publicKeyHash(op.delegate));
   } else {
-    fop += bool(false);
+    fop.push(bool(false));
   }
 
-  return fop;
+  return fop.join('');
 };
 
 /**
  * @description Forge operation bytes
  * @param {Object} opOb The operation object(s)
- * @param {Number} counter The current counter for the account
- * @returns {String} Forged operation bytes
- * ```javascript
+ * @param {number} counter The current counter for the account
+ * @returns {string} Forged operation bytes
+ * @example
  * forge.forge({
  *   branch: head.hash,
  *   contents: [{
@@ -493,7 +493,6 @@ const delegation = (op: ConstructedOperation, protocol: string): string => {
  *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   }],
  * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb));
- * ```
  */
 const forge = async (opOb: OperationObject, counter: number, protocol: string): Promise<ForgedBytes> => {
   if (!opOb.contents) {
@@ -505,14 +504,14 @@ const forge = async (opOb: OperationObject, counter: number, protocol: string): 
   }
 
   const forgedBuffer = toBuffer(utility.b58cdecode(opOb.branch, prefix.b));
-  let forgedBytes = utility.buf2hex(forgedBuffer);
+  let forgedBytes = [utility.buf2hex(forgedBuffer)];
 
   opOb.contents.forEach((content: ConstructedOperation): void => {
-    forgedBytes += op(content, protocol);
+    forgedBytes.push(op(content, protocol));
   });
 
   return {
-    opbytes: forgedBytes,
+    opbytes: forgedBytes.join(''),
     opOb,
     counter,
   };
@@ -520,7 +519,7 @@ const forge = async (opOb: OperationObject, counter: number, protocol: string): 
 
 /**
  * @description Decode raw bytes
- * @param {String} bytes The bytes to decode
+ * @param {string} bytes The bytes to decode
  * @returns {Object} Decoded raw bytes
  */
 const decodeRawBytes = (bytes: string): Micheline => {
@@ -620,7 +619,7 @@ const decodeRawBytes = (bytes: string): Micheline => {
 /**
  * @description Encode raw bytes
  * @param {Object} input The value to encode
- * @returns {String} Encoded value as bytes
+ * @returns {string} Encoded value as bytes
  */
 const encodeRawBytes = (input: Micheline): string => {
   const rec = (inputArg: Micheline): string => {

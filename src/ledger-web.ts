@@ -1,5 +1,6 @@
-import LedgerApp from './hw-app-xtz/Tezos';
 import LedgerTransport from '@ledgerhq/hw-transport-u2f';
+import LedgerApp from './hw-app-xtz/Tezos';
+import { watermark as watermarkConst } from './constants';
 
 interface LedgerGetAddress {
   path ?: string;
@@ -11,6 +12,7 @@ interface LedgerSignOperation {
   path?: string;
   rawTxHex: string;
   curve?: number;
+  watermark?: Uint8Array;
 };
 
 interface LedgerGetVersion {
@@ -24,16 +26,15 @@ interface LedgerGetVersion {
  * @description Get the public key and public key hash from the ledger
  * @param {Object} ledgerParams The parameters of the getAddress function
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
- * @param {Boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
- * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @param {boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
+ * @param {number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
  * @returns {Promise} The public key and public key hash
- * ```javascript
+ * @example
  * ledger.getAddress({
  *   path = "44'/1729'/0'/0'",
  *   displayConfirm = true,
  *   curve = 0x00,
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
- * ```
  */
 const getAddress = async ({
   path = "44'/1729'/0'/0'",
@@ -57,27 +58,29 @@ const getAddress = async ({
  * @description Sign an operation with the ledger
  * @param {Object} ledgerParams The parameters of the signOperation function
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
- * @param {Boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
- * @param {Number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @param {boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
+ * @param {number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @param {Uint8Array} [ledgerParams.watermark='03'] The watermark bytes
  * @returns {Promise} The signed operation
- * ```javascript
+ * @example
  * ledger.signOperation({
  *   path = "44'/1729'/0'/0'",
  *   rawTxHex,
  *   curve = 0x00,
  * }).then((signature) => console.log(signature));
- * ```
  */
 const signOperation = async ({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
+  watermark = watermarkConst.generic,
 }: LedgerSignOperation): Promise<string> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let signature;
   try {
-    ({ signature } = await tezosLedger.signOperation(path, `03${rawTxHex}`, curve));
+    const watermarkHex = (`00${watermark}`).slice(-2);
+    ({ signature } = await tezosLedger.signOperation(path, `${watermarkHex}${rawTxHex}`, curve));
   } catch (e) {
     transport.close();
     return e;
@@ -89,10 +92,9 @@ const signOperation = async ({
 /**
  * @description Show the version of the ledger
  * @returns {Promise} The version info
- * ```javascript
+ * @example
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
- * ```
  */
 const getVersion = async (): Promise<LedgerGetVersion> => {
   const transport = await LedgerTransport.create();

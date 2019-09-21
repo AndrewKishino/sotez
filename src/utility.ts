@@ -25,8 +25,8 @@ const textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
 
 /**
  * @description Convert from base58 to integer
- * @param {String} v The b58 value
- * @returns {String} The converted b58 value
+ * @param {string} v The b58 value
+ * @returns {string} The converted b58 value
  */
 const b582int = (v: string): string => {
   let rv = new BigNumber(0);
@@ -39,8 +39,8 @@ const b582int = (v: string): string => {
 
 /**
  * @description Convert from mutez to tez
- * @param {Number} mutez The amount in mutez to convert to tez
- * @returns {Number} The mutez amount converted to tez
+ * @param {number} mutez The amount in mutez to convert to tez
+ * @returns {number} The mutez amount converted to tez
  */
 const totez = (mutez: number): number => {
   if (typeof mutez === 'number') {
@@ -53,16 +53,16 @@ const totez = (mutez: number): number => {
 
 /**
  * @description Convert from tez to mutez
- * @param {Number} tez The amount in tez to convert to mutez
- * @returns {String} The tez amount converted to mutez
+ * @param {number} tez The amount in tez to convert to mutez
+ * @returns {string} The tez amount converted to mutez
  */
 const mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
  * @description Base58 encode
- * @param {String | Uint8Array} payload The value to encode
+ * @param {string | Uint8Array} payload The value to encode
  * @param {Object} prefixArg The Uint8Array prefix values
- * @returns {String} The base58 encoded value
+ * @returns {string} The base58 encoded value
  */
 const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
@@ -74,7 +74,7 @@ const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
 
 /**
  * @description Base58 decode
- * @param {String} payload The value to decode
+ * @param {string} payload The value to decode
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {Object} The decoded base58 value
  */
@@ -83,7 +83,7 @@ const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array => bs58check
 /**
  * @description Buffer to hex
  * @param {Object} buffer The buffer to convert to hex
- * @returns {String} Converted hex value
+ * @returns {string} Converted hex value
  */
 const buf2hex = (buffer: Buffer): string => {
   const byteArray = new Uint8Array(buffer);
@@ -98,7 +98,7 @@ const buf2hex = (buffer: Buffer): string => {
 
 /**
  * @description Hex to Buffer
- * @param {String} hex The hex to convert to buffer
+ * @param {string} hex The hex to convert to buffer
  * @returns {Object} Converted buffer value
  */
 const hex2buf = (hex: string): Uint8Array => (
@@ -108,8 +108,8 @@ const hex2buf = (hex: string): Uint8Array => (
 
 /**
  * @description Generate a hex nonce
- * @param {Number} length The length of the nonce
- * @returns {String} The nonce of the given length
+ * @param {number} length The length of the nonce
+ * @returns {string} The nonce of the given length
  */
 const hexNonce = (length: number): string => {
   const chars = '0123456789abcedf';

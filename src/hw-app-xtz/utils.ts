@@ -86,7 +86,7 @@ export function asyncWhile<T>(
   return Promise.resolve([]).then(iterate);
 }
 
-const pkB58Prefix = (curve: any) => {
+const pkB58Prefix = (curve: number) => {
   switch (curve) {
     // edpk
     case 0x00:
@@ -102,7 +102,7 @@ const pkB58Prefix = (curve: any) => {
   }
 };
 
-const pkhB58Prefix = (curve: any) => {
+const pkhB58Prefix = (curve: number) => {
   switch (curve) {
     // tz1
     case 0x00:

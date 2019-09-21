@@ -1,19 +1,21 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "composite": true,
     "declaration": true,
-    "declarationDir": "types/",
-    "emitDeclarationOnly": true,
+    "declarationDir": "dist/types",
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "outDir": "build",
     "paths": {
       "ledger": [
         "src/ledger.ts"
       ]
     },
+    "rootDir": "src",
     "strict": true,
     "strictPropertyInitialization": false,
-    "target": "esnext"
+    "target": "es6"
   },
   "include": [
     "src/**/*"

@@ -6,29 +6,20 @@ module.exports = {
   target: 'web',
   mode: 'production',
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.js'],
     modules: [__dirname, 'node_modules'],
     alias: {
-      ledger$: path.resolve(__dirname, './src/ledger-web.ts'),
+      ledger$: path.join(__dirname, 'build', 'ledger-web.js'),
     },
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-      },
-    ],
   },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
   ],
   entry: {
-    main: './src/index.ts',
+    main: ['regenerator-runtime/runtime', path.join(__dirname, 'build', 'index.js')],
   },
   output: {
-    path: path.join(__dirname, 'build', 'web'),
+    path: path.join(__dirname, 'dist', 'web'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },

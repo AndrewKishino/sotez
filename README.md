@@ -52,7 +52,7 @@ Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Do
 npm install
 npm run build
 ```
-Compiled files will be located in the `build` folder.
+Compiled files will be located in the `lib` folder.
 Distribution files will be located in the `dist/node` and `dist/web` folders.
 
 ## License

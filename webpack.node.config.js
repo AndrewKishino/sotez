@@ -10,11 +10,11 @@ module.exports = {
     extensions: ['.js'],
     modules: [__dirname, 'node_modules'],
     alias: {
-      ledger$: path.join(__dirname, 'build', 'ledger.js'),
+      ledger$: path.join(__dirname, 'lib', 'ledger.js'),
     },
   },
   entry: {
-    main: ['regenerator-runtime/runtime', path.join(__dirname, 'build', 'index.js')],
+    main: ['regenerator-runtime/runtime', path.join(__dirname, 'lib', 'index.js')],
   },
   output: {
     path: path.join(__dirname, 'dist', 'node'),

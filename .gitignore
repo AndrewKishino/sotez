@@ -1,6 +1,4 @@
-build/
 tsconfig.tsbuildinfo
-# dist/
 
 # Logs
 logs

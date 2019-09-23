@@ -6,7 +6,7 @@
     "declarationDir": "dist/types",
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "outDir": "build",
+    "outDir": "lib",
     "paths": {
       "ledger": [
         "src/ledger.ts"

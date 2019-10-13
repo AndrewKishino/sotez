@@ -39,15 +39,23 @@ export default class Key {
     email,
     ledgerPath = "44'/1729'/0'/0'",
     ledgerCurve = 0x00,
-  }: { key?: string, passphrase?: string, email?: string, ledgerPath?: string, ledgerCurve?: number } = {}) {
+  }: {
+    key?: string;
+    passphrase?: string;
+    email?: string;
+    ledgerPath?: string;
+    ledgerCurve?: number;
+  } = {}) {
     if (ledgerCurve !== 0x00) {
-      throw new Error('Only ed25519 curve (0x00) is supported for ledger at the moment.');
+      throw new Error(
+        'Only ed25519 curve (0x00) is supported for ledger at the moment.',
+      );
     }
     this._isLedger = !key;
     this._ledgerPath = ledgerPath;
     this._ledgerCurve = ledgerCurve;
 
-    this.ready = new Promise((resolve) => {
+    this.ready = new Promise(resolve => {
       this.initialize({ key, passphrase, email }, resolve);
     });
   }
@@ -85,7 +93,8 @@ export default class Key {
    * @description Returns the public key
    * @returns {string} The public key associated with the private key
    */
-  publicKey = (): string => utility.b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
+  publicKey = (): string =>
+    utility.b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
 
   /**
    * @memberof Key
@@ -104,7 +113,7 @@ export default class Key {
     }
 
     return utility.b58cencode(key, prefix[`${this._curve}sk`]);
-  }
+  };
 
   /**
    * @memberof Key
@@ -119,10 +128,20 @@ export default class Key {
     };
 
     const _prefix = prefixMap[this._curve];
-    return utility.b58cencode(sodium.crypto_generichash(20, this._publicKey), _prefix);
-  }
+    return utility.b58cencode(
+      sodium.crypto_generichash(20, this._publicKey),
+      _prefix,
+    );
+  };
 
-  initialize = async ({ key, passphrase, email }: { key?: string, passphrase?: string, email?: string }, ready: any): Promise<void> => {
+  initialize = async (
+    {
+      key,
+      passphrase,
+      email,
+    }: { key?: string; passphrase?: string; email?: string },
+    ready: any,
+  ): Promise<void> => {
     await sodium.ready;
 
     if (this._isLedger || !key) {
@@ -138,9 +157,19 @@ export default class Key {
         throw new Error('Fundraiser key provided without a passphrase.');
       }
 
-      const salt = utility.textDecode(utility.textEncode(`${email}${passphrase}`)).normalize('NFKD');
-      const seed = pbkdf2.pbkdf2Sync(key, `mnemonic${salt}`, 2048, 64, 'sha512');
-      const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(seed.slice(0, 32));
+      const salt = utility
+        .textDecode(utility.textEncode(`${email}${passphrase}`))
+        .normalize('NFKD');
+      const seed = pbkdf2.pbkdf2Sync(
+        key,
+        `mnemonic${salt}`,
+        2048,
+        64,
+        'sha512',
+      );
+      const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(
+        seed.slice(0, 32),
+      );
 
       this._publicKey = toBuffer(publicKey);
       this._secretKey = toBuffer(privateKey);
@@ -172,7 +201,10 @@ export default class Key {
 
     let constructedKey: Uint8Array;
     if (this._isSecret) {
-      constructedKey = utility.b58cdecode(key, prefix[`${this._curve}${encrypted ? 'e' : ''}sk`]);
+      constructedKey = utility.b58cdecode(
+        key,
+        prefix[`${this._curve}${encrypted ? 'e' : ''}sk`],
+      );
     } else {
       constructedKey = utility.b58cdecode(key, prefix[`${this._curve}pk`]);
     }
@@ -184,9 +216,19 @@ export default class Key {
 
       const salt = toBuffer(constructedKey.slice(0, 8));
       const encryptedSk = constructedKey.slice(8);
-      const encryptionKey = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
+      const encryptionKey = pbkdf2.pbkdf2Sync(
+        passphrase,
+        salt,
+        32768,
+        32,
+        'sha512',
+      );
 
-      constructedKey = sodium.crypto_secretbox_open_easy(encryptedSk, new Uint8Array(24), encryptionKey);
+      constructedKey = sodium.crypto_secretbox_open_easy(
+        encryptedSk,
+        new Uint8Array(24),
+        encryptionKey,
+      );
     }
 
     if (!this._isSecret) {
@@ -198,25 +240,60 @@ export default class Key {
         if (constructedKey.length === 64) {
           this._publicKey = toBuffer(constructedKey.slice(32));
         } else {
-          const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(constructedKey, 'uint8array');
+          const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(
+            constructedKey,
+            'uint8array',
+          );
           this._publicKey = toBuffer(publicKey);
           this._secretKey = toBuffer(privateKey);
         }
       } else if (this._curve === 'sp') {
-        const keyPair = (new elliptic.ec('secp256k1')).keyFromPrivate(constructedKey);
-        const prefix = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
-        this._publicKey = toBuffer(new Uint8Array([prefix].concat(keyPair.getPublic().getX().toArray())));
+        const keyPair = new elliptic.ec('secp256k1').keyFromPrivate(
+          constructedKey,
+        );
+        const prefix =
+          keyPair
+            .getPublic()
+            .getY()
+            .toArray()[31] % 2
+            ? 3
+            : 2;
+        this._publicKey = toBuffer(
+          new Uint8Array(
+            [prefix].concat(
+              keyPair
+                .getPublic()
+                .getX()
+                .toArray(),
+            ),
+          ),
+        );
       } else if (this._curve === 'p2') {
-        const keyPair = (new elliptic.ec('p256')).keyFromPrivate(constructedKey);
-        const prefix = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
-        this._publicKey = toBuffer(new Uint8Array([prefix].concat(keyPair.getPublic().getX().toArray())));
+        const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
+        const prefix =
+          keyPair
+            .getPublic()
+            .getY()
+            .toArray()[31] % 2
+            ? 3
+            : 2;
+        this._publicKey = toBuffer(
+          new Uint8Array(
+            [prefix].concat(
+              keyPair
+                .getPublic()
+                .getX()
+                .toArray(),
+            ),
+          ),
+        );
       } else {
         throw new Error('Invalid key');
       }
     }
 
     ready();
-  }
+  };
 
   /**
    * @memberof Key
@@ -225,7 +302,15 @@ export default class Key {
    * @param {Uint8Array} watermark The watermark bytes
    * @returns {Promise} The signature object
    */
-  sign = async (bytes: string, watermark: Uint8Array): Promise<{ bytes: string, sig: string, prefixSig: string, sbytes: string }> => {
+  sign = async (
+    bytes: string,
+    watermark: Uint8Array,
+  ): Promise<{
+    bytes: string;
+    sig: string;
+    prefixSig: string;
+    sbytes: string;
+  }> => {
     if (this._isLedger) {
       const signature = await ledger.signOperation({
         path: this._ledgerPath,
@@ -239,7 +324,10 @@ export default class Key {
       return {
         bytes,
         sig: utility.b58cencode(signatureBuffer, prefix.sig),
-        prefixSig: utility.b58cencode(signatureBuffer, prefix[`${this._curve}sig`]),
+        prefixSig: utility.b58cencode(
+          signatureBuffer,
+          prefix[`${this._curve}sig`],
+        ),
         sbytes,
       };
     }
@@ -257,7 +345,7 @@ export default class Key {
 
     if (this._curve === 'ed') {
       const signature = sodium.crypto_sign_detached(bytesHash, this._secretKey);
-      const signatureBuffer = toBuffer(signature)
+      const signatureBuffer = toBuffer(signature);
       const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
       return {
@@ -266,8 +354,9 @@ export default class Key {
         prefixSig: utility.b58cencode(signature, prefix.edsig),
         sbytes,
       };
-    } else if (this._curve === 'sp') {
-      const key = (new elliptic.ec('secp256k1')).keyFromPrivate(this._secretKey);
+    }
+    if (this._curve === 'sp') {
+      const key = new elliptic.ec('secp256k1').keyFromPrivate(this._secretKey);
       const sig = key.sign(bytesHash, { canonical: true });
       const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
       const signatureBuffer = toBuffer(signature);
@@ -279,8 +368,9 @@ export default class Key {
         prefixSig: utility.b58cencode(signature, prefix.spsig),
         sbytes,
       };
-    } else if (this._curve === 'p2') {
-      const key = (new elliptic.ec('p256')).keyFromPrivate(this._secretKey);
+    }
+    if (this._curve === 'p2') {
+      const key = new elliptic.ec('p256').keyFromPrivate(this._secretKey);
       const sig = key.sign(bytesHash, { canonical: true });
       const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
       const signatureBuffer = toBuffer(signature);
@@ -295,5 +385,5 @@ export default class Key {
     }
 
     throw new Error('Provided curve not supported');
-  }
+  };
 }

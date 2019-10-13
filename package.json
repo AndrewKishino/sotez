@@ -9,8 +9,7 @@
     "dist/",
     "index.js",
     "lib/",
-    "package.json",
-    "package-lock.json"
+    "package.json"
   ],
   "scripts": {
     "build": "npm run compile && webpack --config webpack.web.config.js --progress && webpack --config webpack.node.config.js --progress",
@@ -66,14 +65,17 @@
     "documentation": "^12.1.2",
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
     "jest": "^24.9.0",
     "npm-run-all": "^4.1.5",
+    "prettier": "1.18.2",
     "regenerator-runtime": "^0.13.3",
     "terser-webpack-plugin": "^2.0.1",
     "typescript": "^3.6.3",
-    "webpack": "^4.40.2",
-    "webpack-cli": "^3.3.8",
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.9",
     "webpack-node-externals": "^1.7.2"
   },
   "repository": {

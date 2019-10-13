@@ -32,13 +32,13 @@ interface Prefix {
   id: Uint8Array;
 
   TZ: Uint8Array;
-};
+}
 
 interface Watermark {
   block: Uint8Array;
   endorsement: Uint8Array;
   generic: Uint8Array;
-};
+}
 
 export const prefix: Prefix = {
   tz1: new Uint8Array([6, 161, 159]),
@@ -82,7 +82,6 @@ export const watermark: Watermark = {
   generic: new Uint8Array([3]),
 };
 
-/* eslint-disable */
 const opMapping: { [key: string]: string } = {
   '00': 'parameter',
   '01': 'storage',
@@ -205,7 +204,6 @@ const opMapping: { [key: string]: string } = {
   '74': 'chain_id',
   '75': 'CHAIN_ID',
 };
-/* eslint-enable */
 
 const opMappingReverse = (() => {
   const result: { [key: string]: string } = {};
@@ -215,7 +213,9 @@ const opMappingReverse = (() => {
   return result;
 })();
 
-const primMapping: { [key: string]: (string | { [key: string]: (number | boolean | string) }) } = {
+const primMapping: {
+  [key: string]: string | { [key: string]: number | boolean | string };
+} = {
   '00': 'int',
   '01': 'string',
   '02': 'seq',
@@ -275,7 +275,7 @@ const forgeOpTags: { [key: string]: { [key: string]: number } } = {
     transaction: 108,
     origination: 109,
     delegation: 110,
-  }
+  },
 };
 
 /* eslint-disable */
@@ -307,8 +307,11 @@ export const forgeMappings = {
 };
 
 export const protocols = {
-  '004': 'Pt24m4xiPbLDhVgVfABUjirbmda3yohdN82Sp9FeuAXJ4eV9otd',
-  '005': 'PsBABY5HQTSkA4297zNHfsZNKtxULfL18y95qb3m53QJiXGmrbU',
+  '004': ['Pt24m4xiPbLDhVgVfABUjirbmda3yohdN82Sp9FeuAXJ4eV9otd'],
+  '005': [
+    'PsBABY5HQTSkA4297zNHfsZNKtxULfL18y95qb3m53QJiXGmrbU',
+    'PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS',
+  ],
 };
 
 export default {

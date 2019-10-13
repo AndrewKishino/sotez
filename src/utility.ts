@@ -2,11 +2,12 @@ import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 import { Buffer } from 'buffer/';
 
-type Micheline = {
-  prim: string,
-  args?: MichelineArray,
-  annots?: Array<string>
-}
+type Micheline =
+  | {
+      prim: string;
+      args?: MichelineArray;
+      annots?: Array<string>;
+    }
   | { bytes: string }
   | { int: string }
   | { string: string }
@@ -17,9 +18,10 @@ type Micheline = {
   | { signature: string }
   | MichelineArray;
 
-interface MichelineArray extends Array<Micheline> { }
+interface MichelineArray extends Array<Micheline> {}
 
-const textEncode = (value: string): Uint8Array => new Uint8Array(Buffer.from(value, 'utf8'));
+const textEncode = (value: string): Uint8Array =>
+  new Uint8Array(Buffer.from(value, 'utf8'));
 
 const textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
 
@@ -32,7 +34,11 @@ const b582int = (v: string): string => {
   let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   for (let i = 0; i < v.length; i++) {
-    rv = rv.plus(new BigNumber(alpha.indexOf(v[v.length - 1 - i])).multipliedBy(new BigNumber(alpha.length).exponentiatedBy(i)));
+    rv = rv.plus(
+      new BigNumber(alpha.indexOf(v[v.length - 1 - i])).multipliedBy(
+        new BigNumber(alpha.length).exponentiatedBy(i),
+      ),
+    );
   }
   return rv.toString(16);
 };
@@ -45,7 +51,8 @@ const b582int = (v: string): string => {
 const totez = (mutez: number): number => {
   if (typeof mutez === 'number') {
     return mutez / 1000000;
-  } if (typeof mutez === 'string') {
+  }
+  if (typeof mutez === 'string') {
     return parseInt(mutez, 10) / 1000000;
   }
   throw new TypeError('Invalid parameter for "mutez" provided.');
@@ -56,7 +63,8 @@ const totez = (mutez: number): number => {
  * @param {number} tez The amount in tez to convert to mutez
  * @returns {string} The tez amount converted to mutez
  */
-const mutez = (tez: number): string => new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
+const mutez = (tez: number): string =>
+  new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
  * @description Base58 encode
@@ -78,7 +86,8 @@ const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {Object} The decoded base58 value
  */
-const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array => bs58check.decode(enc).slice(prefixArg.length);
+const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
+  bs58check.decode(enc).slice(prefixArg.length);
 
 /**
  * @description Buffer to hex
@@ -90,7 +99,7 @@ const buf2hex = (buffer: Buffer): string => {
   const hexParts: string[] = [];
   byteArray.forEach((byte: any) => {
     const hex = byte.toString(16);
-    const paddedHex = (`00${hex}`).slice(-2);
+    const paddedHex = `00${hex}`.slice(-2);
     hexParts.push(paddedHex);
   });
   return hexParts.join('');
@@ -101,10 +110,9 @@ const buf2hex = (buffer: Buffer): string => {
  * @param {string} hex The hex to convert to buffer
  * @returns {Object} Converted buffer value
  */
-const hex2buf = (hex: string): Uint8Array => (
+const hex2buf = (hex: string): Uint8Array =>
   // @ts-ignore
-  new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)))
-);
+  new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
 
 /**
  * @description Generate a hex nonce
@@ -134,7 +142,8 @@ const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
 };
 
 const sexp2mic = function me(mi: string): Micheline {
-  mi = mi.replace(/(?:@[a-z_]+)|(?:#.*$)/mg, '')
+  mi = mi
+    .replace(/(?:@[a-z_]+)|(?:#.*$)/gm, '')
     .replace(/\s+/g, ' ')
     .trim();
   if (mi.charAt(0) === '(') mi = mi.slice(1, -1);
@@ -151,8 +160,11 @@ const sexp2mic = function me(mi: string): Micheline {
       val += mi[i];
       escaped = false;
       continue;
-    } else if ((i === (mi.length - 1) && sopen === false) || (mi[i] === ' ' && pl === 0 && sopen === false)) {
-      if (i === (mi.length - 1)) val += mi[i];
+    } else if (
+      (i === mi.length - 1 && sopen === false) ||
+      (mi[i] === ' ' && pl === 0 && sopen === false)
+    ) {
+      if (i === mi.length - 1) val += mi[i];
       if (val) {
         if (val === parseInt(val, 10).toString()) {
           if (!ret.prim) return { int: val };
@@ -268,8 +280,11 @@ const ml2mic = function me(mi: string): Micheline {
       val += mi[i];
       escaped = false;
       continue;
-    } else if ((i === (mi.length - 1) && sopen === false) || (mi[i] === ';' && pl === 0 && sopen === false)) {
-      if (i === (mi.length - 1)) val += mi[i];
+    } else if (
+      (i === mi.length - 1 && sopen === false) ||
+      (mi[i] === ';' && pl === 0 && sopen === false)
+    ) {
+      if (i === mi.length - 1) val += mi[i];
       if (val.trim() === '' || val.trim() === '}' || val.trim() === ';') {
         val = '';
         continue;

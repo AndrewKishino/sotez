@@ -22,7 +22,7 @@ export function defer<T>(): Defer<T> {
 export function splitPath(path: string): number[] {
   const result: any[] = [];
   const components = path.split('/');
-  components.forEach((element) => {
+  components.forEach(element => {
     let number = parseInt(element, 10);
     if (Number.isNaN(number)) {
       return;
@@ -37,7 +37,10 @@ export function splitPath(path: string): number[] {
 
 // TODO use async await
 
-export function eachSeries<A>(arr: A[], fun: (arg: A) => Promise<any>): Promise<any> {
+export function eachSeries<A>(
+  arr: A[],
+  fun: (arg: A) => Promise<any>,
+): Promise<any> {
   return arr.reduce((p, e) => p.then(() => fun(e)), Promise.resolve());
 }
 
@@ -50,7 +53,7 @@ export function foreach<T, A>(
       return result;
     }
 
-    return callback(array[index], index).then((res) => {
+    return callback(array[index], index).then(res => {
       result.push(res);
       return iterate(index + 1, array, result);
     });
@@ -78,7 +81,7 @@ export function asyncWhile<T>(
       return result;
     }
 
-    return callback().then((res) => {
+    return callback().then(res => {
       result.push(res);
       return iterate(result);
     });
@@ -132,10 +135,7 @@ const compressPublicKey = (publicKey: Buffer, curve: number) => {
     case 0x01:
     case 0x02:
       return Buffer.concat([
-        Buffer.of(
-          curve,
-          0x02 + (publicKey[64] & 0x01),
-        ),
+        Buffer.of(curve, 0x02 + (publicKey[64] & 0x01)),
         publicKey.slice(1, 33),
       ]);
     default:
@@ -166,6 +166,6 @@ const hashPublicKeyToString = (publicKey: Buffer) => {
   const key = publicKey.slice(1);
   let hash = blake2b(keyHashSize);
   hash.update(key);
-  hash.digest(hash = Buffer.alloc(keyHashSize));
+  hash.digest((hash = Buffer.alloc(keyHashSize)));
   return bs58check.encode(Buffer.concat([pkhB58Prefix(curve), hash]));
 };

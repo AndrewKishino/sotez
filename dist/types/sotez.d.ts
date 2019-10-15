@@ -134,6 +134,29 @@ interface ConstructedOperation {
     managerPubkey: string;
 }
 declare type Micheline = {
+    entrypoint: string;
+    value: {
+        prim: string;
+        args?: MichelineArray;
+        annots?: string[];
+    } | {
+        bytes: string;
+    } | {
+        int: string;
+    } | {
+        string: string;
+    } | {
+        address: string;
+    } | {
+        contract: string;
+    } | {
+        key: string;
+    } | {
+        key_hash: string;
+    } | {
+        signature: string;
+    } | MichelineArray;
+} | {
     prim: string;
     args?: MichelineArray;
     annots?: string[];
@@ -169,7 +192,7 @@ interface RpcParams {
     amount: number;
     init?: string;
     fee?: number;
-    parameters?: string;
+    parameters?: string | Micheline;
     gasLimit?: number;
     storageLimit?: number;
     mutez?: boolean;
@@ -247,13 +270,13 @@ export default class Sotez extends AbstractTezModule {
     debugMode: boolean;
     setProvider(provider: string, chain?: string): void;
     /**
-    * @description Import a secret key
-    * @param {string} key The secret key
-    * @param {string} [passphrase] The passphrase of the encrypted key
-    * @param {string} [email] The email associated with the fundraiser account
-    * @example
-    * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y')
-    */
+     * @description Import a secret key
+     * @param {string} key The secret key
+     * @param {string} [passphrase] The passphrase of the encrypted key
+     * @param {string} [email] The email associated with the fundraiser account
+     * @example
+     * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y')
+     */
     importKey: (key: string, passphrase?: string | undefined, email?: string | undefined) => Promise<void>;
     /**
      * @description Import a ledger public key
@@ -479,7 +502,7 @@ export default class Sotez extends AbstractTezModule {
      *   }
      * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
      */
-    prepareOperation: ({ operation, source }: OperationParams) => Promise<ForgedBytes>;
+    prepareOperation: ({ operation, source, }: OperationParams) => Promise<ForgedBytes>;
     /**
      * @description Simulate an operation
      * @param {Object} paramObject The parameters for the operation
@@ -520,7 +543,7 @@ export default class Sotez extends AbstractTezModule {
      *
      * sotez.sendOperation({ operation: [operation, operation] }).then(result => console.log(result));
      */
-    sendOperation: ({ operation, source, skipPrevalidation, skipSignature }: OperationParams) => Promise<any>;
+    sendOperation: ({ operation, source, skipPrevalidation, skipSignature, }: OperationParams) => Promise<any>;
     /**
      * @description Inject an operation
      * @param {Object} opOb The operation object
@@ -615,6 +638,29 @@ export default class Sotez extends AbstractTezModule {
      * @returns {Promise} Typecheck result
      */
     typecheckCode: (code: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;
@@ -642,6 +688,29 @@ export default class Sotez extends AbstractTezModule {
      * @returns {Promise} Serialized data
      */
     packData: (data: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;
@@ -662,6 +731,29 @@ export default class Sotez extends AbstractTezModule {
     } | {
         signature: string;
     } | MichelineArray, type: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;
@@ -689,6 +781,29 @@ export default class Sotez extends AbstractTezModule {
      * @returns {Promise} Typecheck result
      */
     typecheckData: (data: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;
@@ -709,6 +824,29 @@ export default class Sotez extends AbstractTezModule {
     } | {
         signature: string;
     } | MichelineArray, type: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;
@@ -739,6 +877,29 @@ export default class Sotez extends AbstractTezModule {
      * @returns {Promise} Run results
      */
     runCode: (code: string | {
+        entrypoint: string;
+        value: MichelineArray | {
+            prim: string;
+            args?: MichelineArray | undefined;
+            annots?: string[] | undefined;
+        } | {
+            bytes: string;
+        } | {
+            int: string;
+        } | {
+            string: string;
+        } | {
+            address: string;
+        } | {
+            contract: string;
+        } | {
+            key: string;
+        } | {
+            key_hash: string;
+        } | {
+            signature: string;
+        };
+    } | {
         prim: string;
         args?: MichelineArray | undefined;
         annots?: string[] | undefined;

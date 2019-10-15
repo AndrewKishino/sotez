@@ -54,7 +54,7 @@ export default class Key {
      * @returns {string} The public key hash for this key
      */
     publicKeyHash: () => string;
-    initialize: ({ key, passphrase, email }: {
+    initialize: ({ key, passphrase, email, }: {
         key?: string | undefined;
         passphrase?: string | undefined;
         email?: string | undefined;

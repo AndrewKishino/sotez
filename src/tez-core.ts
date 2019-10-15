@@ -2,10 +2,7 @@ export default class AbstractTezModule {
   _provider: string;
   _chain: string;
 
-  constructor(
-    provider: string,
-    chain: string,
-  ) {
+  constructor(provider: string, chain: string) {
     this._provider = provider;
     this._chain = chain;
   }

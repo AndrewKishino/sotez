@@ -6,21 +6,21 @@ interface LedgerGetAddress {
   path?: string;
   displayConfirm?: boolean;
   curve?: number;
-};
+}
 
 interface LedgerSignOperation {
   path?: string;
   rawTxHex: string;
   curve?: number;
   watermark?: Uint8Array;
-};
+}
 
 interface LedgerGetVersion {
   major: number;
   minor: number;
   patch: number;
   bakingApp: boolean;
-};
+}
 
 /**
  * @description Get the public key and public key hash from the ledger
@@ -79,8 +79,12 @@ const signOperation = async ({
   const tezosLedger = new LedgerApp(transport);
   let signature;
   try {
-    const watermarkHex = (`00${watermark}`).slice(-2);
-    ({ signature } = await tezosLedger.signOperation(path, `${watermarkHex}${rawTxHex}`, curve));
+    const watermarkHex = `00${watermark}`.slice(-2);
+    ({ signature } = await tezosLedger.signOperation(
+      path,
+      `${watermarkHex}${rawTxHex}`,
+      curve,
+    ));
   } catch (e) {
     transport.close();
     return e;

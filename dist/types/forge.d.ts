@@ -40,9 +40,32 @@ interface ForgedBytes {
     counter: number;
 }
 declare type Micheline = {
+    entrypoint: string;
+    value: {
+        prim: string;
+        args?: MichelineArray;
+        annots?: string[];
+    } | {
+        bytes: string;
+    } | {
+        int: string;
+    } | {
+        string: string;
+    } | {
+        address: string;
+    } | {
+        contract: string;
+    } | {
+        key: string;
+    } | {
+        key_hash: string;
+    } | {
+        signature: string;
+    } | MichelineArray;
+} | {
     prim: string;
     args?: MichelineArray;
-    annots?: Array<string>;
+    annots?: string[];
 } | {
     bytes: string;
 } | {
@@ -63,7 +86,7 @@ declare type Micheline = {
 interface MichelineArray extends Array<Micheline> {
 }
 declare const _default: {
-    address: (address: string, protocol?: string | undefined) => string;
+    address: (address: string, protocol?: string) => string;
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;

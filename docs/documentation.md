@@ -818,7 +818,7 @@ Forge address bytes
 ### Parameters
 
 -   `address` **[string][2]** Address to forge
--   `protocol`  
+-   `protocol` **[string][2]** Current protocol (optional, default `''`)
 
 Returns **[string][2]** Forged address bytes
 

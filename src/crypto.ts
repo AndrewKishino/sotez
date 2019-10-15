@@ -1,4 +1,7 @@
-import { generateMnemonic as bip39GenerateMnemonic, mnemonicToSeed } from 'bip39';
+import {
+  generateMnemonic as bip39GenerateMnemonic,
+  mnemonicToSeed,
+} from 'bip39';
 import * as pbkdf2 from 'pbkdf2';
 import * as _sodium from 'libsodium-wrappers';
 import toBuffer from 'typedarray-to-buffer';
@@ -10,7 +13,7 @@ interface Keys {
   pkh: string;
   sk: string;
   password?: string;
-};
+}
 
 interface KeysMnemonicPassphrase {
   mnemonic: string;
@@ -18,14 +21,14 @@ interface KeysMnemonicPassphrase {
   sk: string;
   pk: string;
   pkh: string;
-};
+}
 
 interface Signed {
   bytes: string;
   sig: string;
   prefixSig: string;
   sbytes: string;
-};
+}
 
 /**
  * @description Extract key pairs from a secret key
@@ -36,7 +39,10 @@ interface Signed {
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
  */
-const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => {
+const extractKeys = async (
+  sk: string,
+  password: string = '',
+): Promise<Keys> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -64,27 +70,45 @@ const extractKeys = async (sk: string, password: string = ''): Promise<Keys> => 
       }
 
       const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
-      const kp = sodium.crypto_sign_seed_keypair(sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), key));
+      const kp = sodium.crypto_sign_seed_keypair(
+        sodium.crypto_secretbox_open_easy(esm, new Uint8Array(24), key),
+      );
       return {
         sk: utility.b58cencode(kp.privateKey, prefix.edsk),
         pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-        pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
+        pkh: utility.b58cencode(
+          sodium.crypto_generichash(20, kp.publicKey),
+          prefix.tz1,
+        ),
       };
     }
     if (sk.length === 98) {
       return {
         sk,
-        pk: utility.b58cencode(utility.b58cdecode(sk, prefix.edsk).slice(32), prefix.edpk),
-        pkh: utility.b58cencode(sodium.crypto_generichash(20, utility.b58cdecode(sk, prefix.edsk).slice(32)), prefix.tz1),
+        pk: utility.b58cencode(
+          utility.b58cdecode(sk, prefix.edsk).slice(32),
+          prefix.edpk,
+        ),
+        pkh: utility.b58cencode(
+          sodium.crypto_generichash(
+            20,
+            utility.b58cdecode(sk, prefix.edsk).slice(32),
+          ),
+          prefix.tz1,
+        ),
       };
     }
-    if (sk.length === 54) { // seed
+    if (sk.length === 54) {
+      // seed
       const s = utility.b58cdecode(sk, prefix.edsk2);
       const kp = sodium.crypto_sign_seed_keypair(s);
       return {
         sk: utility.b58cencode(kp.privateKey, prefix.edsk),
         pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-        pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
+        pkh: utility.b58cencode(
+          sodium.crypto_generichash(20, kp.publicKey),
+          prefix.tz1,
+        ),
       };
     }
   }
@@ -126,7 +150,10 @@ const checkAddress = (address: string): boolean => {
  * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
  */
-const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysMnemonicPassphrase> => {
+const generateKeys = async (
+  mnemonic: string,
+  passphrase: string,
+): Promise<KeysMnemonicPassphrase> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -134,14 +161,19 @@ const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysM
   }
 
   const sodium = _sodium;
-  const s = await mnemonicToSeed(mnemonic, passphrase).then((seed: (string | Buffer)) => seed.slice(0, 32));
+  const s = await mnemonicToSeed(mnemonic, passphrase).then(
+    (seed: string | Buffer) => seed.slice(0, 32),
+  );
   const kp = sodium.crypto_sign_seed_keypair(toBuffer(s));
   return {
     mnemonic,
     passphrase,
     sk: utility.b58cencode(kp.privateKey, prefix.edsk),
     pk: utility.b58cencode(kp.publicKey, prefix.edpk),
-    pkh: utility.b58cencode(sodium.crypto_generichash(20, kp.publicKey), prefix.tz1),
+    pkh: utility.b58cencode(
+      sodium.crypto_generichash(20, kp.publicKey),
+      prefix.tz1,
+    ),
   };
 };
 
@@ -158,7 +190,12 @@ const generateKeys = async (mnemonic: string, passphrase: string): Promise<KeysM
  * crypto.sign(opbytes, keys.sk, watermark.generic)
  *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
  */
-const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string = ''): Promise<Signed> => {
+const sign = async (
+  bytes: string,
+  sk: string,
+  wm: Uint8Array,
+  password: string = '',
+): Promise<Signed> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -178,7 +215,11 @@ const sign = async (bytes: string, sk: string, wm: Uint8Array, password: string 
   if (typeof wm !== 'undefined') {
     bb = utility.mergebuf(wm, bb);
   }
-  const sig = sodium.crypto_sign_detached(sodium.crypto_generichash(32, bb), utility.b58cdecode(sk, prefix.edsk), 'uint8array');
+  const sig = sodium.crypto_sign_detached(
+    sodium.crypto_generichash(32, bb),
+    utility.b58cdecode(sk, prefix.edsk),
+    'uint8array',
+  );
   const prefixSig = utility.b58cencode(sig, prefix.edsig);
   const signatureBuffer = toBuffer(sig);
   const sbytes = bytes + utility.buf2hex(signatureBuffer);

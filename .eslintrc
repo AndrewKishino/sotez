@@ -1,19 +1,18 @@
 {
   "extends": [
     "airbnb-base",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "env": {
-    "browser":  true,
+    "browser": true,
     "node": true,
     "jest": true
   },
   "parserOptions": {
-    "ecmaVersion": 9
+    "ecmaVersion": 2018
   },
   "rules": {
     "no-param-reassign": 0,

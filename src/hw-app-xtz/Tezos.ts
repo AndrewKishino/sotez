@@ -14,11 +14,7 @@ export default class Tezos {
     this.transport = transport;
     transport.decorateAppAPIMethods(
       this,
-      [
-        'getAddress',
-        'signOperation',
-        'getVersion',
-      ],
+      ['getAddress', 'signOperation', 'getVersion'],
       'XTZ',
     );
   }
@@ -36,9 +32,9 @@ export default class Tezos {
     boolDisplay?: boolean,
     curve: number = 0x00,
   ): Promise<{
-      publicKey: string;
-      address: string;
-    }> {
+    publicKey: string;
+    address: string;
+  }> {
     const paths = splitPath(path);
     const buffer = Buffer.alloc(paths.length * 4 + 1);
     buffer[0] = paths.length;
@@ -46,17 +42,10 @@ export default class Tezos {
       buffer.writeUInt32BE(element, 1 + 4 * index);
     });
     return this.transport
-      .send(
-        0x80,
-        boolDisplay ? 0x03 : 0x02,
-        0,
-        curve,
-        buffer,
-      )
+      .send(0x80, boolDisplay ? 0x03 : 0x02, 0, curve, buffer)
       .then((response: any) => {
         const publicKeyLength = response[0];
-        const publicKey = response
-          .slice(1, 1 + publicKeyLength);
+        const publicKey = response.slice(1, 1 + publicKeyLength);
         return encodePublicKey(publicKey, curve);
       });
   }
@@ -117,17 +106,19 @@ export default class Tezos {
     patch: number;
     bakingApp: boolean;
   }> {
-    return this.transport.send(0x80, 0x00, 0x00, 0x00, Buffer.alloc(0)).then((apduResponse: any) => {
-      const bakingApp = apduResponse[0] === 1;
-      const major = apduResponse[1];
-      const minor = apduResponse[2];
-      const patch = apduResponse[3];
-      return {
-        major,
-        minor,
-        patch,
-        bakingApp,
-      };
-    });
+    return this.transport
+      .send(0x80, 0x00, 0x00, 0x00, Buffer.alloc(0))
+      .then((apduResponse: any) => {
+        const bakingApp = apduResponse[0] === 1;
+        const major = apduResponse[1];
+        const minor = apduResponse[2];
+        const patch = apduResponse[3];
+        return {
+          major,
+          minor,
+          patch,
+          bakingApp,
+        };
+      });
   }
 }

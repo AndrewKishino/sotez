@@ -8,13 +8,16 @@ module.exports = {
   externals: [nodeExternals()],
   resolve: {
     extensions: ['.js'],
-    modules: [__dirname, 'node_modules'],
+    modules: ['node_modules'],
     alias: {
       ledger$: path.join(__dirname, 'lib', 'ledger.js'),
     },
   },
   entry: {
-    main: ['regenerator-runtime/runtime', path.join(__dirname, 'lib', 'index.js')],
+    main: [
+      'regenerator-runtime/runtime',
+      path.join(__dirname, 'lib', 'index.js'),
+    ],
   },
   output: {
     path: path.join(__dirname, 'dist', 'node'),
@@ -24,6 +27,7 @@ module.exports = {
   optimization: {
     minimizer: [
       new TerserPlugin({
+        extractComments: false,
         cache: true,
         parallel: true,
         terserOptions: {

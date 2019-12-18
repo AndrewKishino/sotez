@@ -772,9 +772,7 @@ export default class Sotez extends AbstractTezModule {
         head = header;
 
         if (requiresReveal) {
-          const managerKey = protocols['005'].includes(metadata.next_protocol)
-            ? manager
-            : manager.key;
+          const managerKey = this._getManagerKey(manager, metadata.protocol);
           if (!managerKey) {
             const reveal: Operation = {
               kind: 'reveal',
@@ -841,13 +839,10 @@ export default class Sotez extends AbstractTezModule {
               constructedOp.counter = `${opCounter}`;
             }
 
-            if (protocols['005'].includes(metadata.next_protocol)) {
-              delete constructedOp.manager_pubkey;
-              delete constructedOp.spendable;
-              delete constructedOp.delegatable;
-            }
-
-            return constructedOp;
+            return this._conformOperation(
+              constructedOp,
+              metadata.next_protocol,
+            );
           });
 
         opOb.branch = head.hash;
@@ -1369,5 +1364,55 @@ export default class Sotez extends AbstractTezModule {
         storage: _storage,
       },
     );
+  };
+
+  /**
+   * Get the mananger key from the protocol dependent query
+   * @param {Object|string} manager The manager key query response
+   * @param {string} protocol The protocol of the current block
+   * @returns {string} If manager exists, returns the manager key
+   */
+  _getManagerKey = (manager: any, protocol: string): string | null => {
+    if (!manager) {
+      return null;
+    }
+    const protocolMap = {
+      [`${protocols['001']}`]: manager.key,
+      [`${protocols['002']}`]: manager.key,
+      [`${protocols['003']}`]: manager.key,
+      [`${protocols['004']}`]: manager.key,
+      [`${protocols['005a']}`]: manager,
+      [`${protocols['005']}`]: manager,
+      [`${protocols['006']}`]: manager,
+    };
+    if (!protocolMap[protocol]) {
+      throw new Error(`Unrecognized protocol: ${protocol}`);
+    }
+    return protocolMap[protocol];
+  };
+
+  _conformOperation = (
+    constructedOp: ConstructedOperation,
+    nextProtocol: string,
+  ): ConstructedOperation => {
+    const constructOp001 = (op: ConstructedOperation) => op;
+    const constructOp005 = (op: ConstructedOperation) => {
+      delete op.manager_pubkey;
+      delete op.spendable;
+      delete op.delegatable;
+      return op;
+    };
+
+    const protocolMap = {
+      [`${protocols['001']}`]: constructOp001,
+      [`${protocols['002']}`]: constructOp001,
+      [`${protocols['003']}`]: constructOp001,
+      [`${protocols['004']}`]: constructOp001,
+      [`${protocols['005a']}`]: constructOp005,
+      [`${protocols['005']}`]: constructOp005,
+      [`${protocols['006']}`]: constructOp005,
+    };
+
+    return protocolMap[nextProtocol](constructedOp);
   };
 }

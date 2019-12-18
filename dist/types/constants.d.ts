@@ -64,8 +64,13 @@ export declare const forgeMappings: {
     };
 };
 export declare const protocols: {
-    '004': string[];
-    '005': string[];
+    '001': string;
+    '002': string;
+    '003': string;
+    '004': string;
+    '005a': string;
+    '005': string;
+    '006': string;
 };
 declare const _default: {
     prefix: Prefix;
@@ -100,8 +105,13 @@ declare const _default: {
         };
     };
     protocols: {
-        '004': string[];
-        '005': string[];
+        '001': string;
+        '002': string;
+        '003': string;
+        '004': string;
+        '005a': string;
+        '005': string;
+        '006': string;
     };
 };
 export default _default;

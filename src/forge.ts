@@ -135,8 +135,16 @@ const script = (script: { code: Micheline; storage: Micheline }): string => {
  * @returns {string} Forged parameter bytes
  */
 const parameters = (parameter: any, protocol: string): string => {
-  const fp: Array<string> = [];
-  if (protocols['005'].includes(protocol)) {
+  const parameters001 = (parameter: any): string => {
+    const fp: Array<string> = [];
+    fp.push(bool(true));
+    const t = encodeRawBytes(parameter).toLowerCase();
+    fp.push(toBytesInt32Hex(t.length / 2) + t);
+    return fp.join('');
+  };
+
+  const parameters005 = (parameter: any): string => {
+    const fp: Array<string> = [];
     const isDefaultParameter = parameter.entrypoint === 'default';
     fp.push(isDefaultParameter ? '00' : 'FF');
 
@@ -156,13 +164,25 @@ const parameters = (parameter: any, protocol: string): string => {
       fp.push((parameterBytes.length / 2).toString(16).padStart(8, '0'));
       fp.push(parameterBytes);
     }
-  } else {
-    fp.push(bool(true));
-    const t = encodeRawBytes(parameter).toLowerCase();
-    fp.push(toBytesInt32Hex(t.length / 2) + t);
+
+    return fp.join('');
+  };
+
+  const protocolMap = {
+    [`${protocols['001']}`]: parameters001,
+    [`${protocols['002']}`]: parameters001,
+    [`${protocols['003']}`]: parameters001,
+    [`${protocols['004']}`]: parameters001,
+    [`${protocols['005a']}`]: parameters005,
+    [`${protocols['005']}`]: parameters005,
+    [`${protocols['006']}`]: parameters005,
+  };
+
+  if (!protocolMap[protocol]) {
+    throw new Error(`Unrecognized protocol: ${protocol}`);
   }
 
-  return fp.join('');
+  return protocolMap[protocol](parameter);
 };
 
 /**
@@ -188,13 +208,28 @@ const publicKeyHash = (pkh: string): string => {
  */
 const address = (address: string, protocol: string = ''): string => {
   const fa: Array<string> = [];
+
+  const addressSourceBytes = {
+    [`${protocols['001']}`]: true,
+    [`${protocols['002']}`]: true,
+    [`${protocols['003']}`]: true,
+    [`${protocols['004']}`]: true,
+  };
+
+  const getAddressType = (a: string): string => {
+    if (!protocol || addressSourceBytes[protocol]) {
+      return a.substr(0, 1) === 'K' ? '01' : '00';
+    }
+    return '';
+  };
+
   if (address.substr(0, 1) === 'K') {
-    fa.push(protocols['005'].includes(protocol) ? '' : '01');
+    fa.push(getAddressType(address));
     const forgedBuffer = toBuffer(utility.b58cdecode(address, prefix.KT));
     fa.push(utility.buf2hex(forgedBuffer));
     fa.push('00');
   } else {
-    fa.push(protocols['005'].includes(protocol) ? '' : '00');
+    fa.push(getAddressType(address));
     fa.push(publicKeyHash(address));
   }
   return fa.join('');
@@ -262,18 +297,29 @@ const publicKey = (pk: string): string => {
  * @returns {string} Forged operation bytes
  */
 const op = (op: ConstructedOperation, protocol: string): string => {
+  const opTag001 = (opKind: string): any =>
+    toBuffer(new Uint8Array([forgeMappings.forgeOpTags['001'][opKind]]));
+
+  const opTag005 = (opKind: string): any =>
+    toBuffer(new Uint8Array([forgeMappings.forgeOpTags['005'][opKind]]));
+
+  const protocolMap = {
+    [`${protocols['001']}`]: opTag001,
+    [`${protocols['002']}`]: opTag001,
+    [`${protocols['003']}`]: opTag001,
+    [`${protocols['004']}`]: opTag001,
+    [`${protocols['005a']}`]: opTag005,
+    [`${protocols['005']}`]: opTag005,
+    [`${protocols['006']}`]: opTag005,
+  };
+
+  if (!protocolMap[protocol]) {
+    throw new Error(`Unrecognized protocol: ${protocol}`);
+  }
+
   const fop: Array<string> = [];
 
-  let forgedBuffer;
-  if (protocols['005'].includes(protocol)) {
-    forgedBuffer = toBuffer(
-      new Uint8Array([forgeMappings.forgeOpTags['005'][op.kind]]),
-    );
-  } else {
-    forgedBuffer = toBuffer(
-      new Uint8Array([forgeMappings.forgeOpTags['004'][op.kind]]),
-    );
-  }
+  let forgedBuffer = protocolMap[protocol](op.kind);
 
   fop.push(utility.buf2hex(forgedBuffer));
 
@@ -450,6 +496,48 @@ const transaction = (op: ConstructedOperation, protocol: string): string => {
  * @returns {string} Forged operation bytes
  */
 const origination = (op: ConstructedOperation, protocol: string): string => {
+  const origination001 = (o: ConstructedOperation, forgedOp: Array<string>) => {
+    forgedOp.push(publicKeyHash(o.manager_pubkey));
+    forgedOp.push(zarith(o.balance));
+    forgedOp.push(bool(o.spendable));
+    forgedOp.push(bool(o.delegatable));
+    if (o.delegate) {
+      forgedOp.push(bool(true));
+      forgedOp.push(publicKeyHash(o.delegate));
+    } else {
+      forgedOp.push(bool(false));
+    }
+    if (o.script) {
+      forgedOp.push(bool(true));
+      forgedOp.push(script(o.script));
+    } else {
+      forgedOp.push(bool(false));
+    }
+    return forgedOp.join('');
+  };
+
+  const origination005 = (o: ConstructedOperation, forgedOp: Array<string>) => {
+    forgedOp.push(zarith(o.balance));
+    if (o.delegate) {
+      forgedOp.push(bool(true));
+      forgedOp.push(publicKeyHash(o.delegate));
+    } else {
+      forgedOp.push(bool(false));
+    }
+    forgedOp.push(script(o.script));
+    return forgedOp.join('');
+  };
+
+  const protocolMap = {
+    [`${protocols['001']}`]: origination001,
+    [`${protocols['002']}`]: origination001,
+    [`${protocols['003']}`]: origination001,
+    [`${protocols['004']}`]: origination001,
+    [`${protocols['005a']}`]: origination005,
+    [`${protocols['005']}`]: origination005,
+    [`${protocols['006']}`]: origination005,
+  };
+
   const fop: Array<string> = [];
 
   fop.push(address(op.source, protocol));
@@ -458,35 +546,7 @@ const origination = (op: ConstructedOperation, protocol: string): string => {
   fop.push(zarith(op.gas_limit));
   fop.push(zarith(op.storage_limit));
 
-  if (protocols['005'].includes(protocol)) {
-    fop.push(zarith(op.balance));
-    if (op.delegate) {
-      fop.push(bool(true));
-      fop.push(publicKeyHash(op.delegate));
-    } else {
-      fop.push(bool(false));
-    }
-    fop.push(script(op.script));
-  } else {
-    fop.push(publicKeyHash(op.manager_pubkey));
-    fop.push(zarith(op.balance));
-    fop.push(bool(op.spendable));
-    fop.push(bool(op.delegatable));
-    if (op.delegate) {
-      fop.push(bool(true));
-      fop.push(publicKeyHash(op.delegate));
-    } else {
-      fop.push(bool(false));
-    }
-    if (op.script) {
-      fop.push(bool(true));
-      fop.push(script(op.script));
-    } else {
-      fop.push(bool(false));
-    }
-  }
-
-  return fop.join('');
+  return protocolMap[protocol](op, fop);
 };
 
 /**

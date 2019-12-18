@@ -261,13 +261,20 @@ export default class Sotez extends AbstractTezModule {
     };
     key: KeyInterface;
     constructor(provider?: string, chain?: string, options?: ModuleOptions);
-    defaultFee: number;
-    localForge: boolean;
-    validateLocalForge: boolean;
-    counters: {
+    get defaultFee(): number;
+    set defaultFee(fee: number);
+    get localForge(): boolean;
+    set localForge(value: boolean);
+    get validateLocalForge(): boolean;
+    set validateLocalForge(value: boolean);
+    get counters(): {
         [key: string]: number;
     };
-    debugMode: boolean;
+    set counters(counters: {
+        [key: string]: number;
+    });
+    get debugMode(): boolean;
+    set debugMode(t: boolean);
     setProvider(provider: string, chain?: string): void;
     /**
      * @description Import a secret key
@@ -920,5 +927,13 @@ export default class Sotez extends AbstractTezModule {
     } | {
         signature: string;
     } | MichelineArray, amount: number, input: string, storage: string, trace?: boolean) => Promise<any>;
+    /**
+     * Get the mananger key from the protocol dependent query
+     * @param {Object|string} manager The manager key query response
+     * @param {string} protocol The protocol of the current block
+     * @returns {string} If manager exists, returns the manager key
+     */
+    _getManagerKey: (manager: any, protocol: string) => string | null;
+    _conformOperation: (constructedOp: ConstructedOperation, nextProtocol: string) => ConstructedOperation;
 }
 export {};

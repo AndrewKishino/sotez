@@ -46,11 +46,6 @@ export default class Key {
     ledgerPath?: string;
     ledgerCurve?: number;
   } = {}) {
-    if (ledgerCurve !== 0x00) {
-      throw new Error(
-        'Only ed25519 curve (0x00) is supported for ledger at the moment.',
-      );
-    }
     this._isLedger = !key;
     this._ledgerPath = ledgerPath;
     this._ledgerCurve = ledgerCurve;

@@ -32,10 +32,13 @@ export default class Key {
         ledgerPath?: string;
         ledgerCurve?: number;
     });
-    readonly curve: string;
-    isLedger: boolean;
-    ledgerPath: string;
-    ledgerCurve: number;
+    get curve(): string;
+    get isLedger(): boolean;
+    set isLedger(value: boolean);
+    get ledgerPath(): string;
+    set ledgerPath(value: string);
+    get ledgerCurve(): number;
+    set ledgerCurve(value: number);
     /**
      * @memberof Key
      * @description Returns the public key

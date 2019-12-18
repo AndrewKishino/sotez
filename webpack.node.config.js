@@ -13,12 +13,7 @@ module.exports = {
       ledger$: path.join(__dirname, 'lib', 'ledger.js'),
     },
   },
-  entry: {
-    main: [
-      'regenerator-runtime/runtime',
-      path.join(__dirname, 'lib', 'index.js'),
-    ],
-  },
+  entry: path.join(__dirname, 'lib', 'index.js'),
   output: {
     path: path.join(__dirname, 'dist', 'node'),
     filename: 'index.js',

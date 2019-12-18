@@ -15,12 +15,7 @@ module.exports = {
   plugins: [
     new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
   ],
-  entry: {
-    main: [
-      'regenerator-runtime/runtime',
-      path.join(__dirname, 'lib', 'index.js'),
-    ],
-  },
+  entry: path.join(__dirname, 'lib', 'index.js'),
   output: {
     path: path.join(__dirname, 'dist', 'web'),
     filename: 'index.js',

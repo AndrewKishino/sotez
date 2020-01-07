@@ -18,12 +18,13 @@ type Micheline =
   | { signature: string }
   | MichelineArray;
 
-interface MichelineArray extends Array<Micheline> {}
+type MichelineArray = Array<Micheline>;
 
 const textEncode = (value: string): Uint8Array =>
   new Uint8Array(Buffer.from(value, 'utf8'));
 
-const textDecode = (buffer: Uint8Array) => Buffer.from(buffer).toString('utf8');
+const textDecode = (buffer: Uint8Array): string =>
+  Buffer.from(buffer).toString('utf8');
 
 /**
  * @description Convert from base58 to integer

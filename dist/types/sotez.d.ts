@@ -177,8 +177,7 @@ declare type Micheline = {
 } | {
     signature: string;
 } | MichelineArray;
-interface MichelineArray extends Array<Micheline> {
-}
+declare type MichelineArray = Array<Micheline>;
 interface Keys {
     pk: string;
     pkh: string;

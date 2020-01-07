@@ -1,9 +1,4 @@
-const {
-  default: Sotez,
-  utility,
-  crypto,
-  Key,
-} = require('../index');
+const { default: Sotez, utility, crypto, Key } = require('../index');
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -64,7 +59,8 @@ describe('sotez', () => {
 
   describe('crypto', () => {
     const TEST_KEYS = {
-      sk: 'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
+      sk:
+        'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
       pk: 'edpkvJELH15q7a8ShGRsoULGxLQfUQaGahwRTFywCsnWPPdwnmASRH',
       pkh: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
     };
@@ -77,7 +73,9 @@ describe('sotez', () => {
     test('checkAddress', () => {
       const checkedAddress = crypto.checkAddress(TEST_KEYS.pkh);
       expect(checkedAddress).toBe(true);
-      const invalidAddress = crypto.checkAddress(`${TEST_KEYS.pkh}invalidstring`);
+      const invalidAddress = crypto.checkAddress(
+        `${TEST_KEYS.pkh}invalidstring`,
+      );
       expect(invalidAddress).toBe(false);
     });
 
@@ -94,39 +92,48 @@ describe('sotez', () => {
     });
 
     test('sign', async () => {
-      const {
-        bytes,
-        sig,
-        prefixSig,
-        sbytes,
-      } = await crypto.sign('AA5', TEST_KEYS.sk, new Uint8Array([3]));
+      const { bytes, sig, prefixSig, sbytes } = await crypto.sign(
+        'AA5',
+        TEST_KEYS.sk,
+        new Uint8Array([3]),
+      );
       expect(typeof bytes).toBe('string');
       expect(bytes).toBe('AA5');
       expect(typeof sig).toBe('string');
-      expect(sig).toEqual('sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW');
+      expect(sig).toEqual(
+        'sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW',
+      );
       expect(typeof prefixSig).toBe('string');
-      expect(prefixSig).toBe('edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB');
+      expect(prefixSig).toBe(
+        'edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB',
+      );
       expect(typeof sbytes).toBe('string');
-      expect(sbytes).toBe('AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a');
+      expect(sbytes).toBe(
+        'AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a',
+      );
     });
   });
 
   describe('Key', () => {
     const TEST_KEYS = {
-      sk: 'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
+      sk:
+        'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
       pk: 'edpkvJELH15q7a8ShGRsoULGxLQfUQaGahwRTFywCsnWPPdwnmASRH',
       pkh: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
     };
 
     const KEY1 = {
-      esk: 'edesk1mYD8xFHDsM5UWdf8RjrwyUr7yGo1tvDoWFun1kwAq8pDGJFBWH99SqcdQXX5tHVduFhUwBBZsPNVh2FwTR',
-      sk: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y',
+      esk:
+        'edesk1mYD8xFHDsM5UWdf8RjrwyUr7yGo1tvDoWFun1kwAq8pDGJFBWH99SqcdQXX5tHVduFhUwBBZsPNVh2FwTR',
+      sk:
+        'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y',
       pk: 'edpkuZWgrKbNiwAVZ42RnEiNwm2ipohxbPWXsxpofSLFDqcHjKnypg',
       pkh: 'tz1PTBQi6gTXxCynwvgzu9ga15jnE8WBRUnn',
     };
 
     const KEY2 = {
-      sk: 'edskSASdEH3A9w47bo8W2SgatKg5qeEucWLxNBXfPm2mus9kwV5H9d89C77ZG1qKdn4GG7Hc2jqcE4JKbimA93dZbSC3Qdkawn',
+      sk:
+        'edskSASdEH3A9w47bo8W2SgatKg5qeEucWLxNBXfPm2mus9kwV5H9d89C77ZG1qKdn4GG7Hc2jqcE4JKbimA93dZbSC3Qdkawn',
       pk: 'edpktuHJDoatxk5NcXfdHgFX15t2aZMxA3b5AoQZAzbeDNkiC416Xu',
       pkh: 'tz1UJesXieRG8cZHFUad63RwUfFqh9cwGzvW',
     };
@@ -221,63 +228,102 @@ describe('sotez', () => {
       const key = new Key({ key: TEST_KEYS.sk });
       await key.ready;
 
-      const {
-        bytes,
-        sig,
-        prefixSig,
-        sbytes,
-      } = await key.sign('AA5', new Uint8Array([3]));
+      const { bytes, sig, prefixSig, sbytes } = await key.sign(
+        'AA5',
+        new Uint8Array([3]),
+      );
 
       expect(typeof bytes).toBe('string');
       expect(bytes).toBe('AA5');
       expect(typeof sig).toBe('string');
-      expect(sig).toEqual('sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW');
+      expect(sig).toEqual(
+        'sigsXHR6ten8B7sv7b2upVnKzusZgabmzchYgwrF9BQ4HGjTpHAMqGUicsmPXnsukgy2Mm2KGzckoEEo1y215oBajgYZPSsW',
+      );
       expect(typeof prefixSig).toBe('string');
-      expect(prefixSig).toBe('edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB');
+      expect(prefixSig).toBe(
+        'edsigu3LkYA7Z44N9w76tAwfgjdHRePmWaQsD5ESgab9AQQJE3HksfFkMZmrnoz9ayNw3QZqNwq4MTNkzyb4Ag9RmNdonUBs6RB',
+      );
       expect(typeof sbytes).toBe('string');
-      expect(sbytes).toBe('AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a');
+      expect(sbytes).toBe(
+        'AA5e1bf8a2d3467c5b1f7cd9e1ea6b95b4065908dfe2c439243be384b725bcebfc05f4e8c77f75dcfd58fbe146ce90c0247c9bd3350c18f9bdfcd4a5dde494bfd0a',
+      );
+    });
+
+    test('verify ed25519', async () => {
+      const key = new Key({ key: TEST_KEYS.sk });
+      await key.ready;
+
+      const { bytes, sig } = await key.sign('AA5');
+      const verified = await key.verify(bytes, sig);
+      expect(verified).toBe(true);
     });
 
     test('sign secp256k1', async () => {
       const key = new Key({ key: KEY3.sk });
       await key.ready;
 
-      const {
-        bytes,
-        sig,
-        prefixSig,
-        sbytes,
-      } = await key.sign('AA5', new Uint8Array([3]));
+      const { bytes, sig, prefixSig, sbytes } = await key.sign(
+        'AA5',
+        new Uint8Array([3]),
+      );
 
       expect(typeof bytes).toBe('string');
       expect(bytes).toBe('AA5');
       expect(typeof sig).toBe('string');
-      expect(sig).toEqual('sigohcvcEykea7vTFiWyR5iung7FnxjXPD1HmDsXBbHo8naDo7LKWGdP3A1Jf6gsgY9btB6ZUFZUxT34Jb71KgfxrG5MGkXH');
+      expect(sig).toEqual(
+        'sigohcvcEykea7vTFiWyR5iung7FnxjXPD1HmDsXBbHo8naDo7LKWGdP3A1Jf6gsgY9btB6ZUFZUxT34Jb71KgfxrG5MGkXH',
+      );
       expect(typeof prefixSig).toBe('string');
-      expect(prefixSig).toBe('spsig1XXJFfrEDzYGJdFUV7yENpU425aXob1uUrtYeKLu6h4W1HSvWtaeaWX1hgEBkGkQEKdKqXKszd7B8M1hct1BbBPNenvwAZ');
+      expect(prefixSig).toBe(
+        'spsig1XXJFfrEDzYGJdFUV7yENpU425aXob1uUrtYeKLu6h4W1HSvWtaeaWX1hgEBkGkQEKdKqXKszd7B8M1hct1BbBPNenvwAZ',
+      );
       expect(typeof sbytes).toBe('string');
-      expect(sbytes).toBe('AA5c48937b4fbddcce04e883f2bba7671119dadea003e78b3c149290ee3d5a228bf28c78e2f6f786a6a3b5ab3a2ad0e3d65f2c2af5c0de64f04bdcfd5a7ba0537e4');
+      expect(sbytes).toBe(
+        'AA5c48937b4fbddcce04e883f2bba7671119dadea003e78b3c149290ee3d5a228bf28c78e2f6f786a6a3b5ab3a2ad0e3d65f2c2af5c0de64f04bdcfd5a7ba0537e4',
+      );
+    });
+
+    test('verify secp256k1', async () => {
+      const key = new Key({ key: KEY3.sk });
+      await key.ready;
+
+      const { bytes, sig } = await key.sign('AA5');
+      const verified = await key.verify(bytes, sig);
+      expect(verified).toBe(true);
     });
 
     test('sign p256', async () => {
       const key = new Key({ key: KEY4.sk });
       await key.ready;
 
-      const {
-        bytes,
-        sig,
-        prefixSig,
-        sbytes,
-      } = await key.sign('AA5', new Uint8Array([3]));
+      const { bytes, sig, prefixSig, sbytes } = await key.sign(
+        'AA5',
+        new Uint8Array([3]),
+      );
 
       expect(typeof bytes).toBe('string');
       expect(bytes).toBe('AA5');
       expect(typeof sig).toBe('string');
-      expect(sig).toEqual('sigp69onNc6ShKF5VqU2iExV1fHZWuWmAm6tdJcsMPVkzNNnJXcygczjHXBe5MxnC9hT4DNsg5z4Co9eSjAtXR4xBmo9ZLij');
+      expect(sig).toEqual(
+        'sigp69onNc6ShKF5VqU2iExV1fHZWuWmAm6tdJcsMPVkzNNnJXcygczjHXBe5MxnC9hT4DNsg5z4Co9eSjAtXR4xBmo9ZLij',
+      );
       expect(typeof prefixSig).toBe('string');
-      expect(prefixSig).toBe('p2sigoQNesUABudMi1kbikJmjzUSfxB8mrbBKLQA1GopnySevKaJwMjiE1TwUq1tCDPj255jPwv2KZA7X38euUycWDt7iFk6Pf');
+      expect(prefixSig).toBe(
+        'p2sigoQNesUABudMi1kbikJmjzUSfxB8mrbBKLQA1GopnySevKaJwMjiE1TwUq1tCDPj255jPwv2KZA7X38euUycWDt7iFk6Pf',
+      );
       expect(typeof sbytes).toBe('string');
-      expect(sbytes).toBe('AA5c7816692b041b21ec0c4b3f927b51faf8604a567a83a052f0f2192f727aec2956fe64ba4bdcbe63af07d73cb2065f10832ffd80967463307fbcfe289f576346b');
+      expect(sbytes).toBe(
+        'AA5c7816692b041b21ec0c4b3f927b51faf8604a567a83a052f0f2192f727aec2956fe64ba4bdcbe63af07d73cb2065f10832ffd80967463307fbcfe289f576346b',
+      );
+    });
+
+    test('verify p256', async () => {
+      const key = new Key({ key: KEY4.sk });
+      await key.ready;
+
+      const { bytes, sig } = await key.sign('AA5');
+      const verified = await key.verify(bytes, sig);
+      expect(verified).toBe(true);
     });
   });
 

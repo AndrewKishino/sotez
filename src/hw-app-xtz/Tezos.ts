@@ -55,8 +55,8 @@ export default class Tezos {
    */
   async getAddress(
     path: string,
-    boolDisplay: boolean = false,
-    curve: number = 0x00,
+    boolDisplay = false,
+    curve = 0x00,
     apdu?: number, // TODO specify
   ): Promise<GetAddressResult> {
     const cla = 0x80;
@@ -87,7 +87,7 @@ export default class Tezos {
   async sign(
     path: string,
     rawTxHex: string,
-    curve: number = 0x00,
+    curve = 0x00,
     adpu: number,
   ): Promise<SignOperationResult> {
     const paths = splitPath(path);
@@ -110,9 +110,9 @@ export default class Tezos {
       } else {
         chunkSize = maxChunkSize;
       }
-      const buffer = Buffer.alloc(chunkSize);
-      rawTx.copy(buffer, 0, offset, offset + chunkSize);
-      toSend.push(buffer);
+      const buff = Buffer.alloc(chunkSize);
+      rawTx.copy(buff, 0, offset, offset + chunkSize);
+      toSend.push(buff);
       offset += chunkSize;
     }
 
@@ -125,6 +125,7 @@ export default class Tezos {
       } else if (i === toSend.length - 1) {
         code = 0x81;
       }
+      // eslint-disable-next-line no-await-in-loop
       response = await this.transport.send(0x80, adpu, code, curve, data);
     }
 
@@ -132,10 +133,10 @@ export default class Tezos {
     if (curve === 0) {
       signature = response.slice(0, response.length - 2).toString('hex');
     } else {
-      let signatureBuffer = Buffer.alloc(64);
+      const signatureBuffer = Buffer.alloc(64);
       signatureBuffer.fill(0);
-      let r_val = signatureBuffer.subarray(0, 32);
-      let s_val = signatureBuffer.subarray(32, 64);
+      const r_val = signatureBuffer.subarray(0, 32);
+      const s_val = signatureBuffer.subarray(32, 64);
       let idx = 0;
       const frameType = response.readUInt8(idx++);
       if (frameType !== 0x31 && frameType !== 0x30) {
@@ -154,7 +155,7 @@ export default class Tezos {
       }
       response.copy(r_val, 32 - r_length, idx, idx + r_length);
       idx += r_length;
-      if (response.readUInt8(idx++) != 0x02) {
+      if (response.readUInt8(idx++) !== 0x02) {
         throw new Error('Cannot parse ledger response.');
       }
       let s_length = response.readUInt8(idx++);
@@ -175,7 +176,7 @@ export default class Tezos {
   signOperation(
     path: string,
     rawTxHex: string,
-    curve: number = 0x00,
+    curve = 0x00,
   ): Promise<SignOperationResult> {
     return this.sign(path, rawTxHex, curve, 0x04);
   }
@@ -183,7 +184,7 @@ export default class Tezos {
   signHash(
     path: string,
     rawTxHex: string,
-    curve: number = 0x00,
+    curve = 0x00,
   ): Promise<SignOperationResult> {
     return this.sign(path, rawTxHex, curve, 0x05);
   }

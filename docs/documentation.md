@@ -710,6 +710,16 @@ Sign a raw sequence of bytes
 
 Returns **[Promise][5]** The signature object
 
+### verify
+
+Verify signature, throw error if it is not valid
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+-   `signature` **[string][2]** A signature in base58 encoding
+-   `publicKey`   (optional, default `this.publicKey()`)
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
@@ -799,6 +809,18 @@ crypto.sign(opbytes, keys.sk, watermark.generic)
 
 Returns **[Promise][3]** The signed bytes
 
+## verify
+
+Verify signed bytes
+
+### Parameters
+
+-   `bytes` **[String][1]** The signed bytes
+-   `sig` **[String][1]** The signature of the signed bytes
+-   `pk` **[String][1]** The public key
+
+Returns **[Boolean][2]** Whether the signed bytes are valid
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
@@ -818,7 +840,7 @@ Forge activate_account operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -828,7 +850,7 @@ Forge address bytes
 
 ### Parameters
 
--   `address` **[string][2]** Address to forge
+-   `addressArg` **[string][2]** Address to forge
 -   `protocol` **[string][2]** Current protocol (optional, default `''`)
 
 Returns **[string][2]** Forged address bytes
@@ -839,7 +861,7 @@ Forge ballot operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -849,7 +871,7 @@ Forge boolean
 
 ### Parameters
 
--   `bool` **[boolean][3]** Boolean value to convert
+-   `boolArg` **[boolean][3]** Boolean value to convert
 
 Returns **[string][2]** The converted boolean
 
@@ -869,7 +891,7 @@ Forge delegation operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
@@ -880,7 +902,7 @@ Forge double_baking_evidence operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
@@ -891,7 +913,7 @@ Forge double_endorsement_evidence operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -911,7 +933,7 @@ Forge endorsement operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 ## forge
@@ -950,7 +972,7 @@ Forge operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
@@ -961,7 +983,7 @@ Forge origination operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
@@ -983,7 +1005,7 @@ Forge proposals operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1013,7 +1035,7 @@ Forge reveal operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
@@ -1024,9 +1046,7 @@ Forge script bytes
 
 ### Parameters
 
--   `script` **[Object][1]** Script to forge
-    -   `script.code` **[string][2]** Script code
-    -   `script.storage` **[string][2]** Script storage
+-   `scriptArg` **[Object][1]** Script to forge
 
 Returns **[string][2]** Forged script bytes
 
@@ -1036,7 +1056,7 @@ Forge seed_nonce_revelation operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1066,7 +1086,7 @@ Forge transaction operation bytes
 
 ### Parameters
 
--   `op` **[Object][1]** Operation to forge
+-   `opArg` **[Object][1]** Operation to forge
 -   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes

@@ -173,7 +173,7 @@ type Micheline =
   | { signature: string }
   | MichelineArray;
 
-interface MichelineArray extends Array<Micheline> {}
+type MichelineArray = Array<Micheline>;
 
 interface Keys {
   pk: string;
@@ -275,7 +275,7 @@ export default class Sotez extends AbstractTezModule {
     this._counters = {};
   }
 
-  get defaultFee() {
+  get defaultFee(): number {
     return this._defaultFee;
   }
 
@@ -283,7 +283,7 @@ export default class Sotez extends AbstractTezModule {
     this._defaultFee = fee;
   }
 
-  get localForge() {
+  get localForge(): boolean {
     return this._localForge;
   }
 
@@ -291,7 +291,7 @@ export default class Sotez extends AbstractTezModule {
     this._localForge = value;
   }
 
-  get validateLocalForge() {
+  get validateLocalForge(): boolean {
     return this._validateLocalForge;
   }
 
@@ -299,7 +299,7 @@ export default class Sotez extends AbstractTezModule {
     this._validateLocalForge = value;
   }
 
-  get counters() {
+  get counters(): { [key: string]: number } {
     return this._counters;
   }
 
@@ -307,7 +307,7 @@ export default class Sotez extends AbstractTezModule {
     this._counters = counters;
   }
 
-  get debugMode() {
+  get debugMode(): boolean {
     return this._debugMode;
   }
 
@@ -315,7 +315,7 @@ export default class Sotez extends AbstractTezModule {
     this._debugMode = t;
   }
 
-  setProvider(provider: string, chain: string = this.chain) {
+  setProvider(provider: string, chain: string = this.chain): void {
     super.setProvider(provider, chain);
     this.provider = provider;
     this.chain = chain;
@@ -329,7 +329,11 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y')
    */
-  importKey = async (key: string, passphrase?: string, email?: string) => {
+  importKey = async (
+    key: string,
+    passphrase?: string,
+    email?: string,
+  ): Promise<void> => {
     this.key = new Key({ key, passphrase, email });
     await this.key.ready;
   };
@@ -341,7 +345,10 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * await sotez.importLedger();
    */
-  importLedger = async (path = "44'/1729'/0'/0'", curve = 0x00) => {
+  importLedger = async (
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  ): Promise<void> => {
     this.key = new Key({ ledgerPath: path, ledgerCurve: curve });
     await this.key.ready;
   };
@@ -1304,8 +1311,8 @@ export default class Sotez extends AbstractTezModule {
     }
 
     const check = {
-      data,
-      type,
+      data: _data,
+      type: _type,
       gas: '4000000',
     };
 
@@ -1395,8 +1402,9 @@ export default class Sotez extends AbstractTezModule {
     constructedOp: ConstructedOperation,
     nextProtocol: string,
   ): ConstructedOperation => {
-    const constructOp001 = (op: ConstructedOperation) => op;
-    const constructOp005 = (op: ConstructedOperation) => {
+    const constructOp001 = (op: ConstructedOperation): ConstructedOperation =>
+      op;
+    const constructOp005 = (op: ConstructedOperation): ConstructedOperation => {
       delete op.manager_pubkey;
       delete op.spendable;
       delete op.delegatable;

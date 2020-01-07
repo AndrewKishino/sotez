@@ -23,5 +23,6 @@ declare const _default: {
     checkAddress: (address: string) => boolean;
     generateMnemonic: () => string;
     sign: (bytes: string, sk: string, wm: Uint8Array, password?: string) => Promise<Signed>;
+    verify: (bytes: string, sig: string, pk: string) => Promise<boolean>;
 };
 export default _default;

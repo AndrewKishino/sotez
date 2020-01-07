@@ -7,7 +7,7 @@ export default class AbstractTezModule {
     this._chain = chain;
   }
 
-  get provider() {
+  get provider(): string {
     return this._provider;
   }
 
@@ -15,7 +15,7 @@ export default class AbstractTezModule {
     this._provider = provider;
   }
 
-  get chain() {
+  get chain(): string {
     return this._chain;
   }
 
@@ -23,7 +23,7 @@ export default class AbstractTezModule {
     this._chain = value;
   }
 
-  setProvider(provider: string, chain: string = this.chain) {
+  setProvider(provider: string, chain: string = this.chain): void {
     this._provider = provider;
     this._chain = chain;
   }

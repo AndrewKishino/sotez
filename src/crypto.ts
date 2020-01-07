@@ -39,10 +39,7 @@ interface Signed {
  * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
  */
-const extractKeys = async (
-  sk: string,
-  password: string = '',
-): Promise<Keys> => {
+const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
   try {
     await _sodium.ready;
   } catch (e) {
@@ -161,9 +158,10 @@ const generateKeys = async (
   }
 
   const sodium = _sodium;
-  const s = await mnemonicToSeed(mnemonic, passphrase).then(
-    (seed: string | Buffer) => seed.slice(0, 32),
-  );
+  const s = await mnemonicToSeed(
+    mnemonic,
+    passphrase,
+  ).then((seed: string | Buffer) => seed.slice(0, 32));
   const kp = sodium.crypto_sign_seed_keypair(toBuffer(s));
   return {
     mnemonic,
@@ -194,7 +192,7 @@ const sign = async (
   bytes: string,
   sk: string,
   wm: Uint8Array,
-  password: string = '',
+  password = '',
 ): Promise<Signed> => {
   try {
     await _sodium.ready;
@@ -231,10 +229,39 @@ const sign = async (
   };
 };
 
+/**
+ * @description Verify signed bytes
+ * @param {String} bytes The signed bytes
+ * @param {String} sig The signature of the signed bytes
+ * @param {String} pk The public key
+ * @returns {Boolean} Whether the signed bytes are valid
+ */
+const verify = async (
+  bytes: string,
+  sig: string,
+  pk: string,
+): Promise<boolean> => {
+  try {
+    await _sodium.ready;
+  } catch (e) {
+    throw new Error(e);
+  }
+
+  const sodium = _sodium;
+  const bytesBuffer = toBuffer(utility.hex2buf(bytes));
+  const signature = utility.b58cdecode(sig, prefix.sig);
+  return sodium.crypto_sign_verify_detached(
+    signature,
+    sodium.crypto_generichash(32, bytesBuffer),
+    utility.b58cdecode(pk, prefix.edpk),
+  );
+};
+
 export default {
   extractKeys,
   generateKeys,
   checkAddress,
   generateMnemonic,
   sign,
+  verify,
 };

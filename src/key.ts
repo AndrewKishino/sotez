@@ -2,7 +2,7 @@ import * as sodium from 'libsodium-wrappers';
 import * as pbkdf2 from 'pbkdf2';
 import * as elliptic from 'elliptic';
 import toBuffer from 'typedarray-to-buffer';
-import ledger from 'ledger';
+import ledger from 'ledger'; // eslint-disable-line
 import utility from './utility';
 import { prefix } from './constants';
 
@@ -246,7 +246,7 @@ export default class Key {
         const keyPair = new elliptic.ec('secp256k1').keyFromPrivate(
           constructedKey,
         );
-        const prefix =
+        const prefixVal =
           keyPair
             .getPublic()
             .getY()
@@ -255,7 +255,7 @@ export default class Key {
             : 2;
         this._publicKey = toBuffer(
           new Uint8Array(
-            [prefix].concat(
+            [prefixVal].concat(
               keyPair
                 .getPublic()
                 .getX()
@@ -265,7 +265,7 @@ export default class Key {
         );
       } else if (this._curve === 'p2') {
         const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
-        const prefix =
+        const prefixVal =
           keyPair
             .getPublic()
             .getY()
@@ -274,7 +274,7 @@ export default class Key {
             : 2;
         this._publicKey = toBuffer(
           new Uint8Array(
-            [prefix].concat(
+            [prefixVal].concat(
               keyPair
                 .getPublic()
                 .getX()
@@ -380,5 +380,66 @@ export default class Key {
     }
 
     throw new Error('Provided curve not supported');
+  };
+
+  /**
+   * @memberof Key
+   * @description Verify signature, throw error if it is not valid
+   * @param {string} bytes Sequance of bytes, raw format or hexadecimal notation
+   * @param {Uint8Array} signature A signature in base58 encoding
+   * @param {string} signature A signature in base58 encoding
+   */
+  verify = (
+    bytes: string,
+    signature: string,
+    publicKey: string = this.publicKey(),
+  ): boolean => {
+    if (!publicKey) {
+      throw new Error('Cannot verify without a public key');
+    }
+
+    const _publicKey = toBuffer(
+      utility.b58cdecode(publicKey, prefix[`${this._curve}pk`]),
+    );
+
+    if (signature.slice(0, 3) !== 'sig') {
+      if (this._curve !== signature.slice(0, 2)) {
+        // 'sp', 'p2' 'ed'
+        throw new Error('Signature and public key curves mismatch.');
+      }
+    }
+
+    const bytesBuffer = sodium.crypto_generichash(32, utility.hex2buf(bytes));
+    const sig = utility.b58cdecode(signature, prefix.sig);
+
+    if (this._curve === 'ed') {
+      try {
+        return sodium.crypto_sign_verify_detached(sig, bytesBuffer, _publicKey);
+      } catch (e) {
+        return false;
+      }
+    } else if (this._curve === 'sp') {
+      const key = new elliptic.ec('secp256k1').keyFromPublic(_publicKey);
+      const formattedSig = utility.buf2hex(toBuffer(sig));
+      // @ts-ignore
+      const [r, s] = formattedSig.match(/([a-f\d]{64})/gi);
+      try {
+        return key.verify(bytesBuffer, { r, s });
+      } catch (e) {
+        return false;
+      }
+    } else if (this._curve === 'p2') {
+      const key = new elliptic.ec('p256').keyFromPublic(_publicKey);
+      const formattedSig = utility.buf2hex(toBuffer(sig));
+      // @ts-ignore
+      const [r, s] = formattedSig.match(/([a-f\d]{64})/gi);
+      try {
+        return key.verify(bytesBuffer, { r, s });
+      } catch (e) {
+        return false;
+      }
+    } else {
+      throw new Error(`Curve '${this._curve}' not supported`);
+    }
   };
 }

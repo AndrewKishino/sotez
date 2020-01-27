@@ -122,7 +122,7 @@ const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
  * @description Generate a mnemonic
  * @returns {string} The generated mnemonic
  */
-const generateMnemonic = (): string => bip39GenerateMnemonic(160);
+const generateMnemonic = (): string => bip39GenerateMnemonic(256);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)

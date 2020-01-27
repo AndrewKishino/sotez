@@ -67,7 +67,7 @@ describe('sotez', () => {
 
     test('generateMnemonic', () => {
       const string = crypto.generateMnemonic();
-      expect(string.split(' ')).toHaveLength(15);
+      expect(string.split(' ')).toHaveLength(24);
     });
 
     test('checkAddress', () => {

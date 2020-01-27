@@ -232,6 +232,7 @@ interface ForgedBytes {
     opbytes: string;
     opOb: OperationObject;
     counter: number;
+    chainId: string;
 }
 interface Signed {
     bytes: string;

@@ -234,6 +234,7 @@ interface ForgedBytes {
   opbytes: string;
   opOb: OperationObject;
   counter: number;
+  chainId: string;
 }
 
 interface Signed {
@@ -621,8 +622,11 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass));
    */
-  getBallots = (): Promise<{ yay: number; nay: number; pass: number }> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/ballots`);
+  getBallots = (): Promise<{
+    yay: number;
+    nay: number;
+    pass: number;
+  }> => this.query(`/chains/${this.chain}/blocks/head/votes/ballots`);
 
   /**
    * @description List of delegates with their voting weight, in number of rolls
@@ -805,7 +809,9 @@ export default class Sotez extends AbstractTezModule {
         const constructOps = (cOps: Operation[]): ConstructedOperation[] =>
           cOps.map((op: Operation) => {
             // @ts-ignore
-            const constructedOp: ConstructedOperation = { ...op };
+            const constructedOp: ConstructedOperation = {
+              ...op,
+            };
             if (
               [
                 'proposals',
@@ -870,6 +876,7 @@ export default class Sotez extends AbstractTezModule {
             opbytes: remoteForgedBytes,
             opOb,
             counter,
+            chainId: head.chain_id,
           };
         }
 
@@ -877,7 +884,11 @@ export default class Sotez extends AbstractTezModule {
 
         if (this._validateLocalForge) {
           if (fullOp.opbytes === remoteForgedBytes) {
-            return fullOp;
+            return {
+              ...fullOp,
+              counter,
+              chainId: head.chain_id,
+            };
           }
           throw new Error(
             "Forge validation error - local and remote bytes don't match",
@@ -887,6 +898,7 @@ export default class Sotez extends AbstractTezModule {
         return {
           ...fullOp,
           counter,
+          chainId: head.chain_id,
         };
       },
     );
@@ -910,12 +922,18 @@ export default class Sotez extends AbstractTezModule {
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
-    this.prepareOperation({ operation, source }).then(fullOp =>
-      this.query(
+    this.prepareOperation({ operation, source }).then(fullOp => {
+      delete fullOp.opOb.protocol;
+      fullOp.opOb.signature =
+        'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+      return this.query(
         `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
-        fullOp.opOb,
-      ),
-    );
+        {
+          chain_id: fullOp.chainId,
+          operation: fullOp.opOb,
+        },
+      );
+    });
 
   /**
    * @description Send an operation
@@ -1030,7 +1048,9 @@ export default class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the injected operation hash
    */
   silentInject = (sopbytes: string): Promise<any> =>
-    this.query('/injection/operation', sopbytes).then(hash => ({ hash }));
+    this.query('/injection/operation', sopbytes).then(hash => ({
+      hash,
+    }));
 
   /**
    * @description Transfer operation
@@ -1076,7 +1096,10 @@ export default class Sotez extends AbstractTezModule {
         operation.parameters = parameters;
       }
     }
-    return this.sendOperation({ operation: [operation], source });
+    return this.sendOperation({
+      operation: [operation],
+      source,
+    });
   };
 
   /**
@@ -1196,7 +1219,10 @@ export default class Sotez extends AbstractTezModule {
       storage_limit: storageLimit,
       delegate,
     };
-    return this.sendOperation({ operation: [operation], source });
+    return this.sendOperation({
+      operation: [operation],
+      source,
+    });
   };
 
   /**
@@ -1211,9 +1237,11 @@ export default class Sotez extends AbstractTezModule {
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
-  }: { fee?: number; gasLimit?: number; storageLimit?: number } = {}): Promise<
-    any
-  > => {
+  }: {
+    fee?: number;
+    gasLimit?: number;
+    storageLimit?: number;
+  } = {}): Promise<any> => {
     const operation = {
       kind: 'delegation',
       fee,

@@ -9,7 +9,8 @@
     "dist/",
     "index.js",
     "lib/",
-    "package.json"
+    "package.json",
+    "package-lock.json"
   ],
   "scripts": {
     "build": "npm run compile && webpack --config webpack.web.config.js --progress && webpack --config webpack.node.config.js --progress",

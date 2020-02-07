@@ -75,4 +75,12 @@ export default class Key {
         prefixSig: string;
         sbytes: string;
     }>;
+    /**
+     * @memberof Key
+     * @description Verify signature, throw error if it is not valid
+     * @param {string} bytes Sequance of bytes, raw format or hexadecimal notation
+     * @param {Uint8Array} signature A signature in base58 encoding
+     * @param {string} signature A signature in base58 encoding
+     */
+    verify: (bytes: string, signature: string, publicKey?: string) => boolean;
 }

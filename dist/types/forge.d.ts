@@ -83,31 +83,30 @@ declare type Micheline = {
 } | {
     signature: string;
 } | MichelineArray;
-interface MichelineArray extends Array<Micheline> {
-}
+declare type MichelineArray = Array<Micheline>;
 declare const _default: {
-    address: (address: string, protocol?: string) => string;
+    address: (addressArg: string, protocol?: string) => string;
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
-    op: (op: ConstructedOperation, protocol: string) => string;
-    endorsement: (op: ConstructedOperation) => string;
-    seedNonceRevelation: (op: ConstructedOperation) => string;
-    doubleEndorsementEvidence: (op: ConstructedOperation) => string;
-    doubleBakingEvidence: (op: ConstructedOperation) => string;
-    activateAccount: (op: ConstructedOperation) => string;
-    proposals: (op: ConstructedOperation) => string;
-    ballot: (op: ConstructedOperation) => string;
-    reveal: (op: ConstructedOperation, protocol: string) => string;
-    transaction: (op: ConstructedOperation, protocol: string) => string;
-    origination: (op: ConstructedOperation, protocol: string) => string;
-    delegation: (op: ConstructedOperation, protocol: string) => string;
+    op: (opArg: ConstructedOperation, protocol: string) => string;
+    endorsement: (opArg: ConstructedOperation) => string;
+    seedNonceRevelation: (opArg: ConstructedOperation) => string;
+    doubleEndorsementEvidence: (opArg: ConstructedOperation) => string;
+    doubleBakingEvidence: (opArg: ConstructedOperation) => string;
+    activateAccount: (opArg: ConstructedOperation) => string;
+    proposals: (opArg: ConstructedOperation) => string;
+    ballot: (opArg: ConstructedOperation) => string;
+    reveal: (opArg: ConstructedOperation, protocol: string) => string;
+    transaction: (opArg: ConstructedOperation, protocol: string) => string;
+    origination: (opArg: ConstructedOperation, protocol: string) => string;
+    delegation: (opArg: ConstructedOperation, protocol: string) => string;
     parameters: (parameter: any, protocol: string) => string;
     publicKey: (pk: string) => string;
     publicKeyHash: (pkh: string) => string;
     zarith: (n: string) => string;
-    bool: (bool: boolean) => string;
-    script: (script: {
+    bool: (boolArg: boolean) => string;
+    script: (scriptArg: {
         code: Micheline;
         storage: Micheline;
     }) => string;

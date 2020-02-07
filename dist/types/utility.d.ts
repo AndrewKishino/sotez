@@ -20,8 +20,7 @@ declare type Micheline = {
 } | {
     signature: string;
 } | MichelineArray;
-interface MichelineArray extends Array<Micheline> {
-}
+declare type MichelineArray = Array<Micheline>;
 declare const _default: {
     textEncode: (value: string) => Uint8Array;
     textDecode: (buffer: Uint8Array) => string;

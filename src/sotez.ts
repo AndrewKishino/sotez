@@ -173,7 +173,7 @@ type Micheline =
   | { signature: string }
   | MichelineArray;
 
-interface MichelineArray extends Array<Micheline> {}
+type MichelineArray = Array<Micheline>;
 
 interface Keys {
   pk: string;
@@ -234,6 +234,7 @@ interface ForgedBytes {
   opbytes: string;
   opOb: OperationObject;
   counter: number;
+  chainId: string;
 }
 
 interface Signed {
@@ -275,7 +276,7 @@ export default class Sotez extends AbstractTezModule {
     this._counters = {};
   }
 
-  get defaultFee() {
+  get defaultFee(): number {
     return this._defaultFee;
   }
 
@@ -283,7 +284,7 @@ export default class Sotez extends AbstractTezModule {
     this._defaultFee = fee;
   }
 
-  get localForge() {
+  get localForge(): boolean {
     return this._localForge;
   }
 
@@ -291,7 +292,7 @@ export default class Sotez extends AbstractTezModule {
     this._localForge = value;
   }
 
-  get validateLocalForge() {
+  get validateLocalForge(): boolean {
     return this._validateLocalForge;
   }
 
@@ -299,7 +300,7 @@ export default class Sotez extends AbstractTezModule {
     this._validateLocalForge = value;
   }
 
-  get counters() {
+  get counters(): { [key: string]: number } {
     return this._counters;
   }
 
@@ -307,7 +308,7 @@ export default class Sotez extends AbstractTezModule {
     this._counters = counters;
   }
 
-  get debugMode() {
+  get debugMode(): boolean {
     return this._debugMode;
   }
 
@@ -315,7 +316,7 @@ export default class Sotez extends AbstractTezModule {
     this._debugMode = t;
   }
 
-  setProvider(provider: string, chain: string = this.chain) {
+  setProvider(provider: string, chain: string = this.chain): void {
     super.setProvider(provider, chain);
     this.provider = provider;
     this.chain = chain;
@@ -329,7 +330,11 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y')
    */
-  importKey = async (key: string, passphrase?: string, email?: string) => {
+  importKey = async (
+    key: string,
+    passphrase?: string,
+    email?: string,
+  ): Promise<void> => {
     this.key = new Key({ key, passphrase, email });
     await this.key.ready;
   };
@@ -341,7 +346,10 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * await sotez.importLedger();
    */
-  importLedger = async (path = "44'/1729'/0'/0'", curve = 0x00) => {
+  importLedger = async (
+    path = "44'/1729'/0'/0'",
+    curve = 0x00,
+  ): Promise<void> => {
     this.key = new Key({ ledgerPath: path, ledgerCurve: curve });
     await this.key.ready;
   };
@@ -614,8 +622,11 @@ export default class Sotez extends AbstractTezModule {
    * @example
    * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass));
    */
-  getBallots = (): Promise<{ yay: number; nay: number; pass: number }> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/ballots`);
+  getBallots = (): Promise<{
+    yay: number;
+    nay: number;
+    pass: number;
+  }> => this.query(`/chains/${this.chain}/blocks/head/votes/ballots`);
 
   /**
    * @description List of delegates with their voting weight, in number of rolls
@@ -798,7 +809,9 @@ export default class Sotez extends AbstractTezModule {
         const constructOps = (cOps: Operation[]): ConstructedOperation[] =>
           cOps.map((op: Operation) => {
             // @ts-ignore
-            const constructedOp: ConstructedOperation = { ...op };
+            const constructedOp: ConstructedOperation = {
+              ...op,
+            };
             if (
               [
                 'proposals',
@@ -863,6 +876,7 @@ export default class Sotez extends AbstractTezModule {
             opbytes: remoteForgedBytes,
             opOb,
             counter,
+            chainId: head.chain_id,
           };
         }
 
@@ -870,7 +884,11 @@ export default class Sotez extends AbstractTezModule {
 
         if (this._validateLocalForge) {
           if (fullOp.opbytes === remoteForgedBytes) {
-            return fullOp;
+            return {
+              ...fullOp,
+              counter,
+              chainId: head.chain_id,
+            };
           }
           throw new Error(
             "Forge validation error - local and remote bytes don't match",
@@ -880,6 +898,7 @@ export default class Sotez extends AbstractTezModule {
         return {
           ...fullOp,
           counter,
+          chainId: head.chain_id,
         };
       },
     );
@@ -903,12 +922,18 @@ export default class Sotez extends AbstractTezModule {
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
-    this.prepareOperation({ operation, source }).then(fullOp =>
-      this.query(
+    this.prepareOperation({ operation, source }).then(fullOp => {
+      delete fullOp.opOb.protocol;
+      fullOp.opOb.signature =
+        'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+      return this.query(
         `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
-        fullOp.opOb,
-      ),
-    );
+        {
+          chain_id: fullOp.chainId,
+          operation: fullOp.opOb,
+        },
+      );
+    });
 
   /**
    * @description Send an operation
@@ -1023,7 +1048,9 @@ export default class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the injected operation hash
    */
   silentInject = (sopbytes: string): Promise<any> =>
-    this.query('/injection/operation', sopbytes).then(hash => ({ hash }));
+    this.query('/injection/operation', sopbytes).then(hash => ({
+      hash,
+    }));
 
   /**
    * @description Transfer operation
@@ -1069,7 +1096,10 @@ export default class Sotez extends AbstractTezModule {
         operation.parameters = parameters;
       }
     }
-    return this.sendOperation({ operation: [operation], source });
+    return this.sendOperation({
+      operation: [operation],
+      source,
+    });
   };
 
   /**
@@ -1189,7 +1219,10 @@ export default class Sotez extends AbstractTezModule {
       storage_limit: storageLimit,
       delegate,
     };
-    return this.sendOperation({ operation: [operation], source });
+    return this.sendOperation({
+      operation: [operation],
+      source,
+    });
   };
 
   /**
@@ -1204,9 +1237,11 @@ export default class Sotez extends AbstractTezModule {
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
-  }: { fee?: number; gasLimit?: number; storageLimit?: number } = {}): Promise<
-    any
-  > => {
+  }: {
+    fee?: number;
+    gasLimit?: number;
+    storageLimit?: number;
+  } = {}): Promise<any> => {
     const operation = {
       kind: 'delegation',
       fee,
@@ -1304,8 +1339,8 @@ export default class Sotez extends AbstractTezModule {
     }
 
     const check = {
-      data,
-      type,
+      data: _data,
+      type: _type,
       gas: '4000000',
     };
 
@@ -1395,8 +1430,9 @@ export default class Sotez extends AbstractTezModule {
     constructedOp: ConstructedOperation,
     nextProtocol: string,
   ): ConstructedOperation => {
-    const constructOp001 = (op: ConstructedOperation) => op;
-    const constructOp005 = (op: ConstructedOperation) => {
+    const constructOp001 = (op: ConstructedOperation): ConstructedOperation =>
+      op;
+    const constructOp005 = (op: ConstructedOperation): ConstructedOperation => {
       delete op.manager_pubkey;
       delete op.spendable;
       delete op.delegatable;

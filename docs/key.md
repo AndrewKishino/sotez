@@ -53,6 +53,16 @@ Sign a raw sequence of bytes
 
 Returns **[Promise][5]** The signature object
 
+### verify
+
+Verify signature, throw error if it is not valid
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+-   `signature` **[string][2]** A signature in base58 encoding
+-   `publicKey`   (optional, default `this.publicKey()`)
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

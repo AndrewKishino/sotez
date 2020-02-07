@@ -1,6 +1,7 @@
 {
   "extends": [
     "airbnb-base",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
@@ -26,7 +27,12 @@
     "no-plusplus": 0,
     "no-use-before-define": 0,
     "lines-between-class-members": 0,
-    "@typescript-eslint/indent": ["error", 2],
-    "@typescript-eslint/no-var-requires": 0
+    "new-cap": 0,
+    "@typescript-eslint/indent": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/no-use-before-define": 0,
+    "import/extensions": ["error", { "ts": "never" }]
   }
 }

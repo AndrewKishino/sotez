@@ -39,7 +39,7 @@ export class Key {
   _isLedger: boolean;
   _ledgerPath: string;
   _ledgerCurve: number;
-  ready: Promise<void>;
+  ready: Promise<boolean>;
 
   constructor({
     key,
@@ -175,9 +175,7 @@ export class Key {
       this._secretKey = toBuffer(privateKey);
       this._curve = 'ed';
       this._isSecret = true;
-
       ready();
-      return;
     }
 
     this._curve = key.substring(0, 2);
@@ -277,7 +275,6 @@ export class Key {
         throw new Error('Invalid key');
       }
     }
-
     ready();
   };
 

@@ -353,7 +353,9 @@ export default class Key {
     if (this._curve === 'sp') {
       const key = new elliptic.ec('secp256k1').keyFromPrivate(this._secretKey);
       const sig = key.sign(bytesHash, { canonical: true });
-      const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
+      const signature = new Uint8Array(
+        sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
+      );
       const signatureBuffer = toBuffer(signature);
       const sbytes = bytes + utility.buf2hex(signatureBuffer);
 
@@ -367,7 +369,9 @@ export default class Key {
     if (this._curve === 'p2') {
       const key = new elliptic.ec('p256').keyFromPrivate(this._secretKey);
       const sig = key.sign(bytesHash, { canonical: true });
-      const signature = new Uint8Array(sig.r.toArray().concat(sig.s.toArray()));
+      const signature = new Uint8Array(
+        sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
+      );
       const signatureBuffer = toBuffer(signature);
       const sbytes = bytes + utility.buf2hex(signatureBuffer);
 

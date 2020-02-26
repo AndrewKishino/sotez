@@ -63,7 +63,7 @@ interface SendParams {
   mutez?: boolean;
 }
 
-const DEFAULT_SMART_CONTRACT_METHOD_NAME = 'main';
+const DEFAULT_SMART_CONTRACT_METHOD_NAME = 'default';
 
 class InvalidParameterError extends Error {
   name = 'Invalid parameters error';

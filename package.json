@@ -1,6 +1,6 @@
 {
   "name": "sotez",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Tezos JavaScript API",
   "main": "index.js",
   "browser": "dist/web/index.js",

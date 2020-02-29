@@ -214,6 +214,7 @@ interface OperationParams {
   source?: string;
   skipPrevalidation?: boolean;
   skipSignature?: boolean;
+  skipCounter?: boolean;
 }
 
 interface ContractParams {
@@ -748,6 +749,7 @@ export default class Sotez extends AbstractTezModule {
   prepareOperation = ({
     operation,
     source,
+    skipCounter = false,
   }: OperationParams): Promise<ForgedBytes> => {
     let counter: number;
     const opOb: OperationObject = {};
@@ -848,8 +850,13 @@ export default class Sotez extends AbstractTezModule {
                 constructedOp.balance = `${constructedOp.balance}`;
               if (typeof op.amount !== 'undefined')
                 constructedOp.amount = `${constructedOp.amount}`;
-              const opCounter = ++this._counters[publicKeyHash];
-              constructedOp.counter = `${opCounter}`;
+              // In case prepareOperation should not increment the counter
+              let opCounter = this._counters[publicKeyHash];
+              if (!skipCounter) {
+                constructedOp.counter = `${++this._counters[publicKeyHash]}`;
+              } else {
+                constructedOp.counter = `${++opCounter}`;
+              }
             }
 
             return this._conformOperation(
@@ -922,18 +929,20 @@ export default class Sotez extends AbstractTezModule {
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
-    this.prepareOperation({ operation, source }).then(fullOp => {
-      delete fullOp.opOb.protocol;
-      fullOp.opOb.signature =
-        'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
-      return this.query(
-        `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
-        {
-          chain_id: fullOp.chainId,
-          operation: fullOp.opOb,
-        },
-      );
-    });
+    this.prepareOperation({ operation, source, skipCounter: true }).then(
+      fullOp => {
+        delete fullOp.opOb.protocol;
+        fullOp.opOb.signature =
+          'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+        return this.query(
+          `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
+          {
+            chain_id: fullOp.chainId,
+            operation: fullOp.opOb,
+          },
+        );
+      },
+    );
 
   /**
    * @description Send an operation

@@ -430,6 +430,7 @@ Prepares an operation
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
     -   `paramObject.source`  
+    -   `paramObject.skipCounter`   (optional, default `false`)
 
 #### Examples
 

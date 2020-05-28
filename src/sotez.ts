@@ -808,8 +808,11 @@ export default class Sotez extends AbstractTezModule {
           }
         }
 
-        const constructOps = (cOps: Operation[]): ConstructedOperation[] =>
-          cOps.map((op: Operation) => {
+        const constructOps = (cOps: Operation[]): ConstructedOperation[] => {
+          // In case prepareOperation should not increment the counter
+          let opCounter = this._counters[publicKeyHash];
+
+          return cOps.map((op: Operation) => {
             // @ts-ignore
             const constructedOp: ConstructedOperation = {
               ...op,
@@ -850,8 +853,6 @@ export default class Sotez extends AbstractTezModule {
                 constructedOp.balance = `${constructedOp.balance}`;
               if (typeof op.amount !== 'undefined')
                 constructedOp.amount = `${constructedOp.amount}`;
-              // In case prepareOperation should not increment the counter
-              let opCounter = this._counters[publicKeyHash];
               if (!skipCounter) {
                 constructedOp.counter = `${++this._counters[publicKeyHash]}`;
               } else {
@@ -864,7 +865,7 @@ export default class Sotez extends AbstractTezModule {
               metadata.next_protocol,
             );
           });
-
+        };
         opOb.branch = head.hash;
         opOb.contents = constructOps(ops);
 

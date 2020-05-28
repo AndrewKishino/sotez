@@ -253,13 +253,19 @@ export default class Key {
             .toArray()[31] % 2
             ? 3
             : 2;
+        // Need to pad keypair array to maintain a length of 32
+        const pad = [0, 0];
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(
-              keyPair
-                .getPublic()
-                .getX()
-                .toArray(),
+              pad
+                .concat(
+                  keyPair
+                    .getPublic()
+                    .getX()
+                    .toArray(),
+                )
+                .slice(-32),
             ),
           ),
         );
@@ -272,13 +278,19 @@ export default class Key {
             .toArray()[31] % 2
             ? 3
             : 2;
+        // Need to pad keypair array to maintain a length of 32
+        const pad = [0, 0];
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(
-              keyPair
-                .getPublic()
-                .getX()
-                .toArray(),
+              pad
+                .concat(
+                  keyPair
+                    .getPublic()
+                    .getX()
+                    .toArray(),
+                )
+                .slice(-32),
             ),
           ),
         );

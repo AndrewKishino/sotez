@@ -150,6 +150,12 @@ describe('sotez', () => {
       pkh: 'tz3Wfj9Y87yUc1SYVvq1SZkyFtjf3BuaJnXT',
     };
 
+    const KEY5 = {
+      sk: 'spsk33kCcKpgrvXRQJB2GVGxAMxrSEmwKXLh2KR4ztLcbaCnQq3FFs',
+      pk: 'sppk7bFd7b4DWcabg4yw4N5q8rn9thycWmY21EJDCKfTskNiBH8RJrd',
+      pkh: 'tz2JFbdFh1RVYuYX4gWbVQz9SAtqEZSwZaB8',
+    };
+
     const FUNDRAISER_ACCOUNT = {
       mnemonic: [
         'spatial',
@@ -200,6 +206,15 @@ describe('sotez', () => {
       expect(key.publicKey()).toBe(KEY3.pk);
       expect(key.publicKeyHash()).toBe(KEY3.pkh);
       expect(key.secretKey()).toBe(KEY3.sk);
+    });
+
+    test('import secp256k1 alternate secret key', async () => {
+      const key = new Key({ key: KEY5.sk });
+      await key.ready;
+
+      expect(key.publicKey()).toBe(KEY5.pk);
+      expect(key.publicKeyHash()).toBe(KEY5.pkh);
+      expect(key.secretKey()).toBe(KEY5.sk);
     });
 
     test('import p256 secret key', async () => {

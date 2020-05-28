@@ -645,236 +645,21 @@ export default class Sotez extends AbstractTezModule {
      * @param {number} gas The the gas limit
      * @returns {Promise} Typecheck result
      */
-    typecheckCode: (code: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray, gas?: number) => Promise<any>;
+    typecheckCode: (code: string | Micheline, gas?: number) => Promise<any>;
     /**
      * @description Serializes a piece of data to a binary representation
      * @param {string | Micheline} data
      * @param {string | Micheline} type
      * @returns {Promise} Serialized data
      */
-    packData: (data: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray, type: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray) => Promise<any>;
+    packData: (data: string | Micheline, type: string | Micheline) => Promise<any>;
     /**
      * @description Typechecks data against a type
      * @param {string | Micheline} data
      * @param {string | Micheline} type
      * @returns {Promise} Typecheck result
      */
-    typecheckData: (data: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray, type: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray) => Promise<any>;
+    typecheckData: (data: string | Micheline, type: string | Micheline) => Promise<any>;
     /**
      * @description Runs or traces code against an input and storage
      * @param {string | Micheline} code Code to run
@@ -884,50 +669,7 @@ export default class Sotez extends AbstractTezModule {
      * @param {boolean} [trace=false] Whether to trace
      * @returns {Promise} Run results
      */
-    runCode: (code: string | {
-        entrypoint: string;
-        value: MichelineArray | {
-            prim: string;
-            args?: MichelineArray | undefined;
-            annots?: string[] | undefined;
-        } | {
-            bytes: string;
-        } | {
-            int: string;
-        } | {
-            string: string;
-        } | {
-            address: string;
-        } | {
-            contract: string;
-        } | {
-            key: string;
-        } | {
-            key_hash: string;
-        } | {
-            signature: string;
-        };
-    } | {
-        prim: string;
-        args?: MichelineArray | undefined;
-        annots?: string[] | undefined;
-    } | {
-        bytes: string;
-    } | {
-        int: string;
-    } | {
-        string: string;
-    } | {
-        address: string;
-    } | {
-        contract: string;
-    } | {
-        key: string;
-    } | {
-        key_hash: string;
-    } | {
-        signature: string;
-    } | MichelineArray, amount: number, input: string, storage: string, trace?: boolean) => Promise<any>;
+    runCode: (code: string | Micheline, amount: number, input: string, storage: string, trace?: boolean) => Promise<any>;
     /**
      * Get the mananger key from the protocol dependent query
      * @param {Object|string} manager The manager key query response

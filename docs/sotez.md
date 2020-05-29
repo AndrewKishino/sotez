@@ -16,7 +16,7 @@ Main Sotez Library
 
 ```javascript
 import Sotez from 'sotez';
-const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275 })
+const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
@@ -102,7 +102,7 @@ Returns **[Promise][5]** The hash of the block in which the operation was includ
 
 ### call
 
-Get the current head block hash of the chain
+Queries the rpc endpoint with an optional payload
 
 #### Parameters
 
@@ -592,7 +592,6 @@ Transfer operation
     -   `paramObject.parameters` **[string][2]?** The parameter for the transaction
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
-    -   `paramObject.mutez` **[number][3]** Whether the input amount is set to mutez (1/1,000,000 tez) (optional, default `false`)
 
 #### Examples
 

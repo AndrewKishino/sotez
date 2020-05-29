@@ -5,7 +5,7 @@ import blake2b from 'blake2b';
 export function splitPath(path: string): number[] {
   const result: any[] = [];
   const components = path.split('/');
-  components.forEach(element => {
+  components.forEach((element) => {
     let number = parseInt(element, 10);
     if (Number.isNaN(number)) {
       return;

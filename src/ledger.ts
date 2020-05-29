@@ -36,7 +36,7 @@ interface LedgerGetVersion {
  *   curve = 0x00,
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
  */
-const getAddress = async ({
+export const getAddress = async ({
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
   curve = 0x00,
@@ -69,7 +69,7 @@ const getAddress = async ({
  *   curve = 0x00,
  * }).then((signature) => console.log(signature));
  */
-const signOperation = async ({
+export const signOperation = async ({
   path = "44'/1729'/0'/0'",
   rawTxHex,
   curve = 0x00,
@@ -100,7 +100,7 @@ const signOperation = async ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
  */
-const getVersion = async (): Promise<LedgerGetVersion> => {
+export const getVersion = async (): Promise<LedgerGetVersion> => {
   const transport = await LedgerTransport.create();
   const tezosLedger = new LedgerApp(transport);
   let versionInfo;

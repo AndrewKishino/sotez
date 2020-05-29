@@ -1,4 +1,4 @@
-export default class AbstractTezModule {
+export declare class AbstractTezModule {
     _provider: string;
     _chain: string;
     constructor(provider: string, chain: string);

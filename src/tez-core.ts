@@ -1,4 +1,4 @@
-export default class AbstractTezModule {
+export class AbstractTezModule {
   _provider: string;
   _chain: string;
 

@@ -20,10 +20,10 @@ type Micheline =
 
 type MichelineArray = Array<Micheline>;
 
-const textEncode = (value: string): Uint8Array =>
+export const textEncode = (value: string): Uint8Array =>
   new Uint8Array(Buffer.from(value, 'utf8'));
 
-const textDecode = (buffer: Uint8Array): string =>
+export const textDecode = (buffer: Uint8Array): string =>
   Buffer.from(buffer).toString('utf8');
 
 /**
@@ -31,7 +31,7 @@ const textDecode = (buffer: Uint8Array): string =>
  * @param {string} v The b58 value
  * @returns {string} The converted b58 value
  */
-const b582int = (v: string): string => {
+export const b582int = (v: string): string => {
   let rv = new BigNumber(0);
   const alpha = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
   for (let i = 0; i < v.length; i++) {
@@ -49,7 +49,7 @@ const b582int = (v: string): string => {
  * @param {number} mutez The amount in mutez to convert to tez
  * @returns {number} The mutez amount converted to tez
  */
-const totez = (mutez: number): number => {
+export const totez = (mutez: number): number => {
   if (typeof mutez === 'number') {
     return mutez / 1000000;
   }
@@ -64,7 +64,7 @@ const totez = (mutez: number): number => {
  * @param {number} tez The amount in tez to convert to mutez
  * @returns {string} The tez amount converted to mutez
  */
-const mutez = (tez: number): string =>
+export const mutez = (tez: number): string =>
   new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**
@@ -73,7 +73,10 @@ const mutez = (tez: number): string =>
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {string} The base58 encoded value
  */
-const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
+export const b58cencode = (
+  payload: Uint8Array,
+  prefixArg: Uint8Array,
+): string => {
   const n = new Uint8Array(prefixArg.length + payload.length);
   n.set(prefixArg);
   n.set(payload, prefixArg.length);
@@ -87,7 +90,7 @@ const b58cencode = (payload: Uint8Array, prefixArg: Uint8Array): string => {
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {Object} The decoded base58 value
  */
-const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
+export const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
   bs58check.decode(enc).slice(prefixArg.length);
 
 /**
@@ -95,7 +98,7 @@ const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
  * @param {Object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
-const buf2hex = (buffer: Buffer): string => {
+export const buf2hex = (buffer: Buffer): string => {
   const byteArray = new Uint8Array(buffer);
   const hexParts: string[] = [];
   byteArray.forEach((byte: any) => {
@@ -111,16 +114,16 @@ const buf2hex = (buffer: Buffer): string => {
  * @param {string} hex The hex to convert to buffer
  * @returns {Object} Converted buffer value
  */
-const hex2buf = (hex: string): Uint8Array =>
+export const hex2buf = (hex: string): Uint8Array =>
   // @ts-ignore
-  new Uint8Array(hex.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
+  new Uint8Array(hex.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16)));
 
 /**
  * @description Generate a hex nonce
  * @param {number} length The length of the nonce
  * @returns {string} The nonce of the given length
  */
-const hexNonce = (length: number): string => {
+export const hexNonce = (length: number): string => {
   const chars = '0123456789abcedf';
   let hex = '';
   while (length--) {
@@ -135,14 +138,14 @@ const hexNonce = (length: number): string => {
  * @param {Object} b2 The second buffer
  * @returns {Object} The merged buffer
  */
-const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
+export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   const r = new Uint8Array(b1.length + b2.length);
   r.set(b1);
   r.set(b2, b1.length);
   return r;
 };
 
-const sexp2mic = function me(mi: string): Micheline {
+export const sexp2mic = function me(mi: string): Micheline {
   mi = mi
     .replace(/(?:@[a-z_]+)|(?:#.*$)/gm, '')
     .replace(/\s+/g, ' ')
@@ -199,7 +202,7 @@ const sexp2mic = function me(mi: string): Micheline {
   return ret;
 };
 
-const mic2arr = function me2(s: any): any {
+export const mic2arr = function me2(s: any): any {
   let ret: any = [];
   if (Object.prototype.hasOwnProperty.call(s, 'prim')) {
     if (s.prim === 'Pair') {
@@ -242,7 +245,7 @@ const mic2arr = function me2(s: any): any {
   return ret;
 };
 
-const ml2mic = function me(mi: string): Micheline {
+export const ml2mic = function me(mi: string): Micheline {
   const ret = [];
   let inseq = false;
   let seq = '';
@@ -310,11 +313,11 @@ const ml2mic = function me(mi: string): Micheline {
 };
 
 // Legacy commands
-const ml2tzjson = sexp2mic;
-const tzjson2arr = mic2arr;
-const mlraw2json = ml2mic;
-const mintotz = totez;
-const tztomin = mutez;
+export const ml2tzjson = sexp2mic;
+export const tzjson2arr = mic2arr;
+export const mlraw2json = ml2mic;
+export const mintotz = totez;
+export const tztomin = mutez;
 
 export default {
   textEncode,

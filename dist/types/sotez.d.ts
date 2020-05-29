@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import AbstractTezModule from './tez-core';
+import { AbstractTezModule } from './tez-core';
 interface KeyInterface {
     _publicKey: Buffer;
     _secretKey?: Buffer;
@@ -16,7 +16,7 @@ interface KeyInterface {
         key?: string;
         passphrase?: string;
         email?: string;
-    }, resolve: any) => Promise<void>;
+    }, resolve: () => void) => Promise<void>;
     publicKey: () => string;
     secretKey: () => string;
     publicKeyHash: () => string;
@@ -27,6 +27,7 @@ interface ModuleOptions {
     localForge?: boolean;
     validateLocalForge?: boolean;
     debugMode?: boolean;
+    useMutez?: boolean;
 }
 interface Operation {
     kind: string;
@@ -62,7 +63,7 @@ interface Head {
     protocol: string;
     chain_id: string;
     hash: string;
-    header: any;
+    header: Header;
     metadata: any;
     operations: Operation[][];
 }
@@ -194,7 +195,6 @@ interface RpcParams {
     parameters?: string | Micheline;
     gasLimit?: number;
     storageLimit?: number;
-    mutez?: boolean;
     spendable?: boolean;
     delegatable?: boolean;
     delegate?: string;
@@ -224,7 +224,6 @@ interface ContractParams {
     fee?: number;
     gasLimit?: number;
     init: string | Micheline;
-    mutez?: boolean;
     micheline?: boolean;
     spendable?: boolean;
     storageLimit?: number;
@@ -245,14 +244,14 @@ interface Signed {
  * Main Sotez Library
  * @example
  * import Sotez from 'sotez';
- * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275 })
+ * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   amount: '1000000',
  * });
  */
-export default class Sotez extends AbstractTezModule {
+export declare class Sotez extends AbstractTezModule {
     _localForge: boolean;
     _validateLocalForge: boolean;
     _defaultFee: number;
@@ -260,6 +259,7 @@ export default class Sotez extends AbstractTezModule {
     _counters: {
         [key: string]: number;
     };
+    _useMutez: boolean;
     key: KeyInterface;
     constructor(provider?: string, chain?: string, options?: ModuleOptions);
     get defaultFee(): number;
@@ -276,6 +276,8 @@ export default class Sotez extends AbstractTezModule {
     });
     get debugMode(): boolean;
     set debugMode(t: boolean);
+    get useMutez(): boolean;
+    set useMutez(t: boolean);
     setProvider(provider: string, chain?: string): void;
     /**
      * @description Import a secret key
@@ -487,7 +489,7 @@ export default class Sotez extends AbstractTezModule {
      */
     awaitOperation: (hash: string, interval?: number, timeout?: number) => Promise<string>;
     /**
-     * @description Get the current head block hash of the chain
+     * @description Queries the rpc endpoint with an optional payload
      * @param {string} path The path to query
      * @param {Object} payload The payload of the request
      * @returns {Promise} The response of the rpc call
@@ -575,7 +577,6 @@ export default class Sotez extends AbstractTezModule {
      * @param {string} [paramObject.parameters] The parameter for the transaction
      * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
      * @param {number} [paramObject.storageLimit=300] The storage limit to set for the transaction
-     * @param {number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
      * @returns {Promise} Object containing the injected operation hash
      * @example
      * sotez.transfer({
@@ -584,7 +585,7 @@ export default class Sotez extends AbstractTezModule {
      *   fee: '1420',
      * }).then(result => console.log(result));
      */
-    transfer: ({ to, amount, source, fee, parameters, gasLimit, storageLimit, mutez, }: RpcParams) => Promise<any>;
+    transfer: ({ to, amount, source, fee, parameters, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
     /**
      * @description Activate an account
      * @param {Object} pkh The public key hash of the account

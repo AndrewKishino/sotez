@@ -1,10 +1,72 @@
-import Sotez from './sotez';
-
-export { default as Key } from './key';
-export { default as crypto } from './crypto';
-export { default as forge } from './forge';
-export { default as utility } from './utility';
-export { default as ledger } from 'ledger'; // eslint-disable-line
-export { default as constants } from './constants';
-
-export default Sotez;
+export { Sotez } from './sotez';
+export { Key } from './key';
+export {
+  default as crypto,
+  extractKeys,
+  generateKeys,
+  checkAddress,
+  generateMnemonic,
+  sign,
+  verify,
+} from './crypto';
+export {
+  address,
+  decodeRawBytes,
+  encodeRawBytes,
+  forge,
+  op,
+  endorsement,
+  seedNonceRevelation,
+  doubleEndorsementEvidence,
+  doubleBakingEvidence,
+  activateAccount,
+  proposals,
+  ballot,
+  reveal,
+  transaction,
+  origination,
+  delegation,
+  parameters,
+  publicKey,
+  publicKeyHash,
+  zarith,
+  bool,
+  script,
+  toBytesInt32,
+  toBytesInt32Hex,
+} from './forge';
+export {
+  default as utility,
+  textEncode,
+  textDecode,
+  b582int,
+  totez,
+  mutez,
+  b58cencode,
+  b58cdecode,
+  buf2hex,
+  hex2buf,
+  hexNonce,
+  mergebuf,
+  sexp2mic,
+  mic2arr,
+  ml2mic,
+  ml2tzjson,
+  tzjson2arr,
+  mlraw2json,
+  mintotz,
+  tztomin,
+} from './utility';
+export {
+  default as ledger,
+  getAddress,
+  signOperation,
+  getVersion,
+} from 'ledger';
+export {
+  default as constants,
+  prefix,
+  watermark,
+  forgeMappings,
+  protocols,
+} from './constants';

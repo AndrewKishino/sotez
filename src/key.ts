@@ -2,8 +2,16 @@ import * as sodium from 'libsodium-wrappers';
 import * as pbkdf2 from 'pbkdf2';
 import * as elliptic from 'elliptic';
 import toBuffer from 'typedarray-to-buffer';
-import ledger from 'ledger'; // eslint-disable-line
-import utility from './utility';
+import ledger from 'ledger';
+import {
+  b58cencode,
+  b58cdecode,
+  textDecode,
+  textEncode,
+  hex2buf,
+  buf2hex,
+  mergebuf,
+} from './utility';
 import { prefix } from './constants';
 
 /**
@@ -23,7 +31,7 @@ import { prefix } from './constants';
  * const key = new Key({ ledgerPath: "44'/1729'/0'/1'" });
  * await key.ready;
  */
-export default class Key {
+export class Key {
   _curve: string;
   _publicKey: Buffer;
   _secretKey?: Buffer;
@@ -50,7 +58,7 @@ export default class Key {
     this._ledgerPath = ledgerPath;
     this._ledgerCurve = ledgerCurve;
 
-    this.ready = new Promise(resolve => {
+    this.ready = new Promise((resolve) => {
       this.initialize({ key, passphrase, email }, resolve);
     });
   }
@@ -89,7 +97,7 @@ export default class Key {
    * @returns {string} The public key associated with the private key
    */
   publicKey = (): string =>
-    utility.b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
+    b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
 
   /**
    * @memberof Key
@@ -107,7 +115,7 @@ export default class Key {
       key = toBuffer(privateKey);
     }
 
-    return utility.b58cencode(key, prefix[`${this._curve}sk`]);
+    return b58cencode(key, prefix[`${this._curve}sk`]);
   };
 
   /**
@@ -123,10 +131,7 @@ export default class Key {
     };
 
     const _prefix = prefixMap[this._curve];
-    return utility.b58cencode(
-      sodium.crypto_generichash(20, this._publicKey),
-      _prefix,
-    );
+    return b58cencode(sodium.crypto_generichash(20, this._publicKey), _prefix);
   };
 
   initialize = async (
@@ -135,7 +140,7 @@ export default class Key {
       passphrase,
       email,
     }: { key?: string; passphrase?: string; email?: string },
-    ready: any,
+    ready: () => void,
   ): Promise<void> => {
     await sodium.ready;
 
@@ -152,9 +157,9 @@ export default class Key {
         throw new Error('Fundraiser key provided without a passphrase.');
       }
 
-      const salt = utility
-        .textDecode(utility.textEncode(`${email}${passphrase}`))
-        .normalize('NFKD');
+      const salt = textDecode(textEncode(`${email}${passphrase}`)).normalize(
+        'NFKD',
+      );
       const seed = pbkdf2.pbkdf2Sync(
         key,
         `mnemonic${salt}`,
@@ -196,12 +201,12 @@ export default class Key {
 
     let constructedKey: Uint8Array;
     if (this._isSecret) {
-      constructedKey = utility.b58cdecode(
+      constructedKey = b58cdecode(
         key,
         prefix[`${this._curve}${encrypted ? 'e' : ''}sk`],
       );
     } else {
-      constructedKey = utility.b58cdecode(key, prefix[`${this._curve}pk`]);
+      constructedKey = b58cdecode(key, prefix[`${this._curve}pk`]);
     }
 
     if (encrypted) {
@@ -246,51 +251,25 @@ export default class Key {
         const keyPair = new elliptic.ec('secp256k1').keyFromPrivate(
           constructedKey,
         );
-        const prefixVal =
-          keyPair
-            .getPublic()
-            .getY()
-            .toArray()[31] % 2
-            ? 3
-            : 2;
+        const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
         // Need to pad keypair array to maintain a length of 32
         const pad = [0, 0];
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(
-              pad
-                .concat(
-                  keyPair
-                    .getPublic()
-                    .getX()
-                    .toArray(),
-                )
-                .slice(-32),
+              pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
             ),
           ),
         );
       } else if (this._curve === 'p2') {
         const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
-        const prefixVal =
-          keyPair
-            .getPublic()
-            .getY()
-            .toArray()[31] % 2
-            ? 3
-            : 2;
+        const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
         // Need to pad keypair array to maintain a length of 32
         const pad = [0, 0];
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(
-              pad
-                .concat(
-                  keyPair
-                    .getPublic()
-                    .getX()
-                    .toArray(),
-                )
-                .slice(-32),
+              pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
             ),
           ),
         );
@@ -325,23 +304,20 @@ export default class Key {
         curve: this._ledgerCurve,
         watermark,
       });
-      const signatureBuffer = utility.hex2buf(signature);
+      const signatureBuffer = hex2buf(signature);
       const sbytes = bytes + signature;
 
       return {
         bytes,
-        sig: utility.b58cencode(signatureBuffer, prefix.sig),
-        prefixSig: utility.b58cencode(
-          signatureBuffer,
-          prefix[`${this._curve}sig`],
-        ),
+        sig: b58cencode(signatureBuffer, prefix.sig),
+        prefixSig: b58cencode(signatureBuffer, prefix[`${this._curve}sig`]),
         sbytes,
       };
     }
 
-    let bb = utility.hex2buf(bytes);
+    let bb = hex2buf(bytes);
     if (typeof watermark !== 'undefined') {
-      bb = utility.mergebuf(watermark, bb);
+      bb = mergebuf(watermark, bb);
     }
 
     const bytesHash = toBuffer(sodium.crypto_generichash(32, bb));
@@ -353,12 +329,12 @@ export default class Key {
     if (this._curve === 'ed') {
       const signature = sodium.crypto_sign_detached(bytesHash, this._secretKey);
       const signatureBuffer = toBuffer(signature);
-      const sbytes = bytes + utility.buf2hex(signatureBuffer);
+      const sbytes = bytes + buf2hex(signatureBuffer);
 
       return {
         bytes,
-        sig: utility.b58cencode(signature, prefix.sig),
-        prefixSig: utility.b58cencode(signature, prefix.edsig),
+        sig: b58cencode(signature, prefix.sig),
+        prefixSig: b58cencode(signature, prefix.edsig),
         sbytes,
       };
     }
@@ -369,12 +345,12 @@ export default class Key {
         sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
       );
       const signatureBuffer = toBuffer(signature);
-      const sbytes = bytes + utility.buf2hex(signatureBuffer);
+      const sbytes = bytes + buf2hex(signatureBuffer);
 
       return {
         bytes,
-        sig: utility.b58cencode(signature, prefix.sig),
-        prefixSig: utility.b58cencode(signature, prefix.spsig),
+        sig: b58cencode(signature, prefix.sig),
+        prefixSig: b58cencode(signature, prefix.spsig),
         sbytes,
       };
     }
@@ -385,12 +361,12 @@ export default class Key {
         sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
       );
       const signatureBuffer = toBuffer(signature);
-      const sbytes = bytes + utility.buf2hex(signatureBuffer);
+      const sbytes = bytes + buf2hex(signatureBuffer);
 
       return {
         bytes,
-        sig: utility.b58cencode(signature, prefix.sig),
-        prefixSig: utility.b58cencode(signature, prefix.p2sig),
+        sig: b58cencode(signature, prefix.sig),
+        prefixSig: b58cencode(signature, prefix.p2sig),
         sbytes,
       };
     }
@@ -415,7 +391,7 @@ export default class Key {
     }
 
     const _publicKey = toBuffer(
-      utility.b58cdecode(publicKey, prefix[`${this._curve}pk`]),
+      b58cdecode(publicKey, prefix[`${this._curve}pk`]),
     );
 
     if (signature.slice(0, 3) !== 'sig') {
@@ -425,8 +401,8 @@ export default class Key {
       }
     }
 
-    const bytesBuffer = sodium.crypto_generichash(32, utility.hex2buf(bytes));
-    const sig = utility.b58cdecode(signature, prefix.sig);
+    const bytesBuffer = sodium.crypto_generichash(32, hex2buf(bytes));
+    const sig = b58cdecode(signature, prefix.sig);
 
     if (this._curve === 'ed') {
       try {
@@ -436,24 +412,30 @@ export default class Key {
       }
     } else if (this._curve === 'sp') {
       const key = new elliptic.ec('secp256k1').keyFromPublic(_publicKey);
-      const formattedSig = utility.buf2hex(toBuffer(sig));
-      // @ts-ignore
-      const [r, s] = formattedSig.match(/([a-f\d]{64})/gi);
-      try {
-        return key.verify(bytesBuffer, { r, s });
-      } catch (e) {
-        return false;
+      const formattedSig = buf2hex(toBuffer(sig));
+      const match = formattedSig.match(/([a-f\d]{64})/gi);
+      if (match) {
+        try {
+          const [r, s] = match;
+          return key.verify(bytesBuffer, { r, s });
+        } catch (e) {
+          return false;
+        }
       }
+      return false;
     } else if (this._curve === 'p2') {
       const key = new elliptic.ec('p256').keyFromPublic(_publicKey);
-      const formattedSig = utility.buf2hex(toBuffer(sig));
-      // @ts-ignore
-      const [r, s] = formattedSig.match(/([a-f\d]{64})/gi);
-      try {
-        return key.verify(bytesBuffer, { r, s });
-      } catch (e) {
-        return false;
+      const formattedSig = buf2hex(toBuffer(sig));
+      const match = formattedSig.match(/([a-f\d]{64})/gi);
+      if (match) {
+        try {
+          const [r, s] = match;
+          return key.verify(bytesBuffer, { r, s });
+        } catch (e) {
+          return false;
+        }
       }
+      return false;
     } else {
       throw new Error(`Curve '${this._curve}' not supported`);
     }

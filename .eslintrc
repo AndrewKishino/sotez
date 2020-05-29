@@ -1,38 +1,38 @@
 {
-  "extends": [
-    "airbnb-base",
-    "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "extends": ["airbnb-typescript/base", "plugin:prettier/recommended"],
   "env": {
     "browser": true,
     "node": true,
     "jest": true
   },
   "parserOptions": {
-    "ecmaVersion": 2018
+    "ecmaVersion": 2018,
+    "project": "./tsconfig.json"
   },
   "rules": {
-    "no-param-reassign": 0,
-    "no-console": 0,
+    // eslint
+    "camelcase": 0,
     "global-require": 0,
-    "no-underscore-dangle": 0,
-    "no-bitwise": 0,
-    "max-len": 0,
-    "no-continue": 0,
-    "no-cond-assign": 0,
-    "no-plusplus": 0,
-    "no-use-before-define": 0,
     "lines-between-class-members": 0,
+    "max-len": 0,
     "new-cap": 0,
-    "@typescript-eslint/indent": 0,
-    "@typescript-eslint/no-var-requires": 0,
+    "no-bitwise": 0,
+    "no-cond-assign": 0,
+    "no-console": 0,
+    "no-continue": 0,
+    "no-param-reassign": 0,
+    "no-plusplus": 0,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
+    // eslint-plugin-import
+    "import/extensions": ["error", { "ts": "never" }],
+    "import/prefer-default-export": 0,
+    // @typescript-eslint
+    "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/camelcase": 0,
-    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/indent": 0,
     "@typescript-eslint/no-use-before-define": 0,
-    "import/extensions": ["error", { "ts": "never" }]
+    "@typescript-eslint/no-var-requires": 0
   }
 }

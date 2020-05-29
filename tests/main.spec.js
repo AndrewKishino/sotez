@@ -1,4 +1,4 @@
-const { default: Sotez, utility, crypto, Key } = require('../index');
+const { Sotez, utility, crypto, Key } = require('../index');
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -42,18 +42,6 @@ describe('sotez', () => {
     test('sexp2mic', () => {
       expect(utility.sexp2mic('123')).toEqual({ int: '123' });
       expect(utility.sexp2mic('"456"')).toEqual({ string: '456' });
-    });
-
-    xtest('mic2arr', () => {
-      // todo
-    });
-
-    xtest('ml2mic', () => {
-      // todo
-    });
-
-    xtest('formatMoney', () => {
-      // todo
     });
   });
 
@@ -354,6 +342,21 @@ describe('sotez', () => {
       expect(tez.provider).toBe('http://127.0.0.1:8732');
       expect(tez.chain).toBe('main');
       expect(tez.defaultFee).toBe(1420);
+    });
+
+    test('init options', () => {
+      tez = new Sotez('http://127.0.0.1:8732', 'test', {
+        debugMode: true,
+        defaultFee: 1234,
+        useMutez: false,
+      });
+      expect(tez.debugMode).toBe(true);
+      expect(tez.provider).toBe('http://127.0.0.1:8732');
+      expect(tez.chain).toBe('test');
+      expect(tez.defaultFee).toBe(1234);
+      expect(tez.useMutez).toBe(false);
+      expect(tez.localForge).toBe(true);
+      expect(tez.validateLocalForge).toBe(false);
     });
 
     test('set provider', () => {

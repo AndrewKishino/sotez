@@ -16,7 +16,7 @@
  * const key = new Key({ ledgerPath: "44'/1729'/0'/1'" });
  * await key.ready;
  */
-export default class Key {
+export declare class Key {
     _curve: string;
     _publicKey: Buffer;
     _secretKey?: Buffer;
@@ -61,7 +61,7 @@ export default class Key {
         key?: string | undefined;
         passphrase?: string | undefined;
         email?: string | undefined;
-    }, ready: any) => Promise<void>;
+    }, ready: () => void) => Promise<void>;
     /**
      * @memberof Key
      * @description Sign a raw sequence of bytes

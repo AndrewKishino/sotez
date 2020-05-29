@@ -56,8 +56,8 @@ export default class Tezos {
   async getAddress(
     path: string,
     boolDisplay = false,
-    curve = 0x00,
-    apdu?: number, // TODO specify
+    curve = TezosCurves.ED25519,
+    apdu?: number,
   ): Promise<GetAddressResult> {
     const cla = 0x80;
     if (!apdu) {
@@ -87,7 +87,7 @@ export default class Tezos {
   async sign(
     path: string,
     rawTxHex: string,
-    curve = 0x00,
+    curve = TezosCurves.ED25519,
     adpu: number,
   ): Promise<SignOperationResult> {
     const paths = splitPath(path);
@@ -130,7 +130,7 @@ export default class Tezos {
     }
 
     let signature;
-    if (curve === 0) {
+    if (curve === TezosCurves.ED25519) {
       signature = response.slice(0, response.length - 2).toString('hex');
     } else {
       const signatureBuffer = Buffer.alloc(64);
@@ -176,7 +176,7 @@ export default class Tezos {
   signOperation(
     path: string,
     rawTxHex: string,
-    curve = 0x00,
+    curve = TezosCurves.ED25519,
   ): Promise<SignOperationResult> {
     return this.sign(path, rawTxHex, curve, 0x04);
   }
@@ -184,7 +184,7 @@ export default class Tezos {
   signHash(
     path: string,
     rawTxHex: string,
-    curve = 0x00,
+    curve = TezosCurves.ED25519,
   ): Promise<SignOperationResult> {
     return this.sign(path, rawTxHex, curve, 0x05);
   }

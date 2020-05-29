@@ -84,6 +84,177 @@ declare type Micheline = {
     signature: string;
 } | MichelineArray;
 declare type MichelineArray = Array<Micheline>;
+/**
+ * @description Convert bytes from Int32
+ * @param {number} num Number to convert to bytes
+ * @returns {Object} The converted number
+ */
+export declare const toBytesInt32: (num: number) => any;
+/**
+ * @description Convert hex from Int32
+ * @param {number} num Number to convert to hex
+ * @returns {string} The converted number
+ */
+export declare const toBytesInt32Hex: (num: number) => string;
+/**
+ * @description Forge boolean
+ * @param {boolean} boolArg Boolean value to convert
+ * @returns {string} The converted boolean
+ */
+export declare const bool: (boolArg: boolean) => string;
+/**
+ * @description Forge script bytes
+ * @param {Object} scriptArg Script to forge
+ * @param {string} script.code Script code
+ * @param {string} script.storage Script storage
+ * @returns {string} Forged script bytes
+ */
+export declare const script: (scriptArg: {
+    code: Micheline;
+    storage: Micheline;
+}) => string;
+/**
+ * @description Forge parameter bytes
+ * @param {string} parameter Script to forge
+ * @returns {string} Forged parameter bytes
+ */
+export declare const parameters: (parameter: any, protocol: string) => string;
+/**
+ * @description Forge public key hash bytes
+ * @param {string} pkh Public key hash to forge
+ * @returns {string} Forged public key hash bytes
+ */
+export declare const publicKeyHash: (pkh: string) => string;
+/**
+ * @description Forge address bytes
+ * @param {string} addressArg Address to forge
+ * @param {string} [protocol=''] Current protocol
+ * @returns {string} Forged address bytes
+ */
+export declare const address: (addressArg: string, protocol?: string) => string;
+/**
+ * @description Forge zarith bytes
+ * @param {number} n Zarith to forge
+ * @returns {string} Forged zarith bytes
+ */
+export declare const zarith: (n: string) => string;
+/**
+ * @description Forge public key bytes
+ * @param {number} pk Public key to forge
+ * @returns {string} Forged public key bytes
+ */
+export declare const publicKey: (pk: string) => string;
+/**
+ * @description Forge operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const op: (opArg: ConstructedOperation, protocol: string) => string;
+/**
+ * @description Forge endorsement operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ */
+export declare const endorsement: (opArg: ConstructedOperation) => string;
+/**
+ * @description Forge seed_nonce_revelation operation bytes
+ * @param {Object} opArg Operation to forge
+ * @returns {string} Forged operation bytes
+ */
+export declare const seedNonceRevelation: (opArg: ConstructedOperation) => string;
+/**
+ * @description Forge double_endorsement_evidence operation bytes
+ * @param {Object} opArg Operation to forge
+ * @returns {string} Forged operation bytes
+ */
+export declare const doubleEndorsementEvidence: () => string;
+/**
+ * @description Forge double_baking_evidence operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const doubleBakingEvidence: () => string;
+/**
+ * @description Forge activate_account operation bytes
+ * @param {Object} opArg Operation to forge
+ * @returns {string} Forged operation bytes
+ */
+export declare const activateAccount: (opArg: ConstructedOperation) => string;
+/**
+ * @description Forge proposals operation bytes
+ * @param {Object} opArg Operation to forge
+ * @returns {string} Forged operation bytes
+ */
+export declare const proposals: () => string;
+/**
+ * @description Forge ballot operation bytes
+ * @param {Object} opArg Operation to forge
+ * @returns {string} Forged operation bytes
+ */
+export declare const ballot: (opArg: ConstructedOperation) => string;
+/**
+ * @description Forge reveal operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const reveal: (opArg: ConstructedOperation, protocol: string) => string;
+/**
+ * @description Forge transaction operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const transaction: (opArg: ConstructedOperation, protocol: string) => string;
+/**
+ * @description Forge origination operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const origination: (opArg: ConstructedOperation, protocol: string) => string;
+/**
+ * @description Forge delegation operation bytes
+ * @param {Object} opArg Operation to forge
+ * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
+ */
+export declare const delegation: (opArg: ConstructedOperation, protocol: string) => string;
+/**
+ * @description Forge operation bytes
+ * @param {Object} opOb The operation object(s)
+ * @param {number} counter The current counter for the account
+ * @returns {string} Forged operation bytes
+ * @example
+ * forge.forge({
+ *   branch: head.hash,
+ *   contents: [{
+ *     kind: 'transaction',
+ *     source: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
+ *     fee: '50000',
+ *     counter: '31204',
+ *     gas_limit: '10200',
+ *     storage_limit: '0',
+ *     amount: '100000000',
+ *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+ *   }],
+ * }, 32847).then(({ opbytes, opOb }) => console.log(opbytes, opOb));
+ */
+export declare const forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
+/**
+ * @description Decode raw bytes
+ * @param {string} bytes The bytes to decode
+ * @returns {Object} Decoded raw bytes
+ */
+export declare const decodeRawBytes: (bytes: string) => Micheline;
+/**
+ * @description Encode raw bytes
+ * @param {Object} input The value to encode
+ * @returns {string} Encoded value as bytes
+ */
+export declare const encodeRawBytes: (input: Micheline) => string;
 declare const _default: {
     address: (addressArg: string, protocol?: string) => string;
     decodeRawBytes: (bytes: string) => Micheline;
@@ -92,10 +263,10 @@ declare const _default: {
     op: (opArg: ConstructedOperation, protocol: string) => string;
     endorsement: (opArg: ConstructedOperation) => string;
     seedNonceRevelation: (opArg: ConstructedOperation) => string;
-    doubleEndorsementEvidence: (opArg: ConstructedOperation) => string;
-    doubleBakingEvidence: (opArg: ConstructedOperation) => string;
+    doubleEndorsementEvidence: () => string;
+    doubleBakingEvidence: () => string;
     activateAccount: (opArg: ConstructedOperation) => string;
-    proposals: (opArg: ConstructedOperation) => string;
+    proposals: () => string;
     ballot: (opArg: ConstructedOperation) => string;
     reveal: (opArg: ConstructedOperation, protocol: string) => string;
     transaction: (opArg: ConstructedOperation, protocol: string) => string;

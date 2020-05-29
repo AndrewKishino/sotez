@@ -1,8 +1,8 @@
 import XMLHttpRequest from 'xhr2';
-import AbstractTezModule from './tez-core';
-import Key from './key';
-import forge from './forge';
-import utility from './utility';
+import { AbstractTezModule } from './tez-core';
+import { Key } from './key';
+import { forge } from './forge';
+import { mutez, sexp2mic, ml2mic } from './utility';
 import { watermark, protocols } from './constants';
 
 interface KeyInterface {
@@ -19,7 +19,7 @@ interface KeyInterface {
   curve: string;
   initialize: (
     keyParams: { key?: string; passphrase?: string; email?: string },
-    resolve: any,
+    resolve: () => void,
   ) => Promise<void>;
   publicKey: () => string;
   secretKey: () => string;
@@ -32,6 +32,7 @@ interface ModuleOptions {
   localForge?: boolean;
   validateLocalForge?: boolean;
   debugMode?: boolean;
+  useMutez?: boolean;
 }
 
 interface Operation {
@@ -66,7 +67,7 @@ interface Head {
   protocol: string;
   chain_id: string;
   hash: string;
-  header: any;
+  header: Header;
   metadata: any;
   operations: Operation[][];
 }
@@ -192,7 +193,6 @@ interface RpcParams {
   parameters?: string | Micheline;
   gasLimit?: number;
   storageLimit?: number;
-  mutez?: boolean;
   spendable?: boolean;
   delegatable?: boolean;
   delegate?: string;
@@ -225,7 +225,6 @@ interface ContractParams {
   fee?: number;
   gasLimit?: number;
   init: string | Micheline;
-  mutez?: boolean;
   micheline?: boolean;
   spendable?: boolean;
   storageLimit?: number;
@@ -249,19 +248,20 @@ interface Signed {
  * Main Sotez Library
  * @example
  * import Sotez from 'sotez';
- * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275 })
+ * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
  *   amount: '1000000',
  * });
  */
-export default class Sotez extends AbstractTezModule {
+export class Sotez extends AbstractTezModule {
   _localForge: boolean;
   _validateLocalForge: boolean;
   _defaultFee: number;
   _debugMode: boolean;
   _counters: { [key: string]: number };
+  _useMutez: boolean;
   key: KeyInterface;
 
   constructor(
@@ -274,6 +274,7 @@ export default class Sotez extends AbstractTezModule {
     this._localForge = options.localForge !== false;
     this._validateLocalForge = options.validateLocalForge || false;
     this._debugMode = options.debugMode || false;
+    this._useMutez = options.useMutez !== false;
     this._counters = {};
   }
 
@@ -315,6 +316,14 @@ export default class Sotez extends AbstractTezModule {
 
   set debugMode(t: boolean) {
     this._debugMode = t;
+  }
+
+  get useMutez(): boolean {
+    return this._useMutez;
+  }
+
+  set useMutez(t: boolean) {
+    this._useMutez = t;
   }
 
   setProvider(provider: string, chain: string = this.chain): void {
@@ -460,7 +469,7 @@ export default class Sotez extends AbstractTezModule {
     const operation: Operation[] = [
       {
         kind: 'origination',
-        balance: utility.mutez(balance),
+        balance: this.useMutez ? balance : mutez(balance),
         fee,
         gas_limit: gasLimit,
         storage_limit: storageLimit,
@@ -721,7 +730,7 @@ export default class Sotez extends AbstractTezModule {
   };
 
   /**
-   * @description Get the current head block hash of the chain
+   * @description Queries the rpc endpoint with an optional payload
    * @param {string} path The path to query
    * @param {Object} payload The payload of the request
    * @returns {Promise} The response of the rpc call
@@ -888,7 +897,7 @@ export default class Sotez extends AbstractTezModule {
           };
         }
 
-        const fullOp = await forge.forge(opOb, counter, metadata.next_protocol);
+        const fullOp = await forge(opOb, counter, metadata.next_protocol);
 
         if (this._validateLocalForge) {
           if (fullOp.opbytes === remoteForgedBytes) {
@@ -931,7 +940,7 @@ export default class Sotez extends AbstractTezModule {
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
     this.prepareOperation({ operation, source, skipCounter: true }).then(
-      fullOp => {
+      (fullOp) => {
         delete fullOp.opOb.protocol;
         fullOp.opOb.signature =
           'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
@@ -995,13 +1004,13 @@ export default class Sotez extends AbstractTezModule {
     const publicKeyHash = source || this.key.publicKeyHash();
 
     if (skipPrevalidation) {
-      return this.silentInject(fullOp.opbytes).catch(e => {
+      return this.silentInject(fullOp.opbytes).catch((e) => {
         this._counters[publicKeyHash] = fullOp.counter;
         throw e;
       });
     }
 
-    return this.inject(fullOp.opOb, fullOp.opbytes).catch(e => {
+    return this.inject(fullOp.opOb, fullOp.opbytes).catch((e) => {
       this._counters[publicKeyHash] = fullOp.counter;
       throw e;
     });
@@ -1021,7 +1030,7 @@ export default class Sotez extends AbstractTezModule {
       `/chains/${this.chain}/blocks/head/helpers/preapply/operations`,
       [opOb],
     )
-      .then(f => {
+      .then((f) => {
         if (!Array.isArray(f)) {
           throw new Error('RPC Fail');
         }
@@ -1046,7 +1055,7 @@ export default class Sotez extends AbstractTezModule {
         }
         return this.query('/injection/operation', sopbytes);
       })
-      .then(hash => ({
+      .then((hash) => ({
         hash,
         operations: opResponse,
       }));
@@ -1058,7 +1067,7 @@ export default class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the injected operation hash
    */
   silentInject = (sopbytes: string): Promise<any> =>
-    this.query('/injection/operation', sopbytes).then(hash => ({
+    this.query('/injection/operation', sopbytes).then((hash) => ({
       hash,
     }));
 
@@ -1072,7 +1081,6 @@ export default class Sotez extends AbstractTezModule {
    * @param {string} [paramObject.parameters] The parameter for the transaction
    * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
    * @param {number} [paramObject.storageLimit=300] The storage limit to set for the transaction
-   * @param {number} [paramObject.mutez=false] Whether the input amount is set to mutez (1/1,000,000 tez)
    * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.transfer({
@@ -1089,19 +1097,18 @@ export default class Sotez extends AbstractTezModule {
     parameters,
     gasLimit = 10600,
     storageLimit = 300,
-    mutez = false,
   }: RpcParams): Promise<any> => {
     const operation: Operation = {
       kind: 'transaction',
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      amount: mutez ? utility.mutez(amount) : amount,
+      amount: this.useMutez ? amount : mutez(amount),
       destination: to,
     };
     if (parameters) {
       if (typeof parameters === 'string') {
-        operation.parameters = utility.sexp2mic(parameters);
+        operation.parameters = sexp2mic(parameters);
       } else {
         operation.parameters = parameters;
       }
@@ -1163,13 +1170,13 @@ export default class Sotez extends AbstractTezModule {
     let _init;
 
     if (typeof code === 'string') {
-      _code = utility.ml2mic(code);
+      _code = ml2mic(code);
     } else {
       _code = code;
     }
 
     if (typeof init === 'string') {
-      _init = utility.sexp2mic(init);
+      _init = sexp2mic(init);
     } else {
       _init = init;
     }
@@ -1185,7 +1192,7 @@ export default class Sotez extends AbstractTezModule {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      balance: utility.mutez(balance),
+      balance: this.useMutez ? balance : mutez(balance),
       manager_pubkey: publicKeyHash,
       spendable,
       delegatable,
@@ -1272,7 +1279,7 @@ export default class Sotez extends AbstractTezModule {
     let _code;
 
     if (typeof code === 'string') {
-      _code = utility.ml2mic(code);
+      _code = ml2mic(code);
     } else {
       _code = code;
     }
@@ -1300,13 +1307,13 @@ export default class Sotez extends AbstractTezModule {
     let _type;
 
     if (typeof data === 'string') {
-      _data = utility.sexp2mic(data);
+      _data = sexp2mic(data);
     } else {
       _data = data;
     }
 
     if (typeof type === 'string') {
-      _type = utility.sexp2mic(type);
+      _type = sexp2mic(type);
     } else {
       _type = type;
     }
@@ -1337,13 +1344,13 @@ export default class Sotez extends AbstractTezModule {
     let _type;
 
     if (typeof data === 'string') {
-      _data = utility.sexp2mic(data);
+      _data = sexp2mic(data);
     } else {
       _data = data;
     }
 
     if (typeof type === 'string') {
-      _type = utility.sexp2mic(type);
+      _type = sexp2mic(type);
     } else {
       _type = type;
     }
@@ -1383,19 +1390,19 @@ export default class Sotez extends AbstractTezModule {
     let _storage;
 
     if (typeof code === 'string') {
-      _code = utility.sexp2mic(code);
+      _code = sexp2mic(code);
     } else {
       _code = code;
     }
 
     if (typeof input === 'string') {
-      _input = utility.sexp2mic(input);
+      _input = sexp2mic(input);
     } else {
       _input = input;
     }
 
     if (typeof storage === 'string') {
-      _storage = utility.sexp2mic(storage);
+      _storage = sexp2mic(storage);
     } else {
       _storage = storage;
     }
@@ -1404,7 +1411,7 @@ export default class Sotez extends AbstractTezModule {
       `/chains/${this.chain}/blocks/head/helpers/scripts/${ep}`,
       {
         script: _code,
-        amount: `${utility.mutez(amount)}`,
+        amount: this.useMutez ? `${amount}` : `${mutez(amount)}`,
         input: _input,
         storage: _storage,
       },

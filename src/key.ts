@@ -180,7 +180,7 @@ export class Key {
       return;
     }
 
-    this._curve = key.substr(0, 2);
+    this._curve = key.substring(0, 2);
 
     if (!['sp', 'p2', 'ed'].includes(this._curve)) {
       throw new Error('Invalid prefix for a key encoding.');
@@ -191,7 +191,9 @@ export class Key {
     }
 
     const encrypted = key.substring(2, 3) === 'e';
-    const publicOrSecret = encrypted ? key.slice(3, 5) : key.slice(2, 4);
+    const publicOrSecret = encrypted
+      ? key.substring(3, 5)
+      : key.substring(2, 4);
 
     if (!['pk', 'sk'].includes(publicOrSecret)) {
       throw new Error('Invalid prefix for a key encoding.');
@@ -388,27 +390,33 @@ export class Key {
       throw new Error('Cannot verify without a public key');
     }
 
-    const _publicKey = toBuffer(
-      b58cdecode(publicKey, prefix[`${this._curve}pk`]),
-    );
+    const _curve = publicKey.substring(0, 2);
+    const _publicKey = toBuffer(b58cdecode(publicKey, prefix[`${_curve}pk`]));
 
-    if (signature.slice(0, 3) !== 'sig') {
-      if (this._curve !== signature.slice(0, 2)) {
+    if (signature.substring(0, 3) !== 'sig') {
+      if (_curve !== signature.substring(0, 2)) {
         // 'sp', 'p2' 'ed'
         throw new Error('Signature and public key curves mismatch.');
       }
     }
 
     const bytesBuffer = sodium.crypto_generichash(32, hex2buf(bytes));
-    const sig = b58cdecode(signature, prefix.sig);
+    let sig;
+    if (signature.substring(0, 3) === 'sig') {
+      sig = b58cdecode(signature, prefix.sig);
+    } else if (signature.substring(0, 5) === `${_curve}sig`) {
+      sig = b58cdecode(signature, prefix[`${_curve}sig`]);
+    } else {
+      throw new Error(`Invalid signature provided: ${signature}`);
+    }
 
-    if (this._curve === 'ed') {
+    if (_curve === 'ed') {
       try {
         return sodium.crypto_sign_verify_detached(sig, bytesBuffer, _publicKey);
       } catch (e) {
         return false;
       }
-    } else if (this._curve === 'sp') {
+    } else if (_curve === 'sp') {
       const key = new elliptic.ec('secp256k1').keyFromPublic(_publicKey);
       const formattedSig = buf2hex(toBuffer(sig));
       const match = formattedSig.match(/([a-f\d]{64})/gi);
@@ -421,7 +429,7 @@ export class Key {
         }
       }
       return false;
-    } else if (this._curve === 'p2') {
+    } else if (_curve === 'p2') {
       const key = new elliptic.ec('p256').keyFromPublic(_publicKey);
       const formattedSig = buf2hex(toBuffer(sig));
       const match = formattedSig.match(/([a-f\d]{64})/gi);
@@ -435,7 +443,7 @@ export class Key {
       }
       return false;
     } else {
-      throw new Error(`Curve '${this._curve}' not supported`);
+      throw new Error(`Curve '${_curve}' not supported`);
     }
   };
 }

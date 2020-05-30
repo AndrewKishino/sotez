@@ -51,7 +51,6 @@
     "xhr2": "^0.2.0"
   },
   "devDependencies": {
-    "@types/bip39": "^3.0.0",
     "@types/detect-node": "^2.0.0",
     "@types/elliptic": "^6.4.9",
     "@types/ledgerhq__hw-transport": "^4.21.2",

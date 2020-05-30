@@ -48,7 +48,7 @@ export const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
 
   const sodium = _sodium;
 
-  const curve = sk.substr(0, 2);
+  const curve = sk.substring(0, 2);
 
   if (![54, 55, 88, 98].includes(sk.length)) {
     throw new Error('Invalid length for a key encoding');

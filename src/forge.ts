@@ -196,9 +196,9 @@ export const parameters = (parameter: any, protocol: string): string => {
  * @returns {string} Forged public key hash bytes
  */
 export const publicKeyHash = (pkh: string): string => {
-  const t = parseInt(pkh.substr(2, 1), 10);
+  const t = parseInt(pkh.substring(2, 1), 10);
   const fpkh = [`0${t - 1}`];
-  const forgedBuffer = toBuffer(b58cdecode(pkh, prefix[pkh.substr(0, 3)]));
+  const forgedBuffer = toBuffer(b58cdecode(pkh, prefix[pkh.substring(0, 3)]));
   fpkh.push(buf2hex(forgedBuffer));
   return fpkh.join('');
 };
@@ -221,12 +221,12 @@ export const address = (addressArg: string, protocol = ''): string => {
 
   const getAddressType = (a: string): string => {
     if (!protocol || addressSourceBytes[protocol]) {
-      return a.substr(0, 1) === 'K' ? '01' : '00';
+      return a.substring(0, 1) === 'K' ? '01' : '00';
     }
     return '';
   };
 
-  if (addressArg.substr(0, 1) === 'K') {
+  if (addressArg.substring(0, 1) === 'K') {
     fa.push(getAddressType(addressArg));
     const forgedBuffer = toBuffer(b58cdecode(addressArg, prefix.KT));
     fa.push(buf2hex(forgedBuffer));
@@ -273,7 +273,7 @@ export const zarith = (n: string): string => {
  */
 export const publicKey = (pk: string): string => {
   const fpk: Array<string> = [];
-  switch (pk.substr(0, 2)) {
+  switch (pk.substring(0, 2)) {
     case 'ed':
       fpk.push('00');
       break;
@@ -286,7 +286,7 @@ export const publicKey = (pk: string): string => {
     default:
       break;
   }
-  const forgedBuffer = toBuffer(b58cdecode(pk, prefix[pk.substr(0, 4)]));
+  const forgedBuffer = toBuffer(b58cdecode(pk, prefix[pk.substring(0, 4)]));
   fpk.push(buf2hex(forgedBuffer));
   return fpk.join('');
 };

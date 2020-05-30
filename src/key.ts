@@ -252,8 +252,7 @@ export class Key {
           constructedKey,
         );
         const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
-        // Need to pad keypair array to maintain a length of 32
-        const pad = [0, 0];
+        const pad = new Array(32).fill(0);
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(
@@ -264,8 +263,7 @@ export class Key {
       } else if (this._curve === 'p2') {
         const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
         const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
-        // Need to pad keypair array to maintain a length of 32
-        const pad = [0, 0];
+        const pad = new Array(32).fill(0);
         this._publicKey = toBuffer(
           new Uint8Array(
             [prefixVal].concat(

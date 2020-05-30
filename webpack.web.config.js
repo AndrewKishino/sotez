@@ -1,4 +1,4 @@
-const path = require('path'); // eslint-disable-line
+const path = require('path');
 const webpack = require('webpack'); // eslint-disable-line
 const TerserPlugin = require('terser-webpack-plugin'); // eslint-disable-line
 

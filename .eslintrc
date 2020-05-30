@@ -6,8 +6,7 @@
     "jest": true
   },
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.eslint.json"
   },
   "rules": {
     // eslint

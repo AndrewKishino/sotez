@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1] - 2020-06-02
+
+### Added
+
+- Added `magicBytes` to the `sign` responses. Allows signatures to be verified by doing:
+
+```js
+import { magicBytes as magicBytesMap } from 'sotez';
+// ...
+const { bytes, magicBytes, prefixSig } = await key.sign(
+  '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a...',
+  magicBytesMap.generic,
+);
+const verified = await key.verify(`${magicBytes}${bytes}`, prefixSig);
+```
+
+### Changed
+
+- Changed `watermark` to be `magicBytes`. This is more consistent with the tezos documentation.
+
+```js
+export const magicBytes: MagicBytes = {
+  block: new Uint8Array([1]),
+  endorsement: new Uint8Array([2]),
+  generic: new Uint8Array([3]),
+};
+```
+
 ## [0.7.0] - 2020-05-30
 
 ### Added

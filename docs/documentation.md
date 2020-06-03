@@ -28,7 +28,7 @@ Main Sotez Library
 ### Examples
 
 ```javascript
-import Sotez from 'sotez';
+import { Sotez } from 'sotez';
 const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
@@ -706,7 +706,7 @@ Sign a raw sequence of bytes
 #### Parameters
 
 -   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `watermark` **[Uint8Array][4]** The watermark bytes
+-   `magicBytes` **[Uint8Array][4]** The magic bytes for the operation
 
 Returns **[Promise][5]** The signature object
 
@@ -795,16 +795,16 @@ Sign bytes
 
 -   `bytes` **[string][1]** The bytes to sign
 -   `sk` **[string][1]** The secret key to sign the bytes with
--   `wm` **[Object][4]** The watermark bytes
+-   `magicBytes` **[Object][4]** The magic bytes for the operation
 -   `password` **[string][1]?** The password used to encrypt the sk (optional, default `''`)
 
 ### Examples
 
 ```javascript
-import { watermark } from 'sotez';
+import { magicBytes as magicBytesMap } from 'sotez';
 
-crypto.sign(opbytes, keys.sk, watermark.generic)
-  .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
+crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+  .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
 ```
 
 Returns **[Promise][3]** The signed bytes
@@ -1160,7 +1160,7 @@ Sign an operation with the ledger
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
     -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
-    -   `ledgerParams.watermark` **[Uint8Array][6]** The watermark bytes (optional, default `'03'`)
+    -   `ledgerParams.magicBytes` **[Uint8Array][6]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 

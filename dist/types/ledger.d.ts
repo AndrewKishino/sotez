@@ -7,7 +7,7 @@ interface LedgerSignOperation {
     path?: string;
     rawTxHex: string;
     curve?: number;
-    watermark?: Uint8Array;
+    magicBytes?: Uint8Array;
 }
 interface LedgerGetVersion {
     major: number;
@@ -39,7 +39,7 @@ export declare const getAddress: ({ path, displayConfirm, curve, }?: LedgerGetAd
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
  * @param {boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
  * @param {number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
- * @param {Uint8Array} [ledgerParams.watermark='03'] The watermark bytes
+ * @param {Uint8Array} [ledgerParams.magicBytes='03'] The magic bytes for the operation
  * @returns {Promise} The signed operation
  * @example
  * ledger.signOperation({
@@ -48,7 +48,7 @@ export declare const getAddress: ({ path, displayConfirm, curve, }?: LedgerGetAd
  *   curve = 0x00,
  * }).then((signature) => console.log(signature));
  */
-export declare const signOperation: ({ path, rawTxHex, curve, watermark, }: LedgerSignOperation) => Promise<string>;
+export declare const signOperation: ({ path, rawTxHex, curve, magicBytes, }: LedgerSignOperation) => Promise<string>;
 /**
  * @description Show the version of the ledger
  * @returns {Promise} The version info
@@ -62,7 +62,7 @@ declare const _default: {
         address: string;
         publicKey: string;
     }>;
-    signOperation: ({ path, rawTxHex, curve, watermark, }: LedgerSignOperation) => Promise<string>;
+    signOperation: ({ path, rawTxHex, curve, magicBytes, }: LedgerSignOperation) => Promise<string>;
     getVersion: () => Promise<LedgerGetVersion>;
 };
 export default _default;

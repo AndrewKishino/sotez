@@ -25,6 +25,7 @@ interface KeysMnemonicPassphrase {
 
 interface Signed {
   bytes: string;
+  magicBytes: string;
   sig: string;
   prefixSig: string;
   sbytes: string;
@@ -170,19 +171,19 @@ export const generateKeys = async (
  * @description Sign bytes
  * @param {string} bytes The bytes to sign
  * @param {string} sk The secret key to sign the bytes with
- * @param {Object} wm The watermark bytes
+ * @param {Object} magicBytes The magic bytes for the operation
  * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
  * @example
- * import { watermark } from 'sotez';
+ * import { magicBytes as magicBytesMap } from 'sotez';
  *
- * crypto.sign(opbytes, keys.sk, watermark.generic)
- *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
+ * crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+ *   .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
  */
 export const sign = async (
   bytes: string,
   sk: string,
-  wm: Uint8Array,
+  magicBytes: Uint8Array,
   password = '',
 ): Promise<Signed> => {
   try {
@@ -201,8 +202,8 @@ export const sign = async (
   }
 
   let bb = hex2buf(bytes);
-  if (typeof wm !== 'undefined') {
-    bb = mergebuf(wm, bb);
+  if (typeof magicBytes !== 'undefined') {
+    bb = mergebuf(magicBytes, bb);
   }
   const sig = sodium.crypto_sign_detached(
     sodium.crypto_generichash(32, bb),
@@ -214,6 +215,7 @@ export const sign = async (
   const sbytes = bytes + buf2hex(signatureBuffer);
   return {
     bytes,
+    magicBytes: magicBytes ? buf2hex(toBuffer(magicBytes)) : '',
     sig: b58cencode(sig, prefix.sig),
     prefixSig,
     sbytes,

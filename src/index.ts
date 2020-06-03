@@ -1,5 +1,7 @@
 export { Sotez } from './sotez';
+
 export { Key } from './key';
+
 export {
   default as crypto,
   extractKeys,
@@ -9,6 +11,7 @@ export {
   sign,
   verify,
 } from './crypto';
+
 export {
   address,
   decodeRawBytes,
@@ -35,6 +38,7 @@ export {
   toBytesInt32,
   toBytesInt32Hex,
 } from './forge';
+
 export {
   default as utility,
   textEncode,
@@ -57,16 +61,18 @@ export {
   mintotz,
   tztomin,
 } from './utility';
+
 export {
   default as ledger,
   getAddress,
   signOperation,
   getVersion,
 } from 'ledger';
+
 export {
   default as constants,
   prefix,
-  watermark,
+  magicBytes,
   forgeMappings,
   protocols,
 } from './constants';

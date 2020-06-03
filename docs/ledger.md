@@ -46,7 +46,7 @@ Sign an operation with the ledger
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
     -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
-    -   `ledgerParams.watermark` **[Uint8Array][6]** The watermark bytes (optional, default `'03'`)
+    -   `ledgerParams.magicBytes` **[Uint8Array][6]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 

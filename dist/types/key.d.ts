@@ -66,11 +66,12 @@ export declare class Key {
      * @memberof Key
      * @description Sign a raw sequence of bytes
      * @param {string} bytes Sequence of bytes, raw format or hexadecimal notation
-     * @param {Uint8Array} watermark The watermark bytes
+     * @param {Uint8Array} magicBytes The magic bytes for the operation
      * @returns {Promise} The signature object
      */
-    sign: (bytes: string, watermark: Uint8Array) => Promise<{
+    sign: (bytes: string, magicBytes: Uint8Array) => Promise<{
         bytes: string;
+        magicBytes: string;
         sig: string;
         prefixSig: string;
         sbytes: string;

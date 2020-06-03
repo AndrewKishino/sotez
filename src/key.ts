@@ -285,14 +285,15 @@ export class Key {
    * @memberof Key
    * @description Sign a raw sequence of bytes
    * @param {string} bytes Sequence of bytes, raw format or hexadecimal notation
-   * @param {Uint8Array} watermark The watermark bytes
+   * @param {Uint8Array} magicBytes The magic bytes for the operation
    * @returns {Promise} The signature object
    */
   sign = async (
     bytes: string,
-    watermark: Uint8Array,
+    magicBytes: Uint8Array,
   ): Promise<{
     bytes: string;
+    magicBytes: string;
     sig: string;
     prefixSig: string;
     sbytes: string;
@@ -302,13 +303,14 @@ export class Key {
         path: this._ledgerPath,
         rawTxHex: bytes,
         curve: this._ledgerCurve,
-        watermark,
+        magicBytes,
       });
       const signatureBuffer = hex2buf(signature);
       const sbytes = bytes + signature;
 
       return {
         bytes,
+        magicBytes: magicBytes ? buf2hex(toBuffer(magicBytes)) : '',
         sig: b58cencode(signatureBuffer, prefix.sig),
         prefixSig: b58cencode(signatureBuffer, prefix[`${this._curve}sig`]),
         sbytes,
@@ -316,8 +318,8 @@ export class Key {
     }
 
     let bb = hex2buf(bytes);
-    if (typeof watermark !== 'undefined') {
-      bb = mergebuf(watermark, bb);
+    if (typeof magicBytes !== 'undefined') {
+      bb = mergebuf(magicBytes, bb);
     }
 
     const bytesHash = toBuffer(sodium.crypto_generichash(32, bb));
@@ -333,6 +335,7 @@ export class Key {
 
       return {
         bytes,
+        magicBytes: magicBytes ? buf2hex(toBuffer(magicBytes)) : '',
         sig: b58cencode(signature, prefix.sig),
         prefixSig: b58cencode(signature, prefix.edsig),
         sbytes,
@@ -349,6 +352,7 @@ export class Key {
 
       return {
         bytes,
+        magicBytes: magicBytes ? buf2hex(toBuffer(magicBytes)) : '',
         sig: b58cencode(signature, prefix.sig),
         prefixSig: b58cencode(signature, prefix.spsig),
         sbytes,
@@ -365,6 +369,7 @@ export class Key {
 
       return {
         bytes,
+        magicBytes: magicBytes ? buf2hex(toBuffer(magicBytes)) : '',
         sig: b58cencode(signature, prefix.sig),
         prefixSig: b58cencode(signature, prefix.p2sig),
         sbytes,

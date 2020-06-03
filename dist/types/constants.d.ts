@@ -27,13 +27,13 @@ interface Prefix {
     id: Uint8Array;
     TZ: Uint8Array;
 }
-interface Watermark {
+interface MagicBytes {
     block: Uint8Array;
     endorsement: Uint8Array;
     generic: Uint8Array;
 }
 export declare const prefix: Prefix;
-export declare const watermark: Watermark;
+export declare const magicBytes: MagicBytes;
 export declare const forgeMappings: {
     opMapping: {
         [key: string]: string;
@@ -74,7 +74,7 @@ export declare const protocols: {
 };
 declare const _default: {
     prefix: Prefix;
-    watermark: Watermark;
+    magicBytes: MagicBytes;
     forgeMappings: {
         opMapping: {
             [key: string]: string;

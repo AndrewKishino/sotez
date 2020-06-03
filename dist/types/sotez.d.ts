@@ -236,6 +236,7 @@ interface ForgedBytes {
 }
 interface Signed {
     bytes: string;
+    magicBytes: string;
     sig: string;
     prefixSig: string;
     sbytes: string;
@@ -243,7 +244,7 @@ interface Signed {
 /**
  * Main Sotez Library
  * @example
- * import Sotez from 'sotez';
+ * import { Sotez } from 'sotez';
  * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({

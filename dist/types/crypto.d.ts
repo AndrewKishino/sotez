@@ -13,6 +13,7 @@ interface KeysMnemonicPassphrase {
 }
 interface Signed {
     bytes: string;
+    magicBytes: string;
     sig: string;
     prefixSig: string;
     sbytes: string;
@@ -52,16 +53,16 @@ export declare const generateKeys: (mnemonic: string, passphrase: string) => Pro
  * @description Sign bytes
  * @param {string} bytes The bytes to sign
  * @param {string} sk The secret key to sign the bytes with
- * @param {Object} wm The watermark bytes
+ * @param {Object} magicBytes The magic bytes for the operation
  * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
  * @example
- * import { watermark } from 'sotez';
+ * import { magicBytes as magicBytesMap } from 'sotez';
  *
- * crypto.sign(opbytes, keys.sk, watermark.generic)
- *   .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
+ * crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+ *   .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
  */
-export declare const sign: (bytes: string, sk: string, wm: Uint8Array, password?: string) => Promise<Signed>;
+export declare const sign: (bytes: string, sk: string, magicBytes: Uint8Array, password?: string) => Promise<Signed>;
 /**
  * @description Verify signed bytes
  * @param {String} bytes The signed bytes
@@ -75,7 +76,7 @@ declare const _default: {
     generateKeys: (mnemonic: string, passphrase: string) => Promise<KeysMnemonicPassphrase>;
     checkAddress: (address: string) => boolean;
     generateMnemonic: () => string;
-    sign: (bytes: string, sk: string, wm: Uint8Array, password?: string) => Promise<Signed>;
+    sign: (bytes: string, sk: string, magicBytes: Uint8Array, password?: string) => Promise<Signed>;
     verify: (bytes: string, sig: string, pk: string) => Promise<boolean>;
 };
 export default _default;

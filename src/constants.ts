@@ -34,7 +34,7 @@ interface Prefix {
   TZ: Uint8Array;
 }
 
-interface Watermark {
+interface MagicBytes {
   block: Uint8Array;
   endorsement: Uint8Array;
   generic: Uint8Array;
@@ -76,7 +76,7 @@ export const prefix: Prefix = {
   TZ: new Uint8Array([2, 90, 121]),
 };
 
-export const watermark: Watermark = {
+export const magicBytes: MagicBytes = {
   block: new Uint8Array([1]),
   endorsement: new Uint8Array([2]),
   generic: new Uint8Array([3]),
@@ -318,7 +318,7 @@ export const protocols = {
 
 export default {
   prefix,
-  watermark,
+  magicBytes,
   forgeMappings,
   protocols,
 };

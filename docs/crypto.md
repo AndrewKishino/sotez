@@ -60,16 +60,16 @@ Sign bytes
 
 -   `bytes` **[string][1]** The bytes to sign
 -   `sk` **[string][1]** The secret key to sign the bytes with
--   `wm` **[Object][4]** The watermark bytes
+-   `magicBytes` **[Object][4]** The magic bytes for the operation
 -   `password` **[string][1]?** The password used to encrypt the sk (optional, default `''`)
 
 ### Examples
 
 ```javascript
-import { watermark } from 'sotez';
+import { magicBytes as magicBytesMap } from 'sotez';
 
-crypto.sign(opbytes, keys.sk, watermark.generic)
-  .then(({ bytes, sig, edsig, sbytes }) => console.log(bytes, sig, edsig, sbytes));
+crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+  .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
 ```
 
 Returns **[Promise][3]** The signed bytes

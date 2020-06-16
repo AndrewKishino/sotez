@@ -1,4 +1,3 @@
-const toBuffer = require('typedarray-to-buffer');
 const {
   Sotez,
   utility,

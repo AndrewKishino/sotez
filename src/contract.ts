@@ -12,7 +12,6 @@ interface RpcParams {
   parameters?: string | Micheline;
   gasLimit?: number;
   storageLimit?: number;
-  mutez?: boolean;
   spendable?: boolean;
   delegatable?: boolean;
   delegate?: string;
@@ -60,7 +59,6 @@ interface SendParams {
   storageLimit?: number;
   gasLimit?: number;
   amount?: number;
-  mutez?: boolean;
 }
 
 const DEFAULT_SMART_CONTRACT_METHOD_NAME = 'default';
@@ -308,7 +306,6 @@ export class ContractMethod {
     gasLimit,
     storageLimit,
     amount = 0,
-    mutez = false,
   }: Partial<SendParams> = {}): RpcParams {
     return {
       to: this.address,
@@ -317,12 +314,13 @@ export class ContractMethod {
       gasLimit,
       storageLimit,
       parameters: {
-        entrypoint: this.isMultipleEntrypoint ? this.name : 'default',
+        entrypoint: this.isMultipleEntrypoint
+          ? this.name
+          : DEFAULT_SMART_CONTRACT_METHOD_NAME,
         value: this.isAnonymous
           ? this.parameterSchema.Encode(this.name, ...this.args)
           : this.parameterSchema.Encode(...this.args),
       },
-      mutez,
     };
   }
 }

@@ -1,3 +1,5 @@
+import XMLHttpRequest from 'xhr2';
+
 export class AbstractTezModule {
   _provider: string;
   _chain: string;

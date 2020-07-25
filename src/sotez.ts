@@ -5,28 +5,6 @@ import { forge } from './forge';
 import { mutez, sexp2mic, ml2mic } from './utility';
 import { magicBytes, protocols } from './constants';
 
-interface KeyInterface {
-  _publicKey: Buffer;
-  _secretKey?: Buffer;
-  _isLedger: boolean;
-  _ledgerPath: string;
-  _ledgerCurve: number;
-  _isSecret: boolean;
-  isLedger: boolean;
-  ledgerPath: string;
-  ledgerCurve: number;
-  ready: Promise<boolean>;
-  curve: string;
-  initialize: (
-    keyParams: { key?: string; passphrase?: string; email?: string },
-    resolve: () => void,
-  ) => Promise<void>;
-  publicKey: () => string;
-  secretKey: () => string;
-  publicKeyHash: () => string;
-  sign: (bytes: string, wm: Uint8Array) => Promise<Signed>;
-}
-
 interface ModuleOptions {
   defaultFee?: number;
   localForge?: boolean;

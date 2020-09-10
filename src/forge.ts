@@ -181,6 +181,7 @@ export const parameters = (parameter: any, protocol: string): string => {
     [`${protocols['005a']}`]: parameters005,
     [`${protocols['005']}`]: parameters005,
     [`${protocols['006']}`]: parameters005,
+    [`${protocols['007a']}`]: parameters005,
     [`${protocols['007']}`]: parameters005,
   };
 
@@ -313,6 +314,7 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
     [`${protocols['005a']}`]: opTag005,
     [`${protocols['005']}`]: opTag005,
     [`${protocols['006']}`]: opTag005,
+    [`${protocols['007a']}`]: opTag005,
     [`${protocols['007']}`]: opTag005,
   };
 
@@ -554,6 +556,7 @@ export const origination = (
     [`${protocols['005a']}`]: origination005,
     [`${protocols['005']}`]: origination005,
     [`${protocols['006']}`]: origination005,
+    [`${protocols['007a']}`]: origination005,
     [`${protocols['007']}`]: origination005,
   };
 

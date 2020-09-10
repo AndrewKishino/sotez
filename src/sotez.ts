@@ -720,14 +720,14 @@ export class Sotez extends AbstractTezModule {
 
             ops.unshift(reveal);
           }
+        }
 
-          counter = parseInt(headCounter, 10);
-          if (
-            !this._counters[publicKeyHash] ||
-            this._counters[publicKeyHash] < counter
-          ) {
-            this._counters[publicKeyHash] = counter;
-          }
+        counter = parseInt(headCounter, 10);
+        if (
+          !this._counters[publicKeyHash] ||
+          this._counters[publicKeyHash] < counter
+        ) {
+          this._counters[publicKeyHash] = counter;
         }
 
         const constructOps = (cOps: Operation[]): ConstructedOperation[] => {

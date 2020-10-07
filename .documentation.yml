@@ -5,6 +5,9 @@ toc:
   - name: Key
     file: docs/key.md
 
+  - name: Contract
+    file: docs/contract.md
+
   - name: Crypto
     file: docs/crypto.md
 

@@ -43,6 +43,16 @@ Buffer to hex
 
 Returns **[string][1]** Converted hex value
 
+## encodeExpr
+
+Encodes an expression
+
+### Parameters
+
+-   `value` **[string][1]** 
+
+Returns **[string][1]** The base58 encoded expression
+
 ## hex2buf
 
 Hex to Buffer

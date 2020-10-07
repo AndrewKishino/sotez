@@ -1,27 +1,6 @@
-/// <reference types="node" />
 import { AbstractTezModule } from './tez-core';
-interface KeyInterface {
-    _publicKey: Buffer;
-    _secretKey?: Buffer;
-    _isLedger: boolean;
-    _ledgerPath: string;
-    _ledgerCurve: number;
-    _isSecret: boolean;
-    isLedger: boolean;
-    ledgerPath: string;
-    ledgerCurve: number;
-    ready: Promise<void>;
-    curve: string;
-    initialize: (keyParams: {
-        key?: string;
-        passphrase?: string;
-        email?: string;
-    }, resolve: () => void) => Promise<void>;
-    publicKey: () => string;
-    secretKey: () => string;
-    publicKeyHash: () => string;
-    sign: (bytes: string, wm: Uint8Array) => Promise<Signed>;
-}
+import { Key } from './key';
+import { Contract } from './contract';
 interface ModuleOptions {
     defaultFee?: number;
     localForge?: boolean;
@@ -234,13 +213,6 @@ interface ForgedBytes {
     counter: number;
     chainId: string;
 }
-interface Signed {
-    bytes: string;
-    magicBytes: string;
-    sig: string;
-    prefixSig: string;
-    sbytes: string;
-}
 /**
  * Main Sotez Library
  * @example
@@ -256,12 +228,11 @@ export declare class Sotez extends AbstractTezModule {
     _localForge: boolean;
     _validateLocalForge: boolean;
     _defaultFee: number;
-    _debugMode: boolean;
     _counters: {
         [key: string]: number;
     };
     _useMutez: boolean;
-    key: KeyInterface;
+    key: Key;
     constructor(provider?: string, chain?: string, options?: ModuleOptions);
     get defaultFee(): number;
     set defaultFee(fee: number);
@@ -297,17 +268,6 @@ export declare class Sotez extends AbstractTezModule {
      * await sotez.importLedger();
      */
     importLedger: (path?: string, curve?: number) => Promise<void>;
-    /**
-     * @description Queries a node given a path and payload
-     * @param {string} path The RPC path to query
-     * @param {string} payload The payload of the query
-     * @param {string} method The request method. Either 'GET' or 'POST'
-     * @returns {Promise} The response of the query
-     * @example
-     * sotez.query(`/chains/main/blocks/head`)
-     *  .then(head => console.log(head));
-     */
-    query: (path: string, payload?: any, method?: string | undefined) => Promise<any>;
     /**
      * @description Originate a new account
      * @param {Object} paramObject The parameters for the origination
@@ -671,14 +631,43 @@ export declare class Sotez extends AbstractTezModule {
      * @param {boolean} [trace=false] Whether to trace
      * @returns {Promise} Run results
      */
-    runCode: (code: string | Micheline, amount: number, input: string, storage: string, trace?: boolean) => Promise<any>;
+    runCode: (code: string | Micheline, amount: number, input: string | Micheline, storage: string | Micheline, trace?: boolean) => Promise<any>;
     /**
      * Get the mananger key from the protocol dependent query
      * @param {Object|string} manager The manager key query response
      * @param {string} protocol The protocol of the current block
      * @returns {string} If manager exists, returns the manager key
      */
-    _getManagerKey: (manager: any, protocol: string) => string | null;
-    _conformOperation: (constructedOp: ConstructedOperation, nextProtocol: string) => ConstructedOperation;
+    getManagerKey: (manager: any, protocol: string) => string | null;
+    /**
+     * Conforms the operation to a specific protocol
+     * @param {Object} constructedOp The operation object
+     * @param {string} nextProtocol The next protocol of the current block
+     * @returns {string} The protocol specific operation
+     */
+    private _conformOperation;
+    /**
+     * Looks up a contract and returns an initialized contract
+     * @param {Object} address The contract address
+     * @returns {Promise} An initialized contract class
+     * @example
+     * // Load contract
+     * const contract = await sotez.loadContract('KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
+     * // List defined contract methods
+     * const { methods } = contract;
+     * // Retrieve contract storage
+     * const storage = contract.storage();
+     * // Get big map keys
+     * await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
+     * // Determine method schema
+     * await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).schema();
+     * // Send contract operation
+     * await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).send({
+     *   fee: '100000',
+     *   gasLimit: '800000',
+     *   storageLimit: '60000',
+     * });
+     */
+    loadContract: (address: string) => Promise<Contract>;
 }
 export {};

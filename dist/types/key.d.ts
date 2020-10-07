@@ -24,7 +24,7 @@ export declare class Key {
     _isLedger: boolean;
     _ledgerPath: string;
     _ledgerCurve: number;
-    ready: Promise<void>;
+    ready: Promise<boolean>;
     constructor({ key, passphrase, email, ledgerPath, ledgerCurve, }?: {
         key?: string;
         passphrase?: string;

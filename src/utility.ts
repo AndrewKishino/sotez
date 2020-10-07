@@ -1,6 +1,9 @@
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 import { Buffer } from 'buffer/';
+import blake2b from 'blake2b';
+
+import { prefix } from './constants';
 
 type Micheline =
   | {
@@ -143,6 +146,18 @@ export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   r.set(b1);
   r.set(b2, b1.length);
   return r;
+};
+
+/**
+ * Encodes an expression
+ * @param {string} value
+ * @returns {string} The base58 encoded expression
+ */
+export const encodeExpr = (value: string): string => {
+  let hash = blake2b(32);
+  hash.update(hex2buf(value));
+  hash.digest((hash = Buffer.alloc(32)));
+  return b58cencode(hash, prefix.expr);
 };
 
 export const sexp2mic = function me(mi: string): Micheline {
@@ -331,6 +346,7 @@ export default {
   hex2buf,
   hexNonce,
   mergebuf,
+  encodeExpr,
   sexp2mic,
   mic2arr,
   ml2mic,

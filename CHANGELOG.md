@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2020-10-07
+
+### Added
+
+- Added Delphi and Dalpha protocols
+- Added smart contract abstraction
+
 ## [0.7.1] - 2020-06-02
 
 ### Added

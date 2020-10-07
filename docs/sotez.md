@@ -24,16 +24,16 @@ sotez.transfer({
 });
 ```
 
-### \_getManagerKey
+### \_conformOperation
 
-Get the mananger key from the protocol dependent query
+Conforms the operation to a specific protocol
 
 #### Parameters
 
--   `manager` **([Object][1] \| [string][2])** The manager key query response
--   `protocol` **[string][2]** The protocol of the current block
+-   `constructedOp` **[Object][1]** The operation object
+-   `nextProtocol` **[string][2]** The next protocol of the current block
 
-Returns **[string][2]** If manager exists, returns the manager key
+Returns **[string][2]** The protocol specific operation
 
 ### account
 
@@ -334,6 +334,17 @@ sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
 
 Returns **[Promise][5]** The manager of a contract
 
+### getManagerKey
+
+Get the mananger key from the protocol dependent query
+
+#### Parameters
+
+-   `manager` **([Object][1] \| [string][2])** The manager key query response
+-   `protocol` **[string][2]** The protocol of the current block
+
+Returns **[string][2]** If manager exists, returns the manager key
+
 ### getProposals
 
 List of proposals with number of supporters
@@ -390,6 +401,37 @@ Inject an operation
 -   `sopbytes` **[string][2]** The signed operation bytes
 
 Returns **[Promise][5]** Object containing the injected operation hash
+
+### loadContract
+
+Looks up a contract and returns an initialized contract
+
+#### Parameters
+
+-   `address` **[Object][1]** The contract address
+
+#### Examples
+
+```javascript
+// Load contract
+const contract = await sotez.loadContract('KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
+// List defined contract methods
+const { methods } = contract;
+// Retrieve contract storage
+const storage = contract.storage();
+// Get big map keys
+await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
+// Determine method schema
+await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).schema();
+// Send contract operation
+await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).send({
+  fee: '100000',
+  gasLimit: '800000',
+  storageLimit: '60000',
+});
+```
+
+Returns **[Promise][5]** An initialized contract class
 
 ### originate
 
@@ -448,25 +490,6 @@ sotez.prepareOperation({
 ```
 
 Returns **[Promise][5]** Object containing the prepared operation
-
-### query
-
-Queries a node given a path and payload
-
-#### Parameters
-
--   `path` **[string][2]** The RPC path to query
--   `payload` **[string][2]** The payload of the query
--   `method` **[string][2]** The request method. Either 'GET' or 'POST'
-
-#### Examples
-
-```javascript
-sotez.query(`/chains/main/blocks/head`)
- .then(head => console.log(head));
-```
-
-Returns **[Promise][5]** The response of the query
 
 ### registerDelegate
 

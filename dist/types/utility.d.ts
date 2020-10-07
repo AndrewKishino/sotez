@@ -80,6 +80,12 @@ export declare const hexNonce: (length: number) => string;
  * @returns {Object} The merged buffer
  */
 export declare const mergebuf: (b1: Uint8Array, b2: Uint8Array) => Uint8Array;
+/**
+ * Encodes an expression
+ * @param {string} value
+ * @returns {string} The base58 encoded expression
+ */
+export declare const encodeExpr: (value: string) => string;
 export declare const sexp2mic: (mi: string) => Micheline;
 export declare const mic2arr: (s: any) => any;
 export declare const ml2mic: (mi: string) => Micheline;
@@ -100,6 +106,7 @@ declare const _default: {
     hex2buf: (hex: string) => Uint8Array;
     hexNonce: (length: number) => string;
     mergebuf: (b1: Uint8Array, b2: Uint8Array) => Uint8Array;
+    encodeExpr: (value: string) => string;
     sexp2mic: (mi: string) => Micheline;
     mic2arr: (s: any) => any;
     ml2mic: (mi: string) => Micheline;

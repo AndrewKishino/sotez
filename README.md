@@ -20,7 +20,9 @@ const sotez = new Sotez('http://127.0.0.1:8732');
 
 const example = async () => {
   // A secret key or a ledger must be imported to sign transactions
-  // await sotez.importLedger();
+  // import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+  //
+  // await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
   await sotez.importKey('...');
 
   // A simple 1ꜩ transfer operation

@@ -1,1 +1,1 @@
-declare module '@taquito/michelson-encoder';
+// declare module '@taquito/michelson-encoder';

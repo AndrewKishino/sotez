@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer/';
 declare type Micheline = {
     prim: string;
     args?: MichelineArray;
@@ -60,7 +59,7 @@ export declare const b58cdecode: (enc: string, prefixArg: Uint8Array) => Uint8Ar
  * @param {Object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
-export declare const buf2hex: (buffer: Buffer) => string;
+export declare const buf2hex: (buffer: Uint8Array) => string;
 /**
  * @description Hex to Buffer
  * @param {string} hex The hex to convert to buffer
@@ -102,7 +101,7 @@ declare const _default: {
     mutez: (tez: number) => string;
     b58cencode: (payload: Uint8Array, prefixArg: Uint8Array) => string;
     b58cdecode: (enc: string, prefixArg: Uint8Array) => Uint8Array;
-    buf2hex: (buffer: Buffer) => string;
+    buf2hex: (buffer: Uint8Array) => string;
     hex2buf: (hex: string) => Uint8Array;
     hexNonce: (length: number) => string;
     mergebuf: (b1: Uint8Array, b2: Uint8Array) => Uint8Array;

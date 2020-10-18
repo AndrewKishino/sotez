@@ -67,7 +67,7 @@ export {
   getAddress,
   signOperation,
   getVersion,
-} from 'ledger';
+} from './ledger';
 
 export {
   default as constants,

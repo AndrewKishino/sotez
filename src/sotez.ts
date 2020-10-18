@@ -1,3 +1,4 @@
+import LedgerTransport from '@ledgerhq/hw-transport';
 import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
 import { Contract } from './contract';
@@ -329,16 +330,23 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Import a ledger public key
+   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
    * @param {number} [curve=0x00] The curve parameter
    * @example
-   * await sotez.importLedger();
+   * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+   * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
    */
   importLedger = async (
+    transport: LedgerTransport,
     path = "44'/1729'/0'/0'",
     curve = 0x00,
   ): Promise<void> => {
-    this.key = new Key({ ledgerPath: path, ledgerCurve: curve });
+    this.key = new Key({
+      ledgerPath: path,
+      ledgerCurve: curve,
+      ledgerTransport: transport,
+    });
     await this.key.ready;
   };
 
@@ -1355,8 +1363,11 @@ export class Sotez extends AbstractTezModule {
     const constructOp001 = (op: ConstructedOperation): ConstructedOperation =>
       op;
     const constructOp005 = (op: ConstructedOperation): ConstructedOperation => {
+      // @ts-ignore
       delete op.manager_pubkey;
+      // @ts-ignore
       delete op.spendable;
+      // @ts-ignore
       delete op.delegatable;
       return op;
     };

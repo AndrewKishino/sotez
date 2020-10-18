@@ -2,7 +2,7 @@
 
 ## Sotez
 
-**Extends AbstractTezModule**
+**Extends tez_core_1.AbstractTezModule**
 
 Main Sotez Library
 
@@ -382,13 +382,15 @@ Import a ledger public key
 
 #### Parameters
 
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[number][3]** The curve parameter (optional, default `0x00`)
 
 #### Examples
 
 ```javascript
-await sotez.importLedger();
+import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
 ```
 
 ### inject
@@ -470,7 +472,7 @@ Prepares an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source`  
     -   `paramObject.skipCounter`   (optional, default `false`)
 
@@ -525,7 +527,7 @@ Send an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
     -   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
@@ -581,7 +583,7 @@ Simulate an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source`  
 
 #### Examples
@@ -660,4 +662,6 @@ Returns **[Promise][5]** Typecheck result
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[6]: https://github.com/LedgerHQ/ledgerjs
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

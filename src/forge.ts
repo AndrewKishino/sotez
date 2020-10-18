@@ -1,5 +1,4 @@
 import { BigNumber } from 'bignumber.js';
-import toBuffer from 'typedarray-to-buffer';
 import { buf2hex, b58cdecode, textDecode, textEncode } from './utility';
 import { prefix, forgeMappings, protocols } from './constants';
 
@@ -103,7 +102,7 @@ export const toBytesInt32 = (num: number): any => {
  * @returns {string} The converted number
  */
 export const toBytesInt32Hex = (num: number): string => {
-  const forgedBuffer = toBuffer(toBytesInt32(num));
+  const forgedBuffer = new Uint8Array(toBytesInt32(num));
   return buf2hex(forgedBuffer);
 };
 
@@ -200,7 +199,7 @@ export const parameters = (parameter: any, protocol: string): string => {
 export const publicKeyHash = (pkh: string): string => {
   const t = parseInt(pkh.substr(2, 1), 10);
   const fpkh = [`0${t - 1}`];
-  const forgedBuffer = toBuffer(b58cdecode(pkh, prefix[pkh.substring(0, 3)]));
+  const forgedBuffer = new Uint8Array(b58cdecode(pkh, prefix[pkh.substring(0, 3)]));
   fpkh.push(buf2hex(forgedBuffer));
   return fpkh.join('');
 };
@@ -230,7 +229,7 @@ export const address = (addressArg: string, protocol = ''): string => {
 
   if (addressArg.substring(0, 1) === 'K') {
     fa.push(getAddressType(addressArg));
-    const forgedBuffer = toBuffer(b58cdecode(addressArg, prefix.KT));
+    const forgedBuffer = new Uint8Array(b58cdecode(addressArg, prefix.KT));
     fa.push(buf2hex(forgedBuffer));
     fa.push('00');
   } else {
@@ -288,7 +287,7 @@ export const publicKey = (pk: string): string => {
     default:
       break;
   }
-  const forgedBuffer = toBuffer(b58cdecode(pk, prefix[pk.substring(0, 4)]));
+  const forgedBuffer = new Uint8Array(b58cdecode(pk, prefix[pk.substring(0, 4)]));
   fpk.push(buf2hex(forgedBuffer));
   return fpk.join('');
 };
@@ -301,10 +300,10 @@ export const publicKey = (pk: string): string => {
  */
 export const op = (opArg: ConstructedOperation, protocol: string): string => {
   const opTag001 = (opKind: string): any =>
-    toBuffer(new Uint8Array([forgeMappings.forgeOpTags['001'][opKind]]));
+    new Uint8Array(new Uint8Array([forgeMappings.forgeOpTags['001'][opKind]]));
 
   const opTag005 = (opKind: string): any =>
-    toBuffer(new Uint8Array([forgeMappings.forgeOpTags['005'][opKind]]));
+    new Uint8Array(new Uint8Array([forgeMappings.forgeOpTags['005'][opKind]]));
 
   const protocolMap = {
     [`${protocols['001']}`]: opTag001,
@@ -361,7 +360,7 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
  * @param {string} protocol Current protocol
  */
 export const endorsement = (opArg: ConstructedOperation): string => {
-  const levelBuffer = toBuffer(toBytesInt32(opArg.level));
+  const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
   return buf2hex(levelBuffer);
 };
 
@@ -373,7 +372,7 @@ export const endorsement = (opArg: ConstructedOperation): string => {
 export const seedNonceRevelation = (opArg: ConstructedOperation): string => {
   const fop: Array<string> = [];
 
-  const levelBuffer = toBuffer(toBytesInt32(opArg.level));
+  const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
   fop.push(buf2hex(levelBuffer));
   fop.push(opArg.nonce);
 
@@ -407,7 +406,7 @@ export const doubleBakingEvidence = (): string => {
 export const activateAccount = (opArg: ConstructedOperation): string => {
   const fop: Array<string> = [];
 
-  const addressBuffer = toBuffer(b58cdecode(opArg.pkh, prefix.tz1));
+  const addressBuffer = new Uint8Array(b58cdecode(opArg.pkh, prefix.tz1));
   fop.push(buf2hex(addressBuffer));
   fop.push(opArg.secret);
 
@@ -432,9 +431,9 @@ export const ballot = (opArg: ConstructedOperation): string => {
   const fop: Array<string> = [];
 
   fop.push(publicKeyHash(opArg.source));
-  const periodBuffer = toBuffer(toBytesInt32(opArg.period));
+  const periodBuffer = new Uint8Array(toBytesInt32(opArg.period));
   fop.push(buf2hex(periodBuffer));
-  const forgedBuffer = toBuffer(b58cdecode(opArg.proposal, prefix.P));
+  const forgedBuffer = new Uint8Array(b58cdecode(opArg.proposal, prefix.P));
   fop.push(buf2hex(forgedBuffer));
   let ballotBytes;
   if (opArg.ballot === 'yay' || opArg.ballot === 'yea') {
@@ -632,7 +631,7 @@ export const forge = async (
     throw new Error('No operation branch provided.');
   }
 
-  const forgedBuffer = toBuffer(b58cdecode(opOb.branch, prefix.b));
+  const forgedBuffer = new Uint8Array(b58cdecode(opOb.branch, prefix.b));
   const forgedBytes = [buf2hex(forgedBuffer)];
 
   opOb.contents.forEach((content: ConstructedOperation): void => {
@@ -670,7 +669,7 @@ export const decodeRawBytes = (bytes: string): Micheline => {
       const args = [...Array(prim.len)];
       const result: {
         prim: string;
-        args: (string | number | boolean)[];
+        args?: (string | number | boolean)[];
         annots?: string[];
       } = {
         prim: forgeOp,
@@ -781,7 +780,7 @@ export const encodeRawBytes = (input: Micheline): string => {
         if (inputArg.annots) {
           const annotsBytes = inputArg.annots
             .map((x: any) => {
-              const forgedBuffer = toBuffer(textEncode(x));
+              const forgedBuffer = new Uint8Array(textEncode(x));
               return buf2hex(forgedBuffer);
             })
             .join('20');

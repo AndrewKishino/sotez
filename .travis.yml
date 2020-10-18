@@ -13,4 +13,4 @@ stages:
 jobs:
   include:
     - stage: Lint
-      script: npm run compile
+      script: npm run lint

@@ -101,7 +101,7 @@ export const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
  * @param {Object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
-export const buf2hex = (buffer: Buffer): string => {
+export const buf2hex = (buffer: Uint8Array): string => {
   const byteArray = new Uint8Array(buffer);
   const hexParts: string[] = [];
   byteArray.forEach((byte: any) => {

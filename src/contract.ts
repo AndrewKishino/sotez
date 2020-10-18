@@ -84,7 +84,7 @@ class InvalidParameterError extends Error {
 class BigMapAbstraction {
   constructor(
     private id: BigNumber,
-    private schema: typeof Schema,
+    private schema: Schema,
     private client: any,
   ) {}
 
@@ -104,7 +104,7 @@ class BigMapAbstraction {
   }
 }
 
-const smartContractAbstractionSemantic: (client: any) => typeof Semantic = (
+const smartContractAbstractionSemantic: (client: any) => Semantic = (
   client: any,
 ) => ({
   // Provide a specific abstraction for BigMaps
@@ -128,8 +128,8 @@ const smartContractAbstractionSemantic: (client: any) => typeof Semantic = (
  */
 export class Contract {
   methods: { [key: string]: (...args: any[]) => ContractMethod } = {};
-  schema: typeof Schema;
-  parameterSchema: typeof ParameterSchema;
+  schema: Schema;
+  parameterSchema: ParameterSchema;
   entrypoints: any;
   loaded: Promise<boolean>;
 
@@ -159,7 +159,7 @@ export class Contract {
 
   _initializeMethods = (
     address: string,
-    parameterSchema: typeof ParameterSchema,
+    parameterSchema: ParameterSchema,
     entrypoints: any,
   ): void => {
     this.methods = {};
@@ -259,7 +259,7 @@ export class Contract {
 
 const validateArgs = (
   args: any[],
-  schema: typeof ParameterSchema,
+  schema: ParameterSchema,
   name: string,
 ): void => {
   const sigs = schema.ExtractSignatures();
@@ -276,7 +276,7 @@ export class ContractMethod {
   constructor(
     private client: any,
     private address: string,
-    private parameterSchema: typeof ParameterSchema,
+    private parameterSchema: ParameterSchema,
     private name: string,
     private args: any[],
     private isMultipleEntrypoint = true,

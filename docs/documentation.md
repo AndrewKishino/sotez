@@ -2,13 +2,13 @@
 
 ### Table of Contents
 
--   [Sotez][7]
--   [Key][8]
--   [Contract][9]
--   [Crypto][10]
--   [Forge][11]
--   [Ledger][12]
--   [Utility][13]
+-   [Sotez][8]
+-   [Key][9]
+-   [Contract][10]
+-   [Crypto][11]
+-   [Forge][12]
+-   [Ledger][13]
+-   [Utility][14]
 
 ## Sotez
 
@@ -16,7 +16,7 @@
 
 ## Sotez
 
-**Extends AbstractTezModule**
+**Extends tez_core_1.AbstractTezModule**
 
 Main Sotez Library
 
@@ -396,13 +396,15 @@ Import a ledger public key
 
 #### Parameters
 
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[number][3]** The curve parameter (optional, default `0x00`)
 
 #### Examples
 
 ```javascript
-await sotez.importLedger();
+import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
 ```
 
 ### inject
@@ -484,7 +486,7 @@ Prepares an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source`  
     -   `paramObject.skipCounter`   (optional, default `false`)
 
@@ -539,7 +541,7 @@ Send an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
     -   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
@@ -595,7 +597,7 @@ Simulate an operation
 #### Parameters
 
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source`  
 
 #### Examples
@@ -674,7 +676,9 @@ Returns **[Promise][5]** Typecheck result
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[6]: https://github.com/LedgerHQ/ledgerjs
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 
 ## Key
@@ -1203,7 +1207,8 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `ledgerParams` **[Object][1]** The parameters of the getAddress function (optional, default `{}`)
+-   `ledgerParams` **[Object][1]** The parameters of the getAddress function (optional, default `{transport:hw_transport_1.default}`)
+    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
     -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
@@ -1212,6 +1217,7 @@ Get the public key and public key hash from the ledger
 
 ```javascript
 ledger.getAddress({
+  transport: LedgerTransport,
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
   curve = 0x00,
@@ -1223,6 +1229,10 @@ Returns **[Promise][5]** The public key and public key hash
 ## getVersion
 
 Show the version of the ledger
+
+### Parameters
+
+-   `transport` **LedgerTransport** The parameters of the signOperation function
 
 ### Examples
 
@@ -1240,6 +1250,7 @@ Sign an operation with the ledger
 ### Parameters
 
 -   `ledgerParams` **[Object][1]** The parameters of the signOperation function
+    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
     -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
@@ -1387,16 +1398,16 @@ Returns **[number][4]** The mutez amount converted to tez
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
 
-[7]: #sotez
+[8]: #sotez
 
-[8]: #key
+[9]: #key
 
-[9]: #contract
+[10]: #contract
 
-[10]: #crypto
+[11]: #crypto
 
-[11]: #forge
+[12]: #forge
 
-[12]: #ledger
+[13]: #ledger
 
-[13]: #utility
+[14]: #utility

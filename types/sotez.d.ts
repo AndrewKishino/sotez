@@ -1,3 +1,4 @@
+import LedgerTransport from '@ledgerhq/hw-transport';
 import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
 import { Contract } from './contract';
@@ -262,12 +263,14 @@ export declare class Sotez extends AbstractTezModule {
     importKey: (key: string, passphrase?: string | undefined, email?: string | undefined) => Promise<void>;
     /**
      * @description Import a ledger public key
+     * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
      * @param {string} [path="44'/1729'/0'/0'"] The ledger path
      * @param {number} [curve=0x00] The curve parameter
      * @example
-     * await sotez.importLedger();
+     * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+     * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
      */
-    importLedger: (path?: string, curve?: number) => Promise<void>;
+    importLedger: (transport: LedgerTransport, path?: string, curve?: number) => Promise<void>;
     /**
      * @description Originate a new account
      * @param {Object} paramObject The parameters for the origination

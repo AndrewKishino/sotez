@@ -63,7 +63,6 @@ export class AbstractTezModule {
     return new Promise((resolve, reject) => {
       try {
         const http = new XMLHttpRequest();
-        // @ts-ignore
         http.open(method, this.provider + path, true);
         http.onload = (): void => {
           if (this._debugMode) {

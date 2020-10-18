@@ -78,13 +78,13 @@ export declare class Contract {
     methods: {
         [key: string]: (...args: any[]) => ContractMethod;
     };
-    schema: typeof Schema;
-    parameterSchema: typeof ParameterSchema;
+    schema: Schema;
+    parameterSchema: ParameterSchema;
     entrypoints: any;
     loaded: Promise<boolean>;
     constructor(client: any, address: string);
     _init: (address: string) => Promise<boolean>;
-    _initializeMethods: (address: string, parameterSchema: typeof ParameterSchema, entrypoints: any) => void;
+    _initializeMethods: (address: string, parameterSchema: ParameterSchema, entrypoints: any) => void;
     /**
      * @description Return a friendly representation of the smart contract storage
      */
@@ -105,7 +105,7 @@ export declare class ContractMethod {
     private args;
     private isMultipleEntrypoint;
     private isAnonymous;
-    constructor(client: any, address: string, parameterSchema: typeof ParameterSchema, name: string, args: any[], isMultipleEntrypoint?: boolean, isAnonymous?: boolean);
+    constructor(client: any, address: string, parameterSchema: ParameterSchema, name: string, args: any[], isMultipleEntrypoint?: boolean, isAnonymous?: boolean);
     /**
      * @description Get the schema of the smart contract method
      */

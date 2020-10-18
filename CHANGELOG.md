@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - Added Delphi and Dalpha protocols
 - Added smart contract abstraction
 - Removed embedded Ledger Transports. Now requires the user to provide the transport but provides more flexibility.
--
+- Changed the "crypto" export to "cryptoUtils" to avoid clash with browser
 
 ## [0.7.1] - 2020-06-02
 

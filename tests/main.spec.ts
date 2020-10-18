@@ -1,10 +1,10 @@
 const {
   Sotez,
   utility,
-  crypto,
+  cryptoUtils,
   Key,
   magicBytes: magicBytesMap,
-} = require('../index');
+} = require('../src');
 
 describe('sotez', () => {
   describe('utility', () => {
@@ -51,7 +51,7 @@ describe('sotez', () => {
     });
   });
 
-  describe('crypto', () => {
+  describe('cryptoUtils', () => {
     const TEST_KEYS = {
       sk:
         'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
@@ -60,21 +60,21 @@ describe('sotez', () => {
     };
 
     test('generateMnemonic', () => {
-      const string = crypto.generateMnemonic();
+      const string = cryptoUtils.generateMnemonic();
       expect(string.split(' ')).toHaveLength(24);
     });
 
     test('checkAddress', () => {
-      const checkedAddress = crypto.checkAddress(TEST_KEYS.pkh);
+      const checkedAddress = cryptoUtils.checkAddress(TEST_KEYS.pkh);
       expect(checkedAddress).toBe(true);
-      const invalidAddress = crypto.checkAddress(
+      const invalidAddress = cryptoUtils.checkAddress(
         `${TEST_KEYS.pkh}invalidstring`,
       );
       expect(invalidAddress).toBe(false);
     });
 
     test('generateKeys', async () => {
-      const keys = await crypto.generateKeys('test', 'p');
+      const keys = await cryptoUtils.generateKeys('test', 'p');
       expect(typeof keys.mnemonic).toBe('string');
       expect(typeof keys.passphrase).toBe('string');
       expect(typeof keys.pk).toBe('string');
@@ -86,7 +86,7 @@ describe('sotez', () => {
     });
 
     test('sign', async () => {
-      const { bytes, sig, prefixSig, sbytes } = await crypto.sign(
+      const { bytes, sig, prefixSig, sbytes } = await cryptoUtils.sign(
         '03051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
         TEST_KEYS.sk,
       );
@@ -389,7 +389,7 @@ describe('sotez', () => {
   });
 
   describe('core', () => {
-    let tez;
+    let tez: typeof Sotez;
 
     beforeEach(() => {
       tez = new Sotez();

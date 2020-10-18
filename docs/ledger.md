@@ -6,7 +6,8 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `ledgerParams` **[Object][1]** The parameters of the getAddress function (optional, default `{transport:hw_transport_1.default}`)
+-   `_a`  
+-   `ledgerParams` **[Object][1]** The parameters of the getAddress function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
@@ -48,6 +49,7 @@ Sign an operation with the ledger
 
 ### Parameters
 
+-   `_a`  
 -   `ledgerParams` **[Object][1]** The parameters of the signOperation function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)

@@ -36,7 +36,7 @@ interface Signed {
  * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The extracted key pairs
  * @example
- * crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
+ * cryptoUtils.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
  */
 export const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
@@ -132,7 +132,7 @@ export const checkAddress = (address: string): boolean => {
  * @param {string} passphrase The passphrase used to encrypt the seed
  * @returns {Promise} The generated key pair
  * @example
- * crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
+ * cryptoUtils.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
  */
 export const generateKeys = async (
@@ -164,7 +164,7 @@ export const generateKeys = async (
  * @example
  * import { magicBytes as magicBytesMap } from 'sotez';
  *
- * crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+ * cryptoUtils.sign(opbytes, keys.sk, magicBytesMap.generic)
  *   .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
  */
 export const sign = async (

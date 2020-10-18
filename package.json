@@ -17,7 +17,7 @@
     "dev": "tsc-watch --onSuccess \"npm run docs\"",
     "docs": "npm run docs:all && documentation build --config .documentation.yml --markdown-toc true --shallow true -f md -o docs/documentation.md",
     "docs:all": "npm-run-all -p docs:sotez docs:key docs:crypto docs:contract docs:forge docs:ledger docs:utility",
-    "docs:crypto": "documentation build lib/crypto.js --sort-order 'alpha' --markdown-toc false --shallow true -f md -o docs/crypto.md",
+    "docs:crypto": "documentation build lib/cryptoUtils.js --sort-order 'alpha' --markdown-toc false --shallow true -f md -o docs/crypto.md",
     "docs:contract": "documentation build lib/contract.js --sort-order 'alpha' --markdown-toc false --shallow true -f md -o docs/contract.md",
     "docs:forge": "documentation build lib/forge.js --sort-order 'alpha' --markdown-toc false --shallow true -f md -o docs/forge.md",
     "docs:key": "documentation build lib/key.js --sort-order 'alpha' --markdown-toc false --shallow true -f md -o docs/key.md",
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@types/elliptic": "^6.4.12",
+    "@types/jest": "^26.0.14",
     "@types/ledgerhq__hw-transport": "^4.21.3",
     "@types/libsodium-wrappers": "^0.7.8",
     "@types/node": "^14.11.10",
@@ -63,6 +64,7 @@
     "jest": "^26.5.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.2",
+    "ts-jest": "^26.4.1",
     "tsc-watch": "^4.2.9",
     "typescript": "^4.0.3"
   },

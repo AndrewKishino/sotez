@@ -23,23 +23,21 @@ Return the contract balance
 
 Return a friendly representation of the smart contract storage
 
+## Contract
+
+### balance
+
+Return the contract balance
+
+### storage
+
+Return a friendly representation of the smart contract storage
+
+## BigMapAbstraction
+
 ## ContractMethod
 
 Utility class to send smart contract operation
-
-### Parameters
-
--   `client`  
--   `address`  
--   `parameterSchema`  
--   `name`  
--   `args`  
--   `isMultipleEntrypoint`   (optional, default `true`)
--   `isAnonymous`   (optional, default `false`)
-
-### schema
-
-Get the schema of the smart contract method
 
 ### send
 
@@ -47,8 +45,25 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params`   (optional, default `{}`)
+-   `params`  
 -   `Options`  generic operation parameter
+
+## ContractMethod
+
+### send
+
+Send the smart contract operation
+
+#### Parameters
+
+-   `params`  
+-   `Options`  generic operation parameter
+
+## Error
+
+## get
+
+Get the schema of the smart contract method
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 

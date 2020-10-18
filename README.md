@@ -11,7 +11,7 @@ npm install sotez
 
 ```js
 // Import library or individual modules
-import { Sotez, utility, forge, crypto, ledger, Key } from 'sotez';
+import { Sotez, utility, forge, cryptoUtils, ledger, Key } from 'sotez';
 ```
 
 ```js
@@ -42,7 +42,7 @@ sotez
   .query('/chains/main/blocks/head')
   .then((response) => console.log(response));
 
-crypto.generateMnemonic().then((mnemonic) => console.log(mnemonic));
+cryptoUtils.generateMnemonic().then((mnemonic) => console.log(mnemonic));
 ```
 
 # Documentation

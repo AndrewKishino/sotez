@@ -61,7 +61,48 @@ Verify signature, throw error if it is not valid
 
 -   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
 -   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey`   (optional, default `this.publicKey()`)
+-   `publicKey`  
+
+## Key
+
+### publicKey
+
+Returns the public key
+
+Returns **[string][2]** The public key associated with the private key
+
+### publicKeyHash
+
+Returns public key hash for this key
+
+Returns **[string][2]** The public key hash for this key
+
+### secretKey
+
+Returns the secret key
+
+Returns **[string][2]** The secret key associated with this key, if available
+
+### sign
+
+Sign a raw sequence of bytes
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+-   `magicBytes` **[Uint8Array][4]** The magic bytes for the operation
+
+Returns **[Promise][5]** The signature object
+
+### verify
+
+Verify signature, throw error if it is not valid
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+-   `signature` **[string][2]** A signature in base58 encoding
+-   `publicKey`  
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 

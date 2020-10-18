@@ -3,7 +3,7 @@
 ![npm](https://img.shields.io/npm/v/sotez.svg?logo=npm&color=blue)
 [![Build Status](https://travis-ci.org/AndrewKishino/sotez.svg?branch=master)](https://travis-ci.org/AndrewKishino/sotez)
 
-# Getting Started
+## Getting Started
 
 ```js
 npm install sotez
@@ -45,11 +45,11 @@ sotez
 cryptoUtils.generateMnemonic().then((mnemonic) => console.log(mnemonic));
 ```
 
-# Documentation
+## Documentation
 
 Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Documentation).
 
-# Development
+## Development
 
 ```js
 npm install
@@ -57,7 +57,6 @@ npm run build
 ```
 
 Compiled files will be located in the `lib` folder.
-Distribution files will be located in the `dist/node` and `dist/web` folders.
 
 ## License
 

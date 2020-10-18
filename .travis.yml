@@ -4,14 +4,6 @@ node_js:
   - 12
   - 10
   - 8
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y libudev-dev libusb-1.0-0-dev
-before_script:
-  - npm run build
-stages:
-  - Lint
-jobs:
-  include:
-    - stage: Lint
-      script: npm run lint
+script:
+  - npm run lint
+  - npm test

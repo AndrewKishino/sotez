@@ -42,9 +42,9 @@
     "bs58check": "^2.1.2",
     "buffer": "^5.6.0",
     "elliptic": "^6.5.3",
+    "isomorphic-fetch": "^3.0.0",
     "libsodium-wrappers": "^0.7.8",
-    "pbkdf2": "^3.1.1",
-    "xhr2": "^0.2.0"
+    "pbkdf2": "^3.1.1"
   },
   "devDependencies": {
     "@types/elliptic": "^6.4.12",

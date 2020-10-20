@@ -2,7 +2,7 @@ import LedgerTransport from '@ledgerhq/hw-transport';
 import sodium from 'libsodium-wrappers';
 import pbkdf2 from 'pbkdf2';
 import elliptic from 'elliptic';
-import ledger from './ledger';
+import { getAddress, signOperation } from './ledger';
 import {
   b58cencode,
   b58cdecode,
@@ -16,6 +16,7 @@ import { prefix } from './constants';
 
 /**
  * Creates a key object from a base58 encoded key.
+ *
  * @class Key
  * @param {Object} KeyConstructor
  * @param {string} [KeyConstructor.key] A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
@@ -23,7 +24,7 @@ import { prefix } from './constants';
  * @param {string} [KeyConstructor.passphrase] The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {string} [KeyConstructor.email] Email used if a fundraiser key is passed
  * @param {string} [KeyConstructor.ledgerPath="44'/1729'/0'/0'"] Ledger derivation path
- * @param {number} [KeyConstructor.ledgerCurve=0x00] Ledger curve
+ * @param {string} [KeyConstructor.ledgerCurve=tz1] Ledger curve
  * @example
  * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
  * await key.ready;
@@ -33,13 +34,21 @@ import { prefix } from './constants';
  */
 export class Key {
   _curve: string;
+
   _publicKey: Uint8Array;
+
   _secretKey?: Uint8Array;
+
   _isSecret: boolean;
+
   _isLedger: boolean;
+
   _ledgerPath: string;
-  _ledgerCurve: number;
+
+  _ledgerCurve: string;
+
   _ledgerTransport: any;
+
   ready: Promise<boolean>;
 
   constructor({
@@ -47,14 +56,14 @@ export class Key {
     passphrase,
     email,
     ledgerPath = "44'/1729'/0'/0'",
-    ledgerCurve = 0x00,
+    ledgerCurve = 'tz1',
     ledgerTransport,
   }: {
     key?: string;
     passphrase?: string;
     email?: string;
     ledgerPath?: string;
-    ledgerCurve?: number;
+    ledgerCurve?: string;
     ledgerTransport?: LedgerTransport;
   } = {}) {
     this._isLedger = !key;
@@ -87,11 +96,11 @@ export class Key {
     this._ledgerPath = value;
   }
 
-  get ledgerCurve(): number {
+  get ledgerCurve(): string {
     return this._ledgerCurve;
   }
 
-  set ledgerCurve(value: number) {
+  set ledgerCurve(value: string) {
     this._ledgerCurve = value;
   }
 
@@ -135,7 +144,10 @@ export class Key {
     };
 
     const _prefix = prefixMap[this._curve];
-    return b58cencode(sodium.crypto_generichash(20, new Uint8Array(this._publicKey)), _prefix);
+    return b58cencode(
+      sodium.crypto_generichash(20, new Uint8Array(this._publicKey)),
+      _prefix,
+    );
   };
 
   initialize = async (
@@ -148,7 +160,7 @@ export class Key {
   ): Promise<void> => {
     await sodium.ready;
     if (this._isLedger || !key) {
-      ({ publicKey: key } = await ledger.getAddress({
+      ({ publicKey: key } = await getAddress({
         transport: this._ledgerTransport,
         path: this._ledgerPath,
         displayConfirm: true,
@@ -259,22 +271,20 @@ export class Key {
         );
         const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
         const pad = new Array(32).fill(0);
-        this._publicKey =
-          new Uint8Array(
-            [prefixVal].concat(
-              pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
-            ),
-          )
+        this._publicKey = new Uint8Array(
+          [prefixVal].concat(
+            pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
+          ),
+        );
       } else if (this._curve === 'p2') {
         const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
         const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
         const pad = new Array(32).fill(0);
-        this._publicKey =
-          new Uint8Array(
-            [prefixVal].concat(
-              pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
-            ),
-          );
+        this._publicKey = new Uint8Array(
+          [prefixVal].concat(
+            pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
+          ),
+        );
       } else {
         throw new Error('Invalid key');
       }
@@ -301,7 +311,7 @@ export class Key {
     sbytes: string;
   }> => {
     if (this._isLedger) {
-      const signature = await ledger.signOperation({
+      const signature = await signOperation({
         transport: this._ledgerTransport,
         path: this._ledgerPath,
         rawTxHex: bytes,
@@ -381,10 +391,11 @@ export class Key {
 
   /**
    * @memberof Key
-   * @description Verify signature, throw error if it is not valid
+   * @description Verify signature
    * @param {string} bytes Sequance of bytes, raw format or hexadecimal notation
-   * @param {Uint8Array} signature A signature in base58 encoding
    * @param {string} signature A signature in base58 encoding
+   * @param {string} publicKey A public key
+   * @returns {boolean} Whether the signature is valid
    */
   verify = (
     bytes: string,
@@ -396,7 +407,9 @@ export class Key {
     }
 
     const _curve = publicKey.substring(0, 2);
-    const _publicKey = new Uint8Array(b58cdecode(publicKey, prefix[`${_curve}pk`]));
+    const _publicKey = new Uint8Array(
+      b58cdecode(publicKey, prefix[`${_curve}pk`]),
+    );
 
     if (signature.substring(0, 3) !== 'sig') {
       if (_curve !== signature.substring(0, 2)) {
@@ -417,7 +430,11 @@ export class Key {
 
     if (_curve === 'ed') {
       try {
-        return sodium.crypto_sign_verify_detached(new Uint8Array(sig), new Uint8Array(bytesBuffer), _publicKey);
+        return sodium.crypto_sign_verify_detached(
+          new Uint8Array(sig),
+          new Uint8Array(bytesBuffer),
+          _publicKey,
+        );
       } catch (e) {
         return false;
       }

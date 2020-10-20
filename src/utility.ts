@@ -89,7 +89,7 @@ export const b58cencode = (
 
 /**
  * @description Base58 decode
- * @param {string} payload The value to decode
+ * @param {string} enc The value to decode
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {Object} The decoded base58 value
  */
@@ -149,8 +149,8 @@ export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
 };
 
 /**
- * Encodes an expression
- * @param {string} value
+ * @description Encodes an expression
+ * @param {string} value The value to encode
  * @returns {string} The base58 encoded expression
  */
 export const encodeExpr = (value: string): string => {

@@ -6,14 +6,14 @@ interface LedgerGetAddress {
   transport: typeof LedgerTransport;
   path?: string;
   displayConfirm?: boolean;
-  curve?: number;
+  curve?: string;
 }
 
 interface LedgerSignOperation {
   transport: typeof LedgerTransport;
   path?: string;
   rawTxHex: string;
-  curve?: number;
+  curve?: string;
   magicBytes?: Uint8Array;
 }
 
@@ -24,28 +24,36 @@ interface LedgerGetVersion {
   bakingApp: boolean;
 }
 
+const curves: { [key: string]: number } = {
+  tz1: 0x00,
+  tz2: 0x01,
+  tz3: 0x02,
+};
+
 /**
  * @description Get the public key and public key hash from the ledger
  * @param {Object} ledgerParams The parameters of the getAddress function
  * @param {Object} ledgerParams.transport The ledger transport to interface with
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
  * @param {boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
- * @param {number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @param {string} [ledgerParams.curve=tz1] The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02)
  * @returns {Promise} The public key and public key hash
  * @example
  * ledger.getAddress({
  *   transport: LedgerTransport,
  *   path = "44'/1729'/0'/0'",
  *   displayConfirm = true,
- *   curve = 0x00,
+ *   curve = 'tz1',
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
  */
-export const getAddress = async ({
-  transport,
-  path = "44'/1729'/0'/0'",
-  displayConfirm = true,
-  curve = 0x00,
-}: LedgerGetAddress = { transport: LedgerTransport}): Promise<{ address: string; publicKey: string }> => {
+export const getAddress = async (
+  {
+    transport,
+    path = "44'/1729'/0'/0'",
+    displayConfirm = true,
+    curve = 'tz1',
+  }: LedgerGetAddress = { transport: LedgerTransport },
+): Promise<{ address: string; publicKey: string }> => {
   if (!transport) {
     throw new Error(
       'A ledger transport must be provided in the argument parameters',
@@ -55,7 +63,11 @@ export const getAddress = async ({
   const tezosLedger = new TezosLedgerApp(ledgerTransport);
   let publicKey;
   try {
-    publicKey = await tezosLedger.getAddress(path, displayConfirm, curve);
+    publicKey = await tezosLedger.getAddress(
+      path,
+      displayConfirm,
+      curves[curve],
+    );
   } catch (e) {
     ledgerTransport.close();
     return e;
@@ -70,21 +82,21 @@ export const getAddress = async ({
  * @param {Object} ledgerParams.transport The ledger transport to interface with
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
  * @param {boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
- * @param {number} [ledgerParams.curve=0x00] The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3)
+ * @param {string} [ledgerParams.curve=tz1] The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02)
  * @param {Uint8Array} [ledgerParams.magicBytes='03'] The magic bytes for the operation
  * @returns {Promise} The signed operation
  * @example
  * ledger.signOperation({
  *   path = "44'/1729'/0'/0'",
  *   rawTxHex,
- *   curve = 0x00,
+ *   curve = 'tz1',
  * }).then((signature) => console.log(signature));
  */
 export const signOperation = async ({
   transport,
   path = "44'/1729'/0'/0'",
   rawTxHex,
-  curve = 0x00,
+  curve = 'tz1',
   magicBytes = magicBytesMap.generic,
 }: LedgerSignOperation): Promise<string> => {
   if (!transport) {
@@ -100,7 +112,7 @@ export const signOperation = async ({
     ({ signature } = await tezosLedger.signOperation(
       path,
       `${magicBytesHex}${rawTxHex}`,
-      curve,
+      curves[curve],
     ));
   } catch (e) {
     ledgerTransport.close();

@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { ParameterSchema, Schema, Semantic } from '@taquito/michelson-encoder';
 import { BigNumber } from 'bignumber.js';
 import { encodeExpr } from './utility';
@@ -65,7 +64,9 @@ const DEFAULT_SMART_CONTRACT_METHOD_NAME = 'default';
 
 class InvalidParameterError extends Error {
   name = 'Invalid parameters error';
+
   message: string;
+
   constructor(
     public smartContractMethodName: string,
     public sigs: any[],
@@ -119,7 +120,7 @@ const smartContractAbstractionSemantic: (client: any) => Semantic = (
 });
 
 /**
- * Creates an initialized contract class abstraction
+ * @description Creates an initialized contract class abstraction
  * @class Contract
  * @param {Object} client Initialized Sotez client
  * @param {string} address Contract address
@@ -128,9 +129,13 @@ const smartContractAbstractionSemantic: (client: any) => Semantic = (
  */
 export class Contract {
   methods: { [key: string]: (...args: any[]) => ContractMethod } = {};
+
   schema: Schema;
+
   parameterSchema: ParameterSchema;
+
   entrypoints: any;
+
   loaded: Promise<boolean>;
 
   constructor(public client: any, readonly address: string) {
@@ -234,6 +239,7 @@ export class Contract {
 
   /**
    * @description Return a friendly representation of the smart contract storage
+   * @returns {Promise} The contract storage
    */
   storage = async (): Promise<any> => {
     await this.loaded;
@@ -248,6 +254,7 @@ export class Contract {
 
   /**
    * @description Return the contract balance
+   * @returns {Promise<string>} The contract balance
    */
   balance = async (): Promise<string> => {
     await this.loaded;
@@ -285,6 +292,7 @@ export class ContractMethod {
 
   /**
    * @description Get the schema of the smart contract method
+   * @returns {any} The contract schema
    */
   get schema(): any {
     return this.isAnonymous
@@ -293,9 +301,9 @@ export class ContractMethod {
   }
 
   /**
-   *
    * @description Send the smart contract operation
-   * @param Options generic operation parameter
+   * @param {Partial<SendParams>} params generic operation parameter
+   * @returns {Promise} The operation hash of the transfer
    */
   send(params: Partial<SendParams> = {}): Promise<any> {
     return this.client.transfer(this.toTransferParams(params));

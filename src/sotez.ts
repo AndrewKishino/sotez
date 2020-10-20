@@ -226,6 +226,7 @@ interface Signed {
 
 /**
  * Main Sotez Library
+ *
  * @example
  * import { Sotez } from 'sotez';
  * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
@@ -237,10 +238,15 @@ interface Signed {
  */
 export class Sotez extends AbstractTezModule {
   _localForge: boolean;
+
   _validateLocalForge: boolean;
+
   _defaultFee: number;
+
   _counters: { [key: string]: number };
+
   _useMutez: boolean;
+
   key: Key;
 
   constructor(
@@ -332,7 +338,7 @@ export class Sotez extends AbstractTezModule {
    * @description Import a ledger public key
    * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
-   * @param {number} [curve=0x00] The curve parameter
+   * @param {string} [curve="tz1"] The curve parameter
    * @example
    * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
    * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
@@ -340,7 +346,7 @@ export class Sotez extends AbstractTezModule {
   importLedger = async (
     transport: LedgerTransport,
     path = "44'/1729'/0'/0'",
-    curve = 0x00,
+    curve = 'tz1',
   ): Promise<void> => {
     this.key = new Key({
       ledgerPath: path,
@@ -662,18 +668,20 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Prepares an operation
    * @param {Object} paramObject The parameters for the operation
+   * @param {string} [paramObject.source] The source address of the operation
+   * @param {boolean} paramObject.skipCounter Skip incrementing the counter within sotez
    * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} Object containing the prepared operation
    * @example
    * sotez.prepareOperation({
-   *   operation: {
-   *     kind: 'transaction',
-   *     fee: '1420',
-   *     gas_limit: '10600',
-   *     storage_limit: '300',
-   *     amount: '1000',
-   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   }
+   * operation: {
+   * kind: 'transaction',
+   * fee: '1420',
+   * gas_limit: '10600',
+   * storage_limit: '300',
+   * amount: '1000',
+   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   * }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
   prepareOperation = ({
@@ -845,18 +853,19 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Simulate an operation
    * @param {Object} paramObject The parameters for the operation
+   * @param {string} [paramObject.source] The source address of the operation
    * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
-   *   operation: {
-   *     kind: 'transaction',
-   *     fee: '1420',
-   *     gas_limit: '10600',
-   *     storage_limit: '300',
-   *     amount: '1000',
-   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   },
+   * operation: {
+   * kind: 'transaction',
+   * fee: '1420',
+   * gas_limit: '10600',
+   * storage_limit: '300',
+   * amount: '1000',
+   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   * },
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
@@ -1133,6 +1142,7 @@ export class Sotez extends AbstractTezModule {
    * @param {string} [paramObject.delegate] The delegate for the new account
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
    * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {string} [paramObject.source] The source address of the operation
    * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    */
@@ -1214,8 +1224,8 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Serializes a piece of data to a binary representation
-   * @param {string | Micheline} data
-   * @param {string | Micheline} type
+   * @param {string | Micheline} data The data
+   * @param {string | Micheline} type The data type
    * @returns {Promise} Serialized data
    */
   packData = (
@@ -1247,8 +1257,8 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Typechecks data against a type
-   * @param {string | Micheline} data
-   * @param {string | Micheline} type
+   * @param {string | Micheline} data The data
+   * @param {string | Micheline} type The data type
    * @returns {Promise} Typecheck result
    */
   typecheckData = (
@@ -1324,7 +1334,7 @@ export class Sotez extends AbstractTezModule {
   };
 
   /**
-   * Get the mananger key from the protocol dependent query
+   * @description Get the mananger key from the protocol dependent query
    * @param {Object|string} manager The manager key query response
    * @param {string} protocol The protocol of the current block
    * @returns {string} If manager exists, returns the manager key
@@ -1351,7 +1361,7 @@ export class Sotez extends AbstractTezModule {
   };
 
   /**
-   * Conforms the operation to a specific protocol
+   * @description Conforms the operation to a specific protocol
    * @param {Object} constructedOp The operation object
    * @param {string} nextProtocol The next protocol of the current block
    * @returns {string} The protocol specific operation
@@ -1388,7 +1398,7 @@ export class Sotez extends AbstractTezModule {
   };
 
   /**
-   * Looks up a contract and returns an initialized contract
+   * @description Looks up a contract and returns an initialized contract
    * @param {Object} address The contract address
    * @returns {Promise} An initialized contract class
    * @example

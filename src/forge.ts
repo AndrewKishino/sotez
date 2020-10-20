@@ -116,8 +116,8 @@ export const bool = (boolArg: boolean): string => (boolArg ? 'ff' : '00');
 /**
  * @description Forge script bytes
  * @param {Object} scriptArg Script to forge
- * @param {string} script.code Script code
- * @param {string} script.storage Script storage
+ * @param {string} scriptArg.code Script code
+ * @param {string} scriptArg.storage Script storage
  * @returns {string} Forged script bytes
  */
 export const script = (scriptArg: {
@@ -134,6 +134,7 @@ export const script = (scriptArg: {
 /**
  * @description Forge parameter bytes
  * @param {string} parameter Script to forge
+ * @param {string} protocol The current block protocol
  * @returns {string} Forged parameter bytes
  */
 export const parameters = (parameter: any, protocol: string): string => {
@@ -199,7 +200,9 @@ export const parameters = (parameter: any, protocol: string): string => {
 export const publicKeyHash = (pkh: string): string => {
   const t = parseInt(pkh.substr(2, 1), 10);
   const fpkh = [`0${t - 1}`];
-  const forgedBuffer = new Uint8Array(b58cdecode(pkh, prefix[pkh.substring(0, 3)]));
+  const forgedBuffer = new Uint8Array(
+    b58cdecode(pkh, prefix[pkh.substring(0, 3)]),
+  );
   fpkh.push(buf2hex(forgedBuffer));
   return fpkh.join('');
 };
@@ -287,7 +290,9 @@ export const publicKey = (pk: string): string => {
     default:
       break;
   }
-  const forgedBuffer = new Uint8Array(b58cdecode(pk, prefix[pk.substring(0, 4)]));
+  const forgedBuffer = new Uint8Array(
+    b58cdecode(pk, prefix[pk.substring(0, 4)]),
+  );
   fpk.push(buf2hex(forgedBuffer));
   return fpk.join('');
 };
@@ -357,7 +362,7 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
 /**
  * @description Forge endorsement operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
+ * @returns {string} Forged operation bytes
  */
 export const endorsement = (opArg: ConstructedOperation): string => {
   const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
@@ -379,19 +384,18 @@ export const seedNonceRevelation = (opArg: ConstructedOperation): string => {
   return fop.join('');
 };
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * @description Forge double_endorsement_evidence operation bytes
- * @param {Object} opArg Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const doubleEndorsementEvidence = (): string => {
   throw new Error('Double endorse forging is not complete');
 };
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * @description Forge double_baking_evidence operation bytes
- * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
 export const doubleBakingEvidence = (): string => {
@@ -413,9 +417,9 @@ export const activateAccount = (opArg: ConstructedOperation): string => {
   return fop.join('');
 };
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * @description Forge proposals operation bytes
- * @param {Object} opArg Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const proposals = (): string => {
@@ -602,6 +606,7 @@ export const delegation = (
  * @description Forge operation bytes
  * @param {Object} opOb The operation object(s)
  * @param {number} counter The current counter for the account
+ * @param {string} protocol The current block protocol
  * @returns {string} Forged operation bytes
  * @example
  * forge.forge({

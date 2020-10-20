@@ -62,7 +62,11 @@ export const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
 
       const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
       const kp = sodium.crypto_sign_seed_keypair(
-        sodium.crypto_secretbox_open_easy(new Uint8Array(esm), new Uint8Array(24), new Uint8Array(key)),
+        sodium.crypto_secretbox_open_easy(
+          new Uint8Array(esm),
+          new Uint8Array(24),
+          new Uint8Array(key),
+        ),
       );
       return {
         sk: b58cencode(kp.privateKey, prefix.edsk),
@@ -140,10 +144,9 @@ export const generateKeys = async (
   passphrase: string,
 ): Promise<KeysMnemonicPassphrase> => {
   await sodium.ready;
-  const s = await mnemonicToSeed(
-    mnemonic,
-    passphrase,
-  ).then((seed) => seed.slice(0, 32));
+  const s = await mnemonicToSeed(mnemonic, passphrase).then((seed) =>
+    seed.slice(0, 32),
+  );
   const kp = sodium.crypto_sign_seed_keypair(new Uint8Array(s));
   return {
     mnemonic,
@@ -204,10 +207,10 @@ export const sign = async (
 
 /**
  * @description Verify signed bytes
- * @param {String} bytes The signed bytes
- * @param {String} sig The signature of the signed bytes
- * @param {String} pk The public key
- * @returns {Boolean} Whether the signed bytes are valid
+ * @param {string} bytes The signed bytes
+ * @param {string} sig The signature of the signed bytes
+ * @param {string} pk The public key
+ * @returns {boolean} Whether the signed bytes are valid
  */
 export const verify = async (
   bytes: string,

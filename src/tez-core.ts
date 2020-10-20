@@ -2,7 +2,9 @@ import 'isomorphic-fetch';
 
 export class AbstractTezModule {
   _provider: string;
+
   _chain: string;
+
   _debugMode: boolean;
 
   constructor(provider: string, chain: string, debugMode = false) {
@@ -71,7 +73,9 @@ export class AbstractTezModule {
     return fetch(`${this.provider}${path}`, {
       method: queryMethod,
       headers: {
-        ...(queryMethod === 'POST' ? { 'Content-Type': 'application/json' } : {}),
+        ...(queryMethod === 'POST'
+          ? { 'Content-Type': 'application/json' }
+          : {}),
       },
       body: JSON.stringify(queryPayload),
     }).then((response) => {
@@ -87,5 +91,5 @@ export class AbstractTezModule {
       }
       return response.text();
     });
-  }
+  };
 }

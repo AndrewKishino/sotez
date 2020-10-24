@@ -11,7 +11,7 @@ Get the public key and public key hash from the ledger
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
-    -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
 
 ### Examples
 
@@ -20,11 +20,11 @@ ledger.getAddress({
   transport: LedgerTransport,
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
-  curve = 0x00,
+  curve = 'tz1',
 }).then(({ address, publicKey }) => console.log(address, publicKey));
 ```
 
-Returns **[Promise][5]** The public key and public key hash
+Returns **[Promise][4]** The public key and public key hash
 
 ## getVersion
 
@@ -41,7 +41,7 @@ ledger.getVersion()
   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
 ```
 
-Returns **[Promise][5]** The version info
+Returns **[Promise][4]** The version info
 
 ## signOperation
 
@@ -54,8 +54,8 @@ Sign an operation with the ledger
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
-    -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
-    -   `ledgerParams.magicBytes` **[Uint8Array][6]** The magic bytes for the operation (optional, default `'03'`)
+    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+    -   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 
@@ -63,11 +63,11 @@ Sign an operation with the ledger
 ledger.signOperation({
   path = "44'/1729'/0'/0'",
   rawTxHex,
-  curve = 0x00,
+  curve = 'tz1',
 }).then((signature) => console.log(signature));
 ```
 
-Returns **[Promise][5]** The signed operation
+Returns **[Promise][4]** The signed operation
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -75,8 +75,6 @@ Returns **[Promise][5]** The signed operation
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
-
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array

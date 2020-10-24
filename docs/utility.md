@@ -16,9 +16,8 @@ Base58 decode
 
 ### Parameters
 
--   `enc`  
+-   `enc` **[string][1]** The value to decode
 -   `prefixArg` **[Object][2]** The Uint8Array prefix values
--   `payload` **[string][1]** The value to decode
 
 Returns **[Object][2]** The decoded base58 value
 
@@ -49,7 +48,7 @@ Encodes an expression
 
 ### Parameters
 
--   `value` **[string][1]** 
+-   `value` **[string][1]** The value to encode
 
 Returns **[string][1]** The base58 encoded expression
 

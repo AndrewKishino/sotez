@@ -70,26 +70,38 @@ export class AbstractTezModule {
       console.log('Query Request:', path, payload);
     }
 
-    return fetch(`${this.provider}${path}`, {
-      method: queryMethod,
-      headers: {
-        ...(queryMethod === 'POST'
-          ? { 'Content-Type': 'application/json' }
-          : {}),
-      },
-      body: JSON.stringify(queryPayload),
-    }).then((response) => {
-      if (this._debugMode) {
-        console.log('Query Response:', path, response);
-      }
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        return response.json();
-      }
-      return response.text();
+    return new Promise((resolve, reject) => {
+      fetch(`${this.provider}${path}`, {
+        method: queryMethod,
+        headers: {
+          ...(queryMethod === 'POST'
+            ? { 'Content-Type': 'application/json' }
+            : {}),
+        },
+        body: JSON.stringify(queryPayload),
+      })
+        .then(async (response) => {
+          if (this._debugMode) {
+            console.log('Query Response:', path, response);
+          }
+
+          const contentType = response.headers.get('content-type');
+          const isJson =
+            contentType && contentType.includes('application/json');
+
+          if (!response.ok) {
+            if (isJson) {
+              return response.json().then(reject);
+            }
+            return response.text().then(reject);
+          }
+
+          if (isJson) {
+            return response.json().then(resolve);
+          }
+          return response.text().then(resolve);
+        })
+        .catch(reject);
     });
   };
 }

@@ -19,9 +19,13 @@ const contract = new Contract(sotez, 'KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
 
 Return the contract balance
 
+Returns **[Promise][3]&lt;[string][2]>** The contract balance
+
 ### storage
 
 Return a friendly representation of the smart contract storage
+
+Returns **[Promise][3]** The contract storage
 
 ## Contract
 
@@ -29,9 +33,13 @@ Return a friendly representation of the smart contract storage
 
 Return the contract balance
 
+Returns **[Promise][3]&lt;[string][2]>** The contract balance
+
 ### storage
 
 Return a friendly representation of the smart contract storage
+
+Returns **[Promise][3]** The contract storage
 
 ## BigMapAbstraction
 
@@ -45,8 +53,9 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params`  
--   `Options`  generic operation parameter
+-   `params` **Partial&lt;SendParams>** generic operation parameter
+
+Returns **[Promise][3]** The operation hash of the transfer
 
 ## ContractMethod
 
@@ -56,8 +65,9 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params`  
--   `Options`  generic operation parameter
+-   `params` **Partial&lt;SendParams>** generic operation parameter
+
+Returns **[Promise][3]** The operation hash of the transfer
 
 ## Error
 
@@ -65,6 +75,10 @@ Send the smart contract operation
 
 Get the schema of the smart contract method
 
+Returns **any** The contract schema
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise

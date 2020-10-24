@@ -361,7 +361,7 @@ Import a ledger public key
 
 -   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
--   `curve` **[number][3]** The curve parameter (optional, default `0x00`)
+-   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
 ### Examples
 
@@ -438,8 +438,8 @@ Serializes a piece of data to a binary representation
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** 
--   `type` **([string][2] | Micheline)** 
+-   `data` **([string][2] | Micheline)** The data
+-   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Serialized data
 
@@ -451,20 +451,22 @@ Prepares an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.source` **[string][2]?** The source address of the operation
+    -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
 
 ### Examples
 
 ```javascript
 sotez.prepareOperation({
-  operation: {
-    kind: 'transaction',
-    fee: '1420',
-    gas_limit: '10600',
-    storage_limit: '300',
-    amount: '1000',
-    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  }
+operation: {
+kind: 'transaction',
+fee: '1420',
+gas_limit: '10600',
+storage_limit: '300',
+amount: '1000',
+destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+}
 }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
 ```
 
@@ -541,6 +543,7 @@ Set a delegate for an account
     -   `paramObject.delegate` **[string][2]?** The delegate for the new account
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -563,20 +566,21 @@ Simulate an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
 
 ### Examples
 
 ```javascript
 sotez.simulateOperation({
-  operation: {
-    kind: 'transaction',
-    fee: '1420',
-    gas_limit: '10600',
-    storage_limit: '300',
-    amount: '1000',
-    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  },
+operation: {
+kind: 'transaction',
+fee: '1420',
+gas_limit: '10600',
+storage_limit: '300',
+amount: '1000',
+destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+},
 }).then(result => console.log(result));
 ```
 
@@ -627,8 +631,8 @@ Typechecks data against a type
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** 
--   `type` **([string][2] | Micheline)** 
+-   `data` **([string][2] | Micheline)** The data
+-   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Typecheck result
 

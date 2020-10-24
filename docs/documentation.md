@@ -375,7 +375,7 @@ Import a ledger public key
 
 -   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
--   `curve` **[number][3]** The curve parameter (optional, default `0x00`)
+-   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
 ### Examples
 
@@ -452,8 +452,8 @@ Serializes a piece of data to a binary representation
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** 
--   `type` **([string][2] | Micheline)** 
+-   `data` **([string][2] | Micheline)** The data
+-   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Serialized data
 
@@ -465,20 +465,22 @@ Prepares an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.source` **[string][2]?** The source address of the operation
+    -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
 
 ### Examples
 
 ```javascript
 sotez.prepareOperation({
-  operation: {
-    kind: 'transaction',
-    fee: '1420',
-    gas_limit: '10600',
-    storage_limit: '300',
-    amount: '1000',
-    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  }
+operation: {
+kind: 'transaction',
+fee: '1420',
+gas_limit: '10600',
+storage_limit: '300',
+amount: '1000',
+destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+}
 }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
 ```
 
@@ -555,6 +557,7 @@ Set a delegate for an account
     -   `paramObject.delegate` **[string][2]?** The delegate for the new account
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
@@ -577,20 +580,21 @@ Simulate an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
 
 ### Examples
 
 ```javascript
 sotez.simulateOperation({
-  operation: {
-    kind: 'transaction',
-    fee: '1420',
-    gas_limit: '10600',
-    storage_limit: '300',
-    amount: '1000',
-    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  },
+operation: {
+kind: 'transaction',
+fee: '1420',
+gas_limit: '10600',
+storage_limit: '300',
+amount: '1000',
+destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+},
 }).then(result => console.log(result));
 ```
 
@@ -641,8 +645,8 @@ Typechecks data against a type
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** 
--   `type` **([string][2] | Micheline)** 
+-   `data` **([string][2] | Micheline)** The data
+-   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Typecheck result
 
@@ -695,7 +699,7 @@ Creates a key object from a base58 encoded key.
     -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
     -   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
     -   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
-    -   `KeyConstructor.ledgerCurve` **[number][3]** Ledger curve (optional, default `0x00`)
+    -   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
 
 ### Examples
 
@@ -732,19 +736,21 @@ Sign a raw sequence of bytes
 #### Parameters
 
 -   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][4]** The magic bytes for the operation
+-   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
-Returns **[Promise][5]** The signature object
+Returns **[Promise][4]** The signature object
 
 ### verify
 
-Verify signature, throw error if it is not valid
+Verify signature
 
 #### Parameters
 
 -   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
 -   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey`  
+-   `publicKey` **[string][2]** A public key
+
+Returns **[boolean][5]** Whether the signature is valid
 
 ## Key
 
@@ -773,29 +779,31 @@ Sign a raw sequence of bytes
 #### Parameters
 
 -   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][4]** The magic bytes for the operation
+-   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
-Returns **[Promise][5]** The signature object
+Returns **[Promise][4]** The signature object
 
 ### verify
 
-Verify signature, throw error if it is not valid
+Verify signature
 
 #### Parameters
 
 -   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
 -   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey`  
+-   `publicKey` **[string][2]** A public key
+
+Returns **[boolean][5]** Whether the signature is valid
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
 
 ## Contract
@@ -821,9 +829,13 @@ const contract = new Contract(sotez, 'KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
 
 Return the contract balance
 
+Returns **[Promise][3]&lt;[string][2]>** The contract balance
+
 ### storage
 
 Return a friendly representation of the smart contract storage
+
+Returns **[Promise][3]** The contract storage
 
 ## Contract
 
@@ -831,9 +843,13 @@ Return a friendly representation of the smart contract storage
 
 Return the contract balance
 
+Returns **[Promise][3]&lt;[string][2]>** The contract balance
+
 ### storage
 
 Return a friendly representation of the smart contract storage
+
+Returns **[Promise][3]** The contract storage
 
 ## BigMapAbstraction
 
@@ -847,8 +863,9 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params`  
--   `Options`  generic operation parameter
+-   `params` **Partial&lt;SendParams>** generic operation parameter
+
+Returns **[Promise][3]** The operation hash of the transfer
 
 ## ContractMethod
 
@@ -858,8 +875,9 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params`  
--   `Options`  generic operation parameter
+-   `params` **Partial&lt;SendParams>** generic operation parameter
+
+Returns **[Promise][3]** The operation hash of the transfer
 
 ## Error
 
@@ -867,9 +885,13 @@ Send the smart contract operation
 
 Get the schema of the smart contract method
 
+Returns **any** The contract schema
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
 
 ## Crypto
@@ -956,11 +978,11 @@ Verify signed bytes
 
 ### Parameters
 
--   `bytes` **[String][1]** The signed bytes
--   `sig` **[String][1]** The signature of the signed bytes
--   `pk` **[String][1]** The public key
+-   `bytes` **[string][1]** The signed bytes
+-   `sig` **[string][1]** The signature of the signed bytes
+-   `pk` **[string][1]** The public key
 
-Returns **[Boolean][2]** Whether the signed bytes are valid
+Returns **[boolean][2]** Whether the signed bytes are valid
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
@@ -1041,20 +1063,11 @@ Returns **[string][2]** Forged operation bytes
 
 Forge double_baking_evidence operation bytes
 
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
-
 Returns **[string][2]** Forged operation bytes
 
 ## doubleEndorsementEvidence
 
 Forge double_endorsement_evidence operation bytes
-
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1075,7 +1088,8 @@ Forge endorsement operation bytes
 ### Parameters
 
 -   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+
+Returns **[string][2]** Forged operation bytes
 
 ## forge
 
@@ -1085,7 +1099,7 @@ Forge operation bytes
 
 -   `opOb` **[Object][1]** The operation object(s)
 -   `counter` **[number][4]** The current counter for the account
--   `protocol`  
+-   `protocol` **[string][2]** The current block protocol
 
 ### Examples
 
@@ -1136,17 +1150,13 @@ Forge parameter bytes
 ### Parameters
 
 -   `parameter` **[string][2]** Script to forge
--   `protocol`  
+-   `protocol` **[string][2]** The current block protocol
 
 Returns **[string][2]** Forged parameter bytes
 
 ## proposals
 
 Forge proposals operation bytes
-
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1188,6 +1198,8 @@ Forge script bytes
 ### Parameters
 
 -   `scriptArg` **[Object][1]** Script to forge
+    -   `scriptArg.code` **[string][2]** Script code
+    -   `scriptArg.storage` **[string][2]** Script storage
 
 Returns **[string][2]** Forged script bytes
 
@@ -1266,7 +1278,7 @@ Get the public key and public key hash from the ledger
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
-    -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
+    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
 
 ### Examples
 
@@ -1275,11 +1287,11 @@ ledger.getAddress({
   transport: LedgerTransport,
   path = "44'/1729'/0'/0'",
   displayConfirm = true,
-  curve = 0x00,
+  curve = 'tz1',
 }).then(({ address, publicKey }) => console.log(address, publicKey));
 ```
 
-Returns **[Promise][5]** The public key and public key hash
+Returns **[Promise][4]** The public key and public key hash
 
 ## getVersion
 
@@ -1296,7 +1308,7 @@ ledger.getVersion()
   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
 ```
 
-Returns **[Promise][5]** The version info
+Returns **[Promise][4]** The version info
 
 ## signOperation
 
@@ -1309,8 +1321,8 @@ Sign an operation with the ledger
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
     -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
-    -   `ledgerParams.curve` **[number][4]** The value which defines the curve (0x00=tz1, 0x01=tz2, 0x02=tz3) (optional, default `0x00`)
-    -   `ledgerParams.magicBytes` **[Uint8Array][6]** The magic bytes for the operation (optional, default `'03'`)
+    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+    -   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 
@@ -1318,11 +1330,11 @@ Sign an operation with the ledger
 ledger.signOperation({
   path = "44'/1729'/0'/0'",
   rawTxHex,
-  curve = 0x00,
+  curve = 'tz1',
 }).then((signature) => console.log(signature));
 ```
 
-Returns **[Promise][5]** The signed operation
+Returns **[Promise][4]** The signed operation
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -1330,11 +1342,9 @@ Returns **[Promise][5]** The signed operation
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
-
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
 
 ## Utility
@@ -1357,9 +1367,8 @@ Base58 decode
 
 ### Parameters
 
--   `enc`  
+-   `enc` **[string][1]** The value to decode
 -   `prefixArg` **[Object][2]** The Uint8Array prefix values
--   `payload` **[string][1]** The value to decode
 
 Returns **[Object][2]** The decoded base58 value
 
@@ -1390,7 +1399,7 @@ Encodes an expression
 
 ### Parameters
 
--   `value` **[string][1]** 
+-   `value` **[string][1]** The value to encode
 
 Returns **[string][1]** The base58 encoded expression
 

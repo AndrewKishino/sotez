@@ -66,20 +66,11 @@ Returns **[string][2]** Forged operation bytes
 
 Forge double_baking_evidence operation bytes
 
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
-
 Returns **[string][2]** Forged operation bytes
 
 ## doubleEndorsementEvidence
 
 Forge double_endorsement_evidence operation bytes
-
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -100,7 +91,8 @@ Forge endorsement operation bytes
 ### Parameters
 
 -   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+
+Returns **[string][2]** Forged operation bytes
 
 ## forge
 
@@ -110,7 +102,7 @@ Forge operation bytes
 
 -   `opOb` **[Object][1]** The operation object(s)
 -   `counter` **[number][4]** The current counter for the account
--   `protocol`  
+-   `protocol` **[string][2]** The current block protocol
 
 ### Examples
 
@@ -161,17 +153,13 @@ Forge parameter bytes
 ### Parameters
 
 -   `parameter` **[string][2]** Script to forge
--   `protocol`  
+-   `protocol` **[string][2]** The current block protocol
 
 Returns **[string][2]** Forged parameter bytes
 
 ## proposals
 
 Forge proposals operation bytes
-
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -213,6 +201,8 @@ Forge script bytes
 ### Parameters
 
 -   `scriptArg` **[Object][1]** Script to forge
+    -   `scriptArg.code` **[string][2]** Script code
+    -   `scriptArg.storage` **[string][2]** Script storage
 
 Returns **[string][2]** Forged script bytes
 

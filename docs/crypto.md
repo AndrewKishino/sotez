@@ -80,11 +80,11 @@ Verify signed bytes
 
 ### Parameters
 
--   `bytes` **[String][1]** The signed bytes
--   `sig` **[String][1]** The signature of the signed bytes
--   `pk` **[String][1]** The public key
+-   `bytes` **[string][1]** The signed bytes
+-   `sig` **[string][1]** The signature of the signed bytes
+-   `pk` **[string][1]** The public key
 
-Returns **[Boolean][2]** Whether the signed bytes are valid
+Returns **[boolean][2]** Whether the signed bytes are valid
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

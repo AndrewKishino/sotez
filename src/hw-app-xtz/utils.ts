@@ -1,7 +1,11 @@
 import bs58check from 'bs58check';
 import blake2b from 'blake2b';
 
-// TODO use bip32-path library
+/**
+ * @description Split path utility
+ * @param {string} path The ledger path
+ * @returns {number[]} Array of path segments
+ */
 export function splitPath(path: string): number[] {
   const result: any[] = [];
   const components = path.split('/');

@@ -1,16 +1,9 @@
 language: node_js
 node_js:
+  - 14
   - 12
   - 10
   - 8
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y libudev-dev libusb-1.0-0-dev
-before_script:
-  - npm run build
-stages:
-  - Lint
-jobs:
-  include:
-    - stage: Lint
-      script: npm run compile
+script:
+  - npm run lint
+  - npm test

@@ -42,14 +42,14 @@ export default class Tezos {
   }
 
   /**
-   * get Tezos address for a given BIP 32 path.
+   * @description Get Tezos address for a given BIP 32 path.
    * @param {string} path a path in BIP 32 format, must begin with 44'/1729'
    * @param {boolean} [boolDisplay=false] optionally enable or not the display
    * @param {number} [curve=0x00] optionally enable or not the chaincode request
    * @param {number} [apdu] to use a custom apdu. This should currently only be unset (which will choose
    *   an appropriate APDU based on the boolDisplay parameter), or else set to 0x0A
    *   for the special "display" APDU which uses the alternate copy "Your Key"
-   * @return an object with a publicKey
+   * @returns {Promise} An object with a publicKey
    * @example
    * tez.getAddress("44'/1729'/0'/0'").then(o => o.address)
    */

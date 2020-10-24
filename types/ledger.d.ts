@@ -1,6 +1,5 @@
+/// <reference types="ledgerhq__hw-transport" />
 import LedgerTransport from '@ledgerhq/hw-transport';
-import TezosLedgerApp from './hw-app-xtz/Tezos';
-import { magicBytes as magicBytesMap } from './constants';
 
 interface LedgerGetAddress {
   transport: typeof LedgerTransport;
@@ -8,7 +7,6 @@ interface LedgerGetAddress {
   displayConfirm?: boolean;
   curve?: string;
 }
-
 interface LedgerSignOperation {
   transport: typeof LedgerTransport;
   path?: string;
@@ -16,20 +14,12 @@ interface LedgerSignOperation {
   curve?: string;
   magicBytes?: Uint8Array;
 }
-
 interface LedgerGetVersion {
   major: number;
   minor: number;
   patch: number;
   bakingApp: boolean;
 }
-
-const curves: { [key: string]: number } = {
-  tz1: 0x00,
-  tz2: 0x01,
-  tz3: 0x02,
-};
-
 /**
  * @description Get the public key and public key hash from the ledger
  * @param {Object} ledgerParams The parameters of the getAddress function
@@ -46,36 +36,15 @@ const curves: { [key: string]: number } = {
  *   curve = 'tz1',
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
  */
-export const getAddress = async (
-  {
-    transport,
-    path = "44'/1729'/0'/0'",
-    displayConfirm = true,
-    curve = 'tz1',
-  }: LedgerGetAddress = { transport: LedgerTransport },
-): Promise<{ address: string; publicKey: string }> => {
-  if (!transport) {
-    throw new Error(
-      'A ledger transport must be provided in the argument parameters',
-    );
-  }
-  const ledgerTransport = await transport.create();
-  const tezosLedger = new TezosLedgerApp(ledgerTransport);
-  let publicKey;
-  try {
-    publicKey = await tezosLedger.getAddress(
-      path,
-      displayConfirm,
-      curves[curve],
-    );
-  } catch (e) {
-    ledgerTransport.close();
-    return e;
-  }
-  ledgerTransport.close();
-  return publicKey;
-};
-
+export declare const getAddress: ({
+  transport,
+  path,
+  displayConfirm,
+  curve,
+}?: LedgerGetAddress) => Promise<{
+  address: string;
+  publicKey: string;
+}>;
 /**
  * @description Sign an operation with the ledger
  * @param {Object} ledgerParams The parameters of the signOperation function
@@ -92,36 +61,13 @@ export const getAddress = async (
  *   curve = 'tz1',
  * }).then((signature) => console.log(signature));
  */
-export const signOperation = async ({
+export declare const signOperation: ({
   transport,
-  path = "44'/1729'/0'/0'",
+  path,
   rawTxHex,
-  curve = 'tz1',
-  magicBytes = magicBytesMap.generic,
-}: LedgerSignOperation): Promise<string> => {
-  if (!transport) {
-    throw new Error(
-      'A ledger transport must be provided in the argument parameters',
-    );
-  }
-  const ledgerTransport = await transport.create();
-  const tezosLedger = new TezosLedgerApp(ledgerTransport);
-  let signature;
-  try {
-    const magicBytesHex = `00${magicBytes}`.slice(-2);
-    ({ signature } = await tezosLedger.signOperation(
-      path,
-      `${magicBytesHex}${rawTxHex}`,
-      curves[curve],
-    ));
-  } catch (e) {
-    ledgerTransport.close();
-    return e;
-  }
-  ledgerTransport.close();
-  return signature;
-};
-
+  curve,
+  magicBytes,
+}: LedgerSignOperation) => Promise<string>;
 /**
  * @description Show the version of the ledger
  * @param {LedgerTransport} transport The parameters of the signOperation function
@@ -130,27 +76,26 @@ export const signOperation = async ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
  */
-export const getVersion = async (
+export declare const getVersion: (
   transport: typeof LedgerTransport,
-): Promise<LedgerGetVersion> => {
-  if (!transport) {
-    throw new Error('A ledger transport must be provided as the argument');
-  }
-  const ledgerTransport = await transport.create();
-  const tezosLedger = new TezosLedgerApp(ledgerTransport);
-  let versionInfo;
-  try {
-    versionInfo = await tezosLedger.getVersion();
-  } catch (e) {
-    ledgerTransport.close();
-    return e;
-  }
-  ledgerTransport.close();
-  return versionInfo;
+) => Promise<LedgerGetVersion>;
+declare const _default: {
+  getAddress: ({
+    transport,
+    path,
+    displayConfirm,
+    curve,
+  }?: LedgerGetAddress) => Promise<{
+    address: string;
+    publicKey: string;
+  }>;
+  signOperation: ({
+    transport,
+    path,
+    rawTxHex,
+    curve,
+    magicBytes,
+  }: LedgerSignOperation) => Promise<string>;
+  getVersion: (transport: typeof LedgerTransport) => Promise<LedgerGetVersion>;
 };
-
-export default {
-  getAddress,
-  signOperation,
-  getVersion,
-};
+export default _default;

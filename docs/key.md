@@ -12,7 +12,7 @@ Creates a key object from a base58 encoded key.
     -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
     -   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
     -   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
-    -   `KeyConstructor.ledgerCurve` **[number][3]** Ledger curve (optional, default `0x00`)
+    -   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
 
 ### Examples
 
@@ -49,26 +49,71 @@ Sign a raw sequence of bytes
 #### Parameters
 
 -   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][4]** The magic bytes for the operation
+-   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
-Returns **[Promise][5]** The signature object
+Returns **[Promise][4]** The signature object
 
 ### verify
 
-Verify signature, throw error if it is not valid
+Verify signature
 
 #### Parameters
 
 -   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
 -   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey`   (optional, default `this.publicKey()`)
+-   `publicKey` **[string][2]** A public key
+
+Returns **[boolean][5]** Whether the signature is valid
+
+## Key
+
+### publicKey
+
+Returns the public key
+
+Returns **[string][2]** The public key associated with the private key
+
+### publicKeyHash
+
+Returns public key hash for this key
+
+Returns **[string][2]** The public key hash for this key
+
+### secretKey
+
+Returns the secret key
+
+Returns **[string][2]** The secret key associated with this key, if available
+
+### sign
+
+Sign a raw sequence of bytes
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+-   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
+
+Returns **[Promise][4]** The signature object
+
+### verify
+
+Verify signature
+
+#### Parameters
+
+-   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+-   `signature` **[string][2]** A signature in base58 encoding
+-   `publicKey` **[string][2]** A public key
+
+Returns **[boolean][5]** Whether the signature is valid
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

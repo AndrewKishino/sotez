@@ -1,6 +1,9 @@
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 import { Buffer } from 'buffer/';
+import blake2b from 'blake2b';
+
+import { prefix } from './constants';
 
 type Micheline =
   | {
@@ -86,7 +89,7 @@ export const b58cencode = (
 
 /**
  * @description Base58 decode
- * @param {string} payload The value to decode
+ * @param {string} enc The value to decode
  * @param {Object} prefixArg The Uint8Array prefix values
  * @returns {Object} The decoded base58 value
  */
@@ -98,7 +101,7 @@ export const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
  * @param {Object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
-export const buf2hex = (buffer: Buffer): string => {
+export const buf2hex = (buffer: Uint8Array): string => {
   const byteArray = new Uint8Array(buffer);
   const hexParts: string[] = [];
   byteArray.forEach((byte: any) => {
@@ -143,6 +146,18 @@ export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   r.set(b1);
   r.set(b2, b1.length);
   return r;
+};
+
+/**
+ * @description Encodes an expression
+ * @param {string} value The value to encode
+ * @returns {string} The base58 encoded expression
+ */
+export const encodeExpr = (value: string): string => {
+  let hash = blake2b(32);
+  hash.update(hex2buf(value));
+  hash.digest((hash = Buffer.alloc(32)));
+  return b58cencode(hash, prefix.expr);
 };
 
 export const sexp2mic = function me(mi: string): Micheline {
@@ -331,6 +346,7 @@ export default {
   hex2buf,
   hexNonce,
   mergebuf,
+  encodeExpr,
   sexp2mic,
   mic2arr,
   ml2mic,

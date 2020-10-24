@@ -1,5 +1,9 @@
 {
-  "extends": ["airbnb-typescript/base", "plugin:prettier/recommended"],
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:prettier/recommended",
+    "plugin:jsdoc/recommended"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -11,8 +15,8 @@
   "rules": {
     // eslint
     "camelcase": 0,
-    "global-require": 0,
     "lines-between-class-members": 0,
+    "max-classes-per-file": 0,
     "max-len": 0,
     "new-cap": 0,
     "no-bitwise": 0,
@@ -24,14 +28,13 @@
     "no-underscore-dangle": 0,
     "no-use-before-define": 0,
     // eslint-plugin-import
-    "import/extensions": ["error", { "ts": "never" }],
     "import/prefer-default-export": 0,
     // @typescript-eslint
-    "@typescript-eslint/ban-ts-comment": 0,
-    "@typescript-eslint/camelcase": 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
+    // "@typescript-eslint/ban-ts-comment": 0,
+    // "@typescript-eslint/camelcase": 0,
+    // "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/indent": 0,
     "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/no-var-requires": 0
+    "@typescript-eslint/naming-convention": 0
   }
 }

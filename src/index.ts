@@ -3,14 +3,14 @@ export { Sotez } from './sotez';
 export { Key } from './key';
 
 export {
-  default as crypto,
+  default as cryptoUtils,
   extractKeys,
   generateKeys,
   checkAddress,
   generateMnemonic,
   sign,
   verify,
-} from './crypto';
+} from './cryptoUtils';
 
 export {
   address,
@@ -67,7 +67,7 @@ export {
   getAddress,
   signOperation,
   getVersion,
-} from 'ledger';
+} from './ledger';
 
 export {
   default as constants,

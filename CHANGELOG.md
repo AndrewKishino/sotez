@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2020-10-23
+
+### Added
+
+- Added Delphi and Dalpha protocols
+- Added smart contract abstraction
+- Changed the "crypto" export to "cryptoUtils" to avoid clash with browser
+- Removed embedded Ledger Transports. Now requires the user to provide the transport but provides more flexibility.
+- The ledger curve is represented as a string ('tz1', 'tz2', 'tz3') instead of 0x00, 0x01, 0x02
+
+```js
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
+
+await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'", 'tz2');
+```
+
 ## [0.7.1] - 2020-06-02
 
 ### Added

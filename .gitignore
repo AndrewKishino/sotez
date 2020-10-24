@@ -1,4 +1,6 @@
 tsconfig.tsbuildinfo
+lib/
+.vscode
 
 # Logs
 logs

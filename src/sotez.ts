@@ -1,31 +1,10 @@
-import XMLHttpRequest from 'xhr2';
+import LedgerTransport from '@ledgerhq/hw-transport';
 import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
+import { Contract } from './contract';
 import { forge } from './forge';
 import { mutez, sexp2mic, ml2mic } from './utility';
 import { magicBytes, protocols } from './constants';
-
-interface KeyInterface {
-  _publicKey: Buffer;
-  _secretKey?: Buffer;
-  _isLedger: boolean;
-  _ledgerPath: string;
-  _ledgerCurve: number;
-  _isSecret: boolean;
-  isLedger: boolean;
-  ledgerPath: string;
-  ledgerCurve: number;
-  ready: Promise<void>;
-  curve: string;
-  initialize: (
-    keyParams: { key?: string; passphrase?: string; email?: string },
-    resolve: () => void,
-  ) => Promise<void>;
-  publicKey: () => string;
-  secretKey: () => string;
-  publicKeyHash: () => string;
-  sign: (bytes: string, wm: Uint8Array) => Promise<Signed>;
-}
 
 interface ModuleOptions {
   defaultFee?: number;
@@ -247,6 +226,7 @@ interface Signed {
 
 /**
  * Main Sotez Library
+ *
  * @example
  * import { Sotez } from 'sotez';
  * const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, useMutez: false });
@@ -258,19 +238,23 @@ interface Signed {
  */
 export class Sotez extends AbstractTezModule {
   _localForge: boolean;
+
   _validateLocalForge: boolean;
+
   _defaultFee: number;
-  _debugMode: boolean;
+
   _counters: { [key: string]: number };
+
   _useMutez: boolean;
-  key: KeyInterface;
+
+  key: Key;
 
   constructor(
     provider = 'http://127.0.0.1:8732',
     chain = 'main',
     options: ModuleOptions = {},
   ) {
-    super(provider, chain);
+    super(provider, chain, options.debugMode);
     this._defaultFee = options.defaultFee || 1420;
     this._localForge = options.localForge !== false;
     this._validateLocalForge = options.validateLocalForge || false;
@@ -352,82 +336,24 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Import a ledger public key
+   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
-   * @param {number} [curve=0x00] The curve parameter
+   * @param {string} [curve="tz1"] The curve parameter
    * @example
-   * await sotez.importLedger();
+   * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+   * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
    */
   importLedger = async (
+    transport: LedgerTransport,
     path = "44'/1729'/0'/0'",
-    curve = 0x00,
+    curve = 'tz1',
   ): Promise<void> => {
-    this.key = new Key({ ledgerPath: path, ledgerCurve: curve });
-    await this.key.ready;
-  };
-
-  /**
-   * @description Queries a node given a path and payload
-   * @param {string} path The RPC path to query
-   * @param {string} payload The payload of the query
-   * @param {string} method The request method. Either 'GET' or 'POST'
-   * @returns {Promise} The response of the query
-   * @example
-   * sotez.query(`/chains/main/blocks/head`)
-   *  .then(head => console.log(head));
-   */
-  query = (path: string, payload?: any, method?: string): Promise<any> => {
-    if (typeof payload === 'undefined') {
-      if (typeof method === 'undefined') {
-        method = 'GET';
-      } else {
-        payload = {};
-      }
-    } else if (typeof method === 'undefined') {
-      method = 'POST';
-    }
-    return new Promise((resolve, reject) => {
-      try {
-        const http = new XMLHttpRequest();
-        http.open(method, this.provider + path, true);
-        http.onload = () => {
-          if (this._debugMode) {
-            console.log('Node call:', path, payload);
-          }
-          if (http.status === 200) {
-            if (http.responseText) {
-              let response = JSON.parse(http.responseText);
-              if (this._debugMode) {
-                console.log('Node response:', path, response);
-              }
-              if (response && typeof response.error !== 'undefined') {
-                reject(response.error);
-              } else {
-                if (response && typeof response.ok !== 'undefined')
-                  response = response.ok;
-                resolve(response);
-              }
-            } else {
-              reject('Empty response returned'); // eslint-disable-line
-            }
-          } else if (http.responseText) {
-            reject(http.responseText);
-          } else {
-            reject(http.statusText);
-          }
-        };
-        http.onerror = () => {
-          reject(http.statusText);
-        };
-        if (method === 'POST') {
-          http.setRequestHeader('Content-Type', 'application/json');
-          http.send(JSON.stringify(payload));
-        } else {
-          http.send();
-        }
-      } catch (e) {
-        reject(e);
-      }
+    this.key = new Key({
+      ledgerPath: path,
+      ledgerCurve: curve,
+      ledgerTransport: transport,
     });
+    await this.key.ready;
   };
 
   /**
@@ -742,18 +668,20 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Prepares an operation
    * @param {Object} paramObject The parameters for the operation
+   * @param {string} [paramObject.source] The source address of the operation
+   * @param {boolean} paramObject.skipCounter Skip incrementing the counter within sotez
    * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} Object containing the prepared operation
    * @example
    * sotez.prepareOperation({
-   *   operation: {
-   *     kind: 'transaction',
-   *     fee: '1420',
-   *     gas_limit: '10600',
-   *     storage_limit: '300',
-   *     amount: '1000',
-   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   }
+   * operation: {
+   * kind: 'transaction',
+   * fee: '1420',
+   * gas_limit: '10600',
+   * storage_limit: '300',
+   * amount: '1000',
+   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   * }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
   prepareOperation = ({
@@ -795,7 +723,7 @@ export class Sotez extends AbstractTezModule {
         head = header;
 
         if (requiresReveal) {
-          const managerKey = this._getManagerKey(manager, metadata.protocol);
+          const managerKey = this.getManagerKey(manager, metadata.protocol);
           if (!managerKey) {
             const reveal: Operation = {
               kind: 'reveal',
@@ -808,14 +736,14 @@ export class Sotez extends AbstractTezModule {
 
             ops.unshift(reveal);
           }
+        }
 
-          counter = parseInt(headCounter, 10);
-          if (
-            !this._counters[publicKeyHash] ||
-            this._counters[publicKeyHash] < counter
-          ) {
-            this._counters[publicKeyHash] = counter;
-          }
+        counter = parseInt(headCounter, 10);
+        if (
+          !this._counters[publicKeyHash] ||
+          this._counters[publicKeyHash] < counter
+        ) {
+          this._counters[publicKeyHash] = counter;
         }
 
         const constructOps = (cOps: Operation[]): ConstructedOperation[] => {
@@ -925,18 +853,19 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Simulate an operation
    * @param {Object} paramObject The parameters for the operation
+   * @param {string} [paramObject.source] The source address of the operation
    * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
-   *   operation: {
-   *     kind: 'transaction',
-   *     fee: '1420',
-   *     gas_limit: '10600',
-   *     storage_limit: '300',
-   *     amount: '1000',
-   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   },
+   * operation: {
+   * kind: 'transaction',
+   * fee: '1420',
+   * gas_limit: '10600',
+   * storage_limit: '300',
+   * amount: '1000',
+   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   * },
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
@@ -1213,6 +1142,7 @@ export class Sotez extends AbstractTezModule {
    * @param {string} [paramObject.delegate] The delegate for the new account
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
    * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {string} [paramObject.source] The source address of the operation
    * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    */
@@ -1277,12 +1207,10 @@ export class Sotez extends AbstractTezModule {
    * @returns {Promise} Typecheck result
    */
   typecheckCode = (code: string | Micheline, gas = 10000): Promise<any> => {
-    let _code;
+    let _code = code;
 
     if (typeof code === 'string') {
       _code = ml2mic(code);
-    } else {
-      _code = code;
     }
 
     return this.query(
@@ -1296,27 +1224,23 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Serializes a piece of data to a binary representation
-   * @param {string | Micheline} data
-   * @param {string | Micheline} type
+   * @param {string | Micheline} data The data
+   * @param {string | Micheline} type The data type
    * @returns {Promise} Serialized data
    */
   packData = (
     data: string | Micheline,
     type: string | Micheline,
   ): Promise<any> => {
-    let _data;
-    let _type;
+    let _data = data;
+    let _type = type;
 
     if (typeof data === 'string') {
       _data = sexp2mic(data);
-    } else {
-      _data = data;
     }
 
     if (typeof type === 'string') {
       _type = sexp2mic(type);
-    } else {
-      _type = type;
     }
 
     const check = {
@@ -1333,27 +1257,23 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Typechecks data against a type
-   * @param {string | Micheline} data
-   * @param {string | Micheline} type
+   * @param {string | Micheline} data The data
+   * @param {string | Micheline} type The data type
    * @returns {Promise} Typecheck result
    */
   typecheckData = (
     data: string | Micheline,
     type: string | Micheline,
   ): Promise<any> => {
-    let _data;
-    let _type;
+    let _data = data;
+    let _type = type;
 
     if (typeof data === 'string') {
       _data = sexp2mic(data);
-    } else {
-      _data = data;
     }
 
     if (typeof type === 'string') {
       _type = sexp2mic(type);
-    } else {
-      _type = type;
     }
 
     const check = {
@@ -1380,32 +1300,26 @@ export class Sotez extends AbstractTezModule {
   runCode = (
     code: string | Micheline,
     amount: number,
-    input: string,
-    storage: string,
+    input: string | Micheline,
+    storage: string | Micheline,
     trace = false,
   ): Promise<any> => {
     const ep = trace ? 'trace_code' : 'run_code';
 
-    let _code;
-    let _input;
-    let _storage;
+    let _code = code;
+    let _input = input;
+    let _storage = storage;
 
     if (typeof code === 'string') {
       _code = sexp2mic(code);
-    } else {
-      _code = code;
     }
 
     if (typeof input === 'string') {
       _input = sexp2mic(input);
-    } else {
-      _input = input;
     }
 
     if (typeof storage === 'string') {
       _storage = sexp2mic(storage);
-    } else {
-      _storage = storage;
     }
 
     return this.query(
@@ -1420,12 +1334,12 @@ export class Sotez extends AbstractTezModule {
   };
 
   /**
-   * Get the mananger key from the protocol dependent query
+   * @description Get the mananger key from the protocol dependent query
    * @param {Object|string} manager The manager key query response
    * @param {string} protocol The protocol of the current block
    * @returns {string} If manager exists, returns the manager key
    */
-  _getManagerKey = (manager: any, protocol: string): string | null => {
+  getManagerKey = (manager: any, protocol: string): string | null => {
     if (!manager) {
       return null;
     }
@@ -1437,6 +1351,8 @@ export class Sotez extends AbstractTezModule {
       [`${protocols['005a']}`]: manager,
       [`${protocols['005']}`]: manager,
       [`${protocols['006']}`]: manager,
+      [`${protocols['007a']}`]: manager,
+      [`${protocols['007']}`]: manager,
     };
     if (!protocolMap[protocol]) {
       throw new Error(`Unrecognized protocol: ${protocol}`);
@@ -1444,15 +1360,24 @@ export class Sotez extends AbstractTezModule {
     return protocolMap[protocol];
   };
 
-  _conformOperation = (
+  /**
+   * @description Conforms the operation to a specific protocol
+   * @param {Object} constructedOp The operation object
+   * @param {string} nextProtocol The next protocol of the current block
+   * @returns {string} The protocol specific operation
+   */
+  private _conformOperation = (
     constructedOp: ConstructedOperation,
     nextProtocol: string,
   ): ConstructedOperation => {
     const constructOp001 = (op: ConstructedOperation): ConstructedOperation =>
       op;
     const constructOp005 = (op: ConstructedOperation): ConstructedOperation => {
+      // @ts-ignore
       delete op.manager_pubkey;
+      // @ts-ignore
       delete op.spendable;
+      // @ts-ignore
       delete op.delegatable;
       return op;
     };
@@ -1465,8 +1390,38 @@ export class Sotez extends AbstractTezModule {
       [`${protocols['005a']}`]: constructOp005,
       [`${protocols['005']}`]: constructOp005,
       [`${protocols['006']}`]: constructOp005,
+      [`${protocols['007a']}`]: constructOp005,
+      [`${protocols['007']}`]: constructOp005,
     };
 
     return protocolMap[nextProtocol](constructedOp);
+  };
+
+  /**
+   * @description Looks up a contract and returns an initialized contract
+   * @param {Object} address The contract address
+   * @returns {Promise} An initialized contract class
+   * @example
+   * // Load contract
+   * const contract = await sotez.loadContract('KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
+   * // List defined contract methods
+   * const { methods } = contract;
+   * // Retrieve contract storage
+   * const storage = contract.storage();
+   * // Get big map keys
+   * await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
+   * // Determine method schema
+   * await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).schema();
+   * // Send contract operation
+   * await contract.methods.transfer('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk', 100).send({
+   *   fee: '100000',
+   *   gasLimit: '800000',
+   *   storageLimit: '60000',
+   * });
+   */
+  loadContract = async (address: string): Promise<Contract> => {
+    const contract = new Contract(this, address);
+    await contract.loaded;
+    return contract;
   };
 }

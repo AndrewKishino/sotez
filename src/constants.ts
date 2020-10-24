@@ -72,6 +72,7 @@ export const prefix: Prefix = {
   Co: new Uint8Array([79, 179]),
   id: new Uint8Array([153, 103]),
 
+  expr: new Uint8Array([13, 44, 64, 27]),
   // Legacy prefix
   TZ: new Uint8Array([2, 90, 121]),
 };
@@ -314,6 +315,8 @@ export const protocols = {
   '005a': 'PsBABY5HQTSkA4297zNHfsZNKtxULfL18y95qb3m53QJiXGmrbU',
   '005': 'PsBabyM1eUXZseaJdmXFApDSBqj8YBfwELoxZHHW77EMcAbbwAS',
   '006': 'PsCARTHAGazKbHtnKfLzQg3kms52kSRpgnDY982a9oYsSXRLQEb',
+  '007a': 'PryLyZ8A11FXDr1tRE9zQ7Di6Y8zX48RfFCFpkjC8Pt9yCBLhtN',
+  '007': 'PsDELPH1Kxsxt8f9eWbxQeRxkjfbxoqM52jvs5Y5fBxWWh4ifpo',
 };
 
 export default {

@@ -17,12 +17,12 @@ Extract key pairs from a secret key
 ### Parameters
 
 -   `sk` **[string][1]** The secret key to extract key pairs from
--   `password` **[string][1]?** The password used to encrypt the sk (optional, default `''`)
+-   `password` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
 ```javascript
-crypto.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
+cryptoUtils.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
 ```
 
@@ -40,7 +40,7 @@ Generate a new key pair given a mnemonic and passphrase
 ### Examples
 
 ```javascript
-crypto.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
+cryptoUtils.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
 ```
 
@@ -61,14 +61,14 @@ Sign bytes
 -   `bytes` **[string][1]** The bytes to sign
 -   `sk` **[string][1]** The secret key to sign the bytes with
 -   `magicBytes` **[Object][4]** The magic bytes for the operation
--   `password` **[string][1]?** The password used to encrypt the sk (optional, default `''`)
+-   `password` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
 ```javascript
 import { magicBytes as magicBytesMap } from 'sotez';
 
-crypto.sign(opbytes, keys.sk, magicBytesMap.generic)
+cryptoUtils.sign(opbytes, keys.sk, magicBytesMap.generic)
   .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
 ```
 
@@ -80,11 +80,11 @@ Verify signed bytes
 
 ### Parameters
 
--   `bytes` **[String][1]** The signed bytes
--   `sig` **[String][1]** The signature of the signed bytes
--   `pk` **[String][1]** The public key
+-   `bytes` **[string][1]** The signed bytes
+-   `sig` **[string][1]** The signature of the signed bytes
+-   `pk` **[string][1]** The public key
 
-Returns **[Boolean][2]** Whether the signed bytes are valid
+Returns **[boolean][2]** Whether the signed bytes are valid
 
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 

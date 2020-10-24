@@ -3,7 +3,7 @@
 ![npm](https://img.shields.io/npm/v/sotez.svg?logo=npm&color=blue)
 [![Build Status](https://travis-ci.org/AndrewKishino/sotez.svg?branch=master)](https://travis-ci.org/AndrewKishino/sotez)
 
-# Getting Started
+## Getting Started
 
 ```js
 npm install sotez
@@ -11,7 +11,7 @@ npm install sotez
 
 ```js
 // Import library or individual modules
-import { Sotez, utility, forge, crypto, ledger, Key } from 'sotez';
+import { Sotez, utility, forge, cryptoUtils, ledger, Key } from 'sotez';
 ```
 
 ```js
@@ -20,7 +20,9 @@ const sotez = new Sotez('http://127.0.0.1:8732');
 
 const example = async () => {
   // A secret key or a ledger must be imported to sign transactions
-  // await sotez.importLedger();
+  // import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+  //
+  // await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
   await sotez.importKey('...');
 
   // A simple 1ꜩ transfer operation
@@ -40,14 +42,14 @@ sotez
   .query('/chains/main/blocks/head')
   .then((response) => console.log(response));
 
-crypto.generateMnemonic().then((mnemonic) => console.log(mnemonic));
+cryptoUtils.generateMnemonic().then((mnemonic) => console.log(mnemonic));
 ```
 
-# Documentation
+## Documentation
 
 Documentation can be found [HERE](https://github.com/AndrewKishino/sotez/wiki/Documentation).
 
-# Development
+## Development
 
 ```js
 npm install
@@ -55,7 +57,6 @@ npm run build
 ```
 
 Compiled files will be located in the `lib` folder.
-Distribution files will be located in the `dist/node` and `dist/web` folders.
 
 ## License
 

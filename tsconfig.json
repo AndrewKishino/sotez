@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",
+    "outDir": "lib",
+    "rootDir": "src",
     "composite": true,
     "declaration": true,
     "declarationDir": "types",
@@ -8,8 +10,6 @@
     "lib": ["DOM", "ES2020"],
     "moduleResolution": "node",
     "module": "CommonJS",
-    "outDir": "lib",
-    "rootDir": "src",
     "strict": true,
     "strictPropertyInitialization": false,
     "target": "ES5"

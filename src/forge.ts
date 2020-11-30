@@ -183,6 +183,8 @@ export const parameters = (parameter: any, protocol: string): string => {
     [`${protocols['006']}`]: parameters005,
     [`${protocols['007a']}`]: parameters005,
     [`${protocols['007']}`]: parameters005,
+    [`${protocols['008a']}`]: parameters005,
+    [`${protocols['008']}`]: parameters005,
   };
 
   if (!protocolMap[protocol]) {
@@ -320,6 +322,8 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
     [`${protocols['006']}`]: opTag005,
     [`${protocols['007a']}`]: opTag005,
     [`${protocols['007']}`]: opTag005,
+    [`${protocols['008a']}`]: opTag005,
+    [`${protocols['008']}`]: opTag005,
   };
 
   if (!protocolMap[protocol]) {
@@ -561,6 +565,8 @@ export const origination = (
     [`${protocols['006']}`]: origination005,
     [`${protocols['007a']}`]: origination005,
     [`${protocols['007']}`]: origination005,
+    [`${protocols['008a']}`]: origination005,
+    [`${protocols['008']}`]: origination005,
   };
 
   const fop: Array<string> = [];

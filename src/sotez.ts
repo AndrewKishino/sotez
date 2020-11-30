@@ -1353,6 +1353,8 @@ export class Sotez extends AbstractTezModule {
       [`${protocols['006']}`]: manager,
       [`${protocols['007a']}`]: manager,
       [`${protocols['007']}`]: manager,
+      [`${protocols['008a']}`]: manager,
+      [`${protocols['008']}`]: manager,
     };
     if (!protocolMap[protocol]) {
       throw new Error(`Unrecognized protocol: ${protocol}`);
@@ -1392,6 +1394,8 @@ export class Sotez extends AbstractTezModule {
       [`${protocols['006']}`]: constructOp005,
       [`${protocols['007a']}`]: constructOp005,
       [`${protocols['007']}`]: constructOp005,
+      [`${protocols['008a']}`]: constructOp005,
+      [`${protocols['008']}`]: constructOp005,
     };
 
     return protocolMap[nextProtocol](constructedOp);

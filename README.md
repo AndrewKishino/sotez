@@ -16,25 +16,25 @@ import { Sotez, utility, forge, cryptoUtils, ledger, Key } from 'sotez';
 
 ```js
 import { Sotez } from 'sotez';
-const sotez = new Sotez('http://127.0.0.1:8732');
+const tezos = new Sotez('http://127.0.0.1:8732');
 
 const example = async () => {
   // A secret key or a ledger must be imported to sign transactions
   // import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
   //
-  // await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
-  await sotez.importKey('...');
+  // await tezos.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
+  await tezos.importKey('...');
 
   // A simple 1ꜩ transfer operation
-  const { hash } = await sotez.transfer({
+  const { hash } = await tezos.transfer({
     to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-    amount: '1000000',
+    amount: 1000000,
   });
 
   console.log(`Injected Operation Hash: ${hash}`);
 
   // Await confirmation of included operation
-  const block = await sotez.awaitOperation(hash);
+  const block = await tezos.awaitOperation(hash);
   console.log(`Operation found in block ${block}`);
 };
 

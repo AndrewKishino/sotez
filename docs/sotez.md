@@ -348,7 +348,7 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6]
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6])
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 

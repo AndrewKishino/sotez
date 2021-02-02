@@ -91,17 +91,6 @@ sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
 
 Returns **[Promise][5]** The hash of the block in which the operation was included
 
-## call
-
-Queries the rpc endpoint with an optional payload
-
-### Parameters
-
--   `path` **[string][2]** The path to query
--   `payload` **[Object][1]** The payload of the request
-
-Returns **[Promise][5]** The response of the rpc call
-
 ## getBaker
 
 Get the baker information for an address
@@ -373,7 +362,7 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6]
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
@@ -411,7 +400,7 @@ const contract = await sotez.loadContract('KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK'
 // List defined contract methods
 const { methods } = contract;
 // Retrieve contract storage
-const storage = contract.storage();
+const storage = await contract.storage();
 // Get big map keys
 await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
 // Determine method schema
@@ -473,14 +462,14 @@ Prepares an operation
 
 ```javascript
 sotez.prepareOperation({
-operation: {
-kind: 'transaction',
-fee: '1420',
-gas_limit: '10600',
-storage_limit: '300',
-amount: '1000',
-destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-}
+  operation: {
+    kind: 'transaction',
+    fee: 1420,
+    gas_limit: 10600,
+    storage_limit: 300,
+    amount: 1000,
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  }
 }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
 ```
 
@@ -532,10 +521,10 @@ Send an operation
 ```javascript
 const operation = {
   kind: 'transaction',
-  fee: '1420',
-  gas_limit: '10600',
-  storage_limit: '300',
-  amount: '1000',
+  fee: 1420,
+  gas_limit: 10600,
+  storage_limit: 300,
+  amount: 1000,
   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
 };
 
@@ -587,14 +576,14 @@ Simulate an operation
 
 ```javascript
 sotez.simulateOperation({
-operation: {
-kind: 'transaction',
-fee: '1420',
-gas_limit: '10600',
-storage_limit: '300',
-amount: '1000',
-destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-},
+  operation: {
+    kind: 'transaction',
+    fee: 1420,
+    gas_limit: 10600,
+    storage_limit: 300,
+    amount: 1000,
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  },
 }).then(result => console.log(result));
 ```
 
@@ -621,8 +610,8 @@ Transfer operation
 ```javascript
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  amount: '1000000',
-  fee: '1420',
+  amount: 1000000,
+  fee: 1420,
 }).then(result => console.log(result));
 ```
 
@@ -664,7 +653,7 @@ const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, us
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  amount: '1000000',
+  amount: 1000000,
 });
 ```
 
@@ -727,6 +716,10 @@ Returns **[string][2]** The public key hash for this key
 
 Returns the secret key
 
+#### Parameters
+
+-   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+
 Returns **[string][2]** The secret key associated with this key, if available
 
 ### sign
@@ -769,6 +762,10 @@ Returns **[string][2]** The public key hash for this key
 ### secretKey
 
 Returns the secret key
+
+#### Parameters
+
+-   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 
@@ -908,6 +905,27 @@ Check the validity of a tezos implicit address (tz1...)
 
 Returns **[boolean][2]** Whether address is valid or not
 
+## encryptSecretKey
+
+Encrypts a secret key with a passphrase
+
+### Parameters
+
+-   `key` **[string][1]** The secret key
+-   `passphrase` **[string][1]** The passphrase to encrypt the key
+-   `salt` **[Uint8Array][3]** The salt to apply to the encryption
+
+### Examples
+
+```javascript
+const encryptedSecretKey = cryptoUtils.encryptSecretKey(
+ 'p2sk3T9fYpibobxRr7daoPzywLpLAXJVd3bkXpAaqYVtVB37aAp7bU',
+ 'password',
+);
+```
+
+Returns **[string][1]** The encrypted secret key
+
 ## extractKeys
 
 Extract key pairs from a secret key
@@ -915,7 +933,7 @@ Extract key pairs from a secret key
 ### Parameters
 
 -   `sk` **[string][1]** The secret key to extract key pairs from
--   `password` **[string][1]?** The password used to encrypt the sk
+-   `passphrase` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
@@ -924,7 +942,7 @@ cryptoUtils.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY
   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
 ```
 
-Returns **[Promise][3]** The extracted key pairs
+Returns **[Promise][4]** The extracted key pairs
 
 ## generateKeys
 
@@ -942,13 +960,13 @@ cryptoUtils.generateKeys('raw peace visual boil prefer rebel anchor right elegan
   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
 ```
 
-Returns **[Promise][3]** The generated key pair
+Returns **[Promise][4]** The generated key pair
 
 ## generateMnemonic
 
 Generate a mnemonic
 
-Returns **[string][1]** The generated mnemonic
+Returns **[string][1]** The 15 word generated mnemonic
 
 ## sign
 
@@ -958,7 +976,7 @@ Sign bytes
 
 -   `bytes` **[string][1]** The bytes to sign
 -   `sk` **[string][1]** The secret key to sign the bytes with
--   `magicBytes` **[Object][4]** The magic bytes for the operation
+-   `magicBytes` **[Object][5]** The magic bytes for the operation
 -   `password` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
@@ -967,10 +985,10 @@ Sign bytes
 import { magicBytes as magicBytesMap } from 'sotez';
 
 cryptoUtils.sign(opbytes, keys.sk, magicBytesMap.generic)
-  .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
+  .then(({ bytes, magicBytes, sig, prefixSig, sbytes }) => console.log(bytes, magicBytes, sig, prefixSig, sbytes));
 ```
 
-Returns **[Promise][3]** The signed bytes
+Returns **[Promise][4]** The signed bytes
 
 ## verify
 
@@ -988,9 +1006,11 @@ Returns **[boolean][2]** Whether the signed bytes are valid
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 
 ## Forge

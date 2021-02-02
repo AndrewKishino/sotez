@@ -77,17 +77,6 @@ sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
 
 Returns **[Promise][5]** The hash of the block in which the operation was included
 
-## call
-
-Queries the rpc endpoint with an optional payload
-
-### Parameters
-
--   `path` **[string][2]** The path to query
--   `payload` **[Object][1]** The payload of the request
-
-Returns **[Promise][5]** The response of the rpc call
-
 ## getBaker
 
 Get the baker information for an address
@@ -359,7 +348,7 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6] - previously u2f for web and node-hid for node)
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6]
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
@@ -397,7 +386,7 @@ const contract = await sotez.loadContract('KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK'
 // List defined contract methods
 const { methods } = contract;
 // Retrieve contract storage
-const storage = contract.storage();
+const storage = await contract.storage();
 // Get big map keys
 await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
 // Determine method schema
@@ -459,14 +448,14 @@ Prepares an operation
 
 ```javascript
 sotez.prepareOperation({
-operation: {
-kind: 'transaction',
-fee: '1420',
-gas_limit: '10600',
-storage_limit: '300',
-amount: '1000',
-destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-}
+  operation: {
+    kind: 'transaction',
+    fee: 1420,
+    gas_limit: 10600,
+    storage_limit: 300,
+    amount: 1000,
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  }
 }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
 ```
 
@@ -518,10 +507,10 @@ Send an operation
 ```javascript
 const operation = {
   kind: 'transaction',
-  fee: '1420',
-  gas_limit: '10600',
-  storage_limit: '300',
-  amount: '1000',
+  fee: 1420,
+  gas_limit: 10600,
+  storage_limit: 300,
+  amount: 1000,
   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
 };
 
@@ -573,14 +562,14 @@ Simulate an operation
 
 ```javascript
 sotez.simulateOperation({
-operation: {
-kind: 'transaction',
-fee: '1420',
-gas_limit: '10600',
-storage_limit: '300',
-amount: '1000',
-destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-},
+  operation: {
+    kind: 'transaction',
+    fee: 1420,
+    gas_limit: 10600,
+    storage_limit: 300,
+    amount: 1000,
+    destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+  },
 }).then(result => console.log(result));
 ```
 
@@ -607,8 +596,8 @@ Transfer operation
 ```javascript
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  amount: '1000000',
-  fee: '1420',
+  amount: 1000000,
+  fee: 1420,
 }).then(result => console.log(result));
 ```
 
@@ -650,7 +639,7 @@ const sotez = new Sotez('https://127.0.0.1:8732', 'main', { defaultFee: 1275, us
 await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
 sotez.transfer({
   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-  amount: '1000000',
+  amount: 1000000,
 });
 ```
 

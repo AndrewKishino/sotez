@@ -1,16 +1,15 @@
-import LedgerTransport from '@ledgerhq/hw-transport';
 import TezosLedgerApp from './hw-app-xtz/Tezos';
 import { magicBytes as magicBytesMap } from './constants';
 
 interface LedgerGetAddress {
-  transport: typeof LedgerTransport;
+  transport: any;
   path?: string;
   displayConfirm?: boolean;
   curve?: string;
 }
 
 interface LedgerSignOperation {
-  transport: typeof LedgerTransport;
+  transport: any;
   path?: string;
   rawTxHex: string;
   curve?: string;
@@ -46,14 +45,12 @@ const curves: { [key: string]: number } = {
  *   curve = 'tz1',
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
  */
-export const getAddress = async (
-  {
-    transport,
-    path = "44'/1729'/0'/0'",
-    displayConfirm = true,
-    curve = 'tz1',
-  }: LedgerGetAddress = { transport: LedgerTransport },
-): Promise<{ address: string; publicKey: string }> => {
+export const getAddress = async ({
+  transport,
+  path = "44'/1729'/0'/0'",
+  displayConfirm = true,
+  curve = 'tz1',
+}: LedgerGetAddress): Promise<{ address: string; publicKey: string }> => {
   if (!transport) {
     throw new Error(
       'A ledger transport must be provided in the argument parameters',
@@ -130,9 +127,7 @@ export const signOperation = async ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
  */
-export const getVersion = async (
-  transport: typeof LedgerTransport,
-): Promise<LedgerGetVersion> => {
+export const getVersion = async (transport: any): Promise<LedgerGetVersion> => {
   if (!transport) {
     throw new Error('A ledger transport must be provided as the argument');
   }

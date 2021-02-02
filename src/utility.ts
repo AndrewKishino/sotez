@@ -94,7 +94,7 @@ export const b58cencode = (
  * @returns {Object} The decoded base58 value
  */
 export const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
-  bs58check.decode(enc).slice(prefixArg.length);
+  new Uint8Array(bs58check.decode(enc).slice(prefixArg.length));
 
 /**
  * @description Buffer to hex

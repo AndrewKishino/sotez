@@ -1,5 +1,4 @@
-import LedgerTransport from '@ledgerhq/hw-transport';
-import sodium from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers-sumo';
 import pbkdf2 from 'pbkdf2';
 import elliptic from 'elliptic';
 import { getAddress, signOperation } from './ledger';
@@ -49,6 +48,8 @@ export class Key {
 
   _ledgerTransport: any;
 
+  _salt: Uint8Array;
+
   ready: Promise<boolean>;
 
   constructor({
@@ -64,9 +65,9 @@ export class Key {
     email?: string;
     ledgerPath?: string;
     ledgerCurve?: string;
-    ledgerTransport?: LedgerTransport;
+    ledgerTransport?: any;
   } = {}) {
-    this._isLedger = !key;
+    this._isLedger = !!ledgerTransport;
     this._ledgerPath = ledgerPath;
     this._ledgerCurve = ledgerCurve;
     this._ledgerTransport = ledgerTransport;
@@ -115,20 +116,37 @@ export class Key {
   /**
    * @memberof Key
    * @description Returns the secret key
+   * @param {string} [passphrase] The password used to encrypt the secret key, if applicable
    * @returns {string} The secret key associated with this key, if available
    */
-  secretKey = (): string => {
+  secretKey = (passphrase?: string): string => {
     if (!this._secretKey) {
       throw new Error('Secret key not known.');
     }
 
     let key = this._secretKey;
-    if (this._curve === 'ed') {
-      const { privateKey } = sodium.crypto_sign_seed_keypair(key.slice(0, 32));
-      key = privateKey;
+
+    if (passphrase) {
+      if (this._curve === 'ed') {
+        key = sodium.crypto_sign_ed25519_sk_to_seed(key, 'uint8array');
+      }
+      const encryptionSalt = this._salt || sodium.randombytes_buf(8);
+      const encryptionKey = pbkdf2.pbkdf2Sync(
+        passphrase,
+        encryptionSalt,
+        32768,
+        32,
+        'sha512',
+      );
+      const encryptedSk = sodium.crypto_secretbox_easy(
+        new Uint8Array(key),
+        new Uint8Array(24),
+        new Uint8Array(encryptionKey),
+      );
+      key = mergebuf(encryptionSalt, encryptedSk);
     }
 
-    return b58cencode(key, prefix[`${this._curve}sk`]);
+    return b58cencode(key, prefix[`${this._curve}${passphrase ? 'e' : ''}sk`]);
   };
 
   /**
@@ -143,10 +161,9 @@ export class Key {
       p2: prefix.tz3,
     };
 
-    const _prefix = prefixMap[this._curve];
     return b58cencode(
-      sodium.crypto_generichash(20, new Uint8Array(this._publicKey)),
-      _prefix,
+      sodium.crypto_generichash(20, this._publicKey),
+      prefixMap[this._curve],
     );
   };
 
@@ -156,7 +173,7 @@ export class Key {
       passphrase,
       email,
     }: { key?: string; passphrase?: string; email?: string },
-    ready: () => void,
+    setInit: (value: boolean) => void,
   ): Promise<void> => {
     await sodium.ready;
     if (this._isLedger || !key) {
@@ -192,7 +209,7 @@ export class Key {
       this._curve = 'ed';
       this._isSecret = true;
 
-      ready();
+      setInit(true);
       return;
     }
 
@@ -232,11 +249,11 @@ export class Key {
         throw new Error('Encrypted key provided without a passphrase.');
       }
 
-      const salt = constructedKey.slice(0, 8);
+      this._salt = constructedKey.slice(0, 8);
       const encryptedSk = constructedKey.slice(8);
       const encryptionKey = pbkdf2.pbkdf2Sync(
         passphrase,
-        salt,
+        this._salt,
         32768,
         32,
         'sha512',
@@ -256,10 +273,14 @@ export class Key {
       this._secretKey = new Uint8Array(constructedKey);
       if (this._curve === 'ed') {
         if (constructedKey.length === 64) {
-          this._publicKey = new Uint8Array(constructedKey.slice(32));
+          // sk
+          this._publicKey = new Uint8Array(
+            sodium.crypto_sign_ed25519_sk_to_pk(this._secretKey),
+          );
         } else {
+          // seed
           const { publicKey, privateKey } = sodium.crypto_sign_seed_keypair(
-            new Uint8Array(constructedKey),
+            constructedKey,
             'uint8array',
           );
           this._publicKey = new Uint8Array(publicKey);
@@ -290,7 +311,7 @@ export class Key {
       }
     }
 
-    ready();
+    setInit(true);
   };
 
   /**
@@ -335,7 +356,7 @@ export class Key {
       bb = mergebuf(magicBytes, bb);
     }
 
-    const bytesHash = new Uint8Array(sodium.crypto_generichash(32, bb));
+    const bytesHash = sodium.crypto_generichash(32, bb);
 
     if (!this._secretKey) {
       throw new Error('Cannot sign operations without a secret key.');
@@ -407,9 +428,7 @@ export class Key {
     }
 
     const _curve = publicKey.substring(0, 2);
-    const _publicKey = new Uint8Array(
-      b58cdecode(publicKey, prefix[`${_curve}pk`]),
-    );
+    const _publicKey = b58cdecode(publicKey, prefix[`${_curve}pk`]);
 
     if (signature.substring(0, 3) !== 'sig') {
       if (_curve !== signature.substring(0, 2)) {
@@ -430,11 +449,7 @@ export class Key {
 
     if (_curve === 'ed') {
       try {
-        return sodium.crypto_sign_verify_detached(
-          new Uint8Array(sig),
-          new Uint8Array(bytesBuffer),
-          _publicKey,
-        );
+        return sodium.crypto_sign_verify_detached(sig, bytesBuffer, _publicKey);
       } catch (e) {
         return false;
       }

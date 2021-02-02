@@ -1,5 +1,3 @@
-/// <reference types="ledgerhq__hw-transport" />
-import LedgerTransport from '@ledgerhq/hw-transport';
 /**
  * Creates a key object from a base58 encoded key.
  *
@@ -35,6 +33,8 @@ export declare class Key {
 
   _ledgerTransport: any;
 
+  _salt: Uint8Array;
+
   ready: Promise<boolean>;
 
   constructor({
@@ -50,7 +50,7 @@ export declare class Key {
     email?: string;
     ledgerPath?: string;
     ledgerCurve?: string;
-    ledgerTransport?: LedgerTransport;
+    ledgerTransport?: any;
   });
   get curve(): string;
   get isLedger(): boolean;
@@ -69,9 +69,10 @@ export declare class Key {
   /**
    * @memberof Key
    * @description Returns the secret key
+   * @param {string} [passphrase] The password used to encrypt the secret key, if applicable
    * @returns {string} The secret key associated with this key, if available
    */
-  secretKey: () => string;
+  secretKey: (passphrase?: string | undefined) => string;
 
   /**
    * @memberof Key
@@ -90,7 +91,7 @@ export declare class Key {
       passphrase?: string | undefined;
       email?: string | undefined;
     },
-    ready: () => void,
+    setInit: (value: boolean) => void,
   ) => Promise<void>;
 
   /**

@@ -1,4 +1,3 @@
-import LedgerTransport from '@ledgerhq/hw-transport';
 import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
 import { Contract } from './contract';
@@ -245,7 +244,7 @@ interface ForgedBytes {
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
- *   amount: '1000000',
+ *   amount: 1000000,
  * });
  */
 export declare class Sotez extends AbstractTezModule {
@@ -295,7 +294,7 @@ export declare class Sotez extends AbstractTezModule {
 
   /**
    * @description Import a ledger public key
-   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
+   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
    * @param {string} [curve="tz1"] The curve parameter
    * @example
@@ -303,7 +302,7 @@ export declare class Sotez extends AbstractTezModule {
    * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
    */
   importLedger: (
-    transport: LedgerTransport,
+    transport: any,
     path?: string,
     curve?: string,
   ) => Promise<void>;
@@ -355,7 +354,7 @@ export declare class Sotez extends AbstractTezModule {
    * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(delegate => console.log(delegate));
    */
-  getDelegate: (address: string) => Promise<string | boolean>;
+  getDelegate: (address: string) => Promise<string>;
 
   /**
    * @description Get the manager for a contract
@@ -522,14 +521,6 @@ export declare class Sotez extends AbstractTezModule {
   ) => Promise<string>;
 
   /**
-   * @description Queries the rpc endpoint with an optional payload
-   * @param {string} path The path to query
-   * @param {Object} payload The payload of the request
-   * @returns {Promise} The response of the rpc call
-   */
-  call: (path: string, payload?: OperationObject | undefined) => Promise<any>;
-
-  /**
    * @description Prepares an operation
    * @param {Object} paramObject The parameters for the operation
    * @param {string} [paramObject.source] The source address of the operation
@@ -538,14 +529,14 @@ export declare class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the prepared operation
    * @example
    * sotez.prepareOperation({
-   * operation: {
-   * kind: 'transaction',
-   * fee: '1420',
-   * gas_limit: '10600',
-   * storage_limit: '300',
-   * amount: '1000',
-   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   * }
+   *   operation: {
+   *     kind: 'transaction',
+   *     fee: 1420,
+   *     gas_limit: 10600,
+   *     storage_limit: 300,
+   *     amount: 1000,
+   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
   prepareOperation: ({
@@ -562,14 +553,14 @@ export declare class Sotez extends AbstractTezModule {
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
-   * operation: {
-   * kind: 'transaction',
-   * fee: '1420',
-   * gas_limit: '10600',
-   * storage_limit: '300',
-   * amount: '1000',
-   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   * },
+   *   operation: {
+   *     kind: 'transaction',
+   *     fee: 1420,
+   *     gas_limit: 10600,
+   *     storage_limit: 300,
+   *     amount: 1000,
+   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   *   },
    * }).then(result => console.log(result));
    */
   simulateOperation: ({ operation, source }: OperationParams) => Promise<any>;
@@ -585,10 +576,10 @@ export declare class Sotez extends AbstractTezModule {
    * @example
    * const operation = {
    *   kind: 'transaction',
-   *   fee: '1420',
-   *   gas_limit: '10600',
-   *   storage_limit: '300',
-   *   amount: '1000',
+   *   fee: 1420,
+   *   gas_limit: 10600,
+   *   storage_limit: 300,
+   *   amount: 1000,
    *   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    * };
    *
@@ -632,8 +623,8 @@ export declare class Sotez extends AbstractTezModule {
    * @example
    * sotez.transfer({
    *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   amount: '1000000',
-   *   fee: '1420',
+   *   amount: 1000000,
+   *   fee: 1420,
    * }).then(result => console.log(result));
    */
   transfer: ({
@@ -798,7 +789,7 @@ export declare class Sotez extends AbstractTezModule {
    * // List defined contract methods
    * const { methods } = contract;
    * // Retrieve contract storage
-   * const storage = contract.storage();
+   * const storage = await contract.storage();
    * // Get big map keys
    * await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
    * // Determine method schema

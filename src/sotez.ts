@@ -1,4 +1,3 @@
-import LedgerTransport from '@ledgerhq/hw-transport';
 import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
 import { Contract } from './contract';
@@ -233,7 +232,7 @@ interface Signed {
  * await sotez.importKey('edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y');
  * sotez.transfer({
  *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
- *   amount: '1000000',
+ *   amount: 1000000,
  * });
  */
 export class Sotez extends AbstractTezModule {
@@ -336,7 +335,7 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Import a ledger public key
-   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs - previously u2f for web and node-hid for node)
+   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs)
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
    * @param {string} [curve="tz1"] The curve parameter
    * @example
@@ -344,7 +343,7 @@ export class Sotez extends AbstractTezModule {
    * await sotez.importLedger(TransportNodeHid, "44'/1729'/0'/0'");
    */
   importLedger = async (
-    transport: LedgerTransport,
+    transport: any,
     path = "44'/1729'/0'/0'",
     curve = 'tz1',
   ): Promise<void> => {
@@ -429,14 +428,14 @@ export class Sotez extends AbstractTezModule {
    * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(delegate => console.log(delegate));
    */
-  getDelegate = (address: string): Promise<string | boolean> =>
+  getDelegate = (address: string): Promise<string> =>
     this.query(
       `/chains/${this.chain}/blocks/head/context/contracts/${address}/delegate`,
     ).then((delegate: string) => {
-      if (delegate) {
-        return delegate;
+      if (!delegate) {
+        return '';
       }
-      return false;
+      return delegate;
     });
 
   /**
@@ -624,46 +623,37 @@ export class Sotez extends AbstractTezModule {
       throw new Error('Interval must be more than 0');
     }
 
-    const timeoutAt = Math.ceil(timeout / interval) + 1;
-    let count = 0;
-    let found = false;
+    let timeoutHandle: ReturnType<typeof setTimeout>;
 
-    const operationCheck = (operation: Operation): void => {
-      if (operation.hash === hash) {
-        found = true;
-      }
-    };
+    const operationCheck = (operation: Operation): boolean =>
+      operation.hash === hash;
 
     return new Promise((resolve, reject) => {
-      const repeater = (): Promise<string | void> =>
+      const clearTimeoutHandle = setTimeout(() => {
+        clearTimeout(timeoutHandle);
+        reject(
+          new Error(
+            `Timed out waiting for operation ${hash} after ${timeout} seconds`,
+          ),
+        );
+      }, timeout * 1000);
+
+      const repeater = (): void => {
         this.getHead().then((head: Head) => {
-          count++;
-
           for (let i = 3; i >= 0; i--) {
-            head.operations[i].forEach(operationCheck);
+            if (head.operations[i].some(operationCheck)) {
+              clearTimeout(clearTimeoutHandle);
+              resolve(head.hash);
+              return;
+            }
           }
-
-          if (found) {
-            resolve(head.hash);
-          } else if (count >= timeoutAt) {
-            reject(new Error('Timeout'));
-          } else {
-            setTimeout(repeater, interval * 1000);
-          }
+          timeoutHandle = setTimeout(repeater, interval * 1000);
         });
+      };
 
       repeater();
     });
   };
-
-  /**
-   * @description Queries the rpc endpoint with an optional payload
-   * @param {string} path The path to query
-   * @param {Object} payload The payload of the request
-   * @returns {Promise} The response of the rpc call
-   */
-  call = (path: string, payload?: OperationObject): Promise<any> =>
-    this.query(path, payload);
 
   /**
    * @description Prepares an operation
@@ -674,14 +664,14 @@ export class Sotez extends AbstractTezModule {
    * @returns {Promise} Object containing the prepared operation
    * @example
    * sotez.prepareOperation({
-   * operation: {
-   * kind: 'transaction',
-   * fee: '1420',
-   * gas_limit: '10600',
-   * storage_limit: '300',
-   * amount: '1000',
-   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   * }
+   *   operation: {
+   *     kind: 'transaction',
+   *     fee: 1420,
+   *     gas_limit: 10600,
+   *     storage_limit: 300,
+   *     amount: 1000,
+   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
   prepareOperation = ({
@@ -717,9 +707,12 @@ export class Sotez extends AbstractTezModule {
     }
 
     return Promise.all(promises).then(
-      async ([header, metadata, manager, headCounter]: any[]): Promise<
-        ForgedBytes
-      > => {
+      async ([
+        header,
+        metadata,
+        manager,
+        headCounter,
+      ]: any[]): Promise<ForgedBytes> => {
         head = header;
 
         if (requiresReveal) {
@@ -858,14 +851,14 @@ export class Sotez extends AbstractTezModule {
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
-   * operation: {
-   * kind: 'transaction',
-   * fee: '1420',
-   * gas_limit: '10600',
-   * storage_limit: '300',
-   * amount: '1000',
-   * destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   * },
+   *   operation: {
+   *     kind: 'transaction',
+   *     fee: 1420,
+   *     gas_limit: 10600,
+   *     storage_limit: 300,
+   *     amount: 1000,
+   *     destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
+   *   },
    * }).then(result => console.log(result));
    */
   simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
@@ -895,10 +888,10 @@ export class Sotez extends AbstractTezModule {
    * @example
    * const operation = {
    *   kind: 'transaction',
-   *   fee: '1420',
-   *   gas_limit: '10600',
-   *   storage_limit: '300',
-   *   amount: '1000',
+   *   fee: 1420,
+   *   gas_limit: 10600,
+   *   storage_limit: 300,
+   *   amount: 1000,
    *   destination: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
    * };
    *
@@ -954,30 +947,31 @@ export class Sotez extends AbstractTezModule {
    */
   inject = (opOb: OperationObject, sopbytes: string): Promise<any> => {
     const opResponse: any[] = [];
-    let errors: any[] = [];
+    const errors: any[] = [];
 
     return this.query(
       `/chains/${this.chain}/blocks/head/helpers/preapply/operations`,
       [opOb],
     )
-      .then((f) => {
-        if (!Array.isArray(f)) {
+      .then((results) => {
+        if (!Array.isArray(results)) {
           throw new Error('RPC Fail');
         }
-        for (let i = 0; i < f.length; i++) {
-          for (let j = 0; j < f[i].contents.length; j++) {
-            opResponse.push(f[i].contents[j]);
-            if (
-              typeof f[i].contents[j].metadata.operation_result !==
-                'undefined' &&
-              f[i].contents[j].metadata.operation_result.status === 'failed'
-            ) {
-              errors = errors.concat(
-                f[i].contents[j].metadata.operation_result.errors,
-              );
-            }
-          }
-        }
+
+        results.forEach((result) => {
+          result.contents.forEach(
+            (content: {
+              metadata: { operation_result?: { status: string; errors?: any } };
+            }) => {
+              opResponse.push(content);
+
+              if (content.metadata.operation_result?.status === 'failed') {
+                errors.push(content.metadata.operation_result.errors);
+              }
+            },
+          );
+        });
+
         if (errors.length) {
           throw new Error(
             JSON.stringify({ error: 'Operation Failed', errors }, null, 2),
@@ -1015,8 +1009,8 @@ export class Sotez extends AbstractTezModule {
    * @example
    * sotez.transfer({
    *   to: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
-   *   amount: '1000000',
-   *   fee: '1420',
+   *   amount: 1000000,
+   *   fee: 1420,
    * }).then(result => console.log(result));
    */
   transfer = ({
@@ -1411,7 +1405,7 @@ export class Sotez extends AbstractTezModule {
    * // List defined contract methods
    * const { methods } = contract;
    * // Retrieve contract storage
-   * const storage = contract.storage();
+   * const storage = await contract.storage();
    * // Get big map keys
    * await storage.ledger.get('tz1P1n8LvweoarK3DTPSnAHtiGVRujhvR2vk');
    * // Determine method schema

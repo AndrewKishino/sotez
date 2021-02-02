@@ -1,14 +1,11 @@
-/// <reference types="ledgerhq__hw-transport" />
-import LedgerTransport from '@ledgerhq/hw-transport';
-
 interface LedgerGetAddress {
-  transport: typeof LedgerTransport;
+  transport: any;
   path?: string;
   displayConfirm?: boolean;
   curve?: string;
 }
 interface LedgerSignOperation {
-  transport: typeof LedgerTransport;
+  transport: any;
   path?: string;
   rawTxHex: string;
   curve?: string;
@@ -41,7 +38,7 @@ export declare const getAddress: ({
   path,
   displayConfirm,
   curve,
-}?: LedgerGetAddress) => Promise<{
+}: LedgerGetAddress) => Promise<{
   address: string;
   publicKey: string;
 }>;
@@ -76,16 +73,14 @@ export declare const signOperation: ({
  * ledger.getVersion()
  *   .then(({ major, minor, patch, bakingApp }) => console.log(major, minor, patch, bakingApp));
  */
-export declare const getVersion: (
-  transport: typeof LedgerTransport,
-) => Promise<LedgerGetVersion>;
+export declare const getVersion: (transport: any) => Promise<LedgerGetVersion>;
 declare const _default: {
   getAddress: ({
     transport,
     path,
     displayConfirm,
     curve,
-  }?: LedgerGetAddress) => Promise<{
+  }: LedgerGetAddress) => Promise<{
     address: string;
     publicKey: string;
   }>;
@@ -96,6 +91,6 @@ declare const _default: {
     curve,
     magicBytes,
   }: LedgerSignOperation) => Promise<string>;
-  getVersion: (transport: typeof LedgerTransport) => Promise<LedgerGetVersion>;
+  getVersion: (transport: any) => Promise<LedgerGetVersion>;
 };
 export default _default;

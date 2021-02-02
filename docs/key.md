@@ -40,6 +40,10 @@ Returns **[string][2]** The public key hash for this key
 
 Returns the secret key
 
+#### Parameters
+
+-   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+
 Returns **[string][2]** The secret key associated with this key, if available
 
 ### sign
@@ -82,6 +86,10 @@ Returns **[string][2]** The public key hash for this key
 ### secretKey
 
 Returns the secret key
+
+#### Parameters
+
+-   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 

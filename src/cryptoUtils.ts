@@ -3,7 +3,8 @@ import {
   mnemonicToSeed,
 } from 'bip39';
 import pbkdf2 from 'pbkdf2';
-import sodium from 'libsodium-wrappers';
+import sodium from 'libsodium-wrappers-sumo';
+import elliptic from 'elliptic';
 import { b58cdecode, b58cencode, hex2buf, mergebuf, buf2hex } from './utility';
 import { prefix } from './constants';
 
@@ -11,12 +12,13 @@ interface Keys {
   pk: string;
   pkh: string;
   sk: string;
-  password?: string;
+  esk?: string;
+  salt?: Uint8Array;
 }
 
 interface KeysMnemonicPassphrase {
   mnemonic: string;
-  passphrase: string;
+  passphrase?: string;
   sk: string;
   pk: string;
   pkh: string;
@@ -33,13 +35,16 @@ interface Signed {
 /**
  * @description Extract key pairs from a secret key
  * @param {string} sk The secret key to extract key pairs from
- * @param {string} [password] The password used to encrypt the sk
+ * @param {string} [passphrase] The password used to encrypt the sk
  * @returns {Promise} The extracted key pairs
  * @example
  * cryptoUtils.extractKeys('edskRqAF8s2MKKqRMxq53CYYLMnrqvokMyrtmPRFd5H9osc4bFmqKBY119jiiqKQMti2frLAoKGgZSQN3Lc3ybf5sgPUy38e5A')
  *   .then(({ sk, pk, pkh }) => console.log(sk, pk, pkh));
  */
-export const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
+export const extractKeys = async (
+  sk: string,
+  passphrase = '',
+): Promise<Keys> => {
   await sodium.ready;
 
   const curve = sk.substring(0, 2);
@@ -50,71 +55,120 @@ export const extractKeys = async (sk: string, password = ''): Promise<Keys> => {
 
   const encrypted = sk.substring(2, 3) === 'e';
 
-  if (curve === 'ed') {
-    if (encrypted) {
-      const esb = b58cdecode(sk, prefix.edesk);
-      const salt = esb.slice(0, 8);
-      const esm = esb.slice(8);
+  let constructedKey = b58cdecode(
+    sk,
+    prefix[`${curve}${encrypted ? 'e' : ''}sk`],
+  );
 
-      if (!password) {
-        throw new Error('No password was provided to decrypt the key');
-      }
+  let salt;
+  if (encrypted) {
+    salt = constructedKey.slice(0, 8);
+    const encryptedSk = constructedKey.slice(8);
 
-      const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
-      const kp = sodium.crypto_sign_seed_keypair(
-        sodium.crypto_secretbox_open_easy(
-          new Uint8Array(esm),
-          new Uint8Array(24),
-          new Uint8Array(key),
-        ),
-      );
-      return {
-        sk: b58cencode(kp.privateKey, prefix.edsk),
-        pk: b58cencode(kp.publicKey, prefix.edpk),
-        pkh: b58cencode(
-          sodium.crypto_generichash(20, kp.publicKey),
-          prefix.tz1,
-        ),
-      };
+    if (!passphrase) {
+      throw new Error('No passphrase was provided to decrypt the key');
     }
-    if (sk.length === 98) {
-      return {
-        sk,
-        pk: b58cencode(b58cdecode(sk, prefix.edsk).slice(32), prefix.edpk),
-        pkh: b58cencode(
-          sodium.crypto_generichash(20, b58cdecode(sk, prefix.edsk).slice(32)),
-          prefix.tz1,
-        ),
-      };
-    }
-    if (sk.length === 54) {
-      // seed
-      const s = b58cdecode(sk, prefix.edsk2);
-      const kp = sodium.crypto_sign_seed_keypair(s);
-      return {
-        sk: b58cencode(kp.privateKey, prefix.edsk),
-        pk: b58cencode(kp.publicKey, prefix.edpk),
-        pkh: b58cencode(
-          sodium.crypto_generichash(20, kp.publicKey),
-          prefix.tz1,
-        ),
-      };
-    }
+
+    const key = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
+    constructedKey = sodium.crypto_secretbox_open_easy(
+      new Uint8Array(encryptedSk),
+      new Uint8Array(24),
+      new Uint8Array(key),
+    );
   }
 
-  console.error('Invalid prefix for a key encoding');
-  return {
-    sk: '',
-    pk: '',
-    pkh: '',
+  let secretKey = new Uint8Array(constructedKey);
+
+  let privateKeys: { sk: string; esk?: string; salt?: Uint8Array } = {
+    sk,
   };
+
+  if (encrypted) {
+    privateKeys = {
+      esk: sk,
+      sk: b58cencode(secretKey, prefix[`${curve}sk`]),
+      salt,
+    };
+  }
+
+  if (curve === 'ed') {
+    let publicKey;
+    if (constructedKey.length === 64) {
+      publicKey = new Uint8Array(
+        sodium.crypto_sign_ed25519_sk_to_pk(secretKey),
+      );
+    } else {
+      const {
+        publicKey: publicKeyDerived,
+        privateKey,
+      } = sodium.crypto_sign_seed_keypair(secretKey, 'uint8array');
+      publicKey = new Uint8Array(publicKeyDerived);
+      secretKey = new Uint8Array(privateKey);
+
+      if (encrypted) {
+        privateKeys = {
+          esk: sk,
+          sk: b58cencode(secretKey, prefix[`${curve}sk`]),
+          salt,
+        };
+      }
+    }
+
+    return {
+      ...privateKeys,
+      pk: b58cencode(publicKey, prefix.edpk),
+      pkh: b58cencode(sodium.crypto_generichash(20, publicKey), prefix.tz1),
+    };
+  }
+
+  if (curve === 'sp') {
+    const keyPair = new elliptic.ec('secp256k1').keyFromPrivate(constructedKey);
+    const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
+    const pad = new Array(32).fill(0);
+    const publicKey = new Uint8Array(
+      [prefixVal].concat(
+        pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
+      ),
+    );
+
+    return {
+      ...privateKeys,
+      pk: b58cencode(publicKey, prefix.sppk),
+      pkh: b58cencode(
+        sodium.crypto_generichash(20, new Uint8Array(publicKey)),
+        prefix.tz2,
+      ),
+    };
+  }
+
+  if (curve === 'p2') {
+    const keyPair = new elliptic.ec('p256').keyFromPrivate(constructedKey);
+    const prefixVal = keyPair.getPublic().getY().toArray()[31] % 2 ? 3 : 2;
+    const pad = new Array(32).fill(0);
+    const publicKey = new Uint8Array(
+      [prefixVal].concat(
+        pad.concat(keyPair.getPublic().getX().toArray()).slice(-32),
+      ),
+    );
+
+    return {
+      ...privateKeys,
+      pk: b58cencode(publicKey, prefix.p2pk),
+      pkh: b58cencode(
+        sodium.crypto_generichash(20, new Uint8Array(publicKey)),
+        prefix.tz3,
+      ),
+    };
+  }
+
+  throw new Error('Invalid prefix for a key encoding');
 };
 
 /**
  * @description Generate a mnemonic
- * @returns {string} The generated mnemonic
+ * @returns {string} The 15 word generated mnemonic
  */
-export const generateMnemonic = (): string => bip39GenerateMnemonic(256);
+export const generateMnemonic = (): string => bip39GenerateMnemonic(160);
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
@@ -141,7 +195,7 @@ export const checkAddress = (address: string): boolean => {
  */
 export const generateKeys = async (
   mnemonic: string,
-  passphrase: string,
+  passphrase?: string,
 ): Promise<KeysMnemonicPassphrase> => {
   await sodium.ready;
   const s = await mnemonicToSeed(mnemonic, passphrase).then((seed) =>
@@ -158,6 +212,63 @@ export const generateKeys = async (
 };
 
 /**
+ * @description Encrypts a secret key with a passphrase
+ * @param {string} key The secret key
+ * @param {string} passphrase The passphrase to encrypt the key
+ * @param {Uint8Array} salt The salt to apply to the encryption
+ * @returns {string} The encrypted secret key
+ * @example
+ * const encryptedSecretKey = cryptoUtils.encryptSecretKey(
+ *  'p2sk3T9fYpibobxRr7daoPzywLpLAXJVd3bkXpAaqYVtVB37aAp7bU',
+ *  'password',
+ * );
+ */
+export const encryptSecretKey = (
+  key: string,
+  passphrase: string,
+  salt: Uint8Array = sodium.randombytes_buf(8),
+) => {
+  if (!passphrase) {
+    throw new Error('passphrase is require when encrypting a secret key');
+  }
+
+  const curve = key.substring(0, 2);
+
+  let secretKey = b58cdecode(key, prefix[`${curve}sk`]);
+
+  if (curve === 'ed') {
+    if (secretKey.length !== 64) {
+      // seed
+      const { privateKey } = sodium.crypto_sign_seed_keypair(
+        secretKey,
+        'uint8array',
+      );
+      secretKey = new Uint8Array(privateKey);
+    }
+  }
+
+  if (curve === 'ed') {
+    secretKey = sodium.crypto_sign_ed25519_sk_to_seed(secretKey, 'uint8array');
+  }
+
+  const encryptionKey = pbkdf2.pbkdf2Sync(
+    passphrase,
+    salt,
+    32768,
+    32,
+    'sha512',
+  );
+
+  const encryptedSk = sodium.crypto_secretbox_easy(
+    secretKey,
+    new Uint8Array(24),
+    new Uint8Array(encryptionKey),
+  );
+
+  return b58cencode(mergebuf(salt, encryptedSk), prefix[`${curve}esk`]);
+};
+
+/**
  * @description Sign bytes
  * @param {string} bytes The bytes to sign
  * @param {string} sk The secret key to sign the bytes with
@@ -168,41 +279,109 @@ export const generateKeys = async (
  * import { magicBytes as magicBytesMap } from 'sotez';
  *
  * cryptoUtils.sign(opbytes, keys.sk, magicBytesMap.generic)
- *   .then(({ bytes, magicBytes, sig, edsig, sbytes }) => console.log(bytes, magicBytes, sig, edsig, sbytes));
+ *   .then(({ bytes, magicBytes, sig, prefixSig, sbytes }) => console.log(bytes, magicBytes, sig, prefixSig, sbytes));
  */
 export const sign = async (
   bytes: string,
   sk: string,
-  magicBytes: Uint8Array,
+  magicBytes?: Uint8Array,
   password = '',
 ): Promise<Signed> => {
   await sodium.ready;
-  if (sk.length === 54 || sk.length === 55) {
-    try {
-      ({ sk } = await extractKeys(sk, password));
-    } catch (e) {
-      throw new Error(e);
-    }
+
+  const curve = sk.substring(0, 2);
+
+  if (![54, 55, 88, 98].includes(sk.length)) {
+    throw new Error('Invalid length for a key encoding');
   }
+
+  const encrypted = sk.substring(2, 3) === 'e';
+
+  let constructedKey = b58cdecode(
+    sk,
+    prefix[`${curve}${encrypted ? 'e' : ''}sk`],
+  );
+
+  if (encrypted) {
+    const salt = constructedKey.slice(0, 8);
+    const encryptedSk = constructedKey.slice(8);
+
+    if (!password) {
+      throw new Error('No password was provided to decrypt the key');
+    }
+
+    const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
+    constructedKey = sodium.crypto_secretbox_open_easy(
+      new Uint8Array(encryptedSk),
+      new Uint8Array(24),
+      new Uint8Array(key),
+    );
+  }
+
+  let secretKey = new Uint8Array(constructedKey);
 
   let bb = hex2buf(bytes);
   if (typeof magicBytes !== 'undefined') {
     bb = mergebuf(magicBytes, bb);
   }
-  const sig = sodium.crypto_sign_detached(
-    new Uint8Array(sodium.crypto_generichash(32, bb)),
-    new Uint8Array(b58cdecode(sk, prefix.edsk)),
-    'uint8array',
-  );
-  const prefixSig = b58cencode(sig, prefix.edsig);
-  const sbytes = bytes + buf2hex(sig);
-  return {
-    bytes,
-    magicBytes: magicBytes ? buf2hex(magicBytes) : '',
-    sig: b58cencode(sig, prefix.sig),
-    prefixSig,
-    sbytes,
-  };
+
+  const bytesHash = new Uint8Array(sodium.crypto_generichash(32, bb));
+
+  if (curve === 'ed') {
+    if (constructedKey.length !== 64) {
+      const { privateKey } = sodium.crypto_sign_seed_keypair(
+        secretKey,
+        'uint8array',
+      );
+      secretKey = new Uint8Array(privateKey);
+    }
+    const signature = sodium.crypto_sign_detached(bytesHash, secretKey);
+    const sbytes = bytes + buf2hex(signature);
+
+    return {
+      bytes,
+      magicBytes: magicBytes ? buf2hex(magicBytes) : '',
+      sig: b58cencode(signature, prefix.sig),
+      prefixSig: b58cencode(signature, prefix.edsig),
+      sbytes,
+    };
+  }
+
+  if (curve === 'sp') {
+    const key = new elliptic.ec('secp256k1').keyFromPrivate(secretKey);
+    const sig = key.sign(bytesHash, { canonical: true });
+    const signature = new Uint8Array(
+      sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
+    );
+    const sbytes = bytes + buf2hex(signature);
+
+    return {
+      bytes,
+      magicBytes: magicBytes ? buf2hex(magicBytes) : '',
+      sig: b58cencode(signature, prefix.sig),
+      prefixSig: b58cencode(signature, prefix.spsig),
+      sbytes,
+    };
+  }
+
+  if (curve === 'p2') {
+    const key = new elliptic.ec('p256').keyFromPrivate(secretKey);
+    const sig = key.sign(bytesHash, { canonical: true });
+    const signature = new Uint8Array(
+      sig.r.toArray(undefined, 32).concat(sig.s.toArray(undefined, 32)),
+    );
+    const sbytes = bytes + buf2hex(signature);
+
+    return {
+      bytes,
+      magicBytes: magicBytes ? buf2hex(magicBytes) : '',
+      sig: b58cencode(signature, prefix.sig),
+      prefixSig: b58cencode(signature, prefix.p2sig),
+      sbytes,
+    };
+  }
+
+  throw new Error('Provided curve not supported');
 };
 
 /**
@@ -218,17 +397,74 @@ export const verify = async (
   pk: string,
 ): Promise<boolean> => {
   await sodium.ready;
-  const bytesBuffer = hex2buf(bytes);
-  const signature = b58cdecode(sig, prefix.sig);
-  return sodium.crypto_sign_verify_detached(
-    signature,
-    sodium.crypto_generichash(32, bytesBuffer),
-    b58cdecode(pk, prefix.edpk),
-  );
+  if (!pk) {
+    throw new Error('Cannot verify without a public key');
+  }
+
+  const curve = pk.substring(0, 2);
+  const publicKey = new Uint8Array(b58cdecode(pk, prefix[`${curve}pk`]));
+
+  if (sig.substring(0, 3) !== 'sig') {
+    if (curve !== sig.substring(0, 2)) {
+      // 'sp', 'p2' 'ed'
+      throw new Error('Signature and public key curves mismatch.');
+    }
+  }
+
+  const bytesBuffer = sodium.crypto_generichash(32, hex2buf(bytes));
+  let signature;
+  if (sig.substring(0, 3) === 'sig') {
+    signature = b58cdecode(sig, prefix.sig);
+  } else if (sig.substring(0, 5) === `${curve}sig`) {
+    signature = b58cdecode(sig, prefix[`${curve}sig`]);
+  } else {
+    throw new Error(`Invalid signature provided: ${sig}`);
+  }
+
+  if (curve === 'ed') {
+    try {
+      return sodium.crypto_sign_verify_detached(
+        new Uint8Array(signature),
+        new Uint8Array(bytesBuffer),
+        publicKey,
+      );
+    } catch (e) {
+      return false;
+    }
+  } else if (curve === 'sp') {
+    const key = new elliptic.ec('secp256k1').keyFromPublic(publicKey);
+    const formattedSig = buf2hex(signature);
+    const match = formattedSig.match(/([a-f\d]{64})/gi);
+    if (match) {
+      try {
+        const [r, s] = match;
+        return key.verify(bytesBuffer, { r, s });
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  } else if (curve === 'p2') {
+    const key = new elliptic.ec('p256').keyFromPublic(publicKey);
+    const formattedSig = buf2hex(signature);
+    const match = formattedSig.match(/([a-f\d]{64})/gi);
+    if (match) {
+      try {
+        const [r, s] = match;
+        return key.verify(bytesBuffer, { r, s });
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  } else {
+    throw new Error(`Curve '${curve}' not supported`);
+  }
 };
 
 export default {
   extractKeys,
+  encryptSecretKey,
   generateKeys,
   checkAddress,
   generateMnemonic,

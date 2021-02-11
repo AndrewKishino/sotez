@@ -106,7 +106,7 @@ After we have initialized an instance of Sotez, we can start querying the blockc
 const head = await tezos.getHead();
 
 // Get the current balance of a Tezos address
-const balance = await tezos.getBalance('tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps);
+const balance = await tezos.getBalance('tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps');
 
 // Query the RPC directly
 const previousBalance = await tezos.query('/chains/main/blocks/head~30/context/contracts/tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps/balance');

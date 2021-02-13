@@ -31,7 +31,7 @@ Originate a new account
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the origination
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
@@ -362,7 +362,7 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6]
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6])
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
@@ -421,7 +421,7 @@ Originate a new contract
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
@@ -452,7 +452,7 @@ Prepares an operation
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
@@ -481,7 +481,7 @@ Register an account as a delegate
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
@@ -509,7 +509,7 @@ Send an operation
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
@@ -541,7 +541,7 @@ Set a delegate for an account
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.delegate` **[string][2]?** The delegate for the new account
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
@@ -567,7 +567,7 @@ Simulate an operation
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
@@ -595,7 +595,7 @@ Transfer operation
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.to` **[string][2]** The address of the recipient
     -   `paramObject.amount` **[number][3]** The amount in tez to transfer for the initial balance
@@ -682,7 +682,7 @@ Creates a key object from a base58 encoded key.
 
 ### Parameters
 
--   `KeyConstructor` **[Object][1]** 
+-   `KeyConstructor` **[Object][1]**
     -   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
           providing a key will import a ledger public key.
     -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
@@ -1293,7 +1293,7 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `ledgerParams` **[Object][1]** The parameters of the getAddress function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
@@ -1336,7 +1336,7 @@ Sign an operation with the ledger
 
 ### Parameters
 
--   `_a`  
+-   `_a`
 -   `ledgerParams` **[Object][1]** The parameters of the signOperation function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)

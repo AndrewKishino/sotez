@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0] - 2021-02-01
+
+### Added
+
+- Added support for Edo
+- Added additional curve support to all the cryptoUtils functions
+- Added `encryptSecretKey` to cryptoUtils
+- The `Key` module can now encrypt secret keys by providing a passphrase: `key.secretKey('password')`
+- Refactored and cleaned up some logic
+
+### Changed
+
+- `cryptoUtils.generateMnemonic` now generates 15 word mnemonics as per the original implementation
+
 ## [7.0.0] - 2020-10-23
 
 ### Added

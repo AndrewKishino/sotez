@@ -106,7 +106,7 @@ After we have initialized an instance of Sotez, we can start querying the blockc
 const head = await tezos.getHead();
 
 // Get the current balance of a Tezos address
-const balance = await tezos.getBalance('tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps);
+const balance = await tezos.getBalance('tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps');
 
 // Query the RPC directly
 const previousBalance = await tezos.query('/chains/main/blocks/head~30/context/contracts/tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps/balance');
@@ -141,7 +141,7 @@ npm install @ledgerhq/hw-transport-webusb
 npm install @ledgerhq/hw-transport-u2f
 ```
 
-Importing a ledger requires at least the Transport argument is provided. You can define the BIP44 path as the second argument. If the BIP44 path is not provided, it will use the zero index value (`"44'/1729'/0'/0'"`).
+Importing a ledger requires that you have the Tezos ledger wallet app installed and the app open on the ledger. The Transport argument is the only required argument, but you can define the BIP44 path as the second argument, and the curve (`tz1`, `tz2`, `tz3`) as the third. If the BIP44 path is not provided, it will use the zero index value (`"44'/1729'/0'/0'"`).
 
 ```js
 // Import the required transport for the appropriate environment

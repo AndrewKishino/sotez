@@ -294,7 +294,7 @@ export declare class Sotez extends AbstractTezModule {
 
   /**
    * @description Import a ledger public key
-   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs
+   * @param {Object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs)
    * @param {string} [path="44'/1729'/0'/0'"] The ledger path
    * @param {string} [curve="tz1"] The curve parameter
    * @example

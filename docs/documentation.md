@@ -31,7 +31,7 @@ Originate a new account
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the origination
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
@@ -421,7 +421,7 @@ Originate a new contract
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
@@ -452,7 +452,7 @@ Prepares an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
@@ -475,19 +475,42 @@ sotez.prepareOperation({
 
 Returns **[Promise][5]** Object containing the prepared operation
 
+## registerBaker
+
+Register a new baker account
+
+### Parameters
+
+-   `_a`  
+-   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.credit` **[number][3]** The initial balance to credit for the new baker account
+    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `paramObject.threshold` **[number][3]** The threshold for the multisig baker account (optional, default `1`)
+    -   `paramObject.consensusKey` **[string][2]** The consensus key for the baker account (optional, default `this.key.publicKeyHash()`)
+    -   `paramObject.ownerKeys` **[string][2]** Owner keys for the baker account (optional, default `[this.key.publicKey()]`)
+    -   `paramObject.source` **[string][2]** The source public key hash (optional, default `this.key.publicKeyHash()`)
+    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+
+Returns **[Promise][5]** Object containing the injected operation hash
+
 ## registerDelegate
 
 Register an account as a delegate
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
+
+**Meta**
+
+-   **deprecated**: Use 'registerBaker' in order to create new baking accounts
 
 ## runCode
 
@@ -509,7 +532,7 @@ Send an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
@@ -541,7 +564,7 @@ Set a delegate for an account
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.delegate` **[string][2]?** The delegate for the new account
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
@@ -567,7 +590,7 @@ Simulate an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
@@ -595,7 +618,7 @@ Transfer operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.to` **[string][2]** The address of the recipient
     -   `paramObject.amount` **[number][3]** The amount in tez to transfer for the initial balance
@@ -682,7 +705,7 @@ Creates a key object from a base58 encoded key.
 
 ### Parameters
 
--   `KeyConstructor` **[Object][1]**
+-   `KeyConstructor` **[Object][1]** 
     -   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
           providing a key will import a ledger public key.
     -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
@@ -1038,6 +1061,17 @@ Forge address bytes
 
 Returns **[string][2]** Forged address bytes
 
+## bakerRegistration
+
+Forge baker registration operation bytes
+
+### Parameters
+
+-   `opArg` **[Object][1]** Operation to forge
+-   `protocol` **[string][2]** Current protocol
+
+Returns **[string][2]** Forged operation bytes
+
 ## ballot
 
 Forge ballot operation bytes
@@ -1233,6 +1267,26 @@ Forge seed_nonce_revelation operation bytes
 
 Returns **[string][2]** Forged operation bytes
 
+## toBytesInt16
+
+Convert bytes from Int16
+
+### Parameters
+
+-   `num` **[number][4]** Number to convert to bytes
+
+Returns **[Object][1]** The converted number
+
+## toBytesInt16Hex
+
+Convert hex from Int16
+
+### Parameters
+
+-   `num` **[number][4]** Number to convert to hex
+
+Returns **[string][2]** The converted number
+
 ## toBytesInt32
 
 Convert bytes from Int32
@@ -1293,7 +1347,7 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `ledgerParams` **[Object][1]** The parameters of the getAddress function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
@@ -1336,7 +1390,7 @@ Sign an operation with the ledger
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `ledgerParams` **[Object][1]** The parameters of the signOperation function
     -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
     -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)

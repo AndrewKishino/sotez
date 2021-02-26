@@ -17,7 +17,7 @@ Originate a new account
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the origination
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
@@ -407,7 +407,7 @@ Originate a new contract
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
     -   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
@@ -438,7 +438,7 @@ Prepares an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
@@ -461,19 +461,43 @@ sotez.prepareOperation({
 
 Returns **[Promise][5]** Object containing the prepared operation
 
+## registerBaker
+
+Register a new baker account
+
+### Parameters
+
+-   `_a`  
+-   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.credit` **[number][3]** The initial balance to credit for the new baker account
+    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `paramObject.threshold` **[number][3]** The threshold for the multisig baker account (optional, default `1`)
+    -   `paramObject.consensusKey` **[string][2]** The consensus key for the baker account (optional, default `this.key.publicKeyHash()`)
+    -   `paramObject.ownerKeys` **[string][2]** Owner keys for the baker account (optional, default `[this.key.publicKey()]`)
+    -   `paramObject.source` **[string][2]** The source public key hash (optional, default `this.key.publicKeyHash()`)
+    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+
+Returns **[Promise][5]** Object containing the injected operation hash
+
 ## registerDelegate
 
 Register an account as a delegate
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
     -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
+
+**Meta**
+
+-   **deprecated**: Use 'registerBaker' in order to create new baking accounts
+
 
 ## runCode
 
@@ -495,7 +519,7 @@ Send an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
@@ -527,7 +551,7 @@ Set a delegate for an account
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.delegate` **[string][2]?** The delegate for the new account
     -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
@@ -553,7 +577,7 @@ Simulate an operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
@@ -581,7 +605,7 @@ Transfer operation
 
 ### Parameters
 
--   `_a`
+-   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.to` **[string][2]** The address of the recipient
     -   `paramObject.amount` **[number][3]** The amount in tez to transfer for the initial balance

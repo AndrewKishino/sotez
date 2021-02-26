@@ -5,10 +5,7 @@
  * @returns {number[]} Array of path segments
  */
 export declare function splitPath(path: string): number[];
-export declare const encodePublicKey: (
-  publicKey: Buffer,
-  curve: number,
-) => {
-  publicKey: any;
-  address: any;
+export declare const encodePublicKey: (publicKey: Buffer, curve: number) => {
+    publicKey: any;
+    address: any;
 };

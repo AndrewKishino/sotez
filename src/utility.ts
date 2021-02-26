@@ -67,7 +67,7 @@ export const totez = (mutez: number): number => {
  * @param {number} tez The amount in tez to convert to mutez
  * @returns {string} The tez amount converted to mutez
  */
-export const mutez = (tez: number): string =>
+export const mutez = (tez: number | string): string =>
   new BigNumber(new BigNumber(tez).toFixed(6)).multipliedBy(1000000).toString();
 
 /**

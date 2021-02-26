@@ -21,6 +21,17 @@ Forge address bytes
 
 Returns **[string][2]** Forged address bytes
 
+## bakerRegistration
+
+Forge baker registration operation bytes
+
+### Parameters
+
+-   `opArg` **[Object][1]** Operation to forge
+-   `protocol` **[string][2]** Current protocol
+
+Returns **[string][2]** Forged operation bytes
+
 ## ballot
 
 Forge ballot operation bytes
@@ -215,6 +226,26 @@ Forge seed_nonce_revelation operation bytes
 -   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
+
+## toBytesInt16
+
+Convert bytes from Int16
+
+### Parameters
+
+-   `num` **[number][4]** Number to convert to bytes
+
+Returns **[Object][1]** The converted number
+
+## toBytesInt16Hex
+
+Convert hex from Int16
+
+### Parameters
+
+-   `num` **[number][4]** Number to convert to hex
+
+Returns **[string][2]** The converted number
 
 ## toBytesInt32
 

@@ -2,7 +2,7 @@ import { AbstractTezModule } from './tez-core';
 import { Key } from './key';
 import { Contract } from './contract';
 import { forge } from './forge';
-import { mutez, sexp2mic, ml2mic } from './utility';
+import { mutez, totez, sexp2mic, ml2mic } from './utility';
 import { magicBytes, protocols } from './constants';
 
 interface ModuleOptions {
@@ -30,6 +30,11 @@ interface Operation {
   storage_limit?: number | string;
   parameters?: Micheline;
   balance?: number | string;
+  credit?: number | string;
+  threshold?: number;
+  consensus_key?: string;
+  owner_keys?: string[];
+  version?: string;
   spendable?: boolean;
   delegatable?: boolean;
   delegate?: string;
@@ -107,6 +112,10 @@ interface ConstructedOperation {
   storage_limit: string;
   parameters: string;
   balance: string;
+  credit: string;
+  threshold: number;
+  consensus_key: string;
+  owner_keys: string[];
   spendable: boolean;
   delegatable: boolean;
   delegate: string;
@@ -223,6 +232,8 @@ interface Signed {
   sbytes: string;
 }
 
+const DEFAULT_FEE = 1420;
+
 /**
  * Main Sotez Library
  *
@@ -254,11 +265,12 @@ export class Sotez extends AbstractTezModule {
     options: ModuleOptions = {},
   ) {
     super(provider, chain, options.debugMode);
-    this._defaultFee = options.defaultFee || 1420;
     this._localForge = options.localForge !== false;
     this._validateLocalForge = options.validateLocalForge || false;
     this._debugMode = options.debugMode || false;
     this._useMutez = options.useMutez !== false;
+    this._defaultFee =
+      options.defaultFee || (this._useMutez ? DEFAULT_FEE : totez(DEFAULT_FEE));
     this._counters = {};
   }
 
@@ -387,15 +399,16 @@ export class Sotez extends AbstractTezModule {
       spendable?: boolean;
       delegatable?: boolean;
       delegate?: string;
-    } = {};
-    if (typeof spendable !== 'undefined') params.spendable = spendable;
-    if (typeof delegatable !== 'undefined') params.delegatable = delegatable;
-    if (delegate) params.delegate = delegate;
+    } = {
+      ...{ spendable: spendable ?? undefined },
+      ...{ delegatable: delegatable ?? undefined },
+      ...{ delegate: delegate ?? undefined },
+    };
 
     const operation: Operation[] = [
       {
         kind: 'origination',
-        balance: this.useMutez ? balance : mutez(balance),
+        balance,
         fee,
         gas_limit: gasLimit,
         storage_limit: storageLimit,
@@ -698,7 +711,14 @@ export class Sotez extends AbstractTezModule {
     const publicKeyHash = source || this.key.publicKeyHash();
 
     for (let i = 0; i < ops.length; i++) {
-      if (['transaction', 'origination', 'delegation'].includes(ops[i].kind)) {
+      if (
+        [
+          'transaction',
+          'origination',
+          'delegation',
+          'baker_registration',
+        ].includes(ops[i].kind)
+      ) {
         requiresReveal = true;
         promises.push(this.getManager(publicKeyHash));
         promises.push(this.getCounter(publicKeyHash));
@@ -720,7 +740,7 @@ export class Sotez extends AbstractTezModule {
           if (!managerKey) {
             const reveal: Operation = {
               kind: 'reveal',
-              fee: 1420,
+              fee: this.defaultFee,
               public_key: this.key.publicKey(),
               source: publicKeyHash,
               gas_limit: 10600,
@@ -755,39 +775,42 @@ export class Sotez extends AbstractTezModule {
                 'transaction',
                 'origination',
                 'delegation',
+                'baker_registration',
               ].includes(op.kind)
             ) {
-              if (typeof op.source === 'undefined')
-                constructedOp.source = publicKeyHash;
+              constructedOp.source ||= publicKeyHash;
             }
+
             if (
-              ['reveal', 'transaction', 'origination', 'delegation'].includes(
-                op.kind,
-              )
+              [
+                'reveal',
+                'transaction',
+                'origination',
+                'delegation',
+                'baker_registration',
+              ].includes(op.kind)
             ) {
-              if (typeof op.fee === 'undefined') {
-                constructedOp.fee = '0';
-              } else {
-                constructedOp.fee = `${op.fee}`;
-              }
-              if (typeof op.gas_limit === 'undefined') {
-                constructedOp.gas_limit = '0';
-              } else {
-                constructedOp.gas_limit = `${op.gas_limit}`;
-              }
-              if (typeof op.storage_limit === 'undefined') {
-                constructedOp.storage_limit = '0';
-              } else {
-                constructedOp.storage_limit = `${op.storage_limit}`;
-              }
-              if (typeof op.balance !== 'undefined')
-                constructedOp.balance = `${constructedOp.balance}`;
-              if (typeof op.amount !== 'undefined')
-                constructedOp.amount = `${constructedOp.amount}`;
-              if (!skipCounter) {
-                constructedOp.counter = `${++this._counters[publicKeyHash]}`;
-              } else {
+              const fee = `${op.fee ?? this.defaultFee}`;
+              constructedOp.fee = this.useMutez ? fee : mutez(fee);
+              constructedOp.gas_limit = `${op.gas_limit ?? 0}`;
+              constructedOp.storage_limit = `${op.storage_limit ?? 0}`;
+
+              constructedOp.balance &&= this.useMutez
+                ? `${constructedOp.balance}`
+                : mutez(constructedOp.balance);
+
+              constructedOp.amount &&= this.useMutez
+                ? `${constructedOp.amount}`
+                : mutez(constructedOp.amount);
+
+              constructedOp.credit &&= this.useMutez
+                ? `${constructedOp.credit}`
+                : mutez(constructedOp.credit);
+
+              if (skipCounter) {
                 constructedOp.counter = `${++opCounter}`;
+              } else {
+                constructedOp.counter = `${++this._counters[publicKeyHash]}`;
               }
             }
 
@@ -1027,7 +1050,7 @@ export class Sotez extends AbstractTezModule {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      amount: this.useMutez ? amount : mutez(amount),
+      amount,
       destination: to,
     };
     if (parameters) {
@@ -1116,11 +1139,12 @@ export class Sotez extends AbstractTezModule {
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
-      balance: this.useMutez ? balance : mutez(balance),
+      balance,
       manager_pubkey: publicKeyHash,
       spendable,
       delegatable,
       script,
+      version: '1',
     };
 
     if (delegate) {
@@ -1153,13 +1177,14 @@ export class Sotez extends AbstractTezModule {
     gasLimit?: number;
     storageLimit?: number;
   }): Promise<any> => {
-    const operation = {
+    const operation: Operation = {
       kind: 'delegation',
       source,
       fee,
       gas_limit: gasLimit,
       storage_limit: storageLimit,
       delegate,
+      version: '1',
     };
     return this.sendOperation({
       operation: [operation],
@@ -1168,6 +1193,53 @@ export class Sotez extends AbstractTezModule {
   };
 
   /**
+   * @description Register a new baker account
+   * @param {Object} paramObject The parameters for the operation
+   * @param {number} paramObject.credit The initial balance to credit for the new baker account
+   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
+   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [paramObject.threshold=1] The threshold for the multisig baker account
+   * @param {string} [paramObject.consensusKey=this.key.publicKeyHash()] The consensus key for the baker account
+   * @param {string} [paramObject.ownerKeys=[this.key.publicKey()]] Owner keys for the baker account
+   * @param {string} [paramObject.source=this.key.publicKeyHash()] The source public key hash
+   * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
+   * @returns {Promise} Object containing the injected operation hash
+   */
+  registerBaker = async ({
+    credit,
+    threshold = 1,
+    consensusKey = this.key.publicKey(),
+    ownerKeys = [this.key.publicKey()],
+    source = this.key.publicKeyHash(),
+    fee = this.defaultFee,
+    gasLimit = 10600,
+    storageLimit = 350,
+  }: {
+    credit: number;
+    threshold?: number;
+    consensusKey?: string;
+    ownerKeys?: string[];
+    source?: string;
+    fee?: number;
+    gasLimit?: number;
+    storageLimit?: number;
+  }): Promise<any> => {
+    const operation: Operation = {
+      kind: 'baker_registration',
+      credit,
+      threshold,
+      consensus_key: consensusKey,
+      owner_keys: ownerKeys,
+      source,
+      fee,
+      gas_limit: gasLimit,
+      storage_limit: storageLimit,
+    };
+    return this.sendOperation({ operation: [operation] });
+  };
+
+  /**
+   * @deprecated Use 'registerBaker' in order to create new baking accounts
    * @description Register an account as a delegate
    * @param {Object} paramObject The parameters for the operation
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
@@ -1338,17 +1410,18 @@ export class Sotez extends AbstractTezModule {
       return null;
     }
     const protocolMap = {
-      [`${protocols['001']}`]: manager.key,
-      [`${protocols['002']}`]: manager.key,
-      [`${protocols['003']}`]: manager.key,
-      [`${protocols['004']}`]: manager.key,
-      [`${protocols['005a']}`]: manager,
-      [`${protocols['005']}`]: manager,
-      [`${protocols['006']}`]: manager,
-      [`${protocols['007a']}`]: manager,
-      [`${protocols['007']}`]: manager,
-      [`${protocols['008a']}`]: manager,
-      [`${protocols['008']}`]: manager,
+      [protocols['001']]: manager.key,
+      [protocols['002']]: manager.key,
+      [protocols['003']]: manager.key,
+      [protocols['004']]: manager.key,
+      [protocols['005a']]: manager,
+      [protocols['005']]: manager,
+      [protocols['006']]: manager,
+      [protocols['007a']]: manager,
+      [protocols['007']]: manager,
+      [protocols['008a']]: manager,
+      [protocols['008']]: manager,
+      [protocols['009a']]: manager,
     };
     if (!protocolMap[protocol]) {
       throw new Error(`Unrecognized protocol: ${protocol}`);
@@ -1379,17 +1452,18 @@ export class Sotez extends AbstractTezModule {
     };
 
     const protocolMap = {
-      [`${protocols['001']}`]: constructOp001,
-      [`${protocols['002']}`]: constructOp001,
-      [`${protocols['003']}`]: constructOp001,
-      [`${protocols['004']}`]: constructOp001,
-      [`${protocols['005a']}`]: constructOp005,
-      [`${protocols['005']}`]: constructOp005,
-      [`${protocols['006']}`]: constructOp005,
-      [`${protocols['007a']}`]: constructOp005,
-      [`${protocols['007']}`]: constructOp005,
-      [`${protocols['008a']}`]: constructOp005,
-      [`${protocols['008']}`]: constructOp005,
+      [protocols['001']]: constructOp001,
+      [protocols['002']]: constructOp001,
+      [protocols['003']]: constructOp001,
+      [protocols['004']]: constructOp001,
+      [protocols['005a']]: constructOp005,
+      [protocols['005']]: constructOp005,
+      [protocols['006']]: constructOp005,
+      [protocols['007a']]: constructOp005,
+      [protocols['007']]: constructOp005,
+      [protocols['008a']]: constructOp005,
+      [protocols['008']]: constructOp005,
+      [protocols['009a']]: constructOp005,
     };
 
     return protocolMap[nextProtocol](constructedOp);

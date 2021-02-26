@@ -4,6 +4,7 @@ interface Prefix {
   tz2: Uint8Array;
   tz3: Uint8Array;
   KT: Uint8Array;
+  SG1: Uint8Array;
 
   edpk: Uint8Array;
   edsk2: Uint8Array;
@@ -45,6 +46,7 @@ export const prefix: Prefix = {
   tz2: new Uint8Array([6, 161, 161]),
   tz3: new Uint8Array([6, 161, 164]),
   KT: new Uint8Array([2, 90, 121]),
+  SG1: new Uint8Array([3, 56, 226]),
 
   edsk: new Uint8Array([43, 246, 78, 7]),
   edsk2: new Uint8Array([13, 15, 58, 7]),
@@ -302,6 +304,22 @@ const forgeOpTags: { [key: string]: { [key: string]: number } } = {
     origination: 109,
     delegation: 110,
   },
+  '009': {
+    endorsement: 0,
+    seed_nonce_revelation: 1,
+    double_endorsement_evidence: 2,
+    double_baking_evidence: 3,
+    activate_account: 4,
+    proposals: 5,
+    ballot: 6,
+    endorsement_with_slot: 10,
+    failing_noop: 17,
+    reveal: 107,
+    transaction: 108,
+    baker_registration: 111,
+    origination: 209,
+    delegation: 210,
+  },
 };
 
 /* eslint-disable */
@@ -344,6 +362,7 @@ export const protocols = {
   '007': 'PsDELPH1Kxsxt8f9eWbxQeRxkjfbxoqM52jvs5Y5fBxWWh4ifpo',
   '008a': 'PtEdoTezd3RHSC31mpxxo1npxFjoWWcFgQtxapi51Z8TLu6v6Uq',
   '008': 'PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA',
+  '009a': 'PsrsRVg1Gycjn5LvMtoYSQah1znvYmGp8bHLxwYLBZaYFf2CEkV',
 };
 
 export default {

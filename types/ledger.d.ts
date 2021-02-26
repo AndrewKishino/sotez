@@ -1,21 +1,21 @@
 interface LedgerGetAddress {
-  transport: any;
-  path?: string;
-  displayConfirm?: boolean;
-  curve?: string;
+    transport: any;
+    path?: string;
+    displayConfirm?: boolean;
+    curve?: string;
 }
 interface LedgerSignOperation {
-  transport: any;
-  path?: string;
-  rawTxHex: string;
-  curve?: string;
-  magicBytes?: Uint8Array;
+    transport: any;
+    path?: string;
+    rawTxHex: string;
+    curve?: string;
+    magicBytes?: Uint8Array;
 }
 interface LedgerGetVersion {
-  major: number;
-  minor: number;
-  patch: number;
-  bakingApp: boolean;
+    major: number;
+    minor: number;
+    patch: number;
+    bakingApp: boolean;
 }
 /**
  * @description Get the public key and public key hash from the ledger
@@ -33,14 +33,9 @@ interface LedgerGetVersion {
  *   curve = 'tz1',
  * }).then(({ address, publicKey }) => console.log(address, publicKey));
  */
-export declare const getAddress: ({
-  transport,
-  path,
-  displayConfirm,
-  curve,
-}: LedgerGetAddress) => Promise<{
-  address: string;
-  publicKey: string;
+export declare const getAddress: ({ transport, path, displayConfirm, curve, }: LedgerGetAddress) => Promise<{
+    address: string;
+    publicKey: string;
 }>;
 /**
  * @description Sign an operation with the ledger
@@ -58,13 +53,7 @@ export declare const getAddress: ({
  *   curve = 'tz1',
  * }).then((signature) => console.log(signature));
  */
-export declare const signOperation: ({
-  transport,
-  path,
-  rawTxHex,
-  curve,
-  magicBytes,
-}: LedgerSignOperation) => Promise<string>;
+export declare const signOperation: ({ transport, path, rawTxHex, curve, magicBytes, }: LedgerSignOperation) => Promise<string>;
 /**
  * @description Show the version of the ledger
  * @param {LedgerTransport} transport The parameters of the signOperation function
@@ -75,22 +64,11 @@ export declare const signOperation: ({
  */
 export declare const getVersion: (transport: any) => Promise<LedgerGetVersion>;
 declare const _default: {
-  getAddress: ({
-    transport,
-    path,
-    displayConfirm,
-    curve,
-  }: LedgerGetAddress) => Promise<{
-    address: string;
-    publicKey: string;
-  }>;
-  signOperation: ({
-    transport,
-    path,
-    rawTxHex,
-    curve,
-    magicBytes,
-  }: LedgerSignOperation) => Promise<string>;
-  getVersion: (transport: any) => Promise<LedgerGetVersion>;
+    getAddress: ({ transport, path, displayConfirm, curve, }: LedgerGetAddress) => Promise<{
+        address: string;
+        publicKey: string;
+    }>;
+    signOperation: ({ transport, path, rawTxHex, curve, magicBytes, }: LedgerSignOperation) => Promise<string>;
+    getVersion: (transport: any) => Promise<LedgerGetVersion>;
 };
 export default _default;

@@ -15,10 +15,6 @@ interface ConstructedOperation {
     storage_limit: string;
     parameters: string;
     balance: string;
-    credit: string;
-    consensus_key: string;
-    threshold: number;
-    owner_keys: string[];
     spendable: boolean;
     delegatable: boolean;
     delegate: string;
@@ -145,11 +141,10 @@ export declare const publicKeyHash: (pkh: string) => string;
 /**
  * @description Forge address bytes
  * @param {string} addressArg Address to forge
- * @param {string} [protocol=''] Current protocol
+ * @param {string} [skipType=false] Whether to skip the address type byte
  * @returns {string} Forged address bytes
  */
-export declare const address: (addressArg: string, protocol?: string) => string;
-export declare const bakerHash: (baker: string) => string;
+export declare const address: (addressArg: string, skipType?: boolean) => string;
 /**
  * @description Forge zarith bytes
  * @param {number} n Zarith to forge
@@ -211,10 +206,9 @@ export declare const ballot: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge reveal operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export declare const reveal: (opArg: ConstructedOperation, protocol: string) => string;
+export declare const reveal: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge transaction operation bytes
  * @param {Object} opArg Operation to forge
@@ -232,17 +226,9 @@ export declare const origination: (opArg: ConstructedOperation, protocol: string
 /**
  * @description Forge delegation operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export declare const delegation: (opArg: ConstructedOperation, protocol: string) => string;
-/**
- * @description Forge baker registration operation bytes
- * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
- * @returns {string} Forged operation bytes
- */
-export declare const bakerRegistration: (opArg: ConstructedOperation, protocol: string) => string;
+export declare const delegation: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge operation bytes
  * @param {Object} opOb The operation object(s)
@@ -278,7 +264,7 @@ export declare const decodeRawBytes: (bytes: string) => Micheline;
  */
 export declare const encodeRawBytes: (input: Micheline) => string;
 declare const _default: {
-    address: (addressArg: string, protocol?: string) => string;
+    address: (addressArg: string, skipType?: boolean) => string;
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
@@ -290,10 +276,10 @@ declare const _default: {
     activateAccount: (opArg: ConstructedOperation) => string;
     proposals: () => string;
     ballot: (opArg: ConstructedOperation) => string;
-    reveal: (opArg: ConstructedOperation, protocol: string) => string;
+    reveal: (opArg: ConstructedOperation) => string;
     transaction: (opArg: ConstructedOperation, protocol: string) => string;
     origination: (opArg: ConstructedOperation, protocol: string) => string;
-    delegation: (opArg: ConstructedOperation, protocol: string) => string;
+    delegation: (opArg: ConstructedOperation) => string;
     parameters: (parameter: any, protocol: string) => string;
     publicKey: (pk: string) => string;
     publicKeyHash: (pkh: string) => string;

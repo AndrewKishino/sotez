@@ -65,8 +65,8 @@ Check for the inclusion of an operation in new blocks
 ### Parameters
 
 -   `hash` **[string][2]** The operation hash to check
--   `interval` **[number][3]** The interval to check new blocks (optional, default `10`)
--   `timeout` **[number][3]** The time before the operation times out (optional, default `180`)
+-   `interval` **[number][3]** The interval to check new blocks (in seconds) (optional, default `10`)
+-   `timeout` **[number][3]** The time before the operation times out (in seconds) (optional, default `180`)
 
 ### Examples
 
@@ -76,6 +76,17 @@ sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
 ```
 
 Returns **[Promise][5]** The hash of the block in which the operation was included
+
+## estimateLimits
+
+Given operation objects, return the operations with their estimated limits
+
+### Parameters
+
+-   `operation` **([Object][1] \| [Array][6])** The operation object or list of objects
+-   `prependReveal` **[string][2]** Whether a reveal operation is prepended (optional, default `false`)
+
+Returns **[Promise][5]** The operations with populated limits
 
 ## getBaker
 
@@ -348,7 +359,7 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][6])
+-   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][7])
 -   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
 -   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
@@ -442,7 +453,8 @@ Prepares an operation
 -   `paramObject` **[Object][1]** The parameters for the operation
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
-    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
+    -   `paramObject.skipEstimate` **[boolean][4]** Skip the estimator if enabled
+    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
 
 ### Examples
 
@@ -461,25 +473,6 @@ sotez.prepareOperation({
 
 Returns **[Promise][5]** Object containing the prepared operation
 
-## registerBaker
-
-Register a new baker account
-
-### Parameters
-
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.credit` **[number][3]** The initial balance to credit for the new baker account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.threshold` **[number][3]** The threshold for the multisig baker account (optional, default `1`)
-    -   `paramObject.consensusKey` **[string][2]** The consensus key for the baker account (optional, default `this.key.publicKeyHash()`)
-    -   `paramObject.ownerKeys` **[string][2]** Owner keys for the baker account (optional, default `[this.key.publicKey()]`)
-    -   `paramObject.source` **[string][2]** The source public key hash (optional, default `this.key.publicKeyHash()`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
-
-Returns **[Promise][5]** Object containing the injected operation hash
-
 ## registerDelegate
 
 Register an account as a delegate
@@ -493,11 +486,6 @@ Register an account as a delegate
     -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
-
-**Meta**
-
--   **deprecated**: Use 'registerBaker' in order to create new baking accounts
-
 
 ## runCode
 
@@ -521,7 +509,7 @@ Send an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
+    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
     -   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
     -   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
@@ -579,8 +567,9 @@ Simulate an operation
 
 -   `_a`  
 -   `paramObject` **[Object][1]** The parameters for the operation
+    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
     -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][7])** The operation to include in the transaction
+    -   `paramObject.skipEstimate` **[boolean][4]?** The operation to include in the transaction
 
 ### Examples
 
@@ -605,15 +594,14 @@ Transfer operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.to` **[string][2]** The address of the recipient
-    -   `paramObject.amount` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `paramObject.source` **[string][2]?** The source address of the transfer
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.parameters` **[string][2]?** The parameter for the transaction
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
+-   `transferParams` **([Object][1] \| [Array][6])** The parameters for the operation
+    -   `transferParams.to` **[string][2]** The address of the recipient
+    -   `transferParams.amount` **[number][3]** The amount in tez to transfer for the initial balance
+    -   `transferParams.source` **[string][2]?** The source address of the transfer
+    -   `transferParams.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    -   `transferParams.parameters` **[string][2]?** The parameter for the transaction
+    -   `transferParams.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    -   `transferParams.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
 
 ### Examples
 
@@ -677,6 +665,6 @@ sotez.transfer({
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[6]: https://github.com/LedgerHQ/ledgerjs
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[7]: https://github.com/LedgerHQ/ledgerjs

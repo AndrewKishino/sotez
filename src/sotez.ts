@@ -11,6 +11,7 @@ interface ModuleOptions {
   validateLocalForge?: boolean;
   debugMode?: boolean;
   useMutez?: boolean;
+  dryRunLimiter?: boolean;
 }
 
 interface Operation {
@@ -30,11 +31,6 @@ interface Operation {
   storage_limit?: number | string;
   parameters?: Micheline;
   balance?: number | string;
-  credit?: number | string;
-  threshold?: number;
-  consensus_key?: string;
-  owner_keys?: string[];
-  version?: string;
   spendable?: boolean;
   delegatable?: boolean;
   delegate?: string;
@@ -112,10 +108,6 @@ interface ConstructedOperation {
   storage_limit: string;
   parameters: string;
   balance: string;
-  credit: string;
-  threshold: number;
-  consensus_key: string;
-  owner_keys: string[];
   spendable: boolean;
   delegatable: boolean;
   delegate: string;
@@ -202,6 +194,7 @@ interface OperationParams {
   skipPrevalidation?: boolean;
   skipSignature?: boolean;
   skipCounter?: boolean;
+  skipEstimate?: boolean;
 }
 
 interface ContractParams {
@@ -257,6 +250,8 @@ export class Sotez extends AbstractTezModule {
 
   _useMutez: boolean;
 
+  _dryRunLimiter: boolean;
+
   key: Key;
 
   constructor(
@@ -269,6 +264,7 @@ export class Sotez extends AbstractTezModule {
     this._validateLocalForge = options.validateLocalForge || false;
     this._debugMode = options.debugMode || false;
     this._useMutez = options.useMutez !== false;
+    this._dryRunLimiter = options.dryRunLimiter || false;
     this._defaultFee =
       options.defaultFee || (this._useMutez ? DEFAULT_FEE : totez(DEFAULT_FEE));
     this._counters = {};
@@ -320,6 +316,14 @@ export class Sotez extends AbstractTezModule {
 
   set useMutez(t: boolean) {
     this._useMutez = t;
+  }
+
+  get dryRunLimiter(): boolean {
+    return this._dryRunLimiter;
+  }
+
+  set dryRunLimiter(t: boolean) {
+    this._dryRunLimiter = t;
   }
 
   setProvider(provider: string, chain: string = this.chain): void {
@@ -400,22 +404,21 @@ export class Sotez extends AbstractTezModule {
       delegatable?: boolean;
       delegate?: string;
     } = {
-      ...{ spendable: spendable ?? undefined },
-      ...{ delegatable: delegatable ?? undefined },
-      ...{ delegate: delegate ?? undefined },
+      ...(spendable ? { spendable } : {}),
+      ...(delegatable ? { delegatable } : {}),
+      ...(delegate ? { delegate } : {}),
     };
 
-    const operation: Operation[] = [
-      {
-        kind: 'origination',
-        balance,
-        fee,
-        gas_limit: gasLimit,
-        storage_limit: storageLimit,
-        manager_pubkey: this.key.publicKeyHash(),
-        ...params,
-      },
-    ];
+    const operation: Operation = {
+      kind: 'origination',
+      balance,
+      fee,
+      manager_pubkey: this.key.publicKeyHash(),
+      ...(gasLimit ? { gas_limit: gasLimit } : {}),
+      ...(storageLimit ? { storage_limit: storageLimit } : {}),
+      ...(delegatable ? { delegatable } : {}),
+      ...params,
+    };
 
     return this.sendOperation({ operation });
   };
@@ -616,8 +619,8 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Check for the inclusion of an operation in new blocks
    * @param {string} hash The operation hash to check
-   * @param {number} [interval=10] The interval to check new blocks
-   * @param {number} [timeout=180] The time before the operation times out
+   * @param {number} [interval=10] The interval to check new blocks (in seconds)
+   * @param {number} [timeout=180] The time before the operation times out (in seconds)
    * @returns {Promise} The hash of the block in which the operation was included
    * @example
    * sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
@@ -628,6 +631,10 @@ export class Sotez extends AbstractTezModule {
     interval = 10,
     timeout = 180,
   ): Promise<string> => {
+    if (!hash) {
+      throw new Error('No operation hash provided to awaitOperation');
+    }
+
     if (timeout <= 0) {
       throw new Error('Timeout must be more than 0');
     }
@@ -673,6 +680,7 @@ export class Sotez extends AbstractTezModule {
    * @param {Object} paramObject The parameters for the operation
    * @param {string} [paramObject.source] The source address of the operation
    * @param {boolean} paramObject.skipCounter Skip incrementing the counter within sotez
+   * @param {boolean} paramObject.skipEstimate Skip the estimator if enabled
    * @param {Object | Array} paramObject.operation The operation to include in the transaction
    * @returns {Promise} Object containing the prepared operation
    * @example
@@ -691,33 +699,35 @@ export class Sotez extends AbstractTezModule {
     operation,
     source,
     skipCounter = false,
+    skipEstimate = false,
   }: OperationParams): Promise<ForgedBytes> => {
     let counter: number;
     const opOb: OperationObject = {};
     const promises: any[] = [];
     let requiresReveal = false;
-    let ops: Operation[] = [];
+    let prependReveal = false;
+    let preOps: Operation[] = [];
     let head: Header;
 
     promises.push(this.getHeader());
     promises.push(this.getHeadMetadata());
 
     if (Array.isArray(operation)) {
-      ops = [...operation];
+      preOps = [...operation];
     } else {
-      ops = [operation];
+      preOps = [operation];
     }
 
     const publicKeyHash = source || this.key.publicKeyHash();
 
-    for (let i = 0; i < ops.length; i++) {
+    for (let i = 0; i < preOps.length; i++) {
       if (
         [
           'transaction',
           'origination',
           'delegation',
           'baker_registration',
-        ].includes(ops[i].kind)
+        ].includes(preOps[i].kind)
       ) {
         requiresReveal = true;
         promises.push(this.getManager(publicKeyHash));
@@ -737,26 +747,32 @@ export class Sotez extends AbstractTezModule {
 
         if (requiresReveal) {
           const managerKey = this.getManagerKey(manager, metadata.protocol);
-          if (!managerKey) {
-            const reveal: Operation = {
+          if (!managerKey && preOps.every((op) => op.kind !== 'reveal')) {
+            preOps.unshift({
               kind: 'reveal',
               fee: this.defaultFee,
               public_key: this.key.publicKey(),
               source: publicKeyHash,
               gas_limit: 10600,
               storage_limit: 300,
-            };
-
-            ops.unshift(reveal);
+            });
+            prependReveal = true;
           }
         }
 
         counter = parseInt(headCounter, 10);
+
         if (
           !this._counters[publicKeyHash] ||
           this._counters[publicKeyHash] < counter
         ) {
           this._counters[publicKeyHash] = counter;
+        }
+
+        let ops = preOps;
+
+        if (this.dryRunLimiter && !skipEstimate) {
+          ops = await this.estimateLimits(preOps, prependReveal);
         }
 
         const constructOps = (cOps: Operation[]): ConstructedOperation[] => {
@@ -775,37 +791,32 @@ export class Sotez extends AbstractTezModule {
                 'transaction',
                 'origination',
                 'delegation',
-                'baker_registration',
               ].includes(op.kind)
             ) {
               constructedOp.source ||= publicKeyHash;
             }
 
             if (
-              [
-                'reveal',
-                'transaction',
-                'origination',
-                'delegation',
-                'baker_registration',
-              ].includes(op.kind)
+              ['reveal', 'transaction', 'origination', 'delegation'].includes(
+                op.kind,
+              )
             ) {
               const fee = `${op.fee ?? this.defaultFee}`;
               constructedOp.fee = this.useMutez ? fee : mutez(fee);
               constructedOp.gas_limit = `${op.gas_limit ?? 0}`;
               constructedOp.storage_limit = `${op.storage_limit ?? 0}`;
 
-              constructedOp.balance &&= this.useMutez
-                ? `${constructedOp.balance}`
-                : mutez(constructedOp.balance);
+              if (typeof op.balance !== 'undefined') {
+                constructedOp.balance = this.useMutez
+                  ? `${op.balance}`
+                  : mutez(op.balance);
+              }
 
-              constructedOp.amount &&= this.useMutez
-                ? `${constructedOp.amount}`
-                : mutez(constructedOp.amount);
-
-              constructedOp.credit &&= this.useMutez
-                ? `${constructedOp.credit}`
-                : mutez(constructedOp.credit);
+              if (typeof op.amount !== 'undefined') {
+                constructedOp.amount = this.useMutez
+                  ? `${op.amount}`
+                  : mutez(op.amount);
+              }
 
               if (skipCounter) {
                 constructedOp.counter = `${++opCounter}`;
@@ -869,8 +880,9 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Simulate an operation
    * @param {Object} paramObject The parameters for the operation
+   * @param {Object|Array} paramObject.operation The operation to include in the transaction
    * @param {string} [paramObject.source] The source address of the operation
-   * @param {Object | Array} paramObject.operation The operation to include in the transaction
+   * @param {boolean} [paramObject.skipEstimate] The operation to include in the transaction
    * @returns {Promise} The simulated operation result
    * @example
    * sotez.simulateOperation({
@@ -884,21 +896,28 @@ export class Sotez extends AbstractTezModule {
    *   },
    * }).then(result => console.log(result));
    */
-  simulateOperation = ({ operation, source }: OperationParams): Promise<any> =>
-    this.prepareOperation({ operation, source, skipCounter: true }).then(
-      (fullOp) => {
-        delete fullOp.opOb.protocol;
-        fullOp.opOb.signature =
-          'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
-        return this.query(
-          `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
-          {
-            chain_id: fullOp.chainId,
-            operation: fullOp.opOb,
-          },
-        );
-      },
-    );
+  simulateOperation = ({
+    operation,
+    source,
+    skipEstimate,
+  }: OperationParams): Promise<any> =>
+    this.prepareOperation({
+      operation,
+      source,
+      skipCounter: true,
+      skipEstimate,
+    }).then((fullOp) => {
+      delete fullOp.opOb.protocol;
+      fullOp.opOb.signature =
+        'edsigtXomBKi5CTRf5cjATJWSyaRvhfYNHqSUGrn4SdbYRcGwQrUGjzEfQDTuqHhuA8b2d8NarZjz8TRf65WkpQmo423BtomS8Q';
+      return this.query(
+        `/chains/${this.chain}/blocks/head/helpers/scripts/run_operation`,
+        {
+          chain_id: fullOp.chainId,
+          operation: fullOp.opOb,
+        },
+      );
+    });
 
   /**
    * @description Send an operation
@@ -1020,14 +1039,14 @@ export class Sotez extends AbstractTezModule {
 
   /**
    * @description Transfer operation
-   * @param {Object} paramObject The parameters for the operation
-   * @param {string} paramObject.to The address of the recipient
-   * @param {number} paramObject.amount The amount in tez to transfer for the initial balance
-   * @param {string} [paramObject.source] The source address of the transfer
-   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {string} [paramObject.parameters] The parameter for the transaction
-   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {number} [paramObject.storageLimit=300] The storage limit to set for the transaction
+   * @param {Object|Array} transferParams The parameters for the operation
+   * @param {string} transferParams.to The address of the recipient
+   * @param {number} transferParams.amount The amount in tez to transfer for the initial balance
+   * @param {string} [transferParams.source] The source address of the transfer
+   * @param {number} [transferParams.fee=1420] The fee to set for the transaction
+   * @param {string} [transferParams.parameters] The parameter for the transaction
+   * @param {number} [transferParams.gasLimit=10600] The gas limit to set for the transaction
+   * @param {number} [transferParams.storageLimit=300] The storage limit to set for the transaction
    * @returns {Promise} Object containing the injected operation hash
    * @example
    * sotez.transfer({
@@ -1036,33 +1055,45 @@ export class Sotez extends AbstractTezModule {
    *   fee: 1420,
    * }).then(result => console.log(result));
    */
-  transfer = ({
-    to,
-    amount,
-    source,
-    fee = this.defaultFee,
-    parameters,
-    gasLimit = 10600,
-    storageLimit = 300,
-  }: RpcParams): Promise<any> => {
-    const operation: Operation = {
-      kind: 'transaction',
-      fee,
-      gas_limit: gasLimit,
-      storage_limit: storageLimit,
-      amount,
-      destination: to,
-    };
-    if (parameters) {
-      if (typeof parameters === 'string') {
-        operation.parameters = sexp2mic(parameters);
-      } else {
-        operation.parameters = parameters;
-      }
-    }
+  transfer = async (transferParams: RpcParams | RpcParams[]): Promise<any> => {
+    const transfers = Array.isArray(transferParams)
+      ? [...transferParams]
+      : [transferParams];
+
+    const operations: Operation[] = transfers.map(
+      ({
+        to,
+        amount,
+        source,
+        fee,
+        gasLimit,
+        storageLimit,
+        parameters,
+      }): Operation => {
+        const op: Operation = {
+          kind: 'transaction',
+          destination: to,
+          amount,
+          fee,
+          ...(source ? { source } : {}),
+          ...(gasLimit ? { gas_limit: gasLimit } : {}),
+          ...(storageLimit ? { storage_limit: storageLimit } : {}),
+        };
+
+        if (parameters) {
+          if (typeof parameters === 'string') {
+            op.parameters = sexp2mic(parameters);
+          } else {
+            op.parameters = parameters;
+          }
+        }
+
+        return op;
+      },
+    );
+
     return this.sendOperation({
-      operation: [operation],
-      source,
+      operation: operations,
     });
   };
 
@@ -1137,21 +1168,20 @@ export class Sotez extends AbstractTezModule {
     const operation: Operation = {
       kind: 'origination',
       fee,
-      gas_limit: gasLimit,
-      storage_limit: storageLimit,
       balance,
       manager_pubkey: publicKeyHash,
       spendable,
       delegatable,
       script,
-      version: '1',
+      ...(gasLimit ? { gas_limit: gasLimit } : {}),
+      ...(storageLimit ? { storage_limit: storageLimit } : {}),
     };
 
     if (delegate) {
       operation.delegate = delegate;
     }
 
-    return this.sendOperation({ operation: [operation] });
+    return this.sendOperation({ operation });
   };
 
   /**
@@ -1181,65 +1211,18 @@ export class Sotez extends AbstractTezModule {
       kind: 'delegation',
       source,
       fee,
-      gas_limit: gasLimit,
-      storage_limit: storageLimit,
       delegate,
-      version: '1',
+      ...(gasLimit ? { gas_limit: gasLimit } : {}),
+      ...(storageLimit ? { storage_limit: storageLimit } : {}),
     };
+
     return this.sendOperation({
-      operation: [operation],
+      operation,
       source,
     });
   };
 
   /**
-   * @description Register a new baker account
-   * @param {Object} paramObject The parameters for the operation
-   * @param {number} paramObject.credit The initial balance to credit for the new baker account
-   * @param {number} [paramObject.fee=1420] The fee to set for the transaction
-   * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-   * @param {number} [paramObject.threshold=1] The threshold for the multisig baker account
-   * @param {string} [paramObject.consensusKey=this.key.publicKeyHash()] The consensus key for the baker account
-   * @param {string} [paramObject.ownerKeys=[this.key.publicKey()]] Owner keys for the baker account
-   * @param {string} [paramObject.source=this.key.publicKeyHash()] The source public key hash
-   * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
-   * @returns {Promise} Object containing the injected operation hash
-   */
-  registerBaker = async ({
-    credit,
-    threshold = 1,
-    consensusKey = this.key.publicKey(),
-    ownerKeys = [this.key.publicKey()],
-    source = this.key.publicKeyHash(),
-    fee = this.defaultFee,
-    gasLimit = 10600,
-    storageLimit = 350,
-  }: {
-    credit: number;
-    threshold?: number;
-    consensusKey?: string;
-    ownerKeys?: string[];
-    source?: string;
-    fee?: number;
-    gasLimit?: number;
-    storageLimit?: number;
-  }): Promise<any> => {
-    const operation: Operation = {
-      kind: 'baker_registration',
-      credit,
-      threshold,
-      consensus_key: consensusKey,
-      owner_keys: ownerKeys,
-      source,
-      fee,
-      gas_limit: gasLimit,
-      storage_limit: storageLimit,
-    };
-    return this.sendOperation({ operation: [operation] });
-  };
-
-  /**
-   * @deprecated Use 'registerBaker' in order to create new baking accounts
    * @description Register an account as a delegate
    * @param {Object} paramObject The parameters for the operation
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
@@ -1256,14 +1239,15 @@ export class Sotez extends AbstractTezModule {
     gasLimit?: number;
     storageLimit?: number;
   } = {}): Promise<any> => {
-    const operation = {
+    const operation: Operation = {
       kind: 'delegation',
       fee,
-      gas_limit: gasLimit,
-      storage_limit: storageLimit,
       delegate: this.key.publicKeyHash(),
+      ...(gasLimit ? { gas_limit: gasLimit } : {}),
+      ...(storageLimit ? { storage_limit: storageLimit } : {}),
     };
-    return this.sendOperation({ operation: [operation] });
+
+    return this.sendOperation({ operation });
   };
 
   /**
@@ -1422,6 +1406,7 @@ export class Sotez extends AbstractTezModule {
       [protocols['008a']]: manager,
       [protocols['008']]: manager,
       [protocols['009a']]: manager,
+      [protocols['009']]: manager,
     };
     if (!protocolMap[protocol]) {
       throw new Error(`Unrecognized protocol: ${protocol}`);
@@ -1464,9 +1449,56 @@ export class Sotez extends AbstractTezModule {
       [protocols['008a']]: constructOp005,
       [protocols['008']]: constructOp005,
       [protocols['009a']]: constructOp005,
+      [protocols['009']]: constructOp005,
     };
 
     return protocolMap[nextProtocol](constructedOp);
+  };
+
+  /**
+   * @description Given operation objects, return the operations with their estimated limits
+   * @param {Object|Array} operation The operation object or list of objects
+   * @param {string} [prependReveal=false] Whether a reveal operation is prepended
+   * @returns {Promise} The operations with populated limits
+   */
+  estimateLimits = async (
+    operation: Operation | Operation[],
+    prependReveal = false,
+  ) => {
+    const operations = Array.isArray(operation) ? [...operation] : [operation];
+
+    const simulated = operations.map((op) => ({
+      ...op,
+      gas_limit: 1040000,
+      storage_limit: 60000,
+    }));
+
+    const { contents: simulatedOperations } = await this.simulateOperation({
+      operation: simulated,
+      skipEstimate: true,
+    });
+
+    if (prependReveal) {
+      simulatedOperations.shift();
+    }
+
+    return operations.map((op, index) => {
+      const {
+        metadata: {
+          operation_result: { status, consumed_gas = 0, storage_size = 0 },
+        },
+      } = simulatedOperations[index];
+
+      if (status === 'applied') {
+        return {
+          gas_limit: parseInt(consumed_gas, 10) + 100,
+          storage_limit: parseInt(storage_size, 10) + 20,
+          ...op,
+        };
+      }
+
+      return op;
+    });
   };
 
   /**

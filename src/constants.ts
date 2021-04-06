@@ -208,6 +208,7 @@ const opMapping: { [key: string]: string } = {
   '73': 'APPLY',
   '74': 'chain_id',
   '75': 'CHAIN_ID',
+  // PROTO_008
   '76': 'LEVEL',
   '77': 'SELF_ADDRESS',
   '78': 'never',
@@ -231,6 +232,7 @@ const opMapping: { [key: string]: string } = {
   '8A': 'SPLIT_TICKET',
   '8B': 'JOIN_TICKETS',
   '8C': 'GET_AND_UPDATE',
+  // PROTO_009
 };
 
 const opMappingReverse = (() => {
@@ -362,7 +364,8 @@ export const protocols = {
   '007': 'PsDELPH1Kxsxt8f9eWbxQeRxkjfbxoqM52jvs5Y5fBxWWh4ifpo',
   '008a': 'PtEdoTezd3RHSC31mpxxo1npxFjoWWcFgQtxapi51Z8TLu6v6Uq',
   '008': 'PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA',
-  '009a': 'PsrsRVg1Gycjn5LvMtoYSQah1znvYmGp8bHLxwYLBZaYFf2CEkV',
+  '009a': 'PsFLorBArSaXjuy9oP76Qv1v2FRYnUs7TFtteK5GkRBC24JvbdE',
+  '009': 'PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i',
 };
 
 export default {

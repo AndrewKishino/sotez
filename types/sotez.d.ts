@@ -7,6 +7,7 @@ interface ModuleOptions {
     validateLocalForge?: boolean;
     debugMode?: boolean;
     useMutez?: boolean;
+    dryRunLimiter?: boolean;
 }
 interface Operation {
     kind: string;
@@ -25,11 +26,6 @@ interface Operation {
     storage_limit?: number | string;
     parameters?: Micheline;
     balance?: number | string;
-    credit?: number | string;
-    threshold?: number;
-    consensus_key?: string;
-    owner_keys?: string[];
-    version?: string;
     spendable?: boolean;
     delegatable?: boolean;
     delegate?: string;
@@ -105,10 +101,6 @@ interface ConstructedOperation {
     storage_limit: string;
     parameters: string;
     balance: string;
-    credit: string;
-    threshold: number;
-    consensus_key: string;
-    owner_keys: string[];
     spendable: boolean;
     delegatable: boolean;
     delegate: string;
@@ -203,6 +195,7 @@ interface OperationParams {
     skipPrevalidation?: boolean;
     skipSignature?: boolean;
     skipCounter?: boolean;
+    skipEstimate?: boolean;
 }
 interface ContractParams {
     balance: number;
@@ -242,6 +235,7 @@ export declare class Sotez extends AbstractTezModule {
         [key: string]: number;
     };
     _useMutez: boolean;
+    _dryRunLimiter: boolean;
     key: Key;
     constructor(provider?: string, chain?: string, options?: ModuleOptions);
     get defaultFee(): number;
@@ -260,6 +254,8 @@ export declare class Sotez extends AbstractTezModule {
     set debugMode(t: boolean);
     get useMutez(): boolean;
     set useMutez(t: boolean);
+    get dryRunLimiter(): boolean;
+    set dryRunLimiter(t: boolean);
     setProvider(provider: string, chain?: string): void;
     /**
      * @description Import a secret key
@@ -453,8 +449,8 @@ export declare class Sotez extends AbstractTezModule {
     /**
      * @description Check for the inclusion of an operation in new blocks
      * @param {string} hash The operation hash to check
-     * @param {number} [interval=10] The interval to check new blocks
-     * @param {number} [timeout=180] The time before the operation times out
+     * @param {number} [interval=10] The interval to check new blocks (in seconds)
+     * @param {number} [timeout=180] The time before the operation times out (in seconds)
      * @returns {Promise} The hash of the block in which the operation was included
      * @example
      * sotez.awaitOperation('ooYf5iK6EdTx3XfBusgDqS6znACTq5469D1zQSDFNrs5KdTuUGi')
@@ -466,6 +462,7 @@ export declare class Sotez extends AbstractTezModule {
      * @param {Object} paramObject The parameters for the operation
      * @param {string} [paramObject.source] The source address of the operation
      * @param {boolean} paramObject.skipCounter Skip incrementing the counter within sotez
+     * @param {boolean} paramObject.skipEstimate Skip the estimator if enabled
      * @param {Object | Array} paramObject.operation The operation to include in the transaction
      * @returns {Promise} Object containing the prepared operation
      * @example
@@ -480,12 +477,13 @@ export declare class Sotez extends AbstractTezModule {
      *   }
      * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
      */
-    prepareOperation: ({ operation, source, skipCounter, }: OperationParams) => Promise<ForgedBytes>;
+    prepareOperation: ({ operation, source, skipCounter, skipEstimate, }: OperationParams) => Promise<ForgedBytes>;
     /**
      * @description Simulate an operation
      * @param {Object} paramObject The parameters for the operation
+     * @param {Object|Array} paramObject.operation The operation to include in the transaction
      * @param {string} [paramObject.source] The source address of the operation
-     * @param {Object | Array} paramObject.operation The operation to include in the transaction
+     * @param {boolean} [paramObject.skipEstimate] The operation to include in the transaction
      * @returns {Promise} The simulated operation result
      * @example
      * sotez.simulateOperation({
@@ -499,7 +497,7 @@ export declare class Sotez extends AbstractTezModule {
      *   },
      * }).then(result => console.log(result));
      */
-    simulateOperation: ({ operation, source }: OperationParams) => Promise<any>;
+    simulateOperation: ({ operation, source, skipEstimate, }: OperationParams) => Promise<any>;
     /**
      * @description Send an operation
      * @param {Object} paramObject The parameters for the operation
@@ -538,14 +536,14 @@ export declare class Sotez extends AbstractTezModule {
     silentInject: (sopbytes: string) => Promise<any>;
     /**
      * @description Transfer operation
-     * @param {Object} paramObject The parameters for the operation
-     * @param {string} paramObject.to The address of the recipient
-     * @param {number} paramObject.amount The amount in tez to transfer for the initial balance
-     * @param {string} [paramObject.source] The source address of the transfer
-     * @param {number} [paramObject.fee=1420] The fee to set for the transaction
-     * @param {string} [paramObject.parameters] The parameter for the transaction
-     * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-     * @param {number} [paramObject.storageLimit=300] The storage limit to set for the transaction
+     * @param {Object|Array} transferParams The parameters for the operation
+     * @param {string} transferParams.to The address of the recipient
+     * @param {number} transferParams.amount The amount in tez to transfer for the initial balance
+     * @param {string} [transferParams.source] The source address of the transfer
+     * @param {number} [transferParams.fee=1420] The fee to set for the transaction
+     * @param {string} [transferParams.parameters] The parameter for the transaction
+     * @param {number} [transferParams.gasLimit=10600] The gas limit to set for the transaction
+     * @param {number} [transferParams.storageLimit=300] The storage limit to set for the transaction
      * @returns {Promise} Object containing the injected operation hash
      * @example
      * sotez.transfer({
@@ -554,7 +552,7 @@ export declare class Sotez extends AbstractTezModule {
      *   fee: 1420,
      * }).then(result => console.log(result));
      */
-    transfer: ({ to, amount, source, fee, parameters, gasLimit, storageLimit, }: RpcParams) => Promise<any>;
+    transfer: (transferParams: RpcParams | RpcParams[]) => Promise<any>;
     /**
      * @description Activate an account
      * @param {Object} pkh The public key hash of the account
@@ -598,30 +596,6 @@ export declare class Sotez extends AbstractTezModule {
         storageLimit?: number | undefined;
     }) => Promise<any>;
     /**
-     * @description Register a new baker account
-     * @param {Object} paramObject The parameters for the operation
-     * @param {number} paramObject.credit The initial balance to credit for the new baker account
-     * @param {number} [paramObject.fee=1420] The fee to set for the transaction
-     * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
-     * @param {number} [paramObject.threshold=1] The threshold for the multisig baker account
-     * @param {string} [paramObject.consensusKey=this.key.publicKeyHash()] The consensus key for the baker account
-     * @param {string} [paramObject.ownerKeys=[this.key.publicKey()]] Owner keys for the baker account
-     * @param {string} [paramObject.source=this.key.publicKeyHash()] The source public key hash
-     * @param {number} [paramObject.storageLimit=0] The storage limit to set for the transaction
-     * @returns {Promise} Object containing the injected operation hash
-     */
-    registerBaker: ({ credit, threshold, consensusKey, ownerKeys, source, fee, gasLimit, storageLimit, }: {
-        credit: number;
-        threshold?: number | undefined;
-        consensusKey?: string | undefined;
-        ownerKeys?: string[] | undefined;
-        source?: string | undefined;
-        fee?: number | undefined;
-        gasLimit?: number | undefined;
-        storageLimit?: number | undefined;
-    }) => Promise<any>;
-    /**
-     * @deprecated Use 'registerBaker' in order to create new baking accounts
      * @description Register an account as a delegate
      * @param {Object} paramObject The parameters for the operation
      * @param {number} [paramObject.fee=1420] The fee to set for the transaction
@@ -679,6 +653,13 @@ export declare class Sotez extends AbstractTezModule {
      * @returns {string} The protocol specific operation
      */
     private _conformOperation;
+    /**
+     * @description Given operation objects, return the operations with their estimated limits
+     * @param {Object|Array} operation The operation object or list of objects
+     * @param {string} [prependReveal=false] Whether a reveal operation is prepended
+     * @returns {Promise} The operations with populated limits
+     */
+    estimateLimits: (operation: Operation | Operation[], prependReveal?: boolean) => Promise<Operation[]>;
     /**
      * @description Looks up a contract and returns an initialized contract
      * @param {Object} address The contract address

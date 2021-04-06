@@ -73,7 +73,7 @@ export declare class Key {
      * @param {Uint8Array} magicBytes The magic bytes for the operation
      * @returns {Promise} The signature object
      */
-    sign: (bytes: string, magicBytes: Uint8Array) => Promise<{
+    sign: (bytes: string, magicBytes?: Uint8Array | undefined) => Promise<{
         bytes: string;
         magicBytes: string;
         sig: string;

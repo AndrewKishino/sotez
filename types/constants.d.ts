@@ -77,6 +77,7 @@ export declare const protocols: {
     '008a': string;
     '008': string;
     '009a': string;
+    '009': string;
 };
 declare const _default: {
     prefix: Prefix;
@@ -123,6 +124,7 @@ declare const _default: {
         '008a': string;
         '008': string;
         '009a': string;
+        '009': string;
     };
 };
 export default _default;

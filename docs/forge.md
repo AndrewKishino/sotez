@@ -17,20 +17,9 @@ Forge address bytes
 ### Parameters
 
 -   `addressArg` **[string][2]** Address to forge
--   `protocol` **[string][2]** Current protocol (optional, default `''`)
+-   `skipType` **[string][2]** Whether to skip the address type byte (optional, default `false`)
 
 Returns **[string][2]** Forged address bytes
-
-## bakerRegistration
-
-Forge baker registration operation bytes
-
-### Parameters
-
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
-
-Returns **[string][2]** Forged operation bytes
 
 ## ballot
 
@@ -69,7 +58,6 @@ Forge delegation operation bytes
 ### Parameters
 
 -   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -201,7 +189,6 @@ Forge reveal operation bytes
 ### Parameters
 
 -   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 

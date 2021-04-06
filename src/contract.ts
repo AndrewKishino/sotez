@@ -318,9 +318,6 @@ export class ContractMethod {
     return {
       to: this.address,
       amount,
-      fee,
-      gasLimit,
-      storageLimit,
       parameters: {
         entrypoint: this.isMultipleEntrypoint
           ? this.name
@@ -329,6 +326,9 @@ export class ContractMethod {
           ? this.parameterSchema.Encode(this.name, ...this.args)
           : this.parameterSchema.Encode(...this.args),
       },
+      ...(fee ? { fee } : {}),
+      ...(gasLimit ? { gasLimit } : {}),
+      ...(storageLimit ? { storageLimit } : {}),
     };
   }
 }

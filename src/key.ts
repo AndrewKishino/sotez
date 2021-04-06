@@ -323,7 +323,7 @@ export class Key {
    */
   sign = async (
     bytes: string,
-    magicBytes: Uint8Array,
+    magicBytes?: Uint8Array,
   ): Promise<{
     bytes: string;
     magicBytes: string;

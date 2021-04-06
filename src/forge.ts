@@ -19,10 +19,6 @@ interface ConstructedOperation {
   storage_limit: string;
   parameters: string;
   balance: string;
-  credit: string;
-  consensus_key: string;
-  threshold: number;
-  owner_keys: string[];
   spendable: boolean;
   delegatable: boolean;
   delegate: string;
@@ -105,11 +101,12 @@ const protocolOpTagMap = {
   [protocols['008a']]: opTag005,
   [protocols['008']]: opTag005,
   [protocols['009a']]: opTag009,
+  [protocols['009']]: opTag009,
 };
 
 const origination001 = (
   o: ConstructedOperation,
-  forgedOp: Array<string>,
+  forgedOp: string[],
 ): string => {
   forgedOp.push(publicKeyHash(o.manager_pubkey));
   forgedOp.push(zarith(o.balance));
@@ -132,27 +129,12 @@ const origination001 = (
 
 const origination005 = (
   o: ConstructedOperation,
-  forgedOp: Array<string>,
+  forgedOp: string[],
 ): string => {
   forgedOp.push(zarith(o.balance));
   if (o.delegate) {
     forgedOp.push(bool(true));
     forgedOp.push(publicKeyHash(o.delegate));
-  } else {
-    forgedOp.push(bool(false));
-  }
-  forgedOp.push(script(o.script));
-  return forgedOp.join('');
-};
-
-const origination009 = (
-  o: ConstructedOperation,
-  forgedOp: Array<string>,
-): string => {
-  forgedOp.push(zarith(o.balance));
-  if (o.delegate) {
-    forgedOp.push(bool(true));
-    forgedOp.push(bakerHash(o.delegate));
   } else {
     forgedOp.push(bool(false));
   }
@@ -172,7 +154,6 @@ const protocolOriginationMap = {
   [protocols['007']]: origination005,
   [protocols['008a']]: origination005,
   [protocols['008']]: origination005,
-  [protocols['009a']]: origination009,
 };
 
 /**
@@ -257,7 +238,7 @@ export const script = (scriptArg: {
  */
 export const parameters = (parameter: any, protocol: string): string => {
   const parameters001 = (parameterArg: any): string => {
-    const fp: Array<string> = [];
+    const fp: string[] = [];
     fp.push(bool(true));
     const t = encodeRawBytes(parameterArg).toLowerCase();
     fp.push(toBytesInt32Hex(t.length / 2) + t);
@@ -265,7 +246,7 @@ export const parameters = (parameter: any, protocol: string): string => {
   };
 
   const parameters005 = (parameterArg: any): string => {
-    const fp: Array<string> = [];
+    const fp: string[] = [];
     const isDefaultParameter = parameterArg.entrypoint === 'default';
     fp.push(isDefaultParameter ? '00' : 'FF');
 
@@ -304,6 +285,7 @@ export const parameters = (parameter: any, protocol: string): string => {
     [protocols['008a']]: parameters005,
     [protocols['008']]: parameters005,
     [protocols['009a']]: parameters005,
+    [protocols['009']]: parameters005,
   };
 
   if (!protocolMap[protocol]) {
@@ -331,41 +313,30 @@ export const publicKeyHash = (pkh: string): string => {
 /**
  * @description Forge address bytes
  * @param {string} addressArg Address to forge
- * @param {string} [protocol=''] Current protocol
+ * @param {string} [skipType=false] Whether to skip the address type byte
  * @returns {string} Forged address bytes
  */
-export const address = (addressArg: string, protocol = ''): string => {
-  const fa: Array<string> = [];
-
-  const addressSourceBytes = {
-    [protocols['001']]: true,
-    [protocols['002']]: true,
-    [protocols['003']]: true,
-    [protocols['004']]: true,
-  };
+export const address = (addressArg: string, skipType = false): string => {
+  const fa: string[] = [];
 
   const getAddressType = (a: string): string => {
-    if (!protocol || addressSourceBytes[protocol]) {
-      return a.substring(0, 1) === 'K' ? '01' : '00';
+    if (a.substring(0, 1) === 'K') {
+      return '01';
     }
-    return '';
+    return '00';
   };
 
-  if (addressArg.substring(0, 1) === 'K') {
+  if (!skipType) {
     fa.push(getAddressType(addressArg));
+  }
+  if (addressArg.substring(0, 1) === 'K') {
     const forgedBuffer = new Uint8Array(b58cdecode(addressArg, prefix.KT));
     fa.push(buf2hex(forgedBuffer));
     fa.push('00');
   } else {
-    fa.push(getAddressType(addressArg));
     fa.push(publicKeyHash(addressArg));
   }
   return fa.join('');
-};
-
-export const bakerHash = (baker: string): string => {
-  const forgedBuffer = new Uint8Array(b58cdecode(baker, prefix.SG1));
-  return buf2hex(forgedBuffer);
 };
 
 /**
@@ -374,7 +345,7 @@ export const bakerHash = (baker: string): string => {
  * @returns {string} Forged zarith bytes
  */
 export const zarith = (n: string): string => {
-  const fn: Array<string> = [];
+  const fn: string[] = [];
   let nn = new BigNumber(n, 10);
   if (nn.isNaN()) {
     throw new TypeError(`Error forging zarith ${n}`);
@@ -402,7 +373,7 @@ export const zarith = (n: string): string => {
  * @returns {string} Forged public key bytes
  */
 export const publicKey = (pk: string): string => {
-  const fpk: Array<string> = [];
+  const fpk: string[] = [];
   const keyPrefix = pk.substring(0, 2);
 
   if (keyPrefix === 'ed') {
@@ -435,7 +406,7 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
     throw new Error(`Unrecognized protocol: ${protocol}`);
   }
 
-  const fop: Array<string> = [];
+  const fop: string[] = [];
 
   const forgedBuffer = protocolOpTagMap[protocol](opArg.kind);
 
@@ -456,15 +427,13 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
   } else if (opArg.kind === 'ballot') {
     fop.push(ballot(opArg));
   } else if (opArg.kind === 'reveal') {
-    fop.push(reveal(opArg, protocol));
+    fop.push(reveal(opArg));
   } else if (opArg.kind === 'transaction') {
     fop.push(transaction(opArg, protocol));
   } else if (opArg.kind === 'origination') {
     fop.push(origination(opArg, protocol));
   } else if (opArg.kind === 'delegation') {
-    fop.push(delegation(opArg, protocol));
-  } else if (opArg.kind === 'baker_registration') {
-    fop.push(bakerRegistration(opArg, protocol));
+    fop.push(delegation(opArg));
   }
 
   return fop.join('');
@@ -486,7 +455,7 @@ export const endorsement = (opArg: ConstructedOperation): string => {
  * @returns {string} Forged operation bytes
  */
 export const seedNonceRevelation = (opArg: ConstructedOperation): string => {
-  const fop: Array<string> = [];
+  const fop: string[] = [];
 
   const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
   fop.push(buf2hex(levelBuffer));
@@ -519,7 +488,7 @@ export const doubleBakingEvidence = (): string => {
  * @returns {string} Forged operation bytes
  */
 export const activateAccount = (opArg: ConstructedOperation): string => {
-  const fop: Array<string> = [];
+  const fop: string[] = [];
 
   const addressBuffer = new Uint8Array(b58cdecode(opArg.pkh, prefix.tz1));
   fop.push(buf2hex(addressBuffer));
@@ -543,7 +512,7 @@ export const proposals = (): string => {
  * @returns {string} Forged operation bytes
  */
 export const ballot = (opArg: ConstructedOperation): string => {
-  const fop: Array<string> = [];
+  const fop: string[] = [];
 
   fop.push(publicKeyHash(opArg.source));
   const periodBuffer = new Uint8Array(toBytesInt32(opArg.period));
@@ -566,16 +535,12 @@ export const ballot = (opArg: ConstructedOperation): string => {
 /**
  * @description Forge reveal operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export const reveal = (
-  opArg: ConstructedOperation,
-  protocol: string,
-): string => {
-  const fop: Array<string> = [];
+export const reveal = (opArg: ConstructedOperation): string => {
+  const fop: string[] = [];
 
-  fop.push(address(opArg.source, protocol));
+  fop.push(address(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
@@ -597,13 +562,13 @@ export const transaction = (
 ): string => {
   const fop = [];
 
-  fop.push(address(opArg.source, protocol));
+  fop.push(address(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
   fop.push(zarith(opArg.storage_limit));
   fop.push(zarith(opArg.amount));
-  fop.push(address(opArg.destination));
+  fop.push(address(opArg.destination, true));
 
   if (opArg.parameters) {
     fop.push(parameters(opArg.parameters, protocol));
@@ -624,9 +589,9 @@ export const origination = (
   opArg: ConstructedOperation,
   protocol: string,
 ): string => {
-  const fop: Array<string> = [];
+  const fop: string[] = [];
 
-  fop.push(address(opArg.source, protocol));
+  fop.push(address(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
@@ -638,16 +603,12 @@ export const origination = (
 /**
  * @description Forge delegation operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export const delegation = (
-  opArg: ConstructedOperation,
-  protocol: string,
-): string => {
-  const fop: Array<string> = [];
+export const delegation = (opArg: ConstructedOperation): string => {
+  const fop: string[] = [];
 
-  fop.push(address(opArg.source, protocol));
+  fop.push(address(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
@@ -655,40 +616,10 @@ export const delegation = (
 
   if (opArg.delegate) {
     fop.push(bool(true));
-    fop.push(bakerHash(opArg.delegate));
+    fop.push(publicKeyHash(opArg.delegate));
   } else {
     fop.push(bool(false));
   }
-
-  return fop.join('');
-};
-
-/**
- * @description Forge baker registration operation bytes
- * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
- * @returns {string} Forged operation bytes
- */
-export const bakerRegistration = (
-  opArg: ConstructedOperation,
-  protocol: string,
-): string => {
-  const fop: Array<string> = [];
-
-  fop.push(address(opArg.source, protocol));
-  fop.push(zarith(opArg.fee));
-  fop.push(zarith(opArg.counter));
-  fop.push(zarith(opArg.gas_limit));
-  fop.push(zarith(opArg.storage_limit));
-  fop.push(zarith(opArg.credit));
-  fop.push(publicKey(opArg.consensus_key));
-  fop.push(toBytesInt16Hex(opArg.threshold));
-
-  const ownerBytes: string = opArg.owner_keys.reduce(
-    (accum: string, ownerKey: string) => `${accum}${publicKey(ownerKey)}`,
-    '',
-  );
-  fop.push(toBytesInt32Hex(ownerBytes.length / 2) + ownerBytes);
 
   return fop.join('');
 };
@@ -865,23 +796,46 @@ export const encodeRawBytes = (input: Micheline): string => {
       result.push(bytes);
     } else if (inputArg instanceof Object) {
       if ('prim' in inputArg) {
-        const argsLen = inputArg.args ? inputArg.args.length : 0;
-        result.push(
-          forgeMappings.primMappingReverse[argsLen][`${!!inputArg.annots}`],
-        );
-        result.push(forgeMappings.opMappingReverse[inputArg.prim]);
-        if (inputArg.args) {
-          inputArg.args.forEach((arg: any) => result.push(rec(arg)));
-        }
-        if (inputArg.annots) {
+        if (inputArg.prim === 'LAMBDA') {
+          result.push('09');
+          result.push(forgeMappings.opMappingReverse[inputArg.prim]);
+          if (inputArg.args) {
+            const innerResult: string[] = [];
+            inputArg.args.forEach((arg) => {
+              innerResult.push(rec(arg));
+            });
+            const len = innerResult.join('').length / 2;
+            result.push(len.toString(16).padStart(8, '0'));
+            innerResult.forEach((x) => result.push(x));
+          }
           const annotsBytes = inputArg.annots
-            .map((x: any) => {
-              const forgedBuffer = new Uint8Array(textEncode(x));
-              return buf2hex(forgedBuffer);
-            })
-            .join('20');
+            ? inputArg.annots
+                .map((x) => buf2hex(new Uint8Array(textEncode(x))))
+                .join('20')
+            : '';
           result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
-          result.push(annotsBytes);
+          if (annotsBytes) {
+            result.push(annotsBytes);
+          }
+        } else {
+          const argsLen = inputArg.args ? inputArg.args.length : 0;
+          result.push(
+            forgeMappings.primMappingReverse[argsLen][`${!!inputArg.annots}`],
+          );
+          result.push(forgeMappings.opMappingReverse[inputArg.prim]);
+          if (inputArg.args) {
+            inputArg.args.forEach((arg: any) => result.push(rec(arg)));
+          }
+          if (inputArg.annots) {
+            const annotsBytes = inputArg.annots
+              .map((x: any) => {
+                const forgedBuffer = new Uint8Array(textEncode(x));
+                return buf2hex(forgedBuffer);
+              })
+              .join('20');
+            result.push((annotsBytes.length / 2).toString(16).padStart(8, '0'));
+            result.push(annotsBytes);
+          }
         }
       } else if ('bytes' in inputArg) {
         const len = inputArg.bytes.length / 2;

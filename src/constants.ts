@@ -1,52 +1,8 @@
-interface Prefix {
-  [key: string]: Uint8Array;
-  tz1: Uint8Array;
-  tz2: Uint8Array;
-  tz3: Uint8Array;
-  KT: Uint8Array;
-  SG1: Uint8Array;
-
-  edpk: Uint8Array;
-  edsk2: Uint8Array;
-  spsk: Uint8Array;
-  p2sk: Uint8Array;
-
-  sppk: Uint8Array;
-  p2pk: Uint8Array;
-
-  edesk: Uint8Array;
-  edsk: Uint8Array;
-
-  edsig: Uint8Array;
-  spsig: Uint8Array;
-  p2sig: Uint8Array;
-  sig: Uint8Array;
-
-  Net: Uint8Array;
-  nce: Uint8Array;
-  b: Uint8Array;
-  o: Uint8Array;
-  Lo: Uint8Array;
-  LLo: Uint8Array;
-  P: Uint8Array;
-  Co: Uint8Array;
-  id: Uint8Array;
-
-  TZ: Uint8Array;
-}
-
-interface MagicBytes {
-  block: Uint8Array;
-  endorsement: Uint8Array;
-  generic: Uint8Array;
-}
-
-export const prefix: Prefix = {
+export const prefix: { [key: string]: Uint8Array } = {
   tz1: new Uint8Array([6, 161, 159]),
   tz2: new Uint8Array([6, 161, 161]),
   tz3: new Uint8Array([6, 161, 164]),
   KT: new Uint8Array([2, 90, 121]),
-  SG1: new Uint8Array([3, 56, 226]),
 
   edsk: new Uint8Array([43, 246, 78, 7]),
   edsk2: new Uint8Array([13, 15, 58, 7]),
@@ -81,7 +37,7 @@ export const prefix: Prefix = {
   TZ: new Uint8Array([2, 90, 121]),
 };
 
-export const magicBytes: MagicBytes = {
+export const magicBytes = {
   block: new Uint8Array([1]),
   endorsement: new Uint8Array([2]),
   generic: new Uint8Array([3]),

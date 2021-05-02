@@ -100,7 +100,6 @@ const protocolOpTagMap = {
   [protocols['007']]: opTag005,
   [protocols['008a']]: opTag005,
   [protocols['008']]: opTag005,
-  [protocols['009a']]: opTag009,
   [protocols['009']]: opTag009,
 };
 
@@ -284,7 +283,6 @@ export const parameters = (parameter: any, protocol: string): string => {
     [protocols['007']]: parameters005,
     [protocols['008a']]: parameters005,
     [protocols['008']]: parameters005,
-    [protocols['009a']]: parameters005,
     [protocols['009']]: parameters005,
   };
 
@@ -313,27 +311,18 @@ export const publicKeyHash = (pkh: string): string => {
 /**
  * @description Forge address bytes
  * @param {string} addressArg Address to forge
- * @param {string} [skipType=false] Whether to skip the address type byte
  * @returns {string} Forged address bytes
  */
-export const address = (addressArg: string, skipType = false): string => {
+export const address = (addressArg: string): string => {
   const fa: string[] = [];
 
-  const getAddressType = (a: string): string => {
-    if (a.substring(0, 1) === 'K') {
-      return '01';
-    }
-    return '00';
-  };
-
-  if (!skipType) {
-    fa.push(getAddressType(addressArg));
-  }
   if (addressArg.substring(0, 1) === 'K') {
+    fa.push('01');
     const forgedBuffer = new Uint8Array(b58cdecode(addressArg, prefix.KT));
     fa.push(buf2hex(forgedBuffer));
     fa.push('00');
   } else {
+    fa.push('00');
     fa.push(publicKeyHash(addressArg));
   }
   return fa.join('');
@@ -540,7 +529,7 @@ export const ballot = (opArg: ConstructedOperation): string => {
 export const reveal = (opArg: ConstructedOperation): string => {
   const fop: string[] = [];
 
-  fop.push(address(opArg.source));
+  fop.push(publicKeyHash(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
@@ -562,13 +551,13 @@ export const transaction = (
 ): string => {
   const fop = [];
 
-  fop.push(address(opArg.source));
+  fop.push(publicKeyHash(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
   fop.push(zarith(opArg.storage_limit));
   fop.push(zarith(opArg.amount));
-  fop.push(address(opArg.destination, true));
+  fop.push(address(opArg.destination));
 
   if (opArg.parameters) {
     fop.push(parameters(opArg.parameters, protocol));
@@ -591,7 +580,7 @@ export const origination = (
 ): string => {
   const fop: string[] = [];
 
-  fop.push(address(opArg.source));
+  fop.push(publicKeyHash(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
@@ -608,7 +597,7 @@ export const origination = (
 export const delegation = (opArg: ConstructedOperation): string => {
   const fop: string[] = [];
 
-  fop.push(address(opArg.source));
+  fop.push(publicKeyHash(opArg.source));
   fop.push(zarith(opArg.fee));
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));

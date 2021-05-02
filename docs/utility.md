@@ -6,7 +6,7 @@ Convert from base58 to integer
 
 ### Parameters
 
--   `v` **[string][1]** The b58 value
+*   `v` **[string][1]** The b58 value
 
 Returns **[string][1]** The converted b58 value
 
@@ -16,8 +16,8 @@ Base58 decode
 
 ### Parameters
 
--   `enc` **[string][1]** The value to decode
--   `prefixArg` **[Object][2]** The Uint8Array prefix values
+*   `enc` **[string][1]** The value to decode
+*   `prefixArg` **[Object][2]** The Uint8Array prefix values
 
 Returns **[Object][2]** The decoded base58 value
 
@@ -27,8 +27,8 @@ Base58 encode
 
 ### Parameters
 
--   `payload` **([string][1] \| [Uint8Array][3])** The value to encode
--   `prefixArg` **[Object][2]** The Uint8Array prefix values
+*   `payload` **([string][1] | [Uint8Array][3])** The value to encode
+*   `prefixArg` **[Object][2]** The Uint8Array prefix values
 
 Returns **[string][1]** The base58 encoded value
 
@@ -38,7 +38,7 @@ Buffer to hex
 
 ### Parameters
 
--   `buffer` **[Object][2]** The buffer to convert to hex
+*   `buffer` **[Object][2]** The buffer to convert to hex
 
 Returns **[string][1]** Converted hex value
 
@@ -48,7 +48,7 @@ Encodes an expression
 
 ### Parameters
 
--   `value` **[string][1]** The value to encode
+*   `value` **[string][1]** The value to encode
 
 Returns **[string][1]** The base58 encoded expression
 
@@ -58,7 +58,7 @@ Hex to Buffer
 
 ### Parameters
 
--   `hex` **[string][1]** The hex to convert to buffer
+*   `hex` **[string][1]** The hex to convert to buffer
 
 Returns **[Object][2]** Converted buffer value
 
@@ -68,7 +68,7 @@ Generate a hex nonce
 
 ### Parameters
 
--   `length` **[number][4]** The length of the nonce
+*   `length` **[number][4]** The length of the nonce
 
 Returns **[string][1]** The nonce of the given length
 
@@ -78,8 +78,8 @@ Merge two buffers together
 
 ### Parameters
 
--   `b1` **[Object][2]** The first buffer
--   `b2` **[Object][2]** The second buffer
+*   `b1` **[Object][2]** The first buffer
+*   `b2` **[Object][2]** The second buffer
 
 Returns **[Object][2]** The merged buffer
 
@@ -89,7 +89,7 @@ Convert from tez to mutez
 
 ### Parameters
 
--   `tez` **[number][4]** The amount in tez to convert to mutez
+*   `tez` **[number][4]** The amount in tez to convert to mutez
 
 Returns **[string][1]** The tez amount converted to mutez
 
@@ -99,7 +99,7 @@ Convert from mutez to tez
 
 ### Parameters
 
--   `mutez` **[number][4]** The amount in mutez to convert to tez
+*   `mutez` **[number][4]** The amount in mutez to convert to tez
 
 Returns **[number][4]** The mutez amount converted to tez
 

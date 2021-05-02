@@ -6,7 +6,7 @@ Forge activate_account operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -16,8 +16,7 @@ Forge address bytes
 
 ### Parameters
 
--   `addressArg` **[string][2]** Address to forge
--   `skipType` **[string][2]** Whether to skip the address type byte (optional, default `false`)
+*   `addressArg` **[string][2]** Address to forge
 
 Returns **[string][2]** Forged address bytes
 
@@ -27,7 +26,7 @@ Forge ballot operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -37,7 +36,7 @@ Forge boolean
 
 ### Parameters
 
--   `boolArg` **[boolean][3]** Boolean value to convert
+*   `boolArg` **[boolean][3]** Boolean value to convert
 
 Returns **[string][2]** The converted boolean
 
@@ -47,7 +46,7 @@ Decode raw bytes
 
 ### Parameters
 
--   `bytes` **[string][2]** The bytes to decode
+*   `bytes` **[string][2]** The bytes to decode
 
 Returns **[Object][1]** Decoded raw bytes
 
@@ -57,7 +56,7 @@ Forge delegation operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -79,7 +78,7 @@ Encode raw bytes
 
 ### Parameters
 
--   `input` **[Object][1]** The value to encode
+*   `input` **[Object][1]** The value to encode
 
 Returns **[string][2]** Encoded value as bytes
 
@@ -89,7 +88,7 @@ Forge endorsement operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -99,9 +98,9 @@ Forge operation bytes
 
 ### Parameters
 
--   `opOb` **[Object][1]** The operation object(s)
--   `counter` **[number][4]** The current counter for the account
--   `protocol` **[string][2]** The current block protocol
+*   `opOb` **[Object][1]** The operation object(s)
+*   `counter` **[number][4]** The current counter for the account
+*   `protocol` **[string][2]** The current block protocol
 
 ### Examples
 
@@ -129,8 +128,8 @@ Forge operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -140,8 +139,8 @@ Forge origination operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -151,8 +150,8 @@ Forge parameter bytes
 
 ### Parameters
 
--   `parameter` **[string][2]** Script to forge
--   `protocol` **[string][2]** The current block protocol
+*   `parameter` **[string][2]** Script to forge
+*   `protocol` **[string][2]** The current block protocol
 
 Returns **[string][2]** Forged parameter bytes
 
@@ -168,7 +167,7 @@ Forge public key bytes
 
 ### Parameters
 
--   `pk` **[number][4]** Public key to forge
+*   `pk` **[number][4]** Public key to forge
 
 Returns **[string][2]** Forged public key bytes
 
@@ -178,7 +177,7 @@ Forge public key hash bytes
 
 ### Parameters
 
--   `pkh` **[string][2]** Public key hash to forge
+*   `pkh` **[string][2]** Public key hash to forge
 
 Returns **[string][2]** Forged public key hash bytes
 
@@ -188,7 +187,7 @@ Forge reveal operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -198,9 +197,10 @@ Forge script bytes
 
 ### Parameters
 
--   `scriptArg` **[Object][1]** Script to forge
-    -   `scriptArg.code` **[string][2]** Script code
-    -   `scriptArg.storage` **[string][2]** Script storage
+*   `scriptArg` **[Object][1]** Script to forge
+
+    *   `scriptArg.code` **[string][2]** Script code
+    *   `scriptArg.storage` **[string][2]** Script storage
 
 Returns **[string][2]** Forged script bytes
 
@@ -210,7 +210,7 @@ Forge seed_nonce_revelation operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -220,7 +220,7 @@ Convert bytes from Int16
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to bytes
+*   `num` **[number][4]** Number to convert to bytes
 
 Returns **[Object][1]** The converted number
 
@@ -230,7 +230,7 @@ Convert hex from Int16
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to hex
+*   `num` **[number][4]** Number to convert to hex
 
 Returns **[string][2]** The converted number
 
@@ -240,7 +240,7 @@ Convert bytes from Int32
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to bytes
+*   `num` **[number][4]** Number to convert to bytes
 
 Returns **[Object][1]** The converted number
 
@@ -250,7 +250,7 @@ Convert hex from Int32
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to hex
+*   `num` **[number][4]** Number to convert to hex
 
 Returns **[string][2]** The converted number
 
@@ -260,8 +260,8 @@ Forge transaction operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -271,7 +271,7 @@ Forge zarith bytes
 
 ### Parameters
 
--   `n` **[number][4]** Zarith to forge
+*   `n` **[number][4]** Zarith to forge
 
 Returns **[string][2]** Forged zarith bytes
 

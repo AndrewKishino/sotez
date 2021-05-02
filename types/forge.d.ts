@@ -141,10 +141,9 @@ export declare const publicKeyHash: (pkh: string) => string;
 /**
  * @description Forge address bytes
  * @param {string} addressArg Address to forge
- * @param {string} [skipType=false] Whether to skip the address type byte
  * @returns {string} Forged address bytes
  */
-export declare const address: (addressArg: string, skipType?: boolean) => string;
+export declare const address: (addressArg: string) => string;
 /**
  * @description Forge zarith bytes
  * @param {number} n Zarith to forge
@@ -264,7 +263,7 @@ export declare const decodeRawBytes: (bytes: string) => Micheline;
  */
 export declare const encodeRawBytes: (input: Micheline) => string;
 declare const _default: {
-    address: (addressArg: string, skipType?: boolean) => string;
+    address: (addressArg: string) => string;
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;

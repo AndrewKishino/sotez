@@ -5,3 +5,4 @@ export { address, decodeRawBytes, encodeRawBytes, forge, op, endorsement, seedNo
 export { default as utility, textEncode, textDecode, b582int, totez, mutez, b58cencode, b58cdecode, buf2hex, hex2buf, hexNonce, mergebuf, sexp2mic, mic2arr, ml2mic, ml2tzjson, tzjson2arr, mlraw2json, mintotz, tztomin, } from './utility';
 export { default as ledger, getAddress, signOperation, getVersion, } from './ledger';
 export { default as constants, prefix, magicBytes, forgeMappings, protocols, } from './constants';
+export { MANAGER_LAMBDA } from './lambdas';

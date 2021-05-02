@@ -6,13 +6,14 @@ Creates a key object from a base58 encoded key.
 
 ### Parameters
 
--   `KeyConstructor` **[Object][1]** 
-    -   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
-          providing a key will import a ledger public key.
-    -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
-    -   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
-    -   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
-    -   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
+*   `KeyConstructor` **[Object][1]** 
+
+    *   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
+        providing a key will import a ledger public key.
+    *   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
+    *   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
+    *   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
+    *   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
 
 ### Examples
 
@@ -42,7 +43,7 @@ Returns the secret key
 
 #### Parameters
 
--   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+*   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 
@@ -52,8 +53,8 @@ Sign a raw sequence of bytes
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
+*   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+*   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
 Returns **[Promise][4]** The signature object
 
@@ -63,9 +64,9 @@ Verify signature
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
--   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey` **[string][2]** A public key
+*   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+*   `signature` **[string][2]** A signature in base58 encoding
+*   `publicKey` **[string][2]** A public key
 
 Returns **[boolean][5]** Whether the signature is valid
 
@@ -89,7 +90,7 @@ Returns the secret key
 
 #### Parameters
 
--   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+*   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 
@@ -99,8 +100,8 @@ Sign a raw sequence of bytes
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
+*   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+*   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
 Returns **[Promise][4]** The signature object
 
@@ -110,9 +111,9 @@ Verify signature
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
--   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey` **[string][2]** A public key
+*   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+*   `signature` **[string][2]** A signature in base58 encoding
+*   `publicKey` **[string][2]** A public key
 
 Returns **[boolean][5]** Whether the signature is valid
 

@@ -6,8 +6,8 @@ Creates an initialized contract class abstraction
 
 ### Parameters
 
--   `client` **[Object][1]** Initialized Sotez client
--   `address` **[string][2]** Contract address
+*   `client` **[Object][1]** Initialized Sotez client
+*   `address` **[string][2]** Contract address
 
 ### Examples
 
@@ -19,7 +19,7 @@ const contract = new Contract(sotez, 'KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
 
 Return the contract balance
 
-Returns **[Promise][3]&lt;[string][2]>** The contract balance
+Returns **[Promise][3]<[string][2]>** The contract balance
 
 ### storage
 
@@ -33,7 +33,7 @@ Returns **[Promise][3]** The contract storage
 
 Return the contract balance
 
-Returns **[Promise][3]&lt;[string][2]>** The contract balance
+Returns **[Promise][3]<[string][2]>** The contract balance
 
 ### storage
 
@@ -53,7 +53,7 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params` **Partial&lt;SendParams>** generic operation parameter
+*   `params` **Partial\<SendParams>** generic operation parameter
 
 Returns **[Promise][3]** The operation hash of the transfer
 
@@ -65,7 +65,7 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params` **Partial&lt;SendParams>** generic operation parameter
+*   `params` **Partial\<SendParams>** generic operation parameter
 
 Returns **[Promise][3]** The operation hash of the transfer
 

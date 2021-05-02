@@ -6,12 +6,13 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `_a`  
--   `ledgerParams` **[Object][1]** The parameters of the getAddress function
-    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
-    -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
-    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+*   `_a`  
+*   `ledgerParams` **[Object][1]** The parameters of the getAddress function
+
+    *   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
+    *   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    *   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
+    *   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
 
 ### Examples
 
@@ -32,7 +33,7 @@ Show the version of the ledger
 
 ### Parameters
 
--   `transport` **LedgerTransport** The parameters of the signOperation function
+*   `transport` **LedgerTransport** The parameters of the signOperation function
 
 ### Examples
 
@@ -49,13 +50,14 @@ Sign an operation with the ledger
 
 ### Parameters
 
--   `_a`  
--   `ledgerParams` **[Object][1]** The parameters of the signOperation function
-    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
-    -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
-    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
-    -   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
+*   `_a`  
+*   `ledgerParams` **[Object][1]** The parameters of the signOperation function
+
+    *   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
+    *   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    *   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
+    *   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+    *   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 

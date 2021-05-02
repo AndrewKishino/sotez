@@ -318,9 +318,8 @@ const forgeOpTags: { [key: string]: { [key: string]: number } } = {
     failing_noop: 17,
     reveal: 107,
     transaction: 108,
-    baker_registration: 111,
-    origination: 209,
-    delegation: 210,
+    origination: 109,
+    delegation: 110,
   },
 };
 
@@ -364,7 +363,6 @@ export const protocols = {
   '007': 'PsDELPH1Kxsxt8f9eWbxQeRxkjfbxoqM52jvs5Y5fBxWWh4ifpo',
   '008a': 'PtEdoTezd3RHSC31mpxxo1npxFjoWWcFgQtxapi51Z8TLu6v6Uq',
   '008': 'PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA',
-  '009a': 'PsFLorBArSaXjuy9oP76Qv1v2FRYnUs7TFtteK5GkRBC24JvbdE',
   '009': 'PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i',
 };
 

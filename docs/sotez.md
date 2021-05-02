@@ -6,8 +6,8 @@ Conforms the operation to a specific protocol
 
 ### Parameters
 
--   `constructedOp` **[Object][1]** The operation object
--   `nextProtocol` **[string][2]** The next protocol of the current block
+*   `constructedOp` **[Object][1]** The operation object
+*   `nextProtocol` **[string][2]** The next protocol of the current block
 
 Returns **[string][2]** The protocol specific operation
 
@@ -17,15 +17,16 @@ Originate a new account
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the origination
-    -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
-    -   `paramObject.delegatable` **[boolean][4]?** Whether the new account is delegatable
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the origination
+
+    *   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
+    *   `paramObject.delegatable` **[boolean][4]?** Whether the new account is delegatable
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 ### Examples
 
@@ -46,8 +47,8 @@ Activate an account
 
 ### Parameters
 
--   `pkh` **[Object][1]** The public key hash of the account
--   `secret` **[string][2]** The secret to activate the account
+*   `pkh` **[Object][1]** The public key hash of the account
+*   `secret` **[string][2]** The secret to activate the account
 
 ### Examples
 
@@ -64,9 +65,9 @@ Check for the inclusion of an operation in new blocks
 
 ### Parameters
 
--   `hash` **[string][2]** The operation hash to check
--   `interval` **[number][3]** The interval to check new blocks (in seconds) (optional, default `10`)
--   `timeout` **[number][3]** The time before the operation times out (in seconds) (optional, default `180`)
+*   `hash` **[string][2]** The operation hash to check
+*   `interval` **[number][3]** The interval to check new blocks (in seconds) (optional, default `10`)
+*   `timeout` **[number][3]** The time before the operation times out (in seconds) (optional, default `180`)
 
 ### Examples
 
@@ -83,8 +84,8 @@ Given operation objects, return the operations with their estimated limits
 
 ### Parameters
 
--   `operation` **([Object][1] \| [Array][6])** The operation object or list of objects
--   `prependReveal` **[string][2]** Whether a reveal operation is prepended (optional, default `false`)
+*   `operation` **([Object][1] | [Array][6])** The operation object or list of objects
+*   `source` **[string][2]?** The source of the operation
 
 Returns **[Promise][5]** The operations with populated limits
 
@@ -94,7 +95,7 @@ Get the baker information for an address
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the baker information
+*   `address` **[string][2]** The contract for which to retrieve the baker information
 
 ### Examples
 
@@ -129,7 +130,7 @@ Get the balance for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the balance
+*   `address` **[string][2]** The contract for which to retrieve the balance
 
 ### Examples
 
@@ -170,7 +171,7 @@ Get the counter for an contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the counter
+*   `address` **[string][2]** The contract for which to retrieve the counter
 
 ### Examples
 
@@ -223,7 +224,7 @@ Get the delegate for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the delegate
+*   `address` **[string][2]** The contract for which to retrieve the delegate
 
 ### Examples
 
@@ -300,7 +301,7 @@ Get the manager for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the manager
+*   `address` **[string][2]** The contract for which to retrieve the manager
 
 ### Examples
 
@@ -317,8 +318,8 @@ Get the mananger key from the protocol dependent query
 
 ### Parameters
 
--   `manager` **([Object][1] \| [string][2])** The manager key query response
--   `protocol` **[string][2]** The protocol of the current block
+*   `manager` **([Object][1] | [string][2])** The manager key query response
+*   `protocol` **[string][2]** The protocol of the current block
 
 Returns **[string][2]** If manager exists, returns the manager key
 
@@ -343,9 +344,9 @@ Import a secret key
 
 ### Parameters
 
--   `key` **[string][2]** The secret key
--   `passphrase` **[string][2]?** The passphrase of the encrypted key
--   `email` **[string][2]?** The email associated with the fundraiser account
+*   `key` **[string][2]** The secret key
+*   `passphrase` **[string][2]?** The passphrase of the encrypted key
+*   `email` **[string][2]?** The email associated with the fundraiser account
 
 ### Examples
 
@@ -359,9 +360,9 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][7])
--   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
--   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
+*   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][7])
+*   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
+*   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
 ### Examples
 
@@ -376,8 +377,8 @@ Inject an operation
 
 ### Parameters
 
--   `opOb` **[Object][1]** The operation object
--   `sopbytes` **[string][2]** The signed operation bytes
+*   `opOb` **[Object][1]** The operation object
+*   `sopbytes` **[string][2]** The signed operation bytes
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -387,7 +388,7 @@ Looks up a contract and returns an initialized contract
 
 ### Parameters
 
--   `address` **[Object][1]** The contract address
+*   `address` **[Object][1]** The contract address
 
 ### Examples
 
@@ -418,17 +419,18 @@ Originate a new contract
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
-    -   `paramObject.init` **([string][2] | Micheline)** The initial storage of the contract
-    -   `paramObject.spendable` **[boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)
-    -   `paramObject.delegatable` **[boolean][4]** Whether the new account is delegatable (optional, default `false`)
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
+    *   `paramObject.init` **([string][2] | Micheline)** The initial storage of the contract
+    *   `paramObject.spendable` **[boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)
+    *   `paramObject.delegatable` **[boolean][4]** Whether the new account is delegatable (optional, default `false`)
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -438,8 +440,8 @@ Serializes a piece of data to a binary representation
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** The data
--   `type` **([string][2] | Micheline)** The data type
+*   `data` **([string][2] | Micheline)** The data
+*   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Serialized data
 
@@ -449,12 +451,13 @@ Prepares an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
-    -   `paramObject.skipEstimate` **[boolean][4]** Skip the estimator if enabled
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
+    *   `paramObject.skipEstimate` **[boolean][4]** Skip the estimator if enabled
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
 
 ### Examples
 
@@ -479,11 +482,12 @@ Register an account as a delegate
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -493,11 +497,11 @@ Runs or traces code against an input and storage
 
 ### Parameters
 
--   `code` **([string][2] | Micheline)** Code to run
--   `amount` **[number][3]** Amount in tez to send
--   `input` **([string][2] | Micheline)** Input to run though code
--   `storage` **([string][2] | Micheline)** State of storage
--   `trace` **[boolean][4]** Whether to trace (optional, default `false`)
+*   `code` **([string][2] | Micheline)** Code to run
+*   `amount` **[number][3]** Amount in tez to send
+*   `input` **([string][2] | Micheline)** Input to run though code
+*   `storage` **([string][2] | Micheline)** State of storage
+*   `trace` **[boolean][4]** Whether to trace (optional, default `false`)
 
 Returns **[Promise][5]** Run results
 
@@ -507,12 +511,13 @@ Send an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
-    -   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
+    *   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
 
 ### Examples
 
@@ -539,13 +544,14 @@ Set a delegate for an account
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -555,7 +561,7 @@ Inject an operation without prevalidation
 
 ### Parameters
 
--   `sopbytes` **[string][2]** The signed operation bytes
+*   `sopbytes` **[string][2]** The signed operation bytes
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -565,11 +571,12 @@ Simulate an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipEstimate` **[boolean][4]?** The operation to include in the transaction
+*   `_a`  
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipEstimate` **[boolean][4]?** The operation to include in the transaction
 
 ### Examples
 
@@ -594,14 +601,15 @@ Transfer operation
 
 ### Parameters
 
--   `transferParams` **([Object][1] \| [Array][6])** The parameters for the operation
-    -   `transferParams.to` **[string][2]** The address of the recipient
-    -   `transferParams.amount` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `transferParams.source` **[string][2]?** The source address of the transfer
-    -   `transferParams.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `transferParams.parameters` **[string][2]?** The parameter for the transaction
-    -   `transferParams.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `transferParams.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
+*   `transferParams` **([Object][1] | [Array][6])** The parameters for the operation
+
+    *   `transferParams.to` **[string][2]** The address of the recipient
+    *   `transferParams.amount` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `transferParams.source` **[string][2]?** The source address of the transfer
+    *   `transferParams.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `transferParams.parameters` **[string][2]?** The parameter for the transaction
+    *   `transferParams.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `transferParams.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
 
 ### Examples
 
@@ -621,8 +629,8 @@ Typechecks the provided code
 
 ### Parameters
 
--   `code` **([string][2] | Micheline)** The code to typecheck
--   `gas` **[number][3]** The the gas limit
+*   `code` **([string][2] | Micheline)** The code to typecheck
+*   `gas` **[number][3]** The the gas limit
 
 Returns **[Promise][5]** Typecheck result
 
@@ -632,8 +640,8 @@ Typechecks data against a type
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** The data
--   `type` **([string][2] | Micheline)** The data type
+*   `data` **([string][2] | Micheline)** The data
+*   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Typecheck result
 

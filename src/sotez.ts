@@ -705,7 +705,6 @@ export class Sotez extends AbstractTezModule {
     const opOb: OperationObject = {};
     const promises: any[] = [];
     let requiresReveal = false;
-    let prependReveal = false;
     let preOps: Operation[] = [];
     let head: Header;
 
@@ -756,7 +755,6 @@ export class Sotez extends AbstractTezModule {
               gas_limit: 10600,
               storage_limit: 300,
             });
-            prependReveal = true;
           }
         }
 
@@ -772,7 +770,7 @@ export class Sotez extends AbstractTezModule {
         let ops = preOps;
 
         if (this.dryRunLimiter && !skipEstimate) {
-          ops = await this.estimateLimits(preOps, prependReveal);
+          ops = await this.estimateLimits(preOps, source);
         }
 
         const constructOps = (cOps: Operation[]): ConstructedOperation[] => {
@@ -784,6 +782,7 @@ export class Sotez extends AbstractTezModule {
             const constructedOp: ConstructedOperation = {
               ...op,
             };
+
             if (
               [
                 'proposals',
@@ -863,6 +862,8 @@ export class Sotez extends AbstractTezModule {
               chainId: head.chain_id,
             };
           }
+          console.log(fullOp.opbytes);
+          console.log(remoteForgedBytes);
           throw new Error(
             "Forge validation error - local and remote bytes don't match",
           );
@@ -1405,7 +1406,6 @@ export class Sotez extends AbstractTezModule {
       [protocols['007']]: manager,
       [protocols['008a']]: manager,
       [protocols['008']]: manager,
-      [protocols['009a']]: manager,
       [protocols['009']]: manager,
     };
     if (!protocolMap[protocol]) {
@@ -1448,7 +1448,6 @@ export class Sotez extends AbstractTezModule {
       [protocols['007']]: constructOp005,
       [protocols['008a']]: constructOp005,
       [protocols['008']]: constructOp005,
-      [protocols['009a']]: constructOp005,
       [protocols['009']]: constructOp005,
     };
 
@@ -1458,41 +1457,50 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Given operation objects, return the operations with their estimated limits
    * @param {Object|Array} operation The operation object or list of objects
-   * @param {string} [prependReveal=false] Whether a reveal operation is prepended
+   * @param {string} [source] The source of the operation
    * @returns {Promise} The operations with populated limits
    */
   estimateLimits = async (
     operation: Operation | Operation[],
-    prependReveal = false,
+    source?: string,
   ) => {
     const operations = Array.isArray(operation) ? [...operation] : [operation];
 
-    const simulated = operations.map((op) => ({
-      ...op,
-      gas_limit: 1040000,
-      storage_limit: 60000,
-    }));
+    const simulated = operations.map((op) => {
+      if (
+        ['reveal', 'transaction', 'origination', 'delegation'].includes(op.kind)
+      ) {
+        return {
+          ...op,
+          gas_limit: 1040000,
+          storage_limit: 60000,
+        };
+      }
+
+      return op;
+    });
 
     const { contents: simulatedOperations } = await this.simulateOperation({
       operation: simulated,
+      source,
       skipEstimate: true,
     });
 
-    if (prependReveal) {
-      simulatedOperations.shift();
-    }
-
     return operations.map((op, index) => {
-      const {
-        metadata: {
-          operation_result: { status, consumed_gas = 0, storage_size = 0 },
-        },
-      } = simulatedOperations[index];
+      const metadata = simulatedOperations[index]?.metadata;
 
-      if (status === 'applied') {
+      if (metadata?.operation_result?.status === 'applied') {
+        const {
+          consumed_gas = 0,
+          storage_size = 0,
+        } = metadata.operation_result;
+
+        const consumedGas = parseInt(consumed_gas, 10);
+        const storageSize = parseInt(storage_size, 10);
+
         return {
-          gas_limit: parseInt(consumed_gas, 10) + 100,
-          storage_limit: parseInt(storage_size, 10) + 20,
+          gas_limit: consumedGas + 100,
+          storage_limit: storageSize ? storageSize + 20 : 0,
           ...op,
         };
       }

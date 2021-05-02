@@ -6,7 +6,7 @@ Check the validity of a tezos implicit address (tz1...)
 
 ### Parameters
 
--   `address` **[string][1]** The address to check
+*   `address` **[string][1]** The address to check
 
 Returns **[boolean][2]** Whether address is valid or not
 
@@ -16,9 +16,9 @@ Encrypts a secret key with a passphrase
 
 ### Parameters
 
--   `key` **[string][1]** The secret key
--   `passphrase` **[string][1]** The passphrase to encrypt the key
--   `salt` **[Uint8Array][3]** The salt to apply to the encryption
+*   `key` **[string][1]** The secret key
+*   `passphrase` **[string][1]** The passphrase to encrypt the key
+*   `salt` **[Uint8Array][3]** The salt to apply to the encryption
 
 ### Examples
 
@@ -37,8 +37,8 @@ Extract key pairs from a secret key
 
 ### Parameters
 
--   `sk` **[string][1]** The secret key to extract key pairs from
--   `passphrase` **[string][1]?** The password used to encrypt the sk
+*   `sk` **[string][1]** The secret key to extract key pairs from
+*   `passphrase` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
@@ -55,8 +55,8 @@ Generate a new key pair given a mnemonic and passphrase
 
 ### Parameters
 
--   `mnemonic` **[string][1]** The mnemonic seed
--   `passphrase` **[string][1]** The passphrase used to encrypt the seed
+*   `mnemonic` **[string][1]** The mnemonic seed
+*   `passphrase` **[string][1]** The passphrase used to encrypt the seed
 
 ### Examples
 
@@ -79,10 +79,10 @@ Sign bytes
 
 ### Parameters
 
--   `bytes` **[string][1]** The bytes to sign
--   `sk` **[string][1]** The secret key to sign the bytes with
--   `magicBytes` **[Object][5]** The magic bytes for the operation
--   `password` **[string][1]?** The password used to encrypt the sk
+*   `bytes` **[string][1]** The bytes to sign
+*   `sk` **[string][1]** The secret key to sign the bytes with
+*   `magicBytes` **[Object][5]** The magic bytes for the operation
+*   `password` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
@@ -101,9 +101,9 @@ Verify signed bytes
 
 ### Parameters
 
--   `bytes` **[string][1]** The signed bytes
--   `sig` **[string][1]** The signature of the signed bytes
--   `pk` **[string][1]** The public key
+*   `bytes` **[string][1]** The signed bytes
+*   `sig` **[string][1]** The signature of the signed bytes
+*   `pk` **[string][1]** The public key
 
 Returns **[boolean][2]** Whether the signed bytes are valid
 

@@ -76,3 +76,5 @@ export {
   forgeMappings,
   protocols,
 } from './constants';
+
+export { MANAGER_LAMBDA } from './lambdas';

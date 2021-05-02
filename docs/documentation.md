@@ -2,13 +2,13 @@
 
 ### Table of Contents
 
--   [Sotez][8]
--   [Key][9]
--   [Contract][10]
--   [Crypto][11]
--   [Forge][12]
--   [Ledger][13]
--   [Utility][14]
+*   [Sotez][8]
+*   [Key][9]
+*   [Contract][10]
+*   [Crypto][11]
+*   [Forge][12]
+*   [Ledger][13]
+*   [Utility][14]
 
 ## Sotez
 
@@ -20,8 +20,8 @@ Conforms the operation to a specific protocol
 
 ### Parameters
 
--   `constructedOp` **[Object][1]** The operation object
--   `nextProtocol` **[string][2]** The next protocol of the current block
+*   `constructedOp` **[Object][1]** The operation object
+*   `nextProtocol` **[string][2]** The next protocol of the current block
 
 Returns **[string][2]** The protocol specific operation
 
@@ -31,15 +31,16 @@ Originate a new account
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the origination
-    -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
-    -   `paramObject.delegatable` **[boolean][4]?** Whether the new account is delegatable
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the origination
+
+    *   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `paramObject.spendable` **[boolean][4]?** Whether the keyholder can spend the balance from the new account
+    *   `paramObject.delegatable` **[boolean][4]?** Whether the new account is delegatable
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 ### Examples
 
@@ -60,8 +61,8 @@ Activate an account
 
 ### Parameters
 
--   `pkh` **[Object][1]** The public key hash of the account
--   `secret` **[string][2]** The secret to activate the account
+*   `pkh` **[Object][1]** The public key hash of the account
+*   `secret` **[string][2]** The secret to activate the account
 
 ### Examples
 
@@ -78,9 +79,9 @@ Check for the inclusion of an operation in new blocks
 
 ### Parameters
 
--   `hash` **[string][2]** The operation hash to check
--   `interval` **[number][3]** The interval to check new blocks (in seconds) (optional, default `10`)
--   `timeout` **[number][3]** The time before the operation times out (in seconds) (optional, default `180`)
+*   `hash` **[string][2]** The operation hash to check
+*   `interval` **[number][3]** The interval to check new blocks (in seconds) (optional, default `10`)
+*   `timeout` **[number][3]** The time before the operation times out (in seconds) (optional, default `180`)
 
 ### Examples
 
@@ -97,8 +98,8 @@ Given operation objects, return the operations with their estimated limits
 
 ### Parameters
 
--   `operation` **([Object][1] \| [Array][6])** The operation object or list of objects
--   `prependReveal` **[string][2]** Whether a reveal operation is prepended (optional, default `false`)
+*   `operation` **([Object][1] | [Array][6])** The operation object or list of objects
+*   `source` **[string][2]?** The source of the operation
 
 Returns **[Promise][5]** The operations with populated limits
 
@@ -108,7 +109,7 @@ Get the baker information for an address
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the baker information
+*   `address` **[string][2]** The contract for which to retrieve the baker information
 
 ### Examples
 
@@ -143,7 +144,7 @@ Get the balance for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the balance
+*   `address` **[string][2]** The contract for which to retrieve the balance
 
 ### Examples
 
@@ -184,7 +185,7 @@ Get the counter for an contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the counter
+*   `address` **[string][2]** The contract for which to retrieve the counter
 
 ### Examples
 
@@ -237,7 +238,7 @@ Get the delegate for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the delegate
+*   `address` **[string][2]** The contract for which to retrieve the delegate
 
 ### Examples
 
@@ -314,7 +315,7 @@ Get the manager for a contract
 
 ### Parameters
 
--   `address` **[string][2]** The contract for which to retrieve the manager
+*   `address` **[string][2]** The contract for which to retrieve the manager
 
 ### Examples
 
@@ -331,8 +332,8 @@ Get the mananger key from the protocol dependent query
 
 ### Parameters
 
--   `manager` **([Object][1] \| [string][2])** The manager key query response
--   `protocol` **[string][2]** The protocol of the current block
+*   `manager` **([Object][1] | [string][2])** The manager key query response
+*   `protocol` **[string][2]** The protocol of the current block
 
 Returns **[string][2]** If manager exists, returns the manager key
 
@@ -357,9 +358,9 @@ Import a secret key
 
 ### Parameters
 
--   `key` **[string][2]** The secret key
--   `passphrase` **[string][2]?** The passphrase of the encrypted key
--   `email` **[string][2]?** The email associated with the fundraiser account
+*   `key` **[string][2]** The secret key
+*   `passphrase` **[string][2]?** The passphrase of the encrypted key
+*   `email` **[string][2]?** The email associated with the fundraiser account
 
 ### Examples
 
@@ -373,9 +374,9 @@ Import a ledger public key
 
 ### Parameters
 
--   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][7])
--   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
--   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
+*   `transport` **[Object][1]** The ledger transport ([https://github.com/LedgerHQ/ledgerjs][7])
+*   `path` **[string][2]** The ledger path (optional, default `"44'/1729'/0'/0'"`)
+*   `curve` **[string][2]** The curve parameter (optional, default `"tz1"`)
 
 ### Examples
 
@@ -390,8 +391,8 @@ Inject an operation
 
 ### Parameters
 
--   `opOb` **[Object][1]** The operation object
--   `sopbytes` **[string][2]** The signed operation bytes
+*   `opOb` **[Object][1]** The operation object
+*   `sopbytes` **[string][2]** The signed operation bytes
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -401,7 +402,7 @@ Looks up a contract and returns an initialized contract
 
 ### Parameters
 
--   `address` **[Object][1]** The contract address
+*   `address` **[Object][1]** The contract address
 
 ### Examples
 
@@ -432,17 +433,18 @@ Originate a new contract
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
-    -   `paramObject.init` **([string][2] | Micheline)** The initial storage of the contract
-    -   `paramObject.spendable` **[boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)
-    -   `paramObject.delegatable` **[boolean][4]** Whether the new account is delegatable (optional, default `false`)
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.balance` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `paramObject.code` **([string][2] | Micheline)** The code to deploy for the contract
+    *   `paramObject.init` **([string][2] | Micheline)** The initial storage of the contract
+    *   `paramObject.spendable` **[boolean][4]** Whether the keyholder can spend the balance from the new account (optional, default `false`)
+    *   `paramObject.delegatable` **[boolean][4]** Whether the new account is delegatable (optional, default `false`)
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `257`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -452,8 +454,8 @@ Serializes a piece of data to a binary representation
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** The data
--   `type` **([string][2] | Micheline)** The data type
+*   `data` **([string][2] | Micheline)** The data
+*   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Serialized data
 
@@ -463,12 +465,13 @@ Prepares an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
-    -   `paramObject.skipEstimate` **[boolean][4]** Skip the estimator if enabled
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipCounter` **[boolean][4]** Skip incrementing the counter within sotez
+    *   `paramObject.skipEstimate` **[boolean][4]** Skip the estimator if enabled
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
 
 ### Examples
 
@@ -493,11 +496,12 @@ Register an account as a delegate
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -507,11 +511,11 @@ Runs or traces code against an input and storage
 
 ### Parameters
 
--   `code` **([string][2] | Micheline)** Code to run
--   `amount` **[number][3]** Amount in tez to send
--   `input` **([string][2] | Micheline)** Input to run though code
--   `storage` **([string][2] | Micheline)** State of storage
--   `trace` **[boolean][4]** Whether to trace (optional, default `false`)
+*   `code` **([string][2] | Micheline)** Code to run
+*   `amount` **[number][3]** Amount in tez to send
+*   `input` **([string][2] | Micheline)** Input to run though code
+*   `storage` **([string][2] | Micheline)** State of storage
+*   `trace` **[boolean][4]** Whether to trace (optional, default `false`)
 
 Returns **[Promise][5]** Run results
 
@@ -521,12 +525,13 @@ Send an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
-    -   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipSignature` **[boolean][4]** Use default signature for specific transactions (optional, default `false`)
+    *   `paramObject.skipPrevalidation` **[boolean][4]** Skip prevalidation before injecting operation (optional, default `false`)
 
 ### Examples
 
@@ -553,13 +558,14 @@ Set a delegate for an account
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.delegate` **[string][2]?** The delegate for the new account
-    -   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.delegate` **[string][2]?** The delegate for the new account
+    *   `paramObject.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `paramObject.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `0`)
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -569,7 +575,7 @@ Inject an operation without prevalidation
 
 ### Parameters
 
--   `sopbytes` **[string][2]** The signed operation bytes
+*   `sopbytes` **[string][2]** The signed operation bytes
 
 Returns **[Promise][5]** Object containing the injected operation hash
 
@@ -579,11 +585,12 @@ Simulate an operation
 
 ### Parameters
 
--   `_a`  
--   `paramObject` **[Object][1]** The parameters for the operation
-    -   `paramObject.operation` **([Object][1] \| [Array][6])** The operation to include in the transaction
-    -   `paramObject.source` **[string][2]?** The source address of the operation
-    -   `paramObject.skipEstimate` **[boolean][4]?** The operation to include in the transaction
+*   `_a`
+*   `paramObject` **[Object][1]** The parameters for the operation
+
+    *   `paramObject.operation` **([Object][1] | [Array][6])** The operation to include in the transaction
+    *   `paramObject.source` **[string][2]?** The source address of the operation
+    *   `paramObject.skipEstimate` **[boolean][4]?** The operation to include in the transaction
 
 ### Examples
 
@@ -608,14 +615,15 @@ Transfer operation
 
 ### Parameters
 
--   `transferParams` **([Object][1] \| [Array][6])** The parameters for the operation
-    -   `transferParams.to` **[string][2]** The address of the recipient
-    -   `transferParams.amount` **[number][3]** The amount in tez to transfer for the initial balance
-    -   `transferParams.source` **[string][2]?** The source address of the transfer
-    -   `transferParams.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
-    -   `transferParams.parameters` **[string][2]?** The parameter for the transaction
-    -   `transferParams.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
-    -   `transferParams.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
+*   `transferParams` **([Object][1] | [Array][6])** The parameters for the operation
+
+    *   `transferParams.to` **[string][2]** The address of the recipient
+    *   `transferParams.amount` **[number][3]** The amount in tez to transfer for the initial balance
+    *   `transferParams.source` **[string][2]?** The source address of the transfer
+    *   `transferParams.fee` **[number][3]** The fee to set for the transaction (optional, default `1420`)
+    *   `transferParams.parameters` **[string][2]?** The parameter for the transaction
+    *   `transferParams.gasLimit` **[number][3]** The gas limit to set for the transaction (optional, default `10600`)
+    *   `transferParams.storageLimit` **[number][3]** The storage limit to set for the transaction (optional, default `300`)
 
 ### Examples
 
@@ -635,8 +643,8 @@ Typechecks the provided code
 
 ### Parameters
 
--   `code` **([string][2] | Micheline)** The code to typecheck
--   `gas` **[number][3]** The the gas limit
+*   `code` **([string][2] | Micheline)** The code to typecheck
+*   `gas` **[number][3]** The the gas limit
 
 Returns **[Promise][5]** Typecheck result
 
@@ -646,8 +654,8 @@ Typechecks data against a type
 
 ### Parameters
 
--   `data` **([string][2] | Micheline)** The data
--   `type` **([string][2] | Micheline)** The data type
+*   `data` **([string][2] | Micheline)** The data
+*   `type` **([string][2] | Micheline)** The data type
 
 Returns **[Promise][5]** Typecheck result
 
@@ -683,7 +691,6 @@ sotez.transfer({
 
 [7]: https://github.com/LedgerHQ/ledgerjs
 
-
 ## Key
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -694,13 +701,14 @@ Creates a key object from a base58 encoded key.
 
 ### Parameters
 
--   `KeyConstructor` **[Object][1]** 
-    -   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
-          providing a key will import a ledger public key.
-    -   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
-    -   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
-    -   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
-    -   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
+*   `KeyConstructor` **[Object][1]**
+
+    *   `KeyConstructor.key` **[string][2]?** A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
+        providing a key will import a ledger public key.
+    *   `KeyConstructor.passphrase` **[string][2]?** The passphrase used if the key provided is an encrypted private key or a fundraiser key
+    *   `KeyConstructor.email` **[string][2]?** Email used if a fundraiser key is passed
+    *   `KeyConstructor.ledgerPath` **[string][2]** Ledger derivation path (optional, default `"44'/1729'/0'/0'"`)
+    *   `KeyConstructor.ledgerCurve` **[string][2]** Ledger curve (optional, default `tz1`)
 
 ### Examples
 
@@ -730,7 +738,7 @@ Returns the secret key
 
 #### Parameters
 
--   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+*   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 
@@ -740,8 +748,8 @@ Sign a raw sequence of bytes
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
+*   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+*   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
 Returns **[Promise][4]** The signature object
 
@@ -751,9 +759,9 @@ Verify signature
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
--   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey` **[string][2]** A public key
+*   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+*   `signature` **[string][2]** A signature in base58 encoding
+*   `publicKey` **[string][2]** A public key
 
 Returns **[boolean][5]** Whether the signature is valid
 
@@ -777,7 +785,7 @@ Returns the secret key
 
 #### Parameters
 
--   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
+*   `passphrase` **[string][2]?** The password used to encrypt the secret key, if applicable
 
 Returns **[string][2]** The secret key associated with this key, if available
 
@@ -787,8 +795,8 @@ Sign a raw sequence of bytes
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
--   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
+*   `bytes` **[string][2]** Sequence of bytes, raw format or hexadecimal notation
+*   `magicBytes` **[Uint8Array][3]** The magic bytes for the operation
 
 Returns **[Promise][4]** The signature object
 
@@ -798,9 +806,9 @@ Verify signature
 
 #### Parameters
 
--   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
--   `signature` **[string][2]** A signature in base58 encoding
--   `publicKey` **[string][2]** A public key
+*   `bytes` **[string][2]** Sequance of bytes, raw format or hexadecimal notation
+*   `signature` **[string][2]** A signature in base58 encoding
+*   `publicKey` **[string][2]** A public key
 
 Returns **[boolean][5]** Whether the signature is valid
 
@@ -814,7 +822,6 @@ Returns **[boolean][5]** Whether the signature is valid
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-
 ## Contract
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -825,8 +832,8 @@ Creates an initialized contract class abstraction
 
 ### Parameters
 
--   `client` **[Object][1]** Initialized Sotez client
--   `address` **[string][2]** Contract address
+*   `client` **[Object][1]** Initialized Sotez client
+*   `address` **[string][2]** Contract address
 
 ### Examples
 
@@ -838,7 +845,7 @@ const contract = new Contract(sotez, 'KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');
 
 Return the contract balance
 
-Returns **[Promise][3]&lt;[string][2]>** The contract balance
+Returns **[Promise][3]<[string][2]>** The contract balance
 
 ### storage
 
@@ -852,7 +859,7 @@ Returns **[Promise][3]** The contract storage
 
 Return the contract balance
 
-Returns **[Promise][3]&lt;[string][2]>** The contract balance
+Returns **[Promise][3]<[string][2]>** The contract balance
 
 ### storage
 
@@ -872,7 +879,7 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params` **Partial&lt;SendParams>** generic operation parameter
+*   `params` **Partial\<SendParams>** generic operation parameter
 
 Returns **[Promise][3]** The operation hash of the transfer
 
@@ -884,7 +891,7 @@ Send the smart contract operation
 
 #### Parameters
 
--   `params` **Partial&lt;SendParams>** generic operation parameter
+*   `params` **Partial\<SendParams>** generic operation parameter
 
 Returns **[Promise][3]** The operation hash of the transfer
 
@@ -902,7 +909,6 @@ Returns **any** The contract schema
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-
 ## Crypto
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -913,7 +919,7 @@ Check the validity of a tezos implicit address (tz1...)
 
 ### Parameters
 
--   `address` **[string][1]** The address to check
+*   `address` **[string][1]** The address to check
 
 Returns **[boolean][2]** Whether address is valid or not
 
@@ -923,9 +929,9 @@ Encrypts a secret key with a passphrase
 
 ### Parameters
 
--   `key` **[string][1]** The secret key
--   `passphrase` **[string][1]** The passphrase to encrypt the key
--   `salt` **[Uint8Array][3]** The salt to apply to the encryption
+*   `key` **[string][1]** The secret key
+*   `passphrase` **[string][1]** The passphrase to encrypt the key
+*   `salt` **[Uint8Array][3]** The salt to apply to the encryption
 
 ### Examples
 
@@ -944,8 +950,8 @@ Extract key pairs from a secret key
 
 ### Parameters
 
--   `sk` **[string][1]** The secret key to extract key pairs from
--   `passphrase` **[string][1]?** The password used to encrypt the sk
+*   `sk` **[string][1]** The secret key to extract key pairs from
+*   `passphrase` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
@@ -962,8 +968,8 @@ Generate a new key pair given a mnemonic and passphrase
 
 ### Parameters
 
--   `mnemonic` **[string][1]** The mnemonic seed
--   `passphrase` **[string][1]** The passphrase used to encrypt the seed
+*   `mnemonic` **[string][1]** The mnemonic seed
+*   `passphrase` **[string][1]** The passphrase used to encrypt the seed
 
 ### Examples
 
@@ -986,10 +992,10 @@ Sign bytes
 
 ### Parameters
 
--   `bytes` **[string][1]** The bytes to sign
--   `sk` **[string][1]** The secret key to sign the bytes with
--   `magicBytes` **[Object][5]** The magic bytes for the operation
--   `password` **[string][1]?** The password used to encrypt the sk
+*   `bytes` **[string][1]** The bytes to sign
+*   `sk` **[string][1]** The secret key to sign the bytes with
+*   `magicBytes` **[Object][5]** The magic bytes for the operation
+*   `password` **[string][1]?** The password used to encrypt the sk
 
 ### Examples
 
@@ -1008,9 +1014,9 @@ Verify signed bytes
 
 ### Parameters
 
--   `bytes` **[string][1]** The signed bytes
--   `sig` **[string][1]** The signature of the signed bytes
--   `pk` **[string][1]** The public key
+*   `bytes` **[string][1]** The signed bytes
+*   `sig` **[string][1]** The signature of the signed bytes
+*   `pk` **[string][1]** The public key
 
 Returns **[boolean][2]** Whether the signed bytes are valid
 
@@ -1024,7 +1030,6 @@ Returns **[boolean][2]** Whether the signed bytes are valid
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-
 ## Forge
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -1035,7 +1040,7 @@ Forge activate_account operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1045,8 +1050,7 @@ Forge address bytes
 
 ### Parameters
 
--   `addressArg` **[string][2]** Address to forge
--   `skipType` **[string][2]** Whether to skip the address type byte (optional, default `false`)
+*   `addressArg` **[string][2]** Address to forge
 
 Returns **[string][2]** Forged address bytes
 
@@ -1056,7 +1060,7 @@ Forge ballot operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1066,7 +1070,7 @@ Forge boolean
 
 ### Parameters
 
--   `boolArg` **[boolean][3]** Boolean value to convert
+*   `boolArg` **[boolean][3]** Boolean value to convert
 
 Returns **[string][2]** The converted boolean
 
@@ -1076,7 +1080,7 @@ Decode raw bytes
 
 ### Parameters
 
--   `bytes` **[string][2]** The bytes to decode
+*   `bytes` **[string][2]** The bytes to decode
 
 Returns **[Object][1]** Decoded raw bytes
 
@@ -1086,7 +1090,7 @@ Forge delegation operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1108,7 +1112,7 @@ Encode raw bytes
 
 ### Parameters
 
--   `input` **[Object][1]** The value to encode
+*   `input` **[Object][1]** The value to encode
 
 Returns **[string][2]** Encoded value as bytes
 
@@ -1118,7 +1122,7 @@ Forge endorsement operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1128,9 +1132,9 @@ Forge operation bytes
 
 ### Parameters
 
--   `opOb` **[Object][1]** The operation object(s)
--   `counter` **[number][4]** The current counter for the account
--   `protocol` **[string][2]** The current block protocol
+*   `opOb` **[Object][1]** The operation object(s)
+*   `counter` **[number][4]** The current counter for the account
+*   `protocol` **[string][2]** The current block protocol
 
 ### Examples
 
@@ -1158,8 +1162,8 @@ Forge operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1169,8 +1173,8 @@ Forge origination operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1180,8 +1184,8 @@ Forge parameter bytes
 
 ### Parameters
 
--   `parameter` **[string][2]** Script to forge
--   `protocol` **[string][2]** The current block protocol
+*   `parameter` **[string][2]** Script to forge
+*   `protocol` **[string][2]** The current block protocol
 
 Returns **[string][2]** Forged parameter bytes
 
@@ -1197,7 +1201,7 @@ Forge public key bytes
 
 ### Parameters
 
--   `pk` **[number][4]** Public key to forge
+*   `pk` **[number][4]** Public key to forge
 
 Returns **[string][2]** Forged public key bytes
 
@@ -1207,7 +1211,7 @@ Forge public key hash bytes
 
 ### Parameters
 
--   `pkh` **[string][2]** Public key hash to forge
+*   `pkh` **[string][2]** Public key hash to forge
 
 Returns **[string][2]** Forged public key hash bytes
 
@@ -1217,7 +1221,7 @@ Forge reveal operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1227,9 +1231,10 @@ Forge script bytes
 
 ### Parameters
 
--   `scriptArg` **[Object][1]** Script to forge
-    -   `scriptArg.code` **[string][2]** Script code
-    -   `scriptArg.storage` **[string][2]** Script storage
+*   `scriptArg` **[Object][1]** Script to forge
+
+    *   `scriptArg.code` **[string][2]** Script code
+    *   `scriptArg.storage` **[string][2]** Script storage
 
 Returns **[string][2]** Forged script bytes
 
@@ -1239,7 +1244,7 @@ Forge seed_nonce_revelation operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
+*   `opArg` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1249,7 +1254,7 @@ Convert bytes from Int16
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to bytes
+*   `num` **[number][4]** Number to convert to bytes
 
 Returns **[Object][1]** The converted number
 
@@ -1259,7 +1264,7 @@ Convert hex from Int16
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to hex
+*   `num` **[number][4]** Number to convert to hex
 
 Returns **[string][2]** The converted number
 
@@ -1269,7 +1274,7 @@ Convert bytes from Int32
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to bytes
+*   `num` **[number][4]** Number to convert to bytes
 
 Returns **[Object][1]** The converted number
 
@@ -1279,7 +1284,7 @@ Convert hex from Int32
 
 ### Parameters
 
--   `num` **[number][4]** Number to convert to hex
+*   `num` **[number][4]** Number to convert to hex
 
 Returns **[string][2]** The converted number
 
@@ -1289,8 +1294,8 @@ Forge transaction operation bytes
 
 ### Parameters
 
--   `opArg` **[Object][1]** Operation to forge
--   `protocol` **[string][2]** Current protocol
+*   `opArg` **[Object][1]** Operation to forge
+*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -1300,7 +1305,7 @@ Forge zarith bytes
 
 ### Parameters
 
--   `n` **[number][4]** Zarith to forge
+*   `n` **[number][4]** Zarith to forge
 
 Returns **[string][2]** Forged zarith bytes
 
@@ -1312,7 +1317,6 @@ Returns **[string][2]** Forged zarith bytes
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-
 ## Ledger
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -1323,12 +1327,13 @@ Get the public key and public key hash from the ledger
 
 ### Parameters
 
--   `_a`  
--   `ledgerParams` **[Object][1]** The parameters of the getAddress function
-    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
-    -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
-    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+*   `_a`
+*   `ledgerParams` **[Object][1]** The parameters of the getAddress function
+
+    *   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
+    *   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    *   `ledgerParams.displayConfirm` **[boolean][3]** Whether to display a confirmation the ledger (optional, default `false`)
+    *   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
 
 ### Examples
 
@@ -1349,7 +1354,7 @@ Show the version of the ledger
 
 ### Parameters
 
--   `transport` **LedgerTransport** The parameters of the signOperation function
+*   `transport` **LedgerTransport** The parameters of the signOperation function
 
 ### Examples
 
@@ -1366,13 +1371,14 @@ Sign an operation with the ledger
 
 ### Parameters
 
--   `_a`  
--   `ledgerParams` **[Object][1]** The parameters of the signOperation function
-    -   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
-    -   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
-    -   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
-    -   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
-    -   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
+*   `_a`
+*   `ledgerParams` **[Object][1]** The parameters of the signOperation function
+
+    *   `ledgerParams.transport` **[Object][1]** The ledger transport to interface with
+    *   `ledgerParams.path` **[string][2]** The ledger path (optional, default `44'/1729'/0'/0'`)
+    *   `ledgerParams.rawTxHex` **[boolean][3]** The transaction hex for the ledger to sign
+    *   `ledgerParams.curve` **[string][2]** The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02) (optional, default `tz1`)
+    *   `ledgerParams.magicBytes` **[Uint8Array][5]** The magic bytes for the operation (optional, default `'03'`)
 
 ### Examples
 
@@ -1396,7 +1402,6 @@ Returns **[Promise][4]** The signed operation
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-
 ## Utility
 
 <!-- Generated by documentation.js. Update this documentation by updating the source code. -->
@@ -1407,7 +1412,7 @@ Convert from base58 to integer
 
 ### Parameters
 
--   `v` **[string][1]** The b58 value
+*   `v` **[string][1]** The b58 value
 
 Returns **[string][1]** The converted b58 value
 
@@ -1417,8 +1422,8 @@ Base58 decode
 
 ### Parameters
 
--   `enc` **[string][1]** The value to decode
--   `prefixArg` **[Object][2]** The Uint8Array prefix values
+*   `enc` **[string][1]** The value to decode
+*   `prefixArg` **[Object][2]** The Uint8Array prefix values
 
 Returns **[Object][2]** The decoded base58 value
 
@@ -1428,8 +1433,8 @@ Base58 encode
 
 ### Parameters
 
--   `payload` **([string][1] \| [Uint8Array][3])** The value to encode
--   `prefixArg` **[Object][2]** The Uint8Array prefix values
+*   `payload` **([string][1] | [Uint8Array][3])** The value to encode
+*   `prefixArg` **[Object][2]** The Uint8Array prefix values
 
 Returns **[string][1]** The base58 encoded value
 
@@ -1439,7 +1444,7 @@ Buffer to hex
 
 ### Parameters
 
--   `buffer` **[Object][2]** The buffer to convert to hex
+*   `buffer` **[Object][2]** The buffer to convert to hex
 
 Returns **[string][1]** Converted hex value
 
@@ -1449,7 +1454,7 @@ Encodes an expression
 
 ### Parameters
 
--   `value` **[string][1]** The value to encode
+*   `value` **[string][1]** The value to encode
 
 Returns **[string][1]** The base58 encoded expression
 
@@ -1459,7 +1464,7 @@ Hex to Buffer
 
 ### Parameters
 
--   `hex` **[string][1]** The hex to convert to buffer
+*   `hex` **[string][1]** The hex to convert to buffer
 
 Returns **[Object][2]** Converted buffer value
 
@@ -1469,7 +1474,7 @@ Generate a hex nonce
 
 ### Parameters
 
--   `length` **[number][4]** The length of the nonce
+*   `length` **[number][4]** The length of the nonce
 
 Returns **[string][1]** The nonce of the given length
 
@@ -1479,8 +1484,8 @@ Merge two buffers together
 
 ### Parameters
 
--   `b1` **[Object][2]** The first buffer
--   `b2` **[Object][2]** The second buffer
+*   `b1` **[Object][2]** The first buffer
+*   `b2` **[Object][2]** The second buffer
 
 Returns **[Object][2]** The merged buffer
 
@@ -1490,7 +1495,7 @@ Convert from tez to mutez
 
 ### Parameters
 
--   `tez` **[number][4]** The amount in tez to convert to mutez
+*   `tez` **[number][4]** The amount in tez to convert to mutez
 
 Returns **[string][1]** The tez amount converted to mutez
 
@@ -1500,7 +1505,7 @@ Convert from mutez to tez
 
 ### Parameters
 
--   `mutez` **[number][4]** The amount in mutez to convert to tez
+*   `mutez` **[number][4]** The amount in mutez to convert to tez
 
 Returns **[number][4]** The mutez amount converted to tez
 
@@ -1511,7 +1516,6 @@ Returns **[number][4]** The mutez amount converted to tez
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
-
 
 [8]: #sotez
 

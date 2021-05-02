@@ -1,1 +1,1 @@
-export * from './manager';
+export { MANAGER_LAMBDA } from './manager';

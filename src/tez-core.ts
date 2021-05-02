@@ -86,8 +86,7 @@ export class AbstractTezModule {
           }
 
           const contentType = response.headers.get('content-type');
-          const isJson =
-            contentType && contentType.includes('application/json');
+          const isJson = contentType?.includes('application/json');
 
           if (!response.ok) {
             if (isJson) {

@@ -656,10 +656,10 @@ export declare class Sotez extends AbstractTezModule {
     /**
      * @description Given operation objects, return the operations with their estimated limits
      * @param {Object|Array} operation The operation object or list of objects
-     * @param {string} [prependReveal=false] Whether a reveal operation is prepended
+     * @param {string} [source] The source of the operation
      * @returns {Promise} The operations with populated limits
      */
-    estimateLimits: (operation: Operation | Operation[], prependReveal?: boolean) => Promise<Operation[]>;
+    estimateLimits: (operation: Operation | Operation[], source?: string | undefined) => Promise<Operation[]>;
     /**
      * @description Looks up a contract and returns an initialized contract
      * @param {Object} address The contract address

@@ -76,7 +76,6 @@ export declare const protocols: {
     '007': string;
     '008a': string;
     '008': string;
-    '009a': string;
     '009': string;
 };
 declare const _default: {
@@ -123,7 +122,6 @@ declare const _default: {
         '007': string;
         '008a': string;
         '008': string;
-        '009a': string;
         '009': string;
     };
 };

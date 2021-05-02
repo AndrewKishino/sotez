@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.0.0] - 2021-05-02
+
+### Added
+
+- Added support for Florence
+- `transfer` method now optionally accepts an array of transfer parameters
+
+```js
+tezos.transfer([
+  { to: 'tz1...', amount: 1 },
+  { to: 'tz2...', amount: 1 },
+]);
+```
+
+- Added an additional constructor argument for dry run limiting. All operations will run through a simulation against the node in order to calculate gas and storage consumption. Useful when gas/storage limits are not known or a closer approximation to the actual limit is desired.
+
+```js
+const tezos = new Sotez('https://testnet-tezos.giganode.io', 'main', {
+  useMutez: false,
+  dryRunLimiter: true,
+});
+
+await tezos.importKey('esk...');
+tezos.transfer({ to: 'tz1...', amount: 1 });
+```
+
 ## [8.0.0] - 2021-02-01
 
 ### Added

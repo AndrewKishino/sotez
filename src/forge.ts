@@ -101,6 +101,7 @@ const protocolOpTagMap = {
   [protocols['008a']]: opTag005,
   [protocols['008']]: opTag005,
   [protocols['009']]: opTag009,
+  [protocols['009a']]: opTag009,
 };
 
 const origination001 = (
@@ -284,6 +285,7 @@ export const parameters = (parameter: any, protocol: string): string => {
     [protocols['008a']]: parameters005,
     [protocols['008']]: parameters005,
     [protocols['009']]: parameters005,
+    [protocols['009a']]: parameters005,
   };
 
   if (!protocolMap[protocol]) {

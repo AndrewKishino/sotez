@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.0.0] - 2021-08-01
+
+### Added
+
+- Added support for Granada
+- Removed protocol logic from previous protocols
+
 ## [9.0.0] - 2021-05-02
 
 ### Added

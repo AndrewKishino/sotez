@@ -602,7 +602,7 @@ export class Sotez extends AbstractTezModule {
    */
   awaitOperation = (
     hash: string,
-    interval = 10,
+    interval = 5,
     timeout = 180,
   ): Promise<string> => {
     if (!hash) {
@@ -618,6 +618,7 @@ export class Sotez extends AbstractTezModule {
     }
 
     let timeoutHandle: ReturnType<typeof setTimeout>;
+    const hashMap: Record<string, boolean> = {};
 
     const operationCheck = (operation: Operation): boolean =>
       operation.hash === hash;
@@ -634,11 +635,14 @@ export class Sotez extends AbstractTezModule {
 
       const repeater = (): void => {
         this.getHead().then((head: Head) => {
-          for (let i = 3; i >= 0; i--) {
-            if (head.operations[i].some(operationCheck)) {
-              clearTimeout(clearTimeoutHandle);
-              resolve(head.hash);
-              return;
+          if (!hashMap[head.hash]) {
+            hashMap[head.hash] = true;
+            for (let i = 3; i >= 0; i--) {
+              if (head.operations[i].some(operationCheck)) {
+                clearTimeout(clearTimeoutHandle);
+                resolve(head.hash);
+                return;
+              }
             }
           }
           timeoutHandle = setTimeout(repeater, interval * 1000);

@@ -26,8 +26,6 @@ interface Operation {
     storage_limit?: number | string;
     parameters?: Micheline;
     balance?: number | string;
-    spendable?: boolean;
-    delegatable?: boolean;
     delegate?: string;
     amount?: number | string;
     destination?: string;
@@ -36,8 +34,6 @@ interface Operation {
         code: Micheline;
         storage: Micheline;
     };
-    manager_pubkey?: string;
-    managerPubkey?: string;
 }
 interface Head {
     protocol: string;
@@ -101,8 +97,6 @@ interface ConstructedOperation {
     storage_limit: string;
     parameters: string;
     balance: string;
-    spendable: boolean;
-    delegatable: boolean;
     delegate: string;
     amount: string;
     destination: string;
@@ -111,8 +105,6 @@ interface ConstructedOperation {
         code: Micheline;
         storage: Micheline;
     };
-    manager_pubkey: string;
-    managerPubkey: string;
 }
 declare type Micheline = {
     entrypoint: string;
@@ -175,15 +167,11 @@ interface RpcParams {
     parameters?: string | Micheline;
     gasLimit?: number;
     storageLimit?: number;
-    spendable?: boolean;
-    delegatable?: boolean;
     delegate?: string;
     code?: string;
 }
 interface AccountParams {
     balance: number;
-    spendable?: boolean;
-    delegatable?: boolean;
     delegate?: string;
     fee?: number;
     gasLimit?: number;
@@ -200,13 +188,11 @@ interface OperationParams {
 interface ContractParams {
     balance: number;
     code: string | Micheline;
-    delegatable?: boolean;
     delegate?: string;
     fee?: number;
     gasLimit?: number;
     init: string | Micheline;
     micheline?: boolean;
-    spendable?: boolean;
     storageLimit?: number;
 }
 interface ForgedBytes {
@@ -280,8 +266,6 @@ export declare class Sotez extends AbstractTezModule {
      * @description Originate a new account
      * @param {Object} paramObject The parameters for the origination
      * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
-     * @param {boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
-     * @param {boolean} [paramObject.delegatable] Whether the new account is delegatable
      * @param {string} [paramObject.delegate] The delegate for the new account
      * @param {number} [paramObject.fee=1420] The fee to set for the transaction
      * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
@@ -290,12 +274,10 @@ export declare class Sotez extends AbstractTezModule {
      * @example
      * sotez.account({
      *   balance: 10,
-     *   spendable: true,
-     *   delegatable: true,
      *   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
      * }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]));
      */
-    account: ({ balance, spendable, delegatable, delegate, fee, gasLimit, storageLimit, }: AccountParams) => Promise<any>;
+    account: ({ balance, delegate, fee, gasLimit, storageLimit, }: AccountParams) => Promise<any>;
     /**
      * @description Get the balance for a contract
      * @param {string} address The contract for which to retrieve the balance
@@ -569,15 +551,13 @@ export declare class Sotez extends AbstractTezModule {
      * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
      * @param {string | Micheline} paramObject.code The code to deploy for the contract
      * @param {string | Micheline} paramObject.init The initial storage of the contract
-     * @param {boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
-     * @param {boolean} [paramObject.delegatable=false] Whether the new account is delegatable
      * @param {string} [paramObject.delegate] The delegate for the new account
      * @param {number} [paramObject.fee=1420] The fee to set for the transaction
      * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
      * @param {number} [paramObject.storageLimit=257] The storage limit to set for the transaction
      * @returns {Promise} Object containing the injected operation hash
      */
-    originate: ({ balance, code, init, spendable, delegatable, delegate, fee, gasLimit, storageLimit, }: ContractParams) => Promise<any>;
+    originate: ({ balance, code, init, delegate, fee, gasLimit, storageLimit, }: ContractParams) => Promise<any>;
     /**
      * @description Set a delegate for an account
      * @param {Object} paramObject The parameters for the operation
@@ -639,20 +619,6 @@ export declare class Sotez extends AbstractTezModule {
      * @returns {Promise} Run results
      */
     runCode: (code: string | Micheline, amount: number, input: string | Micheline, storage: string | Micheline, trace?: boolean) => Promise<any>;
-    /**
-     * @description Get the mananger key from the protocol dependent query
-     * @param {Object|string} manager The manager key query response
-     * @param {string} protocol The protocol of the current block
-     * @returns {string} If manager exists, returns the manager key
-     */
-    getManagerKey: (manager: any, protocol: string) => string | null;
-    /**
-     * @description Conforms the operation to a specific protocol
-     * @param {Object} constructedOp The operation object
-     * @param {string} nextProtocol The next protocol of the current block
-     * @returns {string} The protocol specific operation
-     */
-    private _conformOperation;
     /**
      * @description Given operation objects, return the operations with their estimated limits
      * @param {Object|Array} operation The operation object or list of objects

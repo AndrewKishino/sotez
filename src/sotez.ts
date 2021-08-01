@@ -3,7 +3,7 @@ import { Key } from './key';
 import { Contract } from './contract';
 import { forge } from './forge';
 import { mutez, totez, sexp2mic, ml2mic } from './utility';
-import { magicBytes, protocols } from './constants';
+import { magicBytes } from './constants';
 
 interface ModuleOptions {
   defaultFee?: number;
@@ -31,15 +31,11 @@ interface Operation {
   storage_limit?: number | string;
   parameters?: Micheline;
   balance?: number | string;
-  spendable?: boolean;
-  delegatable?: boolean;
   delegate?: string;
   amount?: number | string;
   destination?: string;
   public_key?: string;
   script?: { code: Micheline; storage: Micheline };
-  manager_pubkey?: string;
-  managerPubkey?: string;
 }
 
 interface Head {
@@ -108,15 +104,11 @@ interface ConstructedOperation {
   storage_limit: string;
   parameters: string;
   balance: string;
-  spendable: boolean;
-  delegatable: boolean;
   delegate: string;
   amount: string;
   destination: string;
   public_key: string;
   script: { code: Micheline; storage: Micheline };
-  manager_pubkey: string;
-  managerPubkey: string;
 }
 
 type Micheline =
@@ -172,16 +164,12 @@ interface RpcParams {
   parameters?: string | Micheline;
   gasLimit?: number;
   storageLimit?: number;
-  spendable?: boolean;
-  delegatable?: boolean;
   delegate?: string;
   code?: string;
 }
 
 interface AccountParams {
   balance: number;
-  spendable?: boolean;
-  delegatable?: boolean;
   delegate?: string;
   fee?: number;
   gasLimit?: number;
@@ -200,13 +188,11 @@ interface OperationParams {
 interface ContractParams {
   balance: number;
   code: string | Micheline;
-  delegatable?: boolean;
   delegate?: string;
   fee?: number;
   gasLimit?: number;
   init: string | Micheline;
   micheline?: boolean;
-  spendable?: boolean;
   storageLimit?: number;
 }
 
@@ -375,8 +361,6 @@ export class Sotez extends AbstractTezModule {
    * @description Originate a new account
    * @param {Object} paramObject The parameters for the origination
    * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
-   * @param {boolean} [paramObject.spendable] Whether the keyholder can spend the balance from the new account
-   * @param {boolean} [paramObject.delegatable] Whether the new account is delegatable
    * @param {string} [paramObject.delegate] The delegate for the new account
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
    * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
@@ -385,27 +369,19 @@ export class Sotez extends AbstractTezModule {
    * @example
    * sotez.account({
    *   balance: 10,
-   *   spendable: true,
-   *   delegatable: true,
    *   delegate: 'tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4',
    * }).then(res => console.log(res.operations[0].metadata.operation_result.originated_contracts[0]));
    */
   account = async ({
     balance,
-    spendable,
-    delegatable,
     delegate,
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 257,
   }: AccountParams): Promise<any> => {
     const params: {
-      spendable?: boolean;
-      delegatable?: boolean;
       delegate?: string;
     } = {
-      ...(spendable ? { spendable } : {}),
-      ...(delegatable ? { delegatable } : {}),
       ...(delegate ? { delegate } : {}),
     };
 
@@ -413,10 +389,8 @@ export class Sotez extends AbstractTezModule {
       kind: 'origination',
       balance,
       fee,
-      manager_pubkey: this.key.publicKeyHash(),
       ...(gasLimit ? { gas_limit: gasLimit } : {}),
       ...(storageLimit ? { storage_limit: storageLimit } : {}),
-      ...(delegatable ? { delegatable } : {}),
       ...params,
     };
 
@@ -745,8 +719,7 @@ export class Sotez extends AbstractTezModule {
         head = header;
 
         if (requiresReveal) {
-          const managerKey = this.getManagerKey(manager, metadata.protocol);
-          if (!managerKey && preOps.every((op) => op.kind !== 'reveal')) {
+          if (!manager && preOps.every((op) => op.kind !== 'reveal')) {
             preOps.unshift({
               kind: 'reveal',
               fee: this.defaultFee,
@@ -824,10 +797,7 @@ export class Sotez extends AbstractTezModule {
               }
             }
 
-            return this._conformOperation(
-              constructedOp,
-              metadata.next_protocol,
-            );
+            return constructedOp;
           });
         };
         opOb.branch = head.hash;
@@ -862,8 +832,6 @@ export class Sotez extends AbstractTezModule {
               chainId: head.chain_id,
             };
           }
-          console.log(fullOp.opbytes);
-          console.log(remoteForgedBytes);
           throw new Error(
             "Forge validation error - local and remote bytes don't match",
           );
@@ -1126,8 +1094,6 @@ export class Sotez extends AbstractTezModule {
    * @param {number} paramObject.balance The amount in tez to transfer for the initial balance
    * @param {string | Micheline} paramObject.code The code to deploy for the contract
    * @param {string | Micheline} paramObject.init The initial storage of the contract
-   * @param {boolean} [paramObject.spendable=false] Whether the keyholder can spend the balance from the new account
-   * @param {boolean} [paramObject.delegatable=false] Whether the new account is delegatable
    * @param {string} [paramObject.delegate] The delegate for the new account
    * @param {number} [paramObject.fee=1420] The fee to set for the transaction
    * @param {number} [paramObject.gasLimit=10600] The gas limit to set for the transaction
@@ -1138,8 +1104,6 @@ export class Sotez extends AbstractTezModule {
     balance,
     code,
     init,
-    spendable = false,
-    delegatable = false,
     delegate,
     fee = this.defaultFee,
     gasLimit = 10600,
@@ -1165,14 +1129,10 @@ export class Sotez extends AbstractTezModule {
       storage: _init,
     };
 
-    const publicKeyHash = this.key.publicKeyHash();
     const operation: Operation = {
       kind: 'origination',
       fee,
       balance,
-      manager_pubkey: publicKeyHash,
-      spendable,
-      delegatable,
       script,
       ...(gasLimit ? { gas_limit: gasLimit } : {}),
       ...(storageLimit ? { storage_limit: storageLimit } : {}),
@@ -1382,76 +1342,6 @@ export class Sotez extends AbstractTezModule {
         storage: _storage,
       },
     );
-  };
-
-  /**
-   * @description Get the mananger key from the protocol dependent query
-   * @param {Object|string} manager The manager key query response
-   * @param {string} protocol The protocol of the current block
-   * @returns {string} If manager exists, returns the manager key
-   */
-  getManagerKey = (manager: any, protocol: string): string | null => {
-    if (!manager) {
-      return null;
-    }
-    const protocolMap = {
-      [protocols['001']]: manager.key,
-      [protocols['002']]: manager.key,
-      [protocols['003']]: manager.key,
-      [protocols['004']]: manager.key,
-      [protocols['005a']]: manager,
-      [protocols['005']]: manager,
-      [protocols['006']]: manager,
-      [protocols['007a']]: manager,
-      [protocols['007']]: manager,
-      [protocols['008a']]: manager,
-      [protocols['008']]: manager,
-      [protocols['009']]: manager,
-    };
-    if (!protocolMap[protocol]) {
-      throw new Error(`Unrecognized protocol: ${protocol}`);
-    }
-    return protocolMap[protocol];
-  };
-
-  /**
-   * @description Conforms the operation to a specific protocol
-   * @param {Object} constructedOp The operation object
-   * @param {string} nextProtocol The next protocol of the current block
-   * @returns {string} The protocol specific operation
-   */
-  private _conformOperation = (
-    constructedOp: ConstructedOperation,
-    nextProtocol: string,
-  ): ConstructedOperation => {
-    const constructOp001 = (op: ConstructedOperation): ConstructedOperation =>
-      op;
-    const constructOp005 = (op: ConstructedOperation): ConstructedOperation => {
-      // @ts-ignore
-      delete op.manager_pubkey;
-      // @ts-ignore
-      delete op.spendable;
-      // @ts-ignore
-      delete op.delegatable;
-      return op;
-    };
-
-    const protocolMap = {
-      [protocols['001']]: constructOp001,
-      [protocols['002']]: constructOp001,
-      [protocols['003']]: constructOp001,
-      [protocols['004']]: constructOp001,
-      [protocols['005a']]: constructOp005,
-      [protocols['005']]: constructOp005,
-      [protocols['006']]: constructOp005,
-      [protocols['007a']]: constructOp005,
-      [protocols['007']]: constructOp005,
-      [protocols['008a']]: constructOp005,
-      [protocols['008']]: constructOp005,
-      [protocols['009']]: constructOp005,
-    };
-
-    return protocolMap[nextProtocol](constructedOp);
   };
 
   /**

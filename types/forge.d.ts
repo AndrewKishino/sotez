@@ -15,8 +15,6 @@ interface ConstructedOperation {
     storage_limit: string;
     parameters: string;
     balance: string;
-    spendable: boolean;
-    delegatable: boolean;
     delegate: string;
     amount: string;
     destination: string;
@@ -25,8 +23,6 @@ interface ConstructedOperation {
         code: Micheline;
         storage: Micheline;
     };
-    manager_pubkey: string;
-    managerPubkey: string;
 }
 interface OperationObject {
     branch?: string;
@@ -128,10 +124,9 @@ export declare const script: (scriptArg: {
 /**
  * @description Forge parameter bytes
  * @param {string} parameter Script to forge
- * @param {string} protocol The current block protocol
  * @returns {string} Forged parameter bytes
  */
-export declare const parameters: (parameter: any, protocol: string) => string;
+export declare const parameters: (parameter: any) => string;
 /**
  * @description Forge public key hash bytes
  * @param {string} pkh Public key hash to forge
@@ -159,10 +154,9 @@ export declare const publicKey: (pk: string) => string;
 /**
  * @description Forge operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export declare const op: (opArg: ConstructedOperation, protocol: string) => string;
+export declare const op: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge endorsement operation bytes
  * @param {Object} opArg Operation to forge
@@ -211,17 +205,15 @@ export declare const reveal: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge transaction operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export declare const transaction: (opArg: ConstructedOperation, protocol: string) => string;
+export declare const transaction: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge origination operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export declare const origination: (opArg: ConstructedOperation, protocol: string) => string;
+export declare const origination: (opArg: ConstructedOperation) => string;
 /**
  * @description Forge delegation operation bytes
  * @param {Object} opArg Operation to forge
@@ -267,7 +259,7 @@ declare const _default: {
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
-    op: (opArg: ConstructedOperation, protocol: string) => string;
+    op: (opArg: ConstructedOperation) => string;
     endorsement: (opArg: ConstructedOperation) => string;
     seedNonceRevelation: (opArg: ConstructedOperation) => string;
     doubleEndorsementEvidence: () => string;
@@ -276,10 +268,10 @@ declare const _default: {
     proposals: () => string;
     ballot: (opArg: ConstructedOperation) => string;
     reveal: (opArg: ConstructedOperation) => string;
-    transaction: (opArg: ConstructedOperation, protocol: string) => string;
-    origination: (opArg: ConstructedOperation, protocol: string) => string;
+    transaction: (opArg: ConstructedOperation) => string;
+    origination: (opArg: ConstructedOperation) => string;
     delegation: (opArg: ConstructedOperation) => string;
-    parameters: (parameter: any, protocol: string) => string;
+    parameters: (parameter: any) => string;
     publicKey: (pk: string) => string;
     publicKeyHash: (pkh: string) => string;
     zarith: (n: string) => string;

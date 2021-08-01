@@ -129,7 +129,6 @@ Forge operation bytes
 ### Parameters
 
 *   `opArg` **[Object][1]** Operation to forge
-*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -140,7 +139,6 @@ Forge origination operation bytes
 ### Parameters
 
 *   `opArg` **[Object][1]** Operation to forge
-*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 
@@ -151,7 +149,6 @@ Forge parameter bytes
 ### Parameters
 
 *   `parameter` **[string][2]** Script to forge
-*   `protocol` **[string][2]** The current block protocol
 
 Returns **[string][2]** Forged parameter bytes
 
@@ -261,7 +258,6 @@ Forge transaction operation bytes
 ### Parameters
 
 *   `opArg` **[Object][1]** Operation to forge
-*   `protocol` **[string][2]** Current protocol
 
 Returns **[string][2]** Forged operation bytes
 

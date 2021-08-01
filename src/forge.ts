@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { buf2hex, b58cdecode, textDecode, textEncode } from './utility';
-import { prefix, forgeMappings, protocols } from './constants';
+import { prefix, forgeMappings } from './constants';
 
 interface ConstructedOperation {
   kind: string;
@@ -19,15 +19,11 @@ interface ConstructedOperation {
   storage_limit: string;
   parameters: string;
   balance: string;
-  spendable: boolean;
-  delegatable: boolean;
   delegate: string;
   amount: string;
   destination: string;
   public_key: string;
   script: { code: Micheline; storage: Micheline };
-  manager_pubkey: string;
-  managerPubkey: string;
 }
 
 interface OperationObject {
@@ -79,81 +75,8 @@ type Micheline =
 
 type MichelineArray = Array<Micheline>;
 
-const opTag001 = (opKind: string): any =>
-  new Uint8Array([forgeMappings.forgeOpTags['001'][opKind]]);
-
-const opTag005 = (opKind: string): any =>
-  new Uint8Array([forgeMappings.forgeOpTags['005'][opKind]]);
-
-const opTag009 = (opKind: string): any =>
+const opTag = (opKind: string): any =>
   new Uint8Array([forgeMappings.forgeOpTags['009'][opKind]]);
-
-const protocolOpTagMap = {
-  [protocols['001']]: opTag001,
-  [protocols['002']]: opTag001,
-  [protocols['003']]: opTag001,
-  [protocols['004']]: opTag001,
-  [protocols['005a']]: opTag005,
-  [protocols['005']]: opTag005,
-  [protocols['006']]: opTag005,
-  [protocols['007a']]: opTag005,
-  [protocols['007']]: opTag005,
-  [protocols['008a']]: opTag005,
-  [protocols['008']]: opTag005,
-  [protocols['009']]: opTag009,
-};
-
-const origination001 = (
-  o: ConstructedOperation,
-  forgedOp: string[],
-): string => {
-  forgedOp.push(publicKeyHash(o.manager_pubkey));
-  forgedOp.push(zarith(o.balance));
-  forgedOp.push(bool(o.spendable));
-  forgedOp.push(bool(o.delegatable));
-  if (o.delegate) {
-    forgedOp.push(bool(true));
-    forgedOp.push(publicKeyHash(o.delegate));
-  } else {
-    forgedOp.push(bool(false));
-  }
-  if (o.script) {
-    forgedOp.push(bool(true));
-    forgedOp.push(script(o.script));
-  } else {
-    forgedOp.push(bool(false));
-  }
-  return forgedOp.join('');
-};
-
-const origination005 = (
-  o: ConstructedOperation,
-  forgedOp: string[],
-): string => {
-  forgedOp.push(zarith(o.balance));
-  if (o.delegate) {
-    forgedOp.push(bool(true));
-    forgedOp.push(publicKeyHash(o.delegate));
-  } else {
-    forgedOp.push(bool(false));
-  }
-  forgedOp.push(script(o.script));
-  return forgedOp.join('');
-};
-
-const protocolOriginationMap = {
-  [protocols['001']]: origination001,
-  [protocols['002']]: origination001,
-  [protocols['003']]: origination001,
-  [protocols['004']]: origination001,
-  [protocols['005a']]: origination005,
-  [protocols['005']]: origination005,
-  [protocols['006']]: origination005,
-  [protocols['007a']]: origination005,
-  [protocols['007']]: origination005,
-  [protocols['008a']]: origination005,
-  [protocols['008']]: origination005,
-};
 
 /**
  * @description Convert bytes from Int32
@@ -232,65 +155,31 @@ export const script = (scriptArg: {
 /**
  * @description Forge parameter bytes
  * @param {string} parameter Script to forge
- * @param {string} protocol The current block protocol
  * @returns {string} Forged parameter bytes
  */
-export const parameters = (parameter: any, protocol: string): string => {
-  const parameters001 = (parameterArg: any): string => {
-    const fp: string[] = [];
-    fp.push(bool(true));
-    const t = encodeRawBytes(parameterArg).toLowerCase();
-    fp.push(toBytesInt32Hex(t.length / 2) + t);
-    return fp.join('');
-  };
+export const parameters = (parameter: any): string => {
+  const fp: string[] = [];
+  const isDefaultParameter = parameter.entrypoint === 'default';
+  fp.push(isDefaultParameter ? '00' : 'FF');
 
-  const parameters005 = (parameterArg: any): string => {
-    const fp: string[] = [];
-    const isDefaultParameter = parameterArg.entrypoint === 'default';
-    fp.push(isDefaultParameter ? '00' : 'FF');
+  if (!isDefaultParameter) {
+    const parameterBytes = encodeRawBytes(parameter.value).toLowerCase();
 
-    if (!isDefaultParameter) {
-      const parameterBytes = encodeRawBytes(parameterArg.value).toLowerCase();
-
-      if (forgeMappings.entrypointMappingReverse[parameterArg.entrypoint]) {
-        fp.push(
-          forgeMappings.entrypointMappingReverse[parameterArg.entrypoint],
-        );
-      } else {
-        const stringBytes = encodeRawBytes({
-          string: parameterArg.entrypoint,
-        }).toLowerCase();
-        fp.push('FF');
-        fp.push(stringBytes.slice(8));
-      }
-
-      fp.push((parameterBytes.length / 2).toString(16).padStart(8, '0'));
-      fp.push(parameterBytes);
+    if (forgeMappings.entrypointMappingReverse[parameter.entrypoint]) {
+      fp.push(forgeMappings.entrypointMappingReverse[parameter.entrypoint]);
+    } else {
+      const stringBytes = encodeRawBytes({
+        string: parameter.entrypoint,
+      }).toLowerCase();
+      fp.push('FF');
+      fp.push(stringBytes.slice(8));
     }
 
-    return fp.join('');
-  };
-
-  const protocolMap = {
-    [protocols['001']]: parameters001,
-    [protocols['002']]: parameters001,
-    [protocols['003']]: parameters001,
-    [protocols['004']]: parameters001,
-    [protocols['005a']]: parameters005,
-    [protocols['005']]: parameters005,
-    [protocols['006']]: parameters005,
-    [protocols['007a']]: parameters005,
-    [protocols['007']]: parameters005,
-    [protocols['008a']]: parameters005,
-    [protocols['008']]: parameters005,
-    [protocols['009']]: parameters005,
-  };
-
-  if (!protocolMap[protocol]) {
-    throw new Error(`Unrecognized protocol: ${protocol}`);
+    fp.push((parameterBytes.length / 2).toString(16).padStart(8, '0'));
+    fp.push(parameterBytes);
   }
 
-  return protocolMap[protocol](parameter);
+  return fp.join('');
 };
 
 /**
@@ -387,17 +276,12 @@ export const publicKey = (pk: string): string => {
 /**
  * @description Forge operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export const op = (opArg: ConstructedOperation, protocol: string): string => {
-  if (!protocolOpTagMap[protocol]) {
-    throw new Error(`Unrecognized protocol: ${protocol}`);
-  }
-
+export const op = (opArg: ConstructedOperation): string => {
   const fop: string[] = [];
 
-  const forgedBuffer = protocolOpTagMap[protocol](opArg.kind);
+  const forgedBuffer = opTag(opArg.kind);
 
   fop.push(buf2hex(forgedBuffer));
 
@@ -418,9 +302,9 @@ export const op = (opArg: ConstructedOperation, protocol: string): string => {
   } else if (opArg.kind === 'reveal') {
     fop.push(reveal(opArg));
   } else if (opArg.kind === 'transaction') {
-    fop.push(transaction(opArg, protocol));
+    fop.push(transaction(opArg));
   } else if (opArg.kind === 'origination') {
-    fop.push(origination(opArg, protocol));
+    fop.push(origination(opArg));
   } else if (opArg.kind === 'delegation') {
     fop.push(delegation(opArg));
   }
@@ -542,13 +426,9 @@ export const reveal = (opArg: ConstructedOperation): string => {
 /**
  * @description Forge transaction operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export const transaction = (
-  opArg: ConstructedOperation,
-  protocol: string,
-): string => {
+export const transaction = (opArg: ConstructedOperation): string => {
   const fop = [];
 
   fop.push(publicKeyHash(opArg.source));
@@ -560,7 +440,7 @@ export const transaction = (
   fop.push(address(opArg.destination));
 
   if (opArg.parameters) {
-    fop.push(parameters(opArg.parameters, protocol));
+    fop.push(parameters(opArg.parameters));
   } else {
     fop.push(bool(false));
   }
@@ -571,13 +451,9 @@ export const transaction = (
 /**
  * @description Forge origination operation bytes
  * @param {Object} opArg Operation to forge
- * @param {string} protocol Current protocol
  * @returns {string} Forged operation bytes
  */
-export const origination = (
-  opArg: ConstructedOperation,
-  protocol: string,
-): string => {
+export const origination = (opArg: ConstructedOperation): string => {
   const fop: string[] = [];
 
   fop.push(publicKeyHash(opArg.source));
@@ -585,8 +461,15 @@ export const origination = (
   fop.push(zarith(opArg.counter));
   fop.push(zarith(opArg.gas_limit));
   fop.push(zarith(opArg.storage_limit));
-
-  return protocolOriginationMap[protocol](opArg, fop);
+  fop.push(zarith(opArg.balance));
+  if (opArg.delegate) {
+    fop.push(bool(true));
+    fop.push(publicKeyHash(opArg.delegate));
+  } else {
+    fop.push(bool(false));
+  }
+  fop.push(script(opArg.script));
+  return fop.join('');
 };
 
 /**
@@ -637,6 +520,7 @@ export const delegation = (opArg: ConstructedOperation): string => {
 export const forge = async (
   opOb: OperationObject,
   counter: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protocol: string,
 ): Promise<ForgedBytes> => {
   if (!opOb.contents) {
@@ -651,7 +535,7 @@ export const forge = async (
   const forgedBytes = [buf2hex(forgedBuffer)];
 
   opOb.contents.forEach((content: ConstructedOperation): void => {
-    forgedBytes.push(op(content, protocol));
+    forgedBytes.push(op(content));
   });
 
   return {

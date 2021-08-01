@@ -189,6 +189,7 @@ const opMapping: { [key: string]: string } = {
   '8B': 'JOIN_TICKETS',
   '8C': 'GET_AND_UPDATE',
   // PROTO_009
+  // PROTO_010
 };
 
 const opMappingReverse = (() => {
@@ -320,6 +321,7 @@ export const protocols = {
   '008a': 'PtEdoTezd3RHSC31mpxxo1npxFjoWWcFgQtxapi51Z8TLu6v6Uq',
   '008': 'PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA',
   '009': 'PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i',
+  '010': 'PtGRANADsDU8R9daYKAgWnQYAJ64omN1o3KMGVCykShA97vQbvV',
 };
 
 export default {

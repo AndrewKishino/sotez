@@ -6,7 +6,7 @@ Forge activate_account operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -26,7 +26,7 @@ Forge ballot operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -56,7 +56,7 @@ Forge delegation operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -88,7 +88,7 @@ Forge endorsement operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -100,7 +100,7 @@ Forge operation bytes
 
 *   `opOb` **[Object][1]** The operation object(s)
 *   `counter` **[number][4]** The current counter for the account
-*   `protocol` **[string][2]** The current block protocol
+*   `protocol` **[string][2]** The next protocol for the operation. Used to handle protocol upgrade events if necessary.
 
 ### Examples
 
@@ -122,13 +122,13 @@ forge.forge({
 
 Returns **[string][2]** Forged operation bytes
 
-## op
+## operation
 
 Forge operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -138,7 +138,7 @@ Forge origination operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -184,7 +184,7 @@ Forge reveal operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -207,7 +207,7 @@ Forge seed_nonce_revelation operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 
@@ -257,7 +257,7 @@ Forge transaction operation bytes
 
 ### Parameters
 
-*   `opArg` **[Object][1]** Operation to forge
+*   `op` **[Object][1]** Operation to forge
 
 Returns **[string][2]** Forged operation bytes
 

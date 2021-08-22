@@ -280,7 +280,6 @@ const forgeOpTags: { [key: string]: { [key: string]: number } } = {
   },
 };
 
-/* eslint-disable */
 const entrypointMapping: { [key: string]: string } = {
   '00': 'default',
   '01': 'root',
@@ -288,7 +287,6 @@ const entrypointMapping: { [key: string]: string } = {
   '03': 'set_delegate',
   '04': 'remove_delegate',
 };
-/* eslint-enable */
 
 const entrypointMappingReverse = (() => {
   const result: { [key: string]: string } = {};

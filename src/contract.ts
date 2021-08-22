@@ -11,8 +11,6 @@ interface RpcParams {
   parameters?: string | Micheline;
   gasLimit?: number;
   storageLimit?: number;
-  spendable?: boolean;
-  delegatable?: boolean;
   delegate?: string;
   code?: string;
 }

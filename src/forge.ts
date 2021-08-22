@@ -2,33 +2,33 @@ import { BigNumber } from 'bignumber.js';
 import { buf2hex, b58cdecode, textDecode, textEncode } from './utility';
 import { prefix, forgeMappings } from './constants';
 
-interface ConstructedOperation {
+interface Operation {
   kind: string;
-  level: number;
-  nonce: string;
-  pkh: string;
-  hash: string;
-  secret: string;
-  source: string;
-  period: number;
-  proposal: string;
-  ballot: string;
-  fee: string;
-  counter: string;
-  gas_limit: string;
-  storage_limit: string;
-  parameters: string;
-  balance: string;
-  delegate: string;
-  amount: string;
-  destination: string;
-  public_key: string;
-  script: { code: Micheline; storage: Micheline };
+  level?: number;
+  nonce?: string;
+  pkh?: string;
+  hash?: string;
+  secret?: string;
+  source?: string;
+  period?: number;
+  proposal?: string;
+  ballot?: string;
+  fee?: string;
+  counter?: string;
+  gas_limit?: string;
+  storage_limit?: string;
+  parameters?: Micheline;
+  balance?: string;
+  delegate?: string;
+  amount?: string;
+  destination?: string;
+  public_key?: string;
+  script?: { code: Micheline; storage: Micheline };
 }
 
 interface OperationObject {
   branch?: string;
-  contents?: ConstructedOperation[];
+  contents?: Operation[];
   protocol?: string;
   signature?: string;
 }
@@ -74,9 +74,6 @@ type Micheline =
   | MichelineArray;
 
 type MichelineArray = Array<Micheline>;
-
-const opTag = (opKind: string): any =>
-  new Uint8Array([forgeMappings.forgeOpTags['009'][opKind]]);
 
 /**
  * @description Convert bytes from Int32
@@ -275,38 +272,40 @@ export const publicKey = (pk: string): string => {
 
 /**
  * @description Forge operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const op = (opArg: ConstructedOperation): string => {
+export const operation = (op: Operation): string => {
   const fop: string[] = [];
 
-  const forgedBuffer = opTag(opArg.kind);
+  const forgedBuffer = new Uint8Array([
+    forgeMappings.forgeOpTags['009'][op.kind],
+  ]);
 
   fop.push(buf2hex(forgedBuffer));
 
-  if (opArg.kind === 'endorsement') {
-    fop.push(endorsement(opArg));
-  } else if (opArg.kind === 'seed_nonce_revelation') {
-    fop.push(seedNonceRevelation(opArg));
-  } else if (opArg.kind === 'double_endorsement_evidence') {
+  if (op.kind === 'endorsement') {
+    fop.push(endorsement(op));
+  } else if (op.kind === 'seed_nonce_revelation') {
+    fop.push(seedNonceRevelation(op));
+  } else if (op.kind === 'double_endorsement_evidence') {
     fop.push(doubleEndorsementEvidence());
-  } else if (opArg.kind === 'double_baking_evidence') {
+  } else if (op.kind === 'double_baking_evidence') {
     fop.push(doubleBakingEvidence());
-  } else if (opArg.kind === 'activate_account') {
-    fop.push(activateAccount(opArg));
-  } else if (opArg.kind === 'proposals') {
+  } else if (op.kind === 'activate_account') {
+    fop.push(activateAccount(op));
+  } else if (op.kind === 'proposals') {
     fop.push(proposals());
-  } else if (opArg.kind === 'ballot') {
-    fop.push(ballot(opArg));
-  } else if (opArg.kind === 'reveal') {
-    fop.push(reveal(opArg));
-  } else if (opArg.kind === 'transaction') {
-    fop.push(transaction(opArg));
-  } else if (opArg.kind === 'origination') {
-    fop.push(origination(opArg));
-  } else if (opArg.kind === 'delegation') {
-    fop.push(delegation(opArg));
+  } else if (op.kind === 'ballot') {
+    fop.push(ballot(op));
+  } else if (op.kind === 'reveal') {
+    fop.push(reveal(op));
+  } else if (op.kind === 'transaction') {
+    fop.push(transaction(op));
+  } else if (op.kind === 'origination') {
+    fop.push(origination(op));
+  } else if (op.kind === 'delegation') {
+    fop.push(delegation(op));
   }
 
   return fop.join('');
@@ -314,25 +313,34 @@ export const op = (opArg: ConstructedOperation): string => {
 
 /**
  * @description Forge endorsement operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const endorsement = (opArg: ConstructedOperation): string => {
-  const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
+export const endorsement = (op: Operation): string => {
+  if (!op.level) {
+    throw new Error('Endorsement operation malformed. Missing level.');
+  }
+  const levelBuffer = new Uint8Array(toBytesInt32(op.level));
   return buf2hex(levelBuffer);
 };
 
 /**
  * @description Forge seed_nonce_revelation operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const seedNonceRevelation = (opArg: ConstructedOperation): string => {
+export const seedNonceRevelation = (op: Operation): string => {
   const fop: string[] = [];
 
-  const levelBuffer = new Uint8Array(toBytesInt32(opArg.level));
+  if (!op.level || !op.nonce) {
+    throw new Error(
+      'SeedNonceRevelation operation malformed. Missing level or nonce.',
+    );
+  }
+
+  const levelBuffer = new Uint8Array(toBytesInt32(op.level));
   fop.push(buf2hex(levelBuffer));
-  fop.push(opArg.nonce);
+  fop.push(op.nonce);
 
   return fop.join('');
 };
@@ -357,15 +365,21 @@ export const doubleBakingEvidence = (): string => {
 
 /**
  * @description Forge activate_account operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const activateAccount = (opArg: ConstructedOperation): string => {
+export const activateAccount = (op: Operation): string => {
   const fop: string[] = [];
 
-  const addressBuffer = new Uint8Array(b58cdecode(opArg.pkh, prefix.tz1));
+  if (!op.pkh || !op.secret) {
+    throw new Error(
+      'ActivateAccount operation malformed. Missing pkh or secret.',
+    );
+  }
+
+  const addressBuffer = new Uint8Array(b58cdecode(op.pkh, prefix.tz1));
   fop.push(buf2hex(addressBuffer));
-  fop.push(opArg.secret);
+  fop.push(op.secret);
 
   return fop.join('');
 };
@@ -381,21 +395,27 @@ export const proposals = (): string => {
 
 /**
  * @description Forge ballot operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const ballot = (opArg: ConstructedOperation): string => {
+export const ballot = (op: Operation): string => {
   const fop: string[] = [];
 
-  fop.push(publicKeyHash(opArg.source));
-  const periodBuffer = new Uint8Array(toBytesInt32(opArg.period));
+  if (!op.source || !op.period || !op.proposal) {
+    throw new Error(
+      'Ballot operation malformed. Missing source, period, or proposal.',
+    );
+  }
+
+  fop.push(publicKeyHash(op.source));
+  const periodBuffer = new Uint8Array(toBytesInt32(op.period));
   fop.push(buf2hex(periodBuffer));
-  const forgedBuffer = new Uint8Array(b58cdecode(opArg.proposal, prefix.P));
+  const forgedBuffer = new Uint8Array(b58cdecode(op.proposal, prefix.P));
   fop.push(buf2hex(forgedBuffer));
   let ballotBytes;
-  if (opArg.ballot === 'yay' || opArg.ballot === 'yea') {
+  if (op.ballot === 'yay' || op.ballot === 'yea') {
     ballotBytes = '00';
-  } else if (opArg.ballot === 'nay') {
+  } else if (op.ballot === 'nay') {
     ballotBytes = '01';
   } else {
     ballotBytes = '02';
@@ -407,40 +427,67 @@ export const ballot = (opArg: ConstructedOperation): string => {
 
 /**
  * @description Forge reveal operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const reveal = (opArg: ConstructedOperation): string => {
+export const reveal = (op: Operation): string => {
+  if (
+    !op.source ||
+    !op.fee ||
+    !op.counter ||
+    !op.gas_limit ||
+    !op.storage_limit ||
+    !op.public_key
+  ) {
+    throw new Error(
+      'Reveal operation malformed. Missing source, fee, counter, gas_limit, storage_limit, or public_key.',
+    );
+  }
+
   const fop: string[] = [];
 
-  fop.push(publicKeyHash(opArg.source));
-  fop.push(zarith(opArg.fee));
-  fop.push(zarith(opArg.counter));
-  fop.push(zarith(opArg.gas_limit));
-  fop.push(zarith(opArg.storage_limit));
-  fop.push(publicKey(opArg.public_key));
+  fop.push(publicKeyHash(op.source));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
+  fop.push(publicKey(op.public_key));
 
   return fop.join('');
 };
 
 /**
  * @description Forge transaction operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const transaction = (opArg: ConstructedOperation): string => {
+export const transaction = (op: Operation): string => {
+  if (
+    !op.source ||
+    !op.fee ||
+    !op.counter ||
+    !op.gas_limit ||
+    !op.storage_limit ||
+    !op.amount ||
+    !op.destination
+  ) {
+    throw new Error(
+      'Reveal operation malformed. Missing source, fee, counter, gas_limit, storage_limit, amount, or destination.',
+    );
+  }
+
   const fop = [];
 
-  fop.push(publicKeyHash(opArg.source));
-  fop.push(zarith(opArg.fee));
-  fop.push(zarith(opArg.counter));
-  fop.push(zarith(opArg.gas_limit));
-  fop.push(zarith(opArg.storage_limit));
-  fop.push(zarith(opArg.amount));
-  fop.push(address(opArg.destination));
+  fop.push(publicKeyHash(op.source));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
+  fop.push(zarith(op.amount));
+  fop.push(address(op.destination));
 
-  if (opArg.parameters) {
-    fop.push(parameters(opArg.parameters));
+  if (op.parameters) {
+    fop.push(parameters(op.parameters));
   } else {
     fop.push(bool(false));
   }
@@ -450,45 +497,72 @@ export const transaction = (opArg: ConstructedOperation): string => {
 
 /**
  * @description Forge origination operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const origination = (opArg: ConstructedOperation): string => {
+export const origination = (op: Operation): string => {
+  if (
+    !op.source ||
+    !op.fee ||
+    !op.counter ||
+    !op.gas_limit ||
+    !op.storage_limit ||
+    !op.balance ||
+    !op.script
+  ) {
+    throw new Error(
+      'Reveal operation malformed. Missing source, fee, counter, gas_limit, storage_limit, balance, or script.',
+    );
+  }
+
   const fop: string[] = [];
 
-  fop.push(publicKeyHash(opArg.source));
-  fop.push(zarith(opArg.fee));
-  fop.push(zarith(opArg.counter));
-  fop.push(zarith(opArg.gas_limit));
-  fop.push(zarith(opArg.storage_limit));
-  fop.push(zarith(opArg.balance));
-  if (opArg.delegate) {
+  fop.push(publicKeyHash(op.source));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
+  fop.push(zarith(op.balance));
+  if (op.delegate) {
     fop.push(bool(true));
-    fop.push(publicKeyHash(opArg.delegate));
+    fop.push(publicKeyHash(op.delegate));
   } else {
     fop.push(bool(false));
   }
-  fop.push(script(opArg.script));
+  fop.push(script(op.script));
+
   return fop.join('');
 };
 
 /**
  * @description Forge delegation operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export const delegation = (opArg: ConstructedOperation): string => {
+export const delegation = (op: Operation): string => {
+  if (
+    !op.source ||
+    !op.fee ||
+    !op.counter ||
+    !op.gas_limit ||
+    !op.storage_limit
+  ) {
+    throw new Error(
+      'Reveal operation malformed. Missing source, fee, counter, gas_limit or storage_limit.',
+    );
+  }
+
   const fop: string[] = [];
 
-  fop.push(publicKeyHash(opArg.source));
-  fop.push(zarith(opArg.fee));
-  fop.push(zarith(opArg.counter));
-  fop.push(zarith(opArg.gas_limit));
-  fop.push(zarith(opArg.storage_limit));
+  fop.push(publicKeyHash(op.source));
+  fop.push(zarith(op.fee));
+  fop.push(zarith(op.counter));
+  fop.push(zarith(op.gas_limit));
+  fop.push(zarith(op.storage_limit));
 
-  if (opArg.delegate) {
+  if (op.delegate) {
     fop.push(bool(true));
-    fop.push(publicKeyHash(opArg.delegate));
+    fop.push(publicKeyHash(op.delegate));
   } else {
     fop.push(bool(false));
   }
@@ -500,7 +574,7 @@ export const delegation = (opArg: ConstructedOperation): string => {
  * @description Forge operation bytes
  * @param {Object} opOb The operation object(s)
  * @param {number} counter The current counter for the account
- * @param {string} protocol The current block protocol
+ * @param {string} protocol The next protocol for the operation. Used to handle protocol upgrade events if necessary.
  * @returns {string} Forged operation bytes
  * @example
  * forge.forge({
@@ -534,8 +608,8 @@ export const forge = async (
   const forgedBuffer = new Uint8Array(b58cdecode(opOb.branch, prefix.b));
   const forgedBytes = [buf2hex(forgedBuffer)];
 
-  opOb.contents.forEach((content: ConstructedOperation): void => {
-    forgedBytes.push(op(content));
+  opOb.contents.forEach((content: Operation): void => {
+    forgedBytes.push(operation(content));
   });
 
   return {
@@ -765,7 +839,7 @@ export default {
   decodeRawBytes,
   encodeRawBytes,
   forge,
-  op,
+  operation,
   endorsement,
   seedNonceRevelation,
   doubleEndorsementEvidence,

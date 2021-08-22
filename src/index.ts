@@ -17,7 +17,7 @@ export {
   decodeRawBytes,
   encodeRawBytes,
   forge,
-  op,
+  operation,
   endorsement,
   seedNonceRevelation,
   doubleEndorsementEvidence,

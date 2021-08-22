@@ -30,9 +30,6 @@
     // eslint-plugin-import
     "import/prefer-default-export": 0,
     // @typescript-eslint
-    // "@typescript-eslint/ban-ts-comment": 0,
-    // "@typescript-eslint/camelcase": 0,
-    // "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/indent": 0,
     "@typescript-eslint/no-use-before-define": 0,
     "@typescript-eslint/naming-convention": 0

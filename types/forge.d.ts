@@ -1,32 +1,32 @@
-interface ConstructedOperation {
+interface Operation {
     kind: string;
-    level: number;
-    nonce: string;
-    pkh: string;
-    hash: string;
-    secret: string;
-    source: string;
-    period: number;
-    proposal: string;
-    ballot: string;
-    fee: string;
-    counter: string;
-    gas_limit: string;
-    storage_limit: string;
-    parameters: string;
-    balance: string;
-    delegate: string;
-    amount: string;
-    destination: string;
-    public_key: string;
-    script: {
+    level?: number;
+    nonce?: string;
+    pkh?: string;
+    hash?: string;
+    secret?: string;
+    source?: string;
+    period?: number;
+    proposal?: string;
+    ballot?: string;
+    fee?: string;
+    counter?: string;
+    gas_limit?: string;
+    storage_limit?: string;
+    parameters?: Micheline;
+    balance?: string;
+    delegate?: string;
+    amount?: string;
+    destination?: string;
+    public_key?: string;
+    script?: {
         code: Micheline;
         storage: Micheline;
     };
 }
 interface OperationObject {
     branch?: string;
-    contents?: ConstructedOperation[];
+    contents?: Operation[];
     protocol?: string;
     signature?: string;
 }
@@ -153,22 +153,22 @@ export declare const zarith: (n: string) => string;
 export declare const publicKey: (pk: string) => string;
 /**
  * @description Forge operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const op: (opArg: ConstructedOperation) => string;
+export declare const operation: (op: Operation) => string;
 /**
  * @description Forge endorsement operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const endorsement: (opArg: ConstructedOperation) => string;
+export declare const endorsement: (op: Operation) => string;
 /**
  * @description Forge seed_nonce_revelation operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const seedNonceRevelation: (opArg: ConstructedOperation) => string;
+export declare const seedNonceRevelation: (op: Operation) => string;
 /**
  * @description Forge double_endorsement_evidence operation bytes
  * @returns {string} Forged operation bytes
@@ -181,10 +181,10 @@ export declare const doubleEndorsementEvidence: () => string;
 export declare const doubleBakingEvidence: () => string;
 /**
  * @description Forge activate_account operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const activateAccount: (opArg: ConstructedOperation) => string;
+export declare const activateAccount: (op: Operation) => string;
 /**
  * @description Forge proposals operation bytes
  * @returns {string} Forged operation bytes
@@ -192,39 +192,39 @@ export declare const activateAccount: (opArg: ConstructedOperation) => string;
 export declare const proposals: () => string;
 /**
  * @description Forge ballot operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const ballot: (opArg: ConstructedOperation) => string;
+export declare const ballot: (op: Operation) => string;
 /**
  * @description Forge reveal operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const reveal: (opArg: ConstructedOperation) => string;
+export declare const reveal: (op: Operation) => string;
 /**
  * @description Forge transaction operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const transaction: (opArg: ConstructedOperation) => string;
+export declare const transaction: (op: Operation) => string;
 /**
  * @description Forge origination operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const origination: (opArg: ConstructedOperation) => string;
+export declare const origination: (op: Operation) => string;
 /**
  * @description Forge delegation operation bytes
- * @param {Object} opArg Operation to forge
+ * @param {Object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
-export declare const delegation: (opArg: ConstructedOperation) => string;
+export declare const delegation: (op: Operation) => string;
 /**
  * @description Forge operation bytes
  * @param {Object} opOb The operation object(s)
  * @param {number} counter The current counter for the account
- * @param {string} protocol The current block protocol
+ * @param {string} protocol The next protocol for the operation. Used to handle protocol upgrade events if necessary.
  * @returns {string} Forged operation bytes
  * @example
  * forge.forge({
@@ -259,18 +259,18 @@ declare const _default: {
     decodeRawBytes: (bytes: string) => Micheline;
     encodeRawBytes: (input: Micheline) => string;
     forge: (opOb: OperationObject, counter: number, protocol: string) => Promise<ForgedBytes>;
-    op: (opArg: ConstructedOperation) => string;
-    endorsement: (opArg: ConstructedOperation) => string;
-    seedNonceRevelation: (opArg: ConstructedOperation) => string;
+    operation: (op: Operation) => string;
+    endorsement: (op: Operation) => string;
+    seedNonceRevelation: (op: Operation) => string;
     doubleEndorsementEvidence: () => string;
     doubleBakingEvidence: () => string;
-    activateAccount: (opArg: ConstructedOperation) => string;
+    activateAccount: (op: Operation) => string;
     proposals: () => string;
-    ballot: (opArg: ConstructedOperation) => string;
-    reveal: (opArg: ConstructedOperation) => string;
-    transaction: (opArg: ConstructedOperation) => string;
-    origination: (opArg: ConstructedOperation) => string;
-    delegation: (opArg: ConstructedOperation) => string;
+    ballot: (op: Operation) => string;
+    reveal: (op: Operation) => string;
+    transaction: (op: Operation) => string;
+    origination: (op: Operation) => string;
+    delegation: (op: Operation) => string;
     parameters: (parameter: any) => string;
     publicKey: (pk: string) => string;
     publicKeyHash: (pkh: string) => string;

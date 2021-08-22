@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.1.0-beta.0] - 2021-08-21
+
+### Added
+
+- Added new default options to the constructor for the dry run limiter and the mempool counter manager
+  - The mempool counter manager allows multiple transactions to be injected before the previous transactions was included in a block
+    - Before a transaction is constructed, the mempool is parsed for previous transactions and uses the next counter
+    - When enabling the mempool counter manager, transactions are not prevalidated against the node to allow the transaction to inject without counter errors
+
+```js
+// To disable the dry run limiter and mempool counter manager, initialze the instance with:
+const tezos = new Tezos('https://testnet-tezos.giganode.io', 'main', {
+  dryRunLimiter: false,
+  mempoolCounterManager: false,
+});
+```
+
 ## [10.0.0] - 2021-08-01
 
 ### Added

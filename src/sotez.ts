@@ -215,12 +215,14 @@ export class Sotez extends AbstractTezModule {
     options: ModuleOptions = {},
   ) {
     super(provider, chain, options.debugMode);
-    this._localForge = options.localForge !== false;
-    this._validateLocalForge = !!options.validateLocalForge || false;
-    this._debugMode = !!options.debugMode || false;
-    this._useMutez = options.useMutez !== false;
-    this._dryRunLimiter = options.dryRunLimiter !== false;
-    this._mempoolCounterManager = options.mempoolCounterManager !== false;
+    this._localForge = options.localForge === false ? false : true; // Default: localForge = true
+    this._validateLocalForge =
+      options.validateLocalForge === true ? true : false; // Default: validateLocalForge = false
+    this._debugMode = options.debugMode === true ? true : false; // Default: debugMode = false
+    this._useMutez = options.useMutez === false ? false : true; // Default: useMutez = true
+    this._dryRunLimiter = options.dryRunLimiter === true ? true : false; // Default: dryRunLimiter = false
+    this._mempoolCounterManager =
+      options.mempoolCounterManager === true ? true : false; // Default: mempoolCounterManager = false
     this._defaultFee =
       options.defaultFee || (this._useMutez ? DEFAULT_FEE : totez(DEFAULT_FEE));
   }

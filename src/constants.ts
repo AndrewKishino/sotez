@@ -164,6 +164,8 @@ const opMapping: { [key: string]: string } = {
   '73': 'APPLY',
   '74': 'chain_id',
   '75': 'CHAIN_ID',
+  // PROTO_006
+  // PROTO_007
   // PROTO_008
   '76': 'LEVEL',
   '77': 'SELF_ADDRESS',
@@ -190,6 +192,13 @@ const opMapping: { [key: string]: string } = {
   '8C': 'GET_AND_UPDATE',
   // PROTO_009
   // PROTO_010
+  // PROTO_011
+  '8D': 'chest',
+  '8E': 'chest_key',
+  '8F': 'OPEN_CHEST',
+  '90': 'VIEW',
+  '91': 'view',
+  '92': 'constant',
 };
 
 const opMappingReverse = (() => {
@@ -320,6 +329,7 @@ export const protocols = {
   '008': 'PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA',
   '009': 'PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i',
   '010': 'PtGRANADsDU8R9daYKAgWnQYAJ64omN1o3KMGVCykShA97vQbvV',
+  '011': 'PtHangz2aRngywmSRGGvrcTyMbbdpWdpFKuS4uMWxg2RaH9i1qx',
 };
 
 export default {

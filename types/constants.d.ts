@@ -49,6 +49,7 @@ export declare const protocols: {
     '008': string;
     '009': string;
     '010': string;
+    '011': string;
 };
 declare const _default: {
     prefix: {
@@ -102,6 +103,7 @@ declare const _default: {
         '008': string;
         '009': string;
         '010': string;
+        '011': string;
     };
 };
 export default _default;

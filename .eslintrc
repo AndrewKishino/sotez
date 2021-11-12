@@ -4,6 +4,7 @@
     "plugin:prettier/recommended",
     "plugin:jsdoc/recommended"
   ],
+  "plugins": ["import"],
   "env": {
     "browser": true,
     "node": true,

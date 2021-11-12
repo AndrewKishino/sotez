@@ -67,7 +67,7 @@ export const getAddress = async ({
     );
   } catch (e) {
     ledgerTransport.close();
-    return e;
+    throw e;
   }
   ledgerTransport.close();
   return publicKey;
@@ -113,7 +113,7 @@ export const signOperation = async ({
     ));
   } catch (e) {
     ledgerTransport.close();
-    return e;
+    throw e;
   }
   ledgerTransport.close();
   return signature;
@@ -138,7 +138,7 @@ export const getVersion = async (transport: any): Promise<LedgerGetVersion> => {
     versionInfo = await tezosLedger.getVersion();
   } catch (e) {
     ledgerTransport.close();
-    return e;
+    throw e;
   }
   ledgerTransport.close();
   return versionInfo;

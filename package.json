@@ -55,7 +55,7 @@
     "@types/pbkdf2": "^3.1.0",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
-    "documentation": "^13.2.0",
+    "documentation": "^13.2.5",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-typescript": "^15.0.0",
     "eslint-config-prettier": "^8.0.0",

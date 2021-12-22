@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [11.0.0] - 2021-12-22
+
+- General release Hangzhou
+
+### Added
+
+- Support for Hangzhou protocol
+
+## [11.0.0-beta.0] - 2021-11-12
+
+### Added
+
+- Support for Hangzhou protocol
+
 ## [10.1.0-beta.0] - 2021-08-21
 
 ### Added

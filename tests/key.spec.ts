@@ -71,79 +71,70 @@ const FUNDRAISER_ACCOUNT = {
 describe('Key', () => {
   it('import ed25519 secret key', async () => {
     const key = new Key({ key: ED25519_KEY.sk });
-    await key.ready;
-    expect(key.publicKey()).toBe(ED25519_KEY.pk);
-    expect(key.publicKeyHash()).toBe(ED25519_KEY.pkh);
-    expect(key.secretKey()).toBe(ED25519_KEY.sk);
+    expect(await key.publicKey()).toBe(ED25519_KEY.pk);
+    expect(await key.publicKeyHash()).toBe(ED25519_KEY.pkh);
+    expect(await key.secretKey()).toBe(ED25519_KEY.sk);
   });
 
   it('import encrypted ed25519 secret key', async () => {
     const key = new Key({ key: ED25519_KEY.esk, passphrase: 'password' });
-    await key.ready;
-    expect(key.publicKey()).toBe(ED25519_KEY.pk);
-    expect(key.publicKeyHash()).toBe(ED25519_KEY.pkh);
-    expect(key.secretKey()).toBe(ED25519_KEY.sk);
+    expect(await key.publicKey()).toBe(ED25519_KEY.pk);
+    expect(await key.publicKeyHash()).toBe(ED25519_KEY.pkh);
+    expect(await key.secretKey()).toBe(ED25519_KEY.sk);
 
     const key2 = new Key({
-      key: key.secretKey('password'),
+      key: await key.secretKey('password'),
       passphrase: 'password',
     });
-    await key2.ready;
-    expect(key2.publicKey()).toBe(key.publicKey());
-    expect(key2.publicKeyHash()).toBe(key.publicKeyHash());
-    expect(key2.secretKey()).toBe(key.secretKey());
-    expect(key2.secretKey('password')).toBe(ED25519_KEY.esk);
+    expect(await key2.publicKey()).toBe(await key.publicKey());
+    expect(await key2.publicKeyHash()).toBe(await key.publicKeyHash());
+    expect(await key2.secretKey()).toBe(await key.secretKey());
+    expect(await key2.secretKey('password')).toBe(ED25519_KEY.esk);
   });
 
   it('import secp256k1 secret key', async () => {
     const key = new Key({ key: SECP256K1_KEY.sk });
-    await key.ready;
-    expect(key.publicKey()).toBe(SECP256K1_KEY.pk);
-    expect(key.publicKeyHash()).toBe(SECP256K1_KEY.pkh);
-    expect(key.secretKey()).toBe(SECP256K1_KEY.sk);
+    expect(await key.publicKey()).toBe(SECP256K1_KEY.pk);
+    expect(await key.publicKeyHash()).toBe(SECP256K1_KEY.pkh);
+    expect(await key.secretKey()).toBe(SECP256K1_KEY.sk);
 
     const key2 = new Key({
-      key: key.secretKey('password'),
+      key: await key.secretKey('password'),
       passphrase: 'password',
     });
-    await key2.ready;
-    expect(key2.publicKey()).toBe(key.publicKey());
-    expect(key2.publicKeyHash()).toBe(key.publicKeyHash());
-    expect(key2.secretKey()).toBe(key.secretKey());
+    expect(await key2.publicKey()).toBe(await key.publicKey());
+    expect(await key2.publicKeyHash()).toBe(await key.publicKeyHash());
+    expect(await key2.secretKey()).toBe(await key.secretKey());
   });
 
   it('import secp256k1 alternate secret key', async () => {
     const key = new Key({ key: SECP256K1_KEY_2.sk });
-    await key.ready;
-    expect(key.publicKey()).toBe(SECP256K1_KEY_2.pk);
-    expect(key.publicKeyHash()).toBe(SECP256K1_KEY_2.pkh);
-    expect(key.secretKey()).toBe(SECP256K1_KEY_2.sk);
+    expect(await key.publicKey()).toBe(SECP256K1_KEY_2.pk);
+    expect(await key.publicKeyHash()).toBe(SECP256K1_KEY_2.pkh);
+    expect(await key.secretKey()).toBe(SECP256K1_KEY_2.sk);
 
     const key2 = new Key({
-      key: key.secretKey('password'),
+      key: await key.secretKey('password'),
       passphrase: 'password',
     });
-    await key2.ready;
-    expect(key2.publicKey()).toBe(key.publicKey());
-    expect(key2.publicKeyHash()).toBe(key.publicKeyHash());
-    expect(key2.secretKey()).toBe(key.secretKey());
+    expect(await key2.publicKey()).toBe(await key.publicKey());
+    expect(await key2.publicKeyHash()).toBe(await key.publicKeyHash());
+    expect(await key2.secretKey()).toBe(await key.secretKey());
   });
 
   it('import p256 secret key', async () => {
     const key = new Key({ key: P256_KEY.sk });
-    await key.ready;
-    expect(key.publicKey()).toBe(P256_KEY.pk);
-    expect(key.publicKeyHash()).toBe(P256_KEY.pkh);
-    expect(key.secretKey()).toBe(P256_KEY.sk);
+    expect(await key.publicKey()).toBe(P256_KEY.pk);
+    expect(await key.publicKeyHash()).toBe(P256_KEY.pkh);
+    expect(await key.secretKey()).toBe(P256_KEY.sk);
 
     const key2 = new Key({
-      key: key.secretKey('password'),
+      key: await key.secretKey('password'),
       passphrase: 'password',
     });
-    await key2.ready;
-    expect(key2.publicKey()).toBe(key.publicKey());
-    expect(key2.publicKeyHash()).toBe(key.publicKeyHash());
-    expect(key2.secretKey()).toBe(key.secretKey());
+    expect(await key2.publicKey()).toBe(await key.publicKey());
+    expect(await key2.publicKeyHash()).toBe(await key.publicKeyHash());
+    expect(await key2.secretKey()).toBe(await key.secretKey());
   });
 
   it('import fundraiser account', async () => {
@@ -152,15 +143,13 @@ describe('Key', () => {
       passphrase: FUNDRAISER_ACCOUNT.password,
       email: FUNDRAISER_ACCOUNT.email,
     });
-    await key.ready;
-    expect(key.publicKey()).toBe(ED25519_KEY_2.pk);
-    expect(key.publicKeyHash()).toBe(ED25519_KEY_2.pkh);
-    expect(key.secretKey()).toBe(ED25519_KEY_2.sk);
+    expect(await key.publicKey()).toBe(ED25519_KEY_2.pk);
+    expect(await key.publicKeyHash()).toBe(ED25519_KEY_2.pkh);
+    expect(await key.secretKey()).toBe(ED25519_KEY_2.sk);
   });
 
   it('sign ed25519', async () => {
     const key = new Key({ key: ED25519_KEY_3.sk });
-    await key.ready;
     const { bytes, sig, prefixSig, sbytes } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
       magicBytesMap.generic,
@@ -181,18 +170,20 @@ describe('Key', () => {
 
   it('verify ed25519', async () => {
     const key = new Key({ key: ED25519_KEY_3.sk });
-    await key.ready;
     const { bytes, magicBytes, prefixSig } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
       magicBytesMap.generic,
     );
-    const verified = await key.verify(`${magicBytes}${bytes}`, prefixSig);
+    const verified = await key.verify(
+      `${magicBytes}${bytes}`,
+      prefixSig,
+      await key.publicKey(),
+    );
     expect(verified).toBe(true);
   });
 
   it('sign secp256k1', async () => {
     const key = new Key({ key: SECP256K1_KEY.sk });
-    await key.ready;
 
     const { bytes, sig, prefixSig, sbytes } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
@@ -215,19 +206,21 @@ describe('Key', () => {
 
   it('verify secp256k1', async () => {
     const key = new Key({ key: SECP256K1_KEY.sk });
-    await key.ready;
 
     const { bytes, magicBytes, prefixSig } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
       magicBytesMap.generic,
     );
-    const verified = await key.verify(`${magicBytes}${bytes}`, prefixSig);
+    const verified = await key.verify(
+      `${magicBytes}${bytes}`,
+      prefixSig,
+      await key.publicKey(),
+    );
     expect(verified).toBe(true);
   });
 
   it('sign p256', async () => {
     const key = new Key({ key: P256_KEY.sk });
-    await key.ready;
 
     const { bytes, sig, prefixSig, sbytes } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
@@ -250,19 +243,21 @@ describe('Key', () => {
 
   it('verify p256', async () => {
     const key = new Key({ key: P256_KEY.sk });
-    await key.ready;
 
     const { bytes, magicBytes, prefixSig } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
       magicBytesMap.generic,
     );
-    const verified = await key.verify(`${magicBytes}${bytes}`, prefixSig);
+    const verified = await key.verify(
+      `${magicBytes}${bytes}`,
+      prefixSig,
+      await key.publicKey(),
+    );
     expect(verified).toBe(true);
   });
 
   it('verify invalid p256', async () => {
     const key = new Key({ key: P256_KEY.sk });
-    await key.ready;
 
     const { bytes, magicBytes, prefixSig } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
@@ -270,18 +265,20 @@ describe('Key', () => {
     );
 
     const altKey = new Key({ key: P256_KEY_2.sk });
-    await altKey.ready;
 
-    const verified = await altKey.verify(`${magicBytes}${bytes}`, prefixSig);
+    const verified = await altKey.verify(
+      `${magicBytes}${bytes}`,
+      prefixSig,
+      await altKey.publicKey(),
+    );
     expect(verified).toBe(false);
   });
 
   it('sign p256 producing signature that needs padding', async () => {
     const key = new Key({ key: P256_KEY_2.sk });
-    await key.ready;
-    expect(key.publicKey()).toBe(P256_KEY_2.pk);
-    expect(key.publicKeyHash()).toBe(P256_KEY_2.pkh);
-    expect(key.secretKey()).toBe(P256_KEY_2.sk);
+    expect(await key.publicKey()).toBe(P256_KEY_2.pk);
+    expect(await key.publicKeyHash()).toBe(P256_KEY_2.pkh);
+    expect(await key.secretKey()).toBe(P256_KEY_2.sk);
     expect(
       (
         await key.sign(
@@ -296,13 +293,16 @@ describe('Key', () => {
 
   it('verify p256 producing signature that needs padding', async () => {
     const key = new Key({ key: P256_KEY_2.sk });
-    await key.ready;
 
     const { bytes, magicBytes, prefixSig } = await key.sign(
       '051d7ba791fbe8ccfb6f83dd9c760db5642358909eede2a915a26275e6880b9a6c02a2dea17733a2ef2685e5511bd3f160fd510fea7db50edd8122997800c0843d016910882a9436c31ce1d51570e21ae277bb8d91b800006c02a2dea17733a2ef2685e5511bd3f160fd510fea7df416de812294cd010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000004602000000410320053d036d0743035d0100000024747a31655935417161316b5844466f6965624c3238656d7958466f6e65416f5667317a68031e0743036a0032034f034d031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dd016df8122a6ca010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff020000003e02000000390320053d036d0743035d0100000024747a3161575850323337424c774e484a6343443462334475744365766871713254315a390346034e031b6c02a2dea17733a2ef2685e5511bd3f160fd510fea7dc916e08122dec9010000016910882a9436c31ce1d51570e21ae277bb8d91b800ff0200000013020000000e0320053d036d053e035d034e031b',
       magicBytesMap.generic,
     );
-    const verified = await key.verify(`${magicBytes}${bytes}`, prefixSig);
+    const verified = await key.verify(
+      `${magicBytes}${bytes}`,
+      prefixSig,
+      await key.publicKey(),
+    );
     expect(verified).toBe(true);
   });
 });

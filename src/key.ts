@@ -23,13 +23,13 @@ import { prefix } from './constants';
  * @param {string} [KeyConstructor.passphrase] The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {string} [KeyConstructor.email] Email used if a fundraiser key is passed
  * @param {string} [KeyConstructor.ledgerPath="44'/1729'/0'/0'"] Ledger derivation path
- * @param {string} [KeyConstructor.ledgerCurve=tz1] Ledger curve
+ * @param {string} [KeyConstructor.ledgerCurve='tz1'] Ledger curve
+ * @param {Object} [KeyConstructor.ledgerTransport] Ledger transport
  * @example
- * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
- * await key.ready;
+ * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+ * const key = new Key({ ledgerPath: "44'/1729'/0'/1'", ledgerTransport: TransportNodeHid });
  *
- * const key = new Key({ ledgerPath: "44'/1729'/0'/1'" });
- * await key.ready;
+ * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
  */
 export class Key {
   _curve: string;
@@ -110,16 +110,20 @@ export class Key {
    * @description Returns the public key
    * @returns {string} The public key associated with the private key
    */
-  publicKey = (): string =>
-    b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
+  publicKey = async (): Promise<string> => {
+    await this.ready;
+    return b58cencode(this._publicKey, prefix[`${this._curve}pk`]);
+  };
 
   /**
    * @memberof Key
    * @description Returns the secret key
    * @param {string} [passphrase] The password used to encrypt the secret key, if applicable
-   * @returns {string} The secret key associated with this key, if available
+   * @returns {Promise<string>} The secret key associated with this key, if available
    */
-  secretKey = (passphrase?: string): string => {
+  secretKey = async (passphrase?: string): Promise<string> => {
+    await this.ready;
+
     if (!this._secretKey) {
       throw new Error('Secret key not known.');
     }
@@ -154,7 +158,9 @@ export class Key {
    * @description Returns public key hash for this key
    * @returns {string} The public key hash for this key
    */
-  publicKeyHash = (): string => {
+  publicKeyHash = async (): Promise<string> => {
+    await this.ready;
+
     const prefixMap: { [key: string]: Uint8Array } = {
       ed: prefix.tz1,
       sp: prefix.tz2,
@@ -176,7 +182,7 @@ export class Key {
     setInit: (value: boolean) => void,
   ): Promise<void> => {
     await sodium.ready;
-    if (this._isLedger || !key) {
+    if ((this._isLedger && !key) || !key) {
       ({ publicKey: key } = await getAddress({
         transport: this._ledgerTransport,
         path: this._ledgerPath,
@@ -331,6 +337,8 @@ export class Key {
     prefixSig: string;
     sbytes: string;
   }> => {
+    await this.ready;
+
     if (this._isLedger) {
       const signature = await signOperation({
         transport: this._ledgerTransport,
@@ -418,11 +426,13 @@ export class Key {
    * @param {string} publicKey A public key
    * @returns {boolean} Whether the signature is valid
    */
-  verify = (
+  verify = async (
     bytes: string,
     signature: string,
-    publicKey: string = this.publicKey(),
-  ): boolean => {
+    publicKey: string,
+  ): Promise<boolean> => {
+    await this.ready;
+
     if (!publicKey) {
       throw new Error('Cannot verify without a public key');
     }

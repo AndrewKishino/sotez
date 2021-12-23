@@ -8,13 +8,13 @@
  * @param {string} [KeyConstructor.passphrase] The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {string} [KeyConstructor.email] Email used if a fundraiser key is passed
  * @param {string} [KeyConstructor.ledgerPath="44'/1729'/0'/0'"] Ledger derivation path
- * @param {string} [KeyConstructor.ledgerCurve=tz1] Ledger curve
+ * @param {string} [KeyConstructor.ledgerCurve='tz1'] Ledger curve
+ * @param {Object} [KeyConstructor.ledgerTransport] Ledger transport
  * @example
- * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
- * await key.ready;
+ * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+ * const key = new Key({ ledgerPath: "44'/1729'/0'/1'", ledgerTransport: TransportNodeHid });
  *
- * const key = new Key({ ledgerPath: "44'/1729'/0'/1'" });
- * await key.ready;
+ * const key = new Key({ key: 'edskRv6ZnkLQMVustbYHFPNsABu1Js6pEEWyMUFJQTqEZjVCU2WHh8ckcc7YA4uBzPiJjZCsv3pC1NDdV99AnyLzPjSip4uC3y' });
  */
 export declare class Key {
     _curve: string;
@@ -47,20 +47,20 @@ export declare class Key {
      * @description Returns the public key
      * @returns {string} The public key associated with the private key
      */
-    publicKey: () => string;
+    publicKey: () => Promise<string>;
     /**
      * @memberof Key
      * @description Returns the secret key
      * @param {string} [passphrase] The password used to encrypt the secret key, if applicable
-     * @returns {string} The secret key associated with this key, if available
+     * @returns {Promise<string>} The secret key associated with this key, if available
      */
-    secretKey: (passphrase?: string | undefined) => string;
+    secretKey: (passphrase?: string | undefined) => Promise<string>;
     /**
      * @memberof Key
      * @description Returns public key hash for this key
      * @returns {string} The public key hash for this key
      */
-    publicKeyHash: () => string;
+    publicKeyHash: () => Promise<string>;
     initialize: ({ key, passphrase, email, }: {
         key?: string | undefined;
         passphrase?: string | undefined;
@@ -88,5 +88,5 @@ export declare class Key {
      * @param {string} publicKey A public key
      * @returns {boolean} Whether the signature is valid
      */
-    verify: (bytes: string, signature: string, publicKey?: string) => boolean;
+    verify: (bytes: string, signature: string, publicKey: string) => Promise<boolean>;
 }

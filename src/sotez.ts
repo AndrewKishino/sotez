@@ -39,7 +39,7 @@ interface Operation<T> {
   script?: { code: Micheline; storage: Micheline };
 }
 
-interface Head {
+interface Block {
   protocol: string;
   chain_id: string;
   hash: string;
@@ -331,27 +331,35 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Get the balance for a contract
    * @param {string} address The contract for which to retrieve the balance
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The balance of the contract
    * @example
    * sotez.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(balance => console.log(balance));
    */
-  getBalance = (address: string): Promise<string> =>
+  getBalance = (
+    address: string,
+    block: string | number = 'head',
+  ): Promise<string> =>
     this.query(
-      `/chains/${this.chain}/blocks/head/context/contracts/${address}/balance`,
+      `/chains/${this.chain}/blocks/${block}/context/contracts/${address}/balance`,
     );
 
   /**
    * @description Get the delegate for a contract
    * @param {string} address The contract for which to retrieve the delegate
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The delegate of a contract, if any
    * @example
    * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(delegate => console.log(delegate));
    */
-  getDelegate = (address: string): Promise<string> =>
+  getDelegate = (
+    address: string,
+    block: string | number = 'head',
+  ): Promise<string> =>
     this.query(
-      `/chains/${this.chain}/blocks/head/context/contracts/${address}/delegate`,
+      `/chains/${this.chain}/blocks/${block}/context/contracts/${address}/delegate`,
     ).then((delegate: string) => {
       if (!delegate) {
         return '';
@@ -362,32 +370,41 @@ export class Sotez extends AbstractTezModule {
   /**
    * @description Get the manager for a contract
    * @param {string} address The contract for which to retrieve the manager
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The manager of a contract
    * @example
    * sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(({ manager, key }) => console.log(manager, key));
    */
-  getManager = (address: string): Promise<{ manager: string; key: string }> =>
+  getManager = (
+    address: string,
+    block = 'head',
+  ): Promise<{ manager: string; key: string }> =>
     this.query(
-      `/chains/${this.chain}/blocks/head/context/contracts/${address}/manager_key`,
+      `/chains/${this.chain}/blocks/${block}/context/contracts/${address}/manager_key`,
     );
 
   /**
    * @description Get the counter for an contract
    * @param {string} address The contract for which to retrieve the counter
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The counter of a contract, if any
    * @example
    * sotez.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
    *   .then(counter => console.log(counter));
    */
-  getCounter = (address: string): Promise<string> =>
+  getCounter = (
+    address: string,
+    block: string | number = 'head',
+  ): Promise<string> =>
     this.query(
-      `/chains/${this.chain}/blocks/head/context/contracts/${address}/counter`,
+      `/chains/${this.chain}/blocks/${block}/context/contracts/${address}/counter`,
     );
 
   /**
    * @description Get the baker information for an address
    * @param {string} address The contract for which to retrieve the baker information
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The information of the delegate address
    * @example
    * sotez.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
@@ -411,58 +428,67 @@ export class Sotez extends AbstractTezModule {
    *     grace_period,
    *   ));
    */
-  getBaker = (address: string): Promise<Baker> =>
+  getBaker = (
+    address: string,
+    block: string | number = 'head',
+  ): Promise<Baker> =>
     this.query(
-      `/chains/${this.chain}/blocks/head/context/delegates/${address}`,
+      `/chains/${this.chain}/blocks/${block}/context/delegates/${address}`,
     );
 
   /**
    * @description Get the header of the current head
+   * @param {string|number} [block='head'] The block to retrieve the header from
    * @returns {Promise} The whole block header
    * @example
    * sotez.getHeader().then(header => console.log(header));
    */
-  getHeader = (): Promise<Header> =>
-    this.query(`/chains/${this.chain}/blocks/head/header`);
+  getBlockHeader = (block: string | number = 'head'): Promise<Header> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/header`);
 
   /**
    * @description Get the metadata of the current head
+   * @param {string|number} [block='head'] The block to retrieve the block metadata from
    * @returns {Promise} The head block metadata
    * @example
-   * sotez.getHeadMetadata().then(metadata => console.log(metadata));
+   * sotez.getBlockMetadata().then(metadata => console.log(metadata));
    */
-  getHeadMetadata = (): Promise<Header> =>
-    this.query(`/chains/${this.chain}/blocks/head/metadata`);
+  getBlockMetadata = (block: string | number = 'head'): Promise<Header> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/metadata`);
 
   /**
    * @description Get the current head block of the chain
+   * @param {string|number} [block='head'] The block to retrieve
    * @returns {Promise} The current head block
    * @example
    * sotez.getHead().then(head => console.log(head));
    */
-  getHead = (): Promise<Head> =>
-    this.query(`/chains/${this.chain}/blocks/head`);
+  getBlock = (block: string | number = 'head'): Promise<Block> =>
+    this.query(`/chains/${this.chain}/blocks/${block}`);
 
   /**
    * @description Get the current head block hash of the chain
+   * @param {string|number} [block='head'] The block to retrieve the hash from
    * @returns {Promise} The block's hash, its unique identifier
    * @example
    * sotez.getHeadHash().then(headHash => console.log(headHash))
    */
-  getHeadHash = (): Promise<string> =>
-    this.query(`/chains/${this.chain}/blocks/head/hash`);
+  getBlockHash = (block: string | number = 'head'): Promise<string> =>
+    this.query(`/chains/${this.chain}/blocks/head/${block}`);
 
   /**
    * @description Ballots casted so far during a voting period
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} Ballots casted so far during a voting period
    * @example
    * sotez.getBallotList().then(ballotList => console.log(ballotList));
    */
-  getBallotList = (): Promise<any[]> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/ballot_list`);
+  getBallotList = (block: string | number = 'head'): Promise<any[]> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/votes/ballot_list`);
 
   /**
    * @description List of proposals with number of supporters
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} List of proposals with number of supporters
    * @example
    * sotez.getProposals().then(proposals => {
@@ -470,56 +496,65 @@ export class Sotez extends AbstractTezModule {
    *   console.log(proposals[1][0], proposals[1][1])
    * );
    */
-  getProposals = (): Promise<any[]> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/proposals`);
+  getProposals = (block: string | number = 'head'): Promise<any[]> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/votes/proposals`);
 
   /**
    * @description Sum of ballots casted so far during a voting period
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} Sum of ballots casted so far during a voting period
    * @example
    * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass));
    */
-  getBallots = (): Promise<{
+  getBallots = (
+    block: string | number = 'head',
+  ): Promise<{
     yay: number;
     nay: number;
     pass: number;
-  }> => this.query(`/chains/${this.chain}/blocks/head/votes/ballots`);
+  }> => this.query(`/chains/${this.chain}/blocks/${block}/votes/ballots`);
 
   /**
    * @description List of delegates with their voting weight, in number of rolls
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} The ballots of the current voting period
    * @example
    * sotez.getListings().then(listings => console.log(listings));
    */
-  getListings = (): Promise<any[]> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/listings`);
+  getListings = (block: string | number = 'head'): Promise<any[]> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/votes/listings`);
 
   /**
    * @description Current proposal under evaluation
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} Current proposal under evaluation
    * @example
-   * sotez.getCurrentProposal().then(currentProposal => console.log(currentProposal));
+   * sotez.getProposal().then(currentProposal => console.log(currentProposal));
    */
-  getCurrentProposal = (): Promise<string> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/current_proposal`);
+  getProposal = (block: string | number = 'head'): Promise<string> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/votes/current_proposal`);
 
   /**
    * @description Current period kind
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} Current period kind
    * @example
-   * sotez.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod));
+   * sotez.getProposalPeriod().then(proposalPeriod => console.log(proposalPeriod));
    */
-  getCurrentPeriod = () =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/current_period_kind`);
+  getProposalPeriod = (block: string | number = 'head') =>
+    this.query(
+      `/chains/${this.chain}/blocks/${block}/votes/current_period_kind`,
+    );
 
   /**
    * @description Current expected quorum
+   * @param {string|number} [block='head'] The block to query against
    * @returns {Promise} Current expected quorum
    * @example
-   * sotez.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum));
+   * sotez.getQuorum().then(quorum => console.log(quorum));
    */
-  getCurrentQuorum = (): Promise<number> =>
-    this.query(`/chains/${this.chain}/blocks/head/votes/current_quorum`);
+  getQuorum = (block: string | number = 'head'): Promise<number> =>
+    this.query(`/chains/${this.chain}/blocks/${block}/votes/current_quorum`);
 
   /**
    * @description Current pending operations in the mempool
@@ -574,13 +609,13 @@ export class Sotez extends AbstractTezModule {
       }, timeout * 1000);
 
       const repeater = (): void => {
-        this.getHead().then((head: Head) => {
-          if (!hashMap[head.hash]) {
-            hashMap[head.hash] = true;
+        this.getBlock().then((block: Block) => {
+          if (!hashMap[block.hash]) {
+            hashMap[block.hash] = true;
             for (let i = 3; i >= 0; i--) {
-              if (head.operations[i].some(operationCheck)) {
+              if (block.operations[i].some(operationCheck)) {
                 clearTimeout(clearTimeoutHandle);
-                resolve(head.hash);
+                resolve(block.hash);
                 return;
               }
             }
@@ -612,7 +647,7 @@ export class Sotez extends AbstractTezModule {
    *   }
    * }).then(({ opbytes, opOb, counter }) => console.log(opbytes, opOb, counter));
    */
-  prepareOperation = ({
+  prepareOperation = async ({
     operation,
     source,
     simulated,
@@ -624,8 +659,9 @@ export class Sotez extends AbstractTezModule {
     let preOps: Operation<string | number>[] = [];
     let head: Header;
 
-    promises.push(this.getHeader());
-    promises.push(this.getHeadMetadata());
+    promises.push(this.getBlockHeader());
+    promises.push(this.getBlockMetadata());
+    promises.push(this.getBlockHeader('head~2'));
 
     if (Array.isArray(operation)) {
       preOps = [...operation];
@@ -633,7 +669,7 @@ export class Sotez extends AbstractTezModule {
       preOps = [operation];
     }
 
-    const publicKeyHash = source || this.key.publicKeyHash();
+    const publicKeyHash = source || (await this.key.publicKeyHash());
 
     for (let i = 0; i < preOps.length; i++) {
       if (
@@ -659,6 +695,7 @@ export class Sotez extends AbstractTezModule {
       async ([
         header,
         metadata,
+        finalHeader,
         manager,
         headCounter,
       ]: any[]): Promise<ForgedBytes> => {
@@ -669,7 +706,7 @@ export class Sotez extends AbstractTezModule {
             preOps.unshift({
               kind: 'reveal',
               fee: this.defaultFee,
-              public_key: this.key.publicKey(),
+              public_key: await this.key.publicKey(),
               source: publicKeyHash,
               gas_limit: 10600,
               storage_limit: 300,
@@ -732,7 +769,8 @@ export class Sotez extends AbstractTezModule {
             return constructedOp;
           });
 
-        opOb.branch = head.hash;
+        // anchor the operation on a branch which is considered "final" (head~2)
+        opOb.branch = finalHeader.hash;
         opOb.contents = constructOps(ops) as Operation<string>[];
 
         let remoteForgedBytes = '';
@@ -1075,7 +1113,7 @@ export class Sotez extends AbstractTezModule {
    */
   setDelegate = async ({
     delegate,
-    source = this.key.publicKeyHash(),
+    source,
     fee = this.defaultFee,
     gasLimit = 10600,
     storageLimit = 0,
@@ -1086,6 +1124,8 @@ export class Sotez extends AbstractTezModule {
     gasLimit?: number;
     storageLimit?: number;
   }): Promise<any> => {
+    source ??= await this.key.publicKeyHash();
+
     const operation: Operation<string | number> = {
       kind: 'delegation',
       source,
@@ -1121,7 +1161,7 @@ export class Sotez extends AbstractTezModule {
     const operation: Operation<string | number> = {
       kind: 'delegation',
       fee,
-      delegate: this.key.publicKeyHash(),
+      delegate: await this.key.publicKeyHash(),
       ...(gasLimit ? { gas_limit: gasLimit } : {}),
       ...(storageLimit ? { storage_limit: storageLimit } : {}),
     };

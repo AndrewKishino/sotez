@@ -36,7 +36,7 @@ interface Operation<T> {
         storage: Micheline;
     };
 }
-interface Head {
+interface Block {
     protocol: string;
     chain_id: string;
     hash: string;
@@ -227,45 +227,50 @@ export declare class Sotez extends AbstractTezModule {
     /**
      * @description Get the balance for a contract
      * @param {string} address The contract for which to retrieve the balance
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The balance of the contract
      * @example
      * sotez.getBalance('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
      *   .then(balance => console.log(balance));
      */
-    getBalance: (address: string) => Promise<string>;
+    getBalance: (address: string, block?: string | number) => Promise<string>;
     /**
      * @description Get the delegate for a contract
      * @param {string} address The contract for which to retrieve the delegate
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The delegate of a contract, if any
      * @example
      * sotez.getDelegate('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
      *   .then(delegate => console.log(delegate));
      */
-    getDelegate: (address: string) => Promise<string>;
+    getDelegate: (address: string, block?: string | number) => Promise<string>;
     /**
      * @description Get the manager for a contract
      * @param {string} address The contract for which to retrieve the manager
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The manager of a contract
      * @example
      * sotez.getManager('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
      *   .then(({ manager, key }) => console.log(manager, key));
      */
-    getManager: (address: string) => Promise<{
+    getManager: (address: string, block?: string) => Promise<{
         manager: string;
         key: string;
     }>;
     /**
      * @description Get the counter for an contract
      * @param {string} address The contract for which to retrieve the counter
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The counter of a contract, if any
      * @example
      * sotez.getCounter('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
      *   .then(counter => console.log(counter));
      */
-    getCounter: (address: string) => Promise<string>;
+    getCounter: (address: string, block?: string | number) => Promise<string>;
     /**
      * @description Get the baker information for an address
      * @param {string} address The contract for which to retrieve the baker information
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The information of the delegate address
      * @example
      * sotez.getBaker('tz1fXdNLZ4jrkjtgJWMcfeNpFDK9mbCBsaV4')
@@ -289,44 +294,50 @@ export declare class Sotez extends AbstractTezModule {
      *     grace_period,
      *   ));
      */
-    getBaker: (address: string) => Promise<Baker>;
+    getBaker: (address: string, block?: string | number) => Promise<Baker>;
     /**
      * @description Get the header of the current head
+     * @param {string|number} [block='head'] The block to retrieve the header from
      * @returns {Promise} The whole block header
      * @example
      * sotez.getHeader().then(header => console.log(header));
      */
-    getHeader: () => Promise<Header>;
+    getBlockHeader: (block?: string | number) => Promise<Header>;
     /**
      * @description Get the metadata of the current head
+     * @param {string|number} [block='head'] The block to retrieve the block metadata from
      * @returns {Promise} The head block metadata
      * @example
-     * sotez.getHeadMetadata().then(metadata => console.log(metadata));
+     * sotez.getBlockMetadata().then(metadata => console.log(metadata));
      */
-    getHeadMetadata: () => Promise<Header>;
+    getBlockMetadata: (block?: string | number) => Promise<Header>;
     /**
      * @description Get the current head block of the chain
+     * @param {string|number} [block='head'] The block to retrieve
      * @returns {Promise} The current head block
      * @example
      * sotez.getHead().then(head => console.log(head));
      */
-    getHead: () => Promise<Head>;
+    getBlock: (block?: string | number) => Promise<Block>;
     /**
      * @description Get the current head block hash of the chain
+     * @param {string|number} [block='head'] The block to retrieve the hash from
      * @returns {Promise} The block's hash, its unique identifier
      * @example
      * sotez.getHeadHash().then(headHash => console.log(headHash))
      */
-    getHeadHash: () => Promise<string>;
+    getBlockHash: (block?: string | number) => Promise<string>;
     /**
      * @description Ballots casted so far during a voting period
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} Ballots casted so far during a voting period
      * @example
      * sotez.getBallotList().then(ballotList => console.log(ballotList));
      */
-    getBallotList: () => Promise<any[]>;
+    getBallotList: (block?: string | number) => Promise<any[]>;
     /**
      * @description List of proposals with number of supporters
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} List of proposals with number of supporters
      * @example
      * sotez.getProposals().then(proposals => {
@@ -334,46 +345,51 @@ export declare class Sotez extends AbstractTezModule {
      *   console.log(proposals[1][0], proposals[1][1])
      * );
      */
-    getProposals: () => Promise<any[]>;
+    getProposals: (block?: string | number) => Promise<any[]>;
     /**
      * @description Sum of ballots casted so far during a voting period
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} Sum of ballots casted so far during a voting period
      * @example
      * sotez.getBallots().then(({ yay, nay, pass }) => console.log(yay, nay, pass));
      */
-    getBallots: () => Promise<{
+    getBallots: (block?: string | number) => Promise<{
         yay: number;
         nay: number;
         pass: number;
     }>;
     /**
      * @description List of delegates with their voting weight, in number of rolls
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} The ballots of the current voting period
      * @example
      * sotez.getListings().then(listings => console.log(listings));
      */
-    getListings: () => Promise<any[]>;
+    getListings: (block?: string | number) => Promise<any[]>;
     /**
      * @description Current proposal under evaluation
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} Current proposal under evaluation
      * @example
-     * sotez.getCurrentProposal().then(currentProposal => console.log(currentProposal));
+     * sotez.getProposal().then(currentProposal => console.log(currentProposal));
      */
-    getCurrentProposal: () => Promise<string>;
+    getProposal: (block?: string | number) => Promise<string>;
     /**
      * @description Current period kind
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} Current period kind
      * @example
-     * sotez.getCurrentPeriod().then(currentPeriod => console.log(currentPeriod));
+     * sotez.getProposalPeriod().then(proposalPeriod => console.log(proposalPeriod));
      */
-    getCurrentPeriod: () => Promise<any>;
+    getProposalPeriod: (block?: string | number) => Promise<any>;
     /**
      * @description Current expected quorum
+     * @param {string|number} [block='head'] The block to query against
      * @returns {Promise} Current expected quorum
      * @example
-     * sotez.getCurrentQuorum().then(currentQuorum => console.log(currentQuorum));
+     * sotez.getQuorum().then(quorum => console.log(quorum));
      */
-    getCurrentQuorum: () => Promise<number>;
+    getQuorum: (block?: string | number) => Promise<number>;
     /**
      * @description Current pending operations in the mempool
      * @returns {Promise} Pending operations

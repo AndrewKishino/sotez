@@ -95,7 +95,7 @@ type Micheline =
       value:
         | {
             prim: string;
-            args?: MichelineArray;
+            args?: Micheline[];
             annots?: string[];
           }
         | { bytes: string }
@@ -106,11 +106,11 @@ type Micheline =
         | { key: string }
         | { key_hash: string }
         | { signature: string }
-        | MichelineArray;
+        | Micheline[];
     }
   | {
       prim: string;
-      args?: MichelineArray;
+      args?: Micheline[];
       annots?: string[];
     }
   | { bytes: string }
@@ -121,9 +121,7 @@ type Micheline =
   | { key: string }
   | { key_hash: string }
   | { signature: string }
-  | MichelineArray;
-
-type MichelineArray = Array<Micheline>;
+  | Micheline[];
 
 interface Keys {
   pk: string;

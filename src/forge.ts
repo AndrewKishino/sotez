@@ -185,7 +185,7 @@ export const parameters = (parameter: any): string => {
  * @returns {string} Forged public key hash bytes
  */
 export const publicKeyHash = (pkh: string): string => {
-  const t = parseInt(pkh.substr(2, 1), 10);
+  const t = parseInt(pkh.substring(2, 3), 10);
   const fpkh = [`0${t - 1}`];
   const forgedBuffer = new Uint8Array(
     b58cdecode(pkh, prefix[pkh.substring(0, 3)]),

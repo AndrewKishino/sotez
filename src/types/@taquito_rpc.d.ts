@@ -5,7 +5,7 @@ declare module '@taquito/rpc' {
         value:
           | {
               prim: string;
-              args?: MichelineArray;
+              args?: Micheline[];
               annots?: string[];
             }
           | { bytes: string }
@@ -16,11 +16,11 @@ declare module '@taquito/rpc' {
           | { key: string }
           | { key_hash: string }
           | { signature: string }
-          | MichelineArray;
+          | Micheline[];
       }
     | {
         prim: string;
-        args?: MichelineArray;
+        args?: Micheline[];
         annots?: string[];
       }
     | { bytes: string }
@@ -31,12 +31,16 @@ declare module '@taquito/rpc' {
     | { key: string }
     | { key_hash: string }
     | { signature: string }
-    | MichelineArray;
+    | Micheline[];
 
-  type MichelineArray = Array<Micheline>;
   type MichelsonV1Expression = Micheline;
+  type MichelsonV1ExpressionExtended = {
+    prim: string;
+    args?: Micheline[];
+    annots?: string[];
+  };
   type ScriptResponse = {
-    code: MichelineArray;
+    code: Micheline[];
     storage: Micheline;
   };
 }

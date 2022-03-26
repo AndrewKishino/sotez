@@ -1,8 +1,7 @@
 import { cryptoUtils, magicBytes as magicBytesMap } from '../src';
 
 const TEST_KEY = {
-  sk:
-    'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
+  sk: 'edskS3DtVSbWbPD1yviMGebjYwWJtruMjDcfAZsH9uba22EzKeYhmQkkraFosFETmEMfFNVcDYQ5QbFerj9ozDKroXZ6mb5oxV',
   pk: 'edpkvJELH15q7a8ShGRsoULGxLQfUQaGahwRTFywCsnWPPdwnmASRH',
   pkh: 'tz1RvhdZ5pcjD19vCCK9PgZpnmErTba3dsBs',
 };

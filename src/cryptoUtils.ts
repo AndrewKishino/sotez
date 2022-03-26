@@ -98,10 +98,8 @@ export const extractKeys = async (
         sodium.crypto_sign_ed25519_sk_to_pk(secretKey),
       );
     } else {
-      const {
-        publicKey: publicKeyDerived,
-        privateKey,
-      } = sodium.crypto_sign_seed_keypair(secretKey, 'uint8array');
+      const { publicKey: publicKeyDerived, privateKey } =
+        sodium.crypto_sign_seed_keypair(secretKey, 'uint8array');
       publicKey = new Uint8Array(publicKeyDerived);
       secretKey = new Uint8Array(privateKey);
 

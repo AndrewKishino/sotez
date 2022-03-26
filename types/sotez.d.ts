@@ -86,7 +86,7 @@ declare type Micheline = {
     entrypoint: string;
     value: {
         prim: string;
-        args?: MichelineArray;
+        args?: Micheline[];
         annots?: string[];
     } | {
         bytes: string;
@@ -104,10 +104,10 @@ declare type Micheline = {
         key_hash: string;
     } | {
         signature: string;
-    } | MichelineArray;
+    } | Micheline[];
 } | {
     prim: string;
-    args?: MichelineArray;
+    args?: Micheline[];
     annots?: string[];
 } | {
     bytes: string;
@@ -125,8 +125,7 @@ declare type Micheline = {
     key_hash: string;
 } | {
     signature: string;
-} | MichelineArray;
-declare type MichelineArray = Array<Micheline>;
+} | Micheline[];
 interface Keys {
     pk: string;
     pkh: string;

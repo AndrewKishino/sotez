@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/constants.ts",
+    "src/contract.ts",
+    "src/cryptoUtils.ts",
+    "src/forge.ts",
+    "src/key.ts",
+    "src/ledger.ts",
+    "src/sotez.ts",
+    "src/utility.ts"
+  ],
+  "out": "docs"
+}

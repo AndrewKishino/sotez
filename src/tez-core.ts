@@ -7,7 +7,7 @@ export class AbstractTezModule {
 
   _debugMode: boolean;
 
-  constructor(provider: string, chain: string, debugMode = false) {
+  constructor(provider: string, chain = 'main', debugMode = false) {
     this._provider = provider;
     this._chain = chain;
     this._debugMode = debugMode;

@@ -3,7 +3,7 @@ export declare class AbstractTezModule {
     _provider: string;
     _chain: string;
     _debugMode: boolean;
-    constructor(provider: string, chain: string, debugMode?: boolean);
+    constructor(provider: string, chain?: string, debugMode?: boolean);
     get provider(): string;
     set provider(provider: string);
     get chain(): string;
@@ -21,5 +21,5 @@ export declare class AbstractTezModule {
      * sotez.query(`/chains/main/blocks/head`)
      *  .then(head => console.log(head));
      */
-    query: (path: string, payload?: any, method?: string | undefined) => Promise<any>;
+    query: (path: string, payload?: any, method?: string) => Promise<any>;
 }

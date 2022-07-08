@@ -49,7 +49,7 @@ export declare const checkAddress: (address: string) => boolean;
  * cryptoUtils.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
  */
-export declare const generateKeys: (mnemonic: string, passphrase?: string | undefined) => Promise<KeysMnemonicPassphrase>;
+export declare const generateKeys: (mnemonic: string, passphrase?: string) => Promise<KeysMnemonicPassphrase>;
 /**
  * @description Encrypts a secret key with a passphrase
  * @param {string} key The secret key
@@ -67,7 +67,7 @@ export declare const encryptSecretKey: (key: string, passphrase: string, salt?: 
  * @description Sign bytes
  * @param {string} bytes The bytes to sign
  * @param {string} sk The secret key to sign the bytes with
- * @param {Object} magicBytes The magic bytes for the operation
+ * @param {object} magicBytes The magic bytes for the operation
  * @param {string} [password] The password used to encrypt the sk
  * @returns {Promise} The signed bytes
  * @example
@@ -76,7 +76,7 @@ export declare const encryptSecretKey: (key: string, passphrase: string, salt?: 
  * cryptoUtils.sign(opbytes, keys.sk, magicBytesMap.generic)
  *   .then(({ bytes, magicBytes, sig, prefixSig, sbytes }) => console.log(bytes, magicBytes, sig, prefixSig, sbytes));
  */
-export declare const sign: (bytes: string, sk: string, magicBytes?: Uint8Array | undefined, password?: string) => Promise<Signed>;
+export declare const sign: (bytes: string, sk: string, magicBytes?: Uint8Array, password?: string) => Promise<Signed>;
 /**
  * @description Verify signed bytes
  * @param {string} bytes The signed bytes

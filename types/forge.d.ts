@@ -83,7 +83,7 @@ declare type MichelineArray = Array<Micheline>;
 /**
  * @description Convert bytes from Int32
  * @param {number} num Number to convert to bytes
- * @returns {Object} The converted number
+ * @returns {object} The converted number
  */
 export declare const toBytesInt32: (num: number) => any;
 /**
@@ -95,7 +95,7 @@ export declare const toBytesInt32Hex: (num: number) => string;
 /**
  * @description Convert bytes from Int16
  * @param {number} num Number to convert to bytes
- * @returns {Object} The converted number
+ * @returns {object} The converted number
  */
 export declare const toBytesInt16: (num: number) => any;
 /**
@@ -112,7 +112,7 @@ export declare const toBytesInt16Hex: (num: number) => string;
 export declare const bool: (boolArg: boolean) => string;
 /**
  * @description Forge script bytes
- * @param {Object} scriptArg Script to forge
+ * @param {object} scriptArg Script to forge
  * @param {string} scriptArg.code Script code
  * @param {string} scriptArg.storage Script storage
  * @returns {string} Forged script bytes
@@ -153,19 +153,19 @@ export declare const zarith: (n: string) => string;
 export declare const publicKey: (pk: string) => string;
 /**
  * @description Forge operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const operation: (op: Operation) => string;
 /**
  * @description Forge endorsement operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const endorsement: (op: Operation) => string;
 /**
  * @description Forge seed_nonce_revelation operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const seedNonceRevelation: (op: Operation) => string;
@@ -181,7 +181,7 @@ export declare const doubleEndorsementEvidence: () => string;
 export declare const doubleBakingEvidence: () => string;
 /**
  * @description Forge activate_account operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const activateAccount: (op: Operation) => string;
@@ -192,37 +192,37 @@ export declare const activateAccount: (op: Operation) => string;
 export declare const proposals: () => string;
 /**
  * @description Forge ballot operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const ballot: (op: Operation) => string;
 /**
  * @description Forge reveal operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const reveal: (op: Operation) => string;
 /**
  * @description Forge transaction operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const transaction: (op: Operation) => string;
 /**
  * @description Forge origination operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const origination: (op: Operation) => string;
 /**
  * @description Forge delegation operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export declare const delegation: (op: Operation) => string;
 /**
  * @description Forge operation bytes
- * @param {Object} opOb The operation object(s)
+ * @param {object} opOb The operation object(s)
  * @param {number} counter The current counter for the account
  * @param {string} protocol The next protocol for the operation. Used to handle protocol upgrade events if necessary.
  * @returns {string} Forged operation bytes
@@ -245,12 +245,12 @@ export declare const forge: (opOb: OperationObject, counter: number, protocol: s
 /**
  * @description Decode raw bytes
  * @param {string} bytes The bytes to decode
- * @returns {Object} Decoded raw bytes
+ * @returns {object} Decoded raw bytes
  */
 export declare const decodeRawBytes: (bytes: string) => Micheline;
 /**
  * @description Encode raw bytes
- * @param {Object} input The value to encode
+ * @param {object} input The value to encode
  * @returns {string} Encoded value as bytes
  */
 export declare const encodeRawBytes: (input: Micheline) => string;

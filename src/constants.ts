@@ -43,6 +43,7 @@ export const magicBytes = {
   generic: new Uint8Array([3]),
 };
 
+// src/proto_013_PtJakart/lib_protocol/michelson_v1_primitives.ml
 const opMapping: { [key: string]: string } = {
   '00': 'parameter',
   '01': 'storage',
@@ -181,7 +182,7 @@ const opMapping: { [key: string]: string } = {
   '81': 'bls12_381_g2',
   '82': 'bls12_381_fr',
   '83': 'sapling_state',
-  '84': 'sapling_transaction',
+  '84': 'sapling_transaction_deprecated',
   '85': 'SAPLING_EMPTY_STATE',
   '86': 'SAPLING_VERIFY_UPDATE',
   '87': 'ticket',
@@ -199,6 +200,12 @@ const opMapping: { [key: string]: string } = {
   '90': 'VIEW',
   '91': 'view',
   '92': 'constant',
+  // PROTO_012
+  '93': 'SUB_MUTEZ',
+  // PROTO_013
+  '94': 'tx_rollup_l2_address',
+  '95': 'MIN_BLOCK_TIME',
+  '96': 'sapling_transaction',
 };
 
 const opMappingReverse = (() => {
@@ -331,6 +338,7 @@ export const protocols = {
   '010': 'PtGRANADsDU8R9daYKAgWnQYAJ64omN1o3KMGVCykShA97vQbvV',
   '011': 'PtHangz2aRngywmSRGGvrcTyMbbdpWdpFKuS4uMWxg2RaH9i1qx',
   '012': 'Psithaca2MLRFYargivpo7YvUr7wUDqyxrdhC5CQq78mRvimz6A',
+  '013': 'PtJakart2xVj7pYXJBXrqHgd82rdkLey5ZeeGwDgPp9rhQUbSqY',
 };
 
 export default {

@@ -39,7 +39,7 @@
 
 ## Documentation
 
-More detailed documentation can be found on the [wiki Documentation](https://github.com/AndrewKishino/sotez/wiki/Documentation).
+More detailed documentation can be found in the [Documentation](https://andrewkishino.github.io/sotez/modules.html).
 
 ## Node Version
 
@@ -80,6 +80,7 @@ const tezos = new Sotez(provider, moduleOptions);
   - **defaultFee**: The default fee to apply to transactions
   - **useMutez**: Use mutez values when referring to balance or amounts
   - **useLimitEstimator**: Use an estimator to determine gas and storage limits
+  - **chainId**: The chain ID to interact with
   - **localForge**: Forge operations locally, without an rpc server
   - **validateLocalForge**: Forge operations locally, but verify against the rpc server
   - **debugMode**: Sets debug mode
@@ -92,6 +93,7 @@ const tezos = new Sotez('https://testnet-tezos.giganode.io', {
   defaultFee: 1420,
   useMutez: true,
   useLimitEstimator: true,
+  chainId: 'main',
   debugMode: false,
   localForge: true,
   validateLocalForge: false,

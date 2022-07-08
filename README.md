@@ -72,28 +72,29 @@ const tezos = new Sotez('https://testnet-tezos.giganode.io');
 Sotez can be initialized with the following arguments:
 
 ```js
-const tezos = new Sotez(provider, chain, moduleOptions);
+const tezos = new Sotez(provider, moduleOptions);
 ```
 
 - **provider**: The address of the rpc server of the Tezos node
-- **chain**: The chain to query (Either 'main' or 'test')
 - **moduleOptions**: The configurable options to set for an initialized instance
   - **defaultFee**: The default fee to apply to transactions
+  - **useMutez**: Use mutez values when referring to balance or amounts
+  - **useLimitEstimator**: Use an estimator to determine gas and storage limits
   - **localForge**: Forge operations locally, without an rpc server
   - **validateLocalForge**: Forge operations locally, but verify against the rpc server
   - **debugMode**: Sets debug mode
-  - **useMutez**: Use mutez values when referring to balance or amounts
 
 For example, you can provide additional options when initializing a new instance:
 
 ```js
 // New instance initialized with default values
-const tezos = new Sotez('https://testnet-tezos.giganode.io', 'main', {
+const tezos = new Sotez('https://testnet-tezos.giganode.io', {
   defaultFee: 1420,
+  useMutez: true,
+  useLimitEstimator: true,
+  debugMode: false,
   localForge: true,
   validateLocalForge: false,
-  debugMode: false,
-  useMutez: true,
 });
 ```
 

@@ -12,11 +12,12 @@ describe('core', () => {
     expect(tez.provider).toBe('http://127.0.0.1:8732');
     expect(tez.chain).toBe('main');
     expect(tez.useMutez).toBe(true);
-    expect(tez.defaultFee).toBe(1420);
+    expect(tez.defaultFee).toBe(10000);
   });
 
   it('init options', () => {
-    tez = new Sotez('http://127.0.0.1:8732', 'test', {
+    tez = new Sotez('http://127.0.0.1:8732', {
+      chainId: 'test',
       debugMode: true,
       defaultFee: 1234,
       useMutez: false,

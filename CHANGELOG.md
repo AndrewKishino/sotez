@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.0.0] - 2021-7-7
+
+- General release Jakarta
+
+### Added
+
+- Support for Jakarta protocol
+
+### Changed
+
+- Use `@stablelib` crypto libraries over libsodium
+- Remove `mempoolCounterManager` option from initialization options
+- `chainId` is now an initialization option. Defaults to the alias `main`
+- Changed the 'dryRunLimiter' module option to be 'useLimitEstimator'
+
+## [12.0.0] - 2022-3-26
+
+- General release Ithaca
+
+### Added
+
+- Support for Ithaca protocol
+
 ## [11.0.0] - 2021-12-22
 
 - General release Hangzhou

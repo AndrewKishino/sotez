@@ -43,27 +43,27 @@ export declare const mutez: (tez: number | string) => string;
 /**
  * @description Base58 encode
  * @param {string | Uint8Array} payload The value to encode
- * @param {Object} prefixArg The Uint8Array prefix values
+ * @param {object} prefixArg The Uint8Array prefix values
  * @returns {string} The base58 encoded value
  */
 export declare const b58cencode: (payload: Uint8Array, prefixArg: Uint8Array) => string;
 /**
  * @description Base58 decode
  * @param {string} enc The value to decode
- * @param {Object} prefixArg The Uint8Array prefix values
- * @returns {Object} The decoded base58 value
+ * @param {object} prefixArg The Uint8Array prefix values
+ * @returns {object} The decoded base58 value
  */
 export declare const b58cdecode: (enc: string, prefixArg: Uint8Array) => Uint8Array;
 /**
  * @description Buffer to hex
- * @param {Object} buffer The buffer to convert to hex
+ * @param {object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
 export declare const buf2hex: (buffer: Uint8Array) => string;
 /**
  * @description Hex to Buffer
  * @param {string} hex The hex to convert to buffer
- * @returns {Object} Converted buffer value
+ * @returns {object} Converted buffer value
  */
 export declare const hex2buf: (hex: string) => Uint8Array;
 /**
@@ -74,9 +74,9 @@ export declare const hex2buf: (hex: string) => Uint8Array;
 export declare const hexNonce: (length: number) => string;
 /**
  * @description Merge two buffers together
- * @param {Object} b1 The first buffer
- * @param {Object} b2 The second buffer
- * @returns {Object} The merged buffer
+ * @param {object} b1 The first buffer
+ * @param {object} b2 The second buffer
+ * @returns {object} The merged buffer
  */
 export declare const mergebuf: (b1: Uint8Array, b2: Uint8Array) => Uint8Array;
 /**

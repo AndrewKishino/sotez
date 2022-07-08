@@ -31,8 +31,8 @@ const curves: { [key: string]: number } = {
 
 /**
  * @description Get the public key and public key hash from the ledger
- * @param {Object} ledgerParams The parameters of the getAddress function
- * @param {Object} ledgerParams.transport The ledger transport to interface with
+ * @param {object} ledgerParams The parameters of the getAddress function
+ * @param {object} ledgerParams.transport The ledger transport to interface with
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
  * @param {boolean} [ledgerParams.displayConfirm=false] Whether to display a confirmation the ledger
  * @param {string} [ledgerParams.curve=tz1] The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02)
@@ -75,8 +75,8 @@ export const getAddress = async ({
 
 /**
  * @description Sign an operation with the ledger
- * @param {Object} ledgerParams The parameters of the signOperation function
- * @param {Object} ledgerParams.transport The ledger transport to interface with
+ * @param {object} ledgerParams The parameters of the signOperation function
+ * @param {object} ledgerParams.transport The ledger transport to interface with
  * @param {string} [ledgerParams.path=44'/1729'/0'/0'] The ledger path
  * @param {boolean} ledgerParams.rawTxHex The transaction hex for the ledger to sign
  * @param {string} [ledgerParams.curve=tz1] The value which defines the curve (tz1=0x00, tz2=0x01, tz3=0x02)
@@ -121,7 +121,7 @@ export const signOperation = async ({
 
 /**
  * @description Show the version of the ledger
- * @param {LedgerTransport} transport The parameters of the signOperation function
+ * @param {object} transport The transport
  * @returns {Promise} The version info
  * @example
  * ledger.getVersion()

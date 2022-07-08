@@ -1,5 +1,5 @@
 import bs58check from 'bs58check';
-import blake2b from 'blake2b';
+import { hash as blake2b } from '@stablelib/blake2b';
 
 /**
  * @description Split path utility
@@ -95,8 +95,6 @@ const keyHashSize = 20;
 const hashPublicKeyToString = (publicKey: Buffer) => {
   const curve = publicKey[0];
   const key = publicKey.slice(1);
-  let hash = blake2b(keyHashSize);
-  hash.update(key);
-  hash.digest((hash = Buffer.alloc(keyHashSize)));
+  let hash = blake2b(key, keyHashSize);
   return bs58check.encode(Buffer.concat([pkhB58Prefix(curve), hash]));
 };

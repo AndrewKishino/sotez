@@ -120,7 +120,7 @@ const smartContractAbstractionSemantic: (client: any) => Semantic = (
 /**
  * @description Creates an initialized contract class abstraction
  * @class Contract
- * @param {Object} client Initialized Sotez client
+ * @param {object} client Initialized Sotez client
  * @param {string} address Contract address
  * @example
  * const contract = new Contract(sotez, 'KT1MKm4ynxPSzRjw26jPSJbaMFTqTc4dVPdK');

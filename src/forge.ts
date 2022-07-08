@@ -78,7 +78,7 @@ type MichelineArray = Array<Micheline>;
 /**
  * @description Convert bytes from Int32
  * @param {number} num Number to convert to bytes
- * @returns {Object} The converted number
+ * @returns {object} The converted number
  */
 export const toBytesInt32 = (num: number): any => {
   // @ts-ignore
@@ -105,7 +105,7 @@ export const toBytesInt32Hex = (num: number): string => {
 /**
  * @description Convert bytes from Int16
  * @param {number} num Number to convert to bytes
- * @returns {Object} The converted number
+ * @returns {object} The converted number
  */
 export const toBytesInt16 = (num: number): any => {
   // @ts-ignore
@@ -133,7 +133,7 @@ export const bool = (boolArg: boolean): string => (boolArg ? 'ff' : '00');
 
 /**
  * @description Forge script bytes
- * @param {Object} scriptArg Script to forge
+ * @param {object} scriptArg Script to forge
  * @param {string} scriptArg.code Script code
  * @param {string} scriptArg.storage Script storage
  * @returns {string} Forged script bytes
@@ -272,7 +272,7 @@ export const publicKey = (pk: string): string => {
 
 /**
  * @description Forge operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const operation = (op: Operation): string => {
@@ -313,7 +313,7 @@ export const operation = (op: Operation): string => {
 
 /**
  * @description Forge endorsement operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const endorsement = (op: Operation): string => {
@@ -326,7 +326,7 @@ export const endorsement = (op: Operation): string => {
 
 /**
  * @description Forge seed_nonce_revelation operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const seedNonceRevelation = (op: Operation): string => {
@@ -365,7 +365,7 @@ export const doubleBakingEvidence = (): string => {
 
 /**
  * @description Forge activate_account operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const activateAccount = (op: Operation): string => {
@@ -395,7 +395,7 @@ export const proposals = (): string => {
 
 /**
  * @description Forge ballot operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const ballot = (op: Operation): string => {
@@ -427,7 +427,7 @@ export const ballot = (op: Operation): string => {
 
 /**
  * @description Forge reveal operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const reveal = (op: Operation): string => {
@@ -458,7 +458,7 @@ export const reveal = (op: Operation): string => {
 
 /**
  * @description Forge transaction operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const transaction = (op: Operation): string => {
@@ -497,7 +497,7 @@ export const transaction = (op: Operation): string => {
 
 /**
  * @description Forge origination operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const origination = (op: Operation): string => {
@@ -536,7 +536,7 @@ export const origination = (op: Operation): string => {
 
 /**
  * @description Forge delegation operation bytes
- * @param {Object} op Operation to forge
+ * @param {object} op Operation to forge
  * @returns {string} Forged operation bytes
  */
 export const delegation = (op: Operation): string => {
@@ -572,7 +572,7 @@ export const delegation = (op: Operation): string => {
 
 /**
  * @description Forge operation bytes
- * @param {Object} opOb The operation object(s)
+ * @param {object} opOb The operation object(s)
  * @param {number} counter The current counter for the account
  * @param {string} protocol The next protocol for the operation. Used to handle protocol upgrade events if necessary.
  * @returns {string} Forged operation bytes
@@ -622,7 +622,7 @@ export const forge = async (
 /**
  * @description Decode raw bytes
  * @param {string} bytes The bytes to decode
- * @returns {Object} Decoded raw bytes
+ * @returns {object} Decoded raw bytes
  */
 export const decodeRawBytes = (bytes: string): Micheline => {
   bytes = bytes.toUpperCase();
@@ -728,7 +728,7 @@ export const decodeRawBytes = (bytes: string): Micheline => {
 
 /**
  * @description Encode raw bytes
- * @param {Object} input The value to encode
+ * @param {object} input The value to encode
  * @returns {string} Encoded value as bytes
  */
 export const encodeRawBytes = (input: Micheline): string => {

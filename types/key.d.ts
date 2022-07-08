@@ -2,14 +2,14 @@
  * Creates a key object from a base58 encoded key.
  *
  * @class Key
- * @param {Object} KeyConstructor
+ * @param {object} KeyConstructor
  * @param {string} [KeyConstructor.key] A public or secret key in base58 encoding, or a 15 word bip39 english mnemonic string. Not
  *   providing a key will import a ledger public key.
  * @param {string} [KeyConstructor.passphrase] The passphrase used if the key provided is an encrypted private key or a fundraiser key
  * @param {string} [KeyConstructor.email] Email used if a fundraiser key is passed
  * @param {string} [KeyConstructor.ledgerPath="44'/1729'/0'/0'"] Ledger derivation path
  * @param {string} [KeyConstructor.ledgerCurve='tz1'] Ledger curve
- * @param {Object} [KeyConstructor.ledgerTransport] Ledger transport
+ * @param {object} [KeyConstructor.ledgerTransport] Ledger transport
  * @example
  * import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
  * const key = new Key({ ledgerPath: "44'/1729'/0'/1'", ledgerTransport: TransportNodeHid });
@@ -54,7 +54,7 @@ export declare class Key {
      * @param {string} [passphrase] The password used to encrypt the secret key, if applicable
      * @returns {Promise<string>} The secret key associated with this key, if available
      */
-    secretKey: (passphrase?: string | undefined) => Promise<string>;
+    secretKey: (passphrase?: string) => Promise<string>;
     /**
      * @memberof Key
      * @description Returns public key hash for this key
@@ -73,7 +73,7 @@ export declare class Key {
      * @param {Uint8Array} magicBytes The magic bytes for the operation
      * @returns {Promise} The signature object
      */
-    sign: (bytes: string, magicBytes?: Uint8Array | undefined) => Promise<{
+    sign: (bytes: string, magicBytes?: Uint8Array) => Promise<{
         bytes: string;
         magicBytes: string;
         sig: string;

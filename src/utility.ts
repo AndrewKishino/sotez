@@ -1,7 +1,7 @@
 import bs58check from 'bs58check';
 import { BigNumber } from 'bignumber.js';
 import { Buffer } from 'buffer/';
-import blake2b from 'blake2b';
+import { hash as blake2b } from '@stablelib/blake2b';
 
 import { prefix } from './constants';
 
@@ -73,7 +73,7 @@ export const mutez = (tez: number | string): string =>
 /**
  * @description Base58 encode
  * @param {string | Uint8Array} payload The value to encode
- * @param {Object} prefixArg The Uint8Array prefix values
+ * @param {object} prefixArg The Uint8Array prefix values
  * @returns {string} The base58 encoded value
  */
 export const b58cencode = (
@@ -90,15 +90,15 @@ export const b58cencode = (
 /**
  * @description Base58 decode
  * @param {string} enc The value to decode
- * @param {Object} prefixArg The Uint8Array prefix values
- * @returns {Object} The decoded base58 value
+ * @param {object} prefixArg The Uint8Array prefix values
+ * @returns {object} The decoded base58 value
  */
 export const b58cdecode = (enc: string, prefixArg: Uint8Array): Uint8Array =>
   new Uint8Array(bs58check.decode(enc).slice(prefixArg.length));
 
 /**
  * @description Buffer to hex
- * @param {Object} buffer The buffer to convert to hex
+ * @param {object} buffer The buffer to convert to hex
  * @returns {string} Converted hex value
  */
 export const buf2hex = (buffer: Uint8Array): string => {
@@ -115,7 +115,7 @@ export const buf2hex = (buffer: Uint8Array): string => {
 /**
  * @description Hex to Buffer
  * @param {string} hex The hex to convert to buffer
- * @returns {Object} Converted buffer value
+ * @returns {object} Converted buffer value
  */
 export const hex2buf = (hex: string): Uint8Array =>
   // @ts-ignore
@@ -137,9 +137,9 @@ export const hexNonce = (length: number): string => {
 
 /**
  * @description Merge two buffers together
- * @param {Object} b1 The first buffer
- * @param {Object} b2 The second buffer
- * @returns {Object} The merged buffer
+ * @param {object} b1 The first buffer
+ * @param {object} b2 The second buffer
+ * @returns {object} The merged buffer
  */
 export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
   const r = new Uint8Array(b1.length + b2.length);
@@ -154,9 +154,7 @@ export const mergebuf = (b1: Uint8Array, b2: Uint8Array): Uint8Array => {
  * @returns {string} The base58 encoded expression
  */
 export const encodeExpr = (value: string): string => {
-  let hash = blake2b(32);
-  hash.update(hex2buf(value));
-  hash.digest((hash = Buffer.alloc(32)));
+  let hash = blake2b(hex2buf(value), 32);
   return b58cencode(hash, prefix.expr);
 };
 

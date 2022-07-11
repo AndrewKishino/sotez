@@ -7,6 +7,8 @@ const TEST_KEY = {
 };
 
 const KEY_ED25519 = 'edsk3Z2t7t1XimympW62RmUDQeBxn9dw3pQdxxhpAGngmkjiFuXUAj';
+const KEY_ED25519_ALT =
+  'edskRqqHqAnB7Yw94ZPArZdonoShmnAmi42uwxcETBBnPwu4Kz1iY7P1xTJr4M3em1bLLb6tLeo9sTSDXnzmH6iixBgL5fFB37';
 const KEY_SECP256K1 = 'spsk2BbX6umbLYLmb1yLFWEFZPSkeJt4WWomhuhbuqc13LxrhXDA3i';
 const KEY_P256 = 'p2sk3NKhFyDQ74wsBBYDLZ2BpRcHBPhV1BkxBuvDJP2zuqZ23vL5gy';
 const ENCRYPTED_KEY_ED25519 =
@@ -31,6 +33,15 @@ describe('cryptoUtils', () => {
         'edpktkMe2an4WSByUyoGW4sxRPMpr4o7Ka9J72JJetqqothP4KzHof',
       );
       expect(extractedKeys.pkh).toBe('tz1iZDVj66qc6WsZtzR1zuuzVwNN7oJAu96v');
+    });
+
+    it('ed25519 long secret keys', async () => {
+      const extractedKeys = await cryptoUtils.extractKeys(KEY_ED25519_ALT);
+      expect(extractedKeys.sk).toBe(KEY_ED25519_ALT);
+      expect(extractedKeys.pk).toBe(
+        'edpkvNGUd3xcBNmPWRbXJoS6WEvxu1BVoWjHr7ab7QoAJFFqhx9tkR',
+      );
+      expect(extractedKeys.pkh).toBe('tz1aWXP237BLwNHJcCD4b3DutCevhqq2T1Z9');
     });
 
     it('secp256k1 secret keys', async () => {
@@ -227,6 +238,37 @@ describe('cryptoUtils', () => {
       expect(keys.pkh).toBe('tz1hALbJbG3X1BgNHimVF8A11urkvHJgYUat');
       expect(keys.pkh.length).toBe(36);
     });
+
+    it.each([
+      {
+        path: "44'/1729'/0'/0'",
+        pkh: 'tz1TyyX7U6r6tB1uSS4aUnfKX9rj3y9NCEVL',
+      },
+      {
+        path: "44'/1729'/1'/0'",
+        pkh: 'tz1WCBJKr1rRivyCnN9hREpRAMqrLdmqDcym',
+      },
+      {
+        path: "44'/1729'/2147483647'/0'",
+        pkh: 'tz1WKKg7eN7rADsFrfzZmRrEECfBcZbXKtvS',
+      },
+      {
+        path: "44'/1729'/1'/1'/1'",
+        pkh: 'tz1dAgezeiGexQkgfbPm8MgP1XTqA4rJRt3C',
+      },
+    ])(
+      'should correctly generate HD account keys for path $path',
+      async (derivation) => {
+        const TEST_MNEMONIC =
+          'gym exact clown can answer hope sample mirror knife twenty powder super imitate lion churn almost shed chalk dust civil gadget pyramid helmet trade';
+        const keys = await cryptoUtils.generateKeys(
+          TEST_MNEMONIC,
+          undefined,
+          derivation.path,
+        );
+        expect(derivation.pkh).toBe(keys.pkh);
+      },
+    );
   });
 
   describe('sign', () => {

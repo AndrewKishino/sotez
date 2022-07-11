@@ -1,12 +1,13 @@
 import { hash } from '@stablelib/blake2b';
 import {
   generateKeyPairFromSeed,
-  extractPublicKeyFromSecretKey,
   sign as ed25519Sign,
   verify as ed25519Verify,
 } from '@stablelib/ed25519';
 import { randomBytes } from '@stablelib/random';
 import { openSecretBox, secretBox } from '@stablelib/nacl';
+import { hmac } from '@stablelib/hmac';
+import { SHA512 } from '@stablelib/sha512';
 import {
   generateMnemonic as bip39GenerateMnemonic,
   mnemonicToSeed,
@@ -40,6 +41,11 @@ interface Signed {
   sbytes: string;
 }
 
+interface Node {
+  privateKey: Uint8Array;
+  chainCode: Uint8Array;
+}
+
 /**
  * @description Extract key pairs from a secret key
  * @param {string} sk The secret key to extract key pairs from
@@ -51,7 +57,7 @@ interface Signed {
  */
 export const extractKeys = async (
   sk: string,
-  passphrase = '',
+  passphrase?: string,
 ): Promise<Keys> => {
   const curve = sk.substring(0, 2);
 
@@ -94,21 +100,17 @@ export const extractKeys = async (
 
   if (curve === 'ed') {
     let publicKey;
-    if (secretKey.length === 64) {
-      publicKey = extractPublicKeyFromSecretKey(secretKey);
-    } else {
-      const { publicKey: publicKeyDerived, secretKey: privateKey } =
-        generateKeyPairFromSeed(secretKey);
-      publicKey = publicKeyDerived;
-      secretKey = privateKey;
+    const { publicKey: publicKeyDerived, secretKey: privateKey } =
+      generateKeyPairFromSeed(secretKey.slice(0, 32));
 
-      if (encrypted) {
-        privateKeys = {
-          esk: sk,
-          sk: b58cencode(secretKey, prefix[`${curve}sk`]),
-          salt,
-        };
-      }
+    publicKey = publicKeyDerived;
+    secretKey = privateKey;
+
+    if (encrypted) {
+      privateKeys = {
+        ...privateKeys,
+        sk: b58cencode(secretKey, prefix[`${curve}sk`]),
+      };
     }
 
     return {
@@ -157,9 +159,16 @@ export const extractKeys = async (
 
 /**
  * @description Generate a mnemonic
- * @returns {string} The 15 word generated mnemonic
+ * @param {number} [numberOfWords=15] The number of words to include in the mnemonic
+ * @returns {string} The generated mnemonic
  */
-export const generateMnemonic = (): string => bip39GenerateMnemonic(160);
+export const generateMnemonic = (numberOfWords = 15): string => {
+  if ([15, 18, 21, 24].includes(numberOfWords)) {
+    return bip39GenerateMnemonic((numberOfWords * 32) / 3);
+  } else {
+    throw new Error('InvalidNumberOfWords');
+  }
+};
 
 /**
  * @description Check the validity of a tezos implicit address (tz1...)
@@ -178,20 +187,33 @@ export const checkAddress = (address: string): boolean => {
 /**
  * @description Generate a new key pair given a mnemonic and passphrase
  * @param {string} mnemonic The mnemonic seed
- * @param {string} passphrase The passphrase used to encrypt the seed
+ * @param {string} [passphrase] The passphrase used to salt the seed
+ * @param {string} [derivationPath='m/44h/1729h/0h/0h'] Derivation path if generating keys for an HD account
  * @returns {Promise} The generated key pair
  * @example
  * cryptoUtils.generateKeys('raw peace visual boil prefer rebel anchor right elegant side gossip enroll force salmon between', 'my_password_123')
+ *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
+ *
+ * // Or generate keys given an HD derivartion path
+ * cryptoUtils.generateKeys('gym exact clown can answer hope sample mirror knife twenty powder super imitate lion churn almost shed chalk dust civil gadget pyramid helmet trade', undefined, 'm/44h/1729h/0h/0h')
  *   .then(({ mnemonic, passphrase, sk, pk, pkh }) => console.log(mnemonic, passphrase, sk, pk, pkh));
  */
 export const generateKeys = async (
   mnemonic: string,
   passphrase?: string,
+  derivationPath?: string,
 ): Promise<KeysMnemonicPassphrase> => {
-  const s = await mnemonicToSeed(mnemonic, passphrase).then((seed) =>
-    seed.slice(0, 32),
-  );
-  const kp = generateKeyPairFromSeed(new Uint8Array(s));
+  let seed = await mnemonicToSeed(mnemonic, passphrase);
+  if (derivationPath) {
+    derivationPath = derivationPath.replace('m/', '').replace(/'/g, 'h');
+    const pathArray = derivationPathToArray(derivationPath);
+    let node = deriveRootNode(seed);
+    for (const index of pathArray) {
+      node = deriveChildNode(node, index);
+    }
+    seed = Buffer.from(node.privateKey);
+  }
+  const kp = generateKeyPairFromSeed(seed.slice(0, 32));
   return {
     mnemonic,
     passphrase,
@@ -436,7 +458,51 @@ export const verify = async (
   }
 };
 
+const deriveNode = (message: Uint8Array, key: Buffer): Node => {
+  const derived = hmac(SHA512, key, message);
+  return {
+    privateKey: derived.slice(0, 32),
+    chainCode: derived.slice(32),
+  };
+};
+
+const deriveRootNode = (seed: Uint8Array): Node => {
+  if (seed.length !== 64) {
+    throw new Error('Invalid seed size');
+  }
+  const domainSeperator = Buffer.from('ed25519 seed');
+  return deriveNode(seed, domainSeperator);
+};
+
+const deriveChildNode = (node: Node, index: number): Node => {
+  const indexBuf: Buffer = Buffer.allocUnsafe(4);
+  indexBuf.writeUInt32BE(index, 0);
+  const message: Buffer = Buffer.concat([
+    Buffer.alloc(1, 0),
+    Buffer.from(node.privateKey),
+    indexBuf,
+  ]);
+  return deriveNode(message, Buffer.from(node.chainCode));
+};
+
+const derivationPathToArray = (derivationPath: string): number[] => {
+  derivationPath = derivationPath.replace('m/', '').replace(/'/g, 'h');
+  if (!derivationPath.match(/^44h\/1(729)?(h\/[0-9]+)+h$/g)) {
+    throw new Error(
+      'Invalid derivation path. Only hardened derivation paths on Tezos domain space is supported.',
+    );
+  }
+  return derivationPath.split('/').map((level: string) => {
+    level = level.slice(0, -1);
+    if (Number(level) >= Number('0x80000000')) {
+      throw new Error('Invalid derivation path. Out of bound.');
+    }
+    return Number(level) + Number('0x80000000');
+  });
+};
+
 export default {
+  mnemonicToSeed,
   extractKeys,
   encryptSecretKey,
   generateKeys,

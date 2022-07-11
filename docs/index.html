@@ -9,7 +9,7 @@
 <div class="container container-main">
 <div class="col-8 col-content">
 <div class="tsd-page-title">
-<h2> sotez</h2></div>
+<h2>sotez</h2></div>
 <div class="tsd-panel tsd-typography"><!-- PROJECT LOGO -->
 
 <p align="center">
@@ -65,7 +65,7 @@
 <a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
   <h2>Documentation</h2>
 </a>
-<p>More detailed documentation can be found on the <a href="https://github.com/AndrewKishino/sotez/wiki/Documentation">wiki Documentation</a>.</p>
+<p>More detailed documentation can be found in the <a href="https://andrewkishino.github.io/sotez/modules.html">Documentation</a>.</p>
 
 <a href="#node-version" id="node-version" style="color: inherit; text-decoration: none;">
   <h2>Node Version</h2>
@@ -103,6 +103,7 @@
 <li><strong>defaultFee</strong>: The default fee to apply to transactions</li>
 <li><strong>useMutez</strong>: Use mutez values when referring to balance or amounts</li>
 <li><strong>useLimitEstimator</strong>: Use an estimator to determine gas and storage limits</li>
+<li><strong>chainId</strong>: The chain ID to interact with</li>
 <li><strong>localForge</strong>: Forge operations locally, without an rpc server</li>
 <li><strong>validateLocalForge</strong>: Forge operations locally, but verify against the rpc server</li>
 <li><strong>debugMode</strong>: Sets debug mode</li>
@@ -110,7 +111,7 @@
 </li>
 </ul>
 <p>For example, you can provide additional options when initializing a new instance:</p>
-<pre><code class="language-js"><span class="hl-7">// New instance initialized with default values</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">tezos</span><span class="hl-0"> = </span><span class="hl-4">new</span><span class="hl-0"> </span><span class="hl-6">Sotez</span><span class="hl-0">(</span><span class="hl-3">&#39;https://testnet-tezos.giganode.io&#39;</span><span class="hl-0">, {</span><br/><span class="hl-0">  </span><span class="hl-2">defaultFee:</span><span class="hl-0"> </span><span class="hl-8">1420</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">useMutez:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">useLimitEstimator:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">debugMode:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">localForge:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">validateLocalForge:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">});</span>
+<pre><code class="language-js"><span class="hl-7">// New instance initialized with default values</span><br/><span class="hl-4">const</span><span class="hl-0"> </span><span class="hl-5">tezos</span><span class="hl-0"> = </span><span class="hl-4">new</span><span class="hl-0"> </span><span class="hl-6">Sotez</span><span class="hl-0">(</span><span class="hl-3">&#39;https://testnet-tezos.giganode.io&#39;</span><span class="hl-0">, {</span><br/><span class="hl-0">  </span><span class="hl-2">defaultFee:</span><span class="hl-0"> </span><span class="hl-8">1420</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">useMutez:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">useLimitEstimator:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">chainId:</span><span class="hl-0"> </span><span class="hl-3">&#39;main&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">debugMode:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">localForge:</span><span class="hl-0"> </span><span class="hl-4">true</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-2">validateLocalForge:</span><span class="hl-0"> </span><span class="hl-4">false</span><span class="hl-0">,</span><br/><span class="hl-0">});</span>
 </code></pre>
 
 <a href="#query" id="query" style="color: inherit; text-decoration: none;">

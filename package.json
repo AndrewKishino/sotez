@@ -30,8 +30,10 @@
   "dependencies": {
     "@stablelib/blake2b": "^1.0.1",
     "@stablelib/ed25519": "^1.0.2",
+    "@stablelib/hmac": "^1.0.1",
     "@stablelib/nacl": "^1.0.3",
     "@stablelib/random": "^1.0.1",
+    "@stablelib/sha512": "^1.0.1",
     "@taquito/michelson-encoder": "^13.0.1",
     "bignumber.js": "^9.0.2",
     "bip39": "^3.0.4",

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [13.0.1] - 2021-7-10
+
+- Support Hardened Derivation in `cryptoUtils.generateKeys`
+  - Import HD accounts using a mnemonic and a derivation path
+  - These accounts should match ledger HD accounts
+
+```ts
+const keys = await cryptoUtils.generateKeys('gym exact clown can...', undefined, 'm/44h/1729h/0h/0h');
+```
+
+### Added
+
+- Support for Hardened Derivation in generateKeys
+
 ## [13.0.0] - 2021-7-7
 
 - General release Jakarta

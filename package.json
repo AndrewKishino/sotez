@@ -1,6 +1,6 @@
 {
   "name": "sotez",
-  "version": "13.0.0",
+  "version": "13.0.1",
   "description": "Tezos Typescript Library",
   "main": "index.js",
   "types": "types/index.d.ts",

@@ -1,4 +1,4 @@
-import TezosLedgerApp from './hw-app-xtz/Tezos';
+import TezosLedgerApp from '@ledgerhq/hw-app-tezos';
 import { magicBytes as magicBytesMap } from './constants';
 
 interface LedgerGetAddress {
@@ -60,11 +60,10 @@ export const getAddress = async ({
   const tezosLedger = new TezosLedgerApp(ledgerTransport);
   let publicKey;
   try {
-    publicKey = await tezosLedger.getAddress(
-      path,
-      displayConfirm,
-      curves[curve],
-    );
+    publicKey = await tezosLedger.getAddress(path, {
+      verify: displayConfirm,
+      curve: curves[curve],
+    });
   } catch (e) {
     ledgerTransport.close();
     throw e;
@@ -109,7 +108,7 @@ export const signOperation = async ({
     ({ signature } = await tezosLedger.signOperation(
       path,
       `${magicBytesHex}${rawTxHex}`,
-      curves[curve],
+      { curve: curves[curve] },
     ));
   } catch (e) {
     ledgerTransport.close();

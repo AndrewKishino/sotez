@@ -112,7 +112,9 @@ const head = await tezos.getHead();
 const balance = await tezos.getBalance('tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps');
 
 // Query the RPC directly
-const previousBalance = await tezos.query('/chains/main/blocks/head~30/context/contracts/tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps/balance');
+const previousBalance = await tezos.query(
+  '/chains/main/blocks/head~30/context/contracts/tz1e148HC7RUtCcZRNb4UnjNoRjyyxB8pNps/balance',
+);
 ```
 
 #### Sign
@@ -136,7 +138,7 @@ await tezos.importKey(
 
 ##### Ledger
 
-You may instead decide that you would like to sign operations using a Ledger device. In that case, you will need to also install the required [Transport](https://github.com/LedgerHQ/ledgerjs#ledgerhqhw-transport-) for the environment you are importing from:
+You may instead decide that you would like to sign operations using a Ledger device. In that case, you will need to also install the required [Transport](https://github.com/LedgerHQ/ledger-live/tree/develop/libs/ledgerjs#ledgerhqhw-transport-) for the environment you are importing from:
 
 ```sh
 npm install @ledgerhq/hw-transport-node-hid
@@ -464,8 +466,7 @@ import { Key, magicBytes } from 'sotez';
 
 const setupKey = async () => {
   const key = new Key({
-    key:
-      'edskRhQtHKMHVf3FDbnqhorMMVXrvgTVNJinVx6WQXb8RVXdKG5PVL5R7JsXU4Sc24wgG5Q5csQBcCQVVd98iSF1QJWjoHLW11',
+    key: 'edskRhQtHKMHVf3FDbnqhorMMVXrvgTVNJinVx6WQXb8RVXdKG5PVL5R7JsXU4Sc24wgG5Q5csQBcCQVVd98iSF1QJWjoHLW11',
   });
   await key.ready;
 

@@ -7,7 +7,8 @@ import {
 } from '@stablelib/ed25519';
 import { randomBytes } from '@stablelib/random';
 import { openSecretBox, secretBox } from '@stablelib/nacl';
-import pbkdf2 from 'pbkdf2';
+import { SHA512 } from '@stablelib/sha512';
+import { deriveKey } from '@stablelib/pbkdf2';
 import elliptic from 'elliptic';
 import { getAddress, signOperation } from './ledger';
 import {
@@ -143,12 +144,12 @@ export class Key {
         key = key.slice(0, 32);
       }
       const salt = this._salt || randomBytes(8);
-      const encryptionKey = pbkdf2.pbkdf2Sync(
-        passphrase,
+      const encryptionKey = deriveKey(
+        SHA512,
+        textEncode(passphrase),
         salt,
         32768,
         32,
-        'sha512',
       );
       const encryptedSk = secretBox(
         new Uint8Array(encryptionKey),
@@ -203,13 +204,14 @@ export class Key {
       const salt = textDecode(textEncode(`${email}${passphrase}`)).normalize(
         'NFKD',
       );
-      const seed = pbkdf2.pbkdf2Sync(
-        key,
-        `mnemonic${salt}`,
+      const seed = deriveKey(
+        SHA512,
+        textEncode(key),
+        textEncode(`mnemonic${salt}`),
         2048,
         64,
-        'sha512',
       );
+
       const { publicKey, secretKey: privateKey } = generateKeyPairFromSeed(
         new Uint8Array(seed.slice(0, 32)),
       );
@@ -261,12 +263,12 @@ export class Key {
 
       this._salt = decodedKey.slice(0, 8);
       const encryptedSk = decodedKey.slice(8);
-      const encryptionKey = pbkdf2.pbkdf2Sync(
-        passphrase,
+      const encryptionKey = deriveKey(
+        SHA512,
+        textEncode(passphrase),
         this._salt,
         32768,
         32,
-        'sha512',
       );
 
       decodedKey = openSecretBox(

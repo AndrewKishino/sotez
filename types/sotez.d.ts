@@ -211,7 +211,7 @@ export declare class Sotez extends AbstractTezModule {
     importKey: (key: string, passphrase?: string, email?: string) => Promise<void>;
     /**
      * @description Import a ledger public key
-     * @param {object} transport The ledger transport (https://github.com/LedgerHQ/ledgerjs)
+     * @param {object} transport The ledger transport (https://github.com/LedgerHQ/ledger-live/tree/develop/libs/ledgerjs#ledgerhqhw-transport-)
      * @param {string} [path="44'/1729'/0'/0'"] The ledger path
      * @param {string} [curve="tz1"] The curve parameter
      * @example

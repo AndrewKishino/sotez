@@ -1,4 +1,4 @@
-import 'isomorphic-fetch';
+import fetch from 'cross-fetch';
 
 export class AbstractTezModule {
   _provider: string;

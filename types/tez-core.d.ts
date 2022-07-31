@@ -1,4 +1,3 @@
-import 'isomorphic-fetch';
 export declare class AbstractTezModule {
     _provider: string;
     _chain: string;

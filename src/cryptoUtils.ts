@@ -12,9 +12,16 @@ import {
   generateMnemonic as bip39GenerateMnemonic,
   mnemonicToSeed,
 } from 'bip39';
-import pbkdf2 from 'pbkdf2';
+import { deriveKey } from '@stablelib/pbkdf2';
 import elliptic from 'elliptic';
-import { b58cdecode, b58cencode, hex2buf, mergebuf, buf2hex } from './utility';
+import {
+  b58cdecode,
+  b58cencode,
+  hex2buf,
+  mergebuf,
+  buf2hex,
+  textEncode,
+} from './utility';
 import { prefix } from './constants';
 
 interface Keys {
@@ -78,7 +85,7 @@ export const extractKeys = async (
       throw new Error('No passphrase was provided to decrypt the key');
     }
 
-    const key = pbkdf2.pbkdf2Sync(passphrase, salt, 32768, 32, 'sha512');
+    const key = deriveKey(SHA512, textEncode(passphrase), salt, 32768, 32);
     secretKey = openSecretBox(
       new Uint8Array(key),
       new Uint8Array(24),
@@ -257,12 +264,12 @@ export const encryptSecretKey = (
     secretKey = secretKey.slice(0, 32);
   }
 
-  const encryptionKey = pbkdf2.pbkdf2Sync(
-    passphrase,
+  const encryptionKey = deriveKey(
+    SHA512,
+    textEncode(passphrase),
     salt,
     32768,
     32,
-    'sha512',
   );
 
   const encryptedSk = secretBox(
@@ -314,7 +321,7 @@ export const sign = async (
       throw new Error('No password was provided to decrypt the key');
     }
 
-    const key = pbkdf2.pbkdf2Sync(password, salt, 32768, 32, 'sha512');
+    const key = deriveKey(SHA512, textEncode(password), salt, 32768, 32);
     constructedKey = openSecretBox(
       new Uint8Array(key),
       new Uint8Array(24),

@@ -6,6 +6,6 @@
  */
 export declare function splitPath(path: string): number[];
 export declare const encodePublicKey: (publicKey: Buffer, curve: number) => {
-    publicKey: any;
-    address: any;
+    publicKey: string;
+    address: string;
 };

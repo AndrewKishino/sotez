@@ -28,10 +28,12 @@
   "author": "Andrew Kishino",
   "license": "MIT",
   "dependencies": {
+    "@ledgerhq/hw-app-tezos": "^6.27.1",
     "@stablelib/blake2b": "^1.0.1",
     "@stablelib/ed25519": "^1.0.2",
     "@stablelib/hmac": "^1.0.1",
     "@stablelib/nacl": "^1.0.3",
+    "@stablelib/pbkdf2": "^1.0.1",
     "@stablelib/random": "^1.0.1",
     "@stablelib/sha512": "^1.0.1",
     "@taquito/michelson-encoder": "^13.0.1",
@@ -39,13 +41,13 @@
     "bip39": "^3.0.4",
     "bs58check": "^2.1.2",
     "buffer": "^6.0.3",
-    "elliptic": "^6.5.4",
-    "isomorphic-fetch": "^3.0.0",
-    "pbkdf2": "^3.1.2"
+    "cross-fetch": "^3.1.5",
+    "elliptic": "^6.5.4"
   },
   "devDependencies": {
     "@swc/core": "^1.2.210",
     "@swc/jest": "^0.2.21",
+    "@types/bs58check": "^2.1.0",
     "@types/elliptic": "^6.4.14",
     "@types/jest": "^28.1.4",
     "@types/node": "^18.0.3",
